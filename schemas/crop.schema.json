@@ -8,7 +8,7 @@
     "id": {"type": "string"},
     "name": {"type": "string"},
     "family": {"type": "string"},
-    "role": {"type": "array", "items": {"enum": ["cash", "cover", "forage", "fallow", "break"]}},
+    "role": {"type": "array", "items": {"enum": ["cash", "cover", "forage", "fallow", "break", "water"]}},
     "legume": {"type": "boolean"},
     "root": {"type": "string"},
     "kc": {
@@ -16,12 +16,17 @@
       "properties": {"ini": {"$ref": "sourced_number.schema.json"}, "mid": {"$ref": "sourced_number.schema.json"}, "end": {"$ref": "sourced_number.schema.json"}}
     },
     "stage_lengths_days": {
-      "type": "object", "required": ["ini", "dev", "mid", "late", "source"],
+      "type": ["object", "null"], "description": "null for non-crop entries (flooded field)", "required": ["ini", "dev", "mid", "late", "source"],
       "properties": {"ini": {"type": "integer"}, "dev": {"type": "integer"}, "mid": {"type": "integer"}, "late": {"type": "integer"}, "source": {"type": "string"}}
     },
     "cover_by_stage": {
       "type": "object", "required": ["ini", "dev", "mid", "late"],
-      "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}
+      "properties": {
+        "ini": {"type": "number", "minimum": 0, "maximum": 1}, "dev": {"type": "number", "minimum": 0, "maximum": 1},
+        "mid": {"type": "number", "minimum": 0, "maximum": 1}, "late": {"type": "number", "minimum": 0, "maximum": 1},
+        "method": {"type": "string"}, "verified": {"type": "boolean"}, "note": {"type": "string"}
+      },
+      "additionalProperties": false
     },
     "ratings_0_4": {
       "type": "object",
@@ -29,9 +34,12 @@
       "additionalProperties": {"$ref": "sourced_number.schema.json"}
     },
     "yield_range": {"$ref": "sourced_number.schema.json"},
-    "drainage_classes_ok": {"type": "array", "items": {"type": "string"}},
+    "drainage_classes_ok": {"description": "list of classes, or engine form {value: [classes], method, verified, note}", "oneOf": [
+      {"type": "array", "items": {"type": "string"}},
+      {"type": "object", "required": ["value"], "properties": {"value": {"type": "array", "items": {"type": "string"}}, "method": {"type": "string"}, "verified": {"type": "boolean"}, "note": {"type": "string"}}}
+    ]},
     "seeding_window": {
-      "type": "object", "required": ["start", "end", "verified"],
+      "type": ["object", "null"], "description": "null for non-crop entries (fallow, flooded field)", "required": ["start", "end", "verified"],
       "properties": {
         "start": {"type": "string", "pattern": "^\\d\\d-\\d\\d$"}, "end": {"type": "string", "pattern": "^\\d\\d-\\d\\d$"},
         "best": {"type": "string"}, "verified": {"type": "boolean"}

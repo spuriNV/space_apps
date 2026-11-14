@@ -38,6 +38,11 @@ FIXTURE = {
     "bc_news": "bc_news.json", "bc_signal": "bc_signal.json", "glossary": "glossary.json", "crop": "crops/{c}.json",
 }
 
+try:  # engine is a path dependency (see pyproject); fixture/stored-score fallback if it can't be imported
+    from rotation_engine import score as _engine_score_fn
+except Exception:  # noqa: BLE001
+    _engine_score_fn = None
+
 app = FastAPI(title="Field Shift API", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
                    allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Data-Source"])
@@ -58,11 +63,13 @@ def resolve(kind: str, p: str | None = None, l: str | None = None, c: str | None
             if isinstance(data, list):
                 data = {"items": data}
             return data, "real"
-    if kind == "crop":  # also accept a single crops.json (list or dict)
-        f = ROOT / "backend/engine/out/crops.json"
-        if f.is_file():
+    if kind == "crop":  # engine writes backend/engine/crops.json = {"crops": [...]}; also accept list/dict forms
+        for rel in ("backend/engine/crops.json", "backend/engine/out/crops.json"):
+            f = ROOT / rel
+            if not f.is_file():
+                continue
             data = _read(f)
-            items = data if isinstance(data, list) else data.get("items", list(data.values()))
+            items = data if isinstance(data, list) else data.get("crops", data.get("items", list(data.values())))
             for it in items:
                 if isinstance(it, dict) and it.get("id") == c:
                     return it, "real"
@@ -70,6 +77,20 @@ def resolve(kind: str, p: str | None = None, l: str | None = None, c: str | None
     if not f.is_file():
         raise HTTPException(404, f"no data for {kind} {fmt}")
     return _read(f), "fixture"
+
+
+def normalize_strategy(st: dict) -> dict:
+    """Engine emits brief.gaps as plain strings; schema wants {text, source_ids}. Wrap strings, leave objects."""
+    gaps = (st.get("brief") or {}).get("gaps")
+    if isinstance(gaps, list):
+        st["brief"]["gaps"] = [{"text": g, "source_ids": []} if isinstance(g, str) else g for g in gaps]
+    return st
+
+
+def normalize_strategies(d: dict) -> dict:
+    for st in d.get("items", []):
+        normalize_strategy(st)
+    return d
 
 
 def send(resp: Response, data: dict, src: str):
@@ -125,7 +146,8 @@ def features_weekly(pid: str, resp: Response):
 
 @app.get("/api/locations/{pid}/strategies")
 def strategies(pid: str, resp: Response):
-    check_preset(pid); d, s = resolve("strategies", pid); d.setdefault("location_id", pid); return send(resp, d, s)
+    check_preset(pid); d, s = resolve("strategies", pid); d.setdefault("location_id", pid)
+    return send(resp, normalize_strategies(d), s)
 
 
 class Scenario(BaseModel):
@@ -154,10 +176,38 @@ def _rank(strats):
     return out
 
 
+def _plain(x):
+    """Engine output may hold numpy scalars/arrays; convert to plain JSON types."""
+    if isinstance(x, dict):
+        return {str(k): _plain(v) for k, v in x.items()}
+    if isinstance(x, (list, tuple)):
+        return [_plain(v) for v in x]
+    if hasattr(x, "tolist"):
+        return _plain(x.tolist())
+    if hasattr(x, "item"):
+        return x.item()
+    return x
+
+
+def _engine_score(pid: str, req: ScoreRequest, w: dict):
+    """Run the real rotation engine. Returns strategies list, or None if the engine is unavailable."""
+    if _engine_score_fn is None:
+        return None
+    try:
+        return _plain(_engine_score_fn(pid, weights=w, constraints=req.constraints,
+                                market_preference=req.market_preference or "no_preference",
+                                allocation=req.allocation, replay_year=req.replay_year,
+                                scenario=req.scenario.model_dump()))
+    except ValueError as e:  # engine input validation (bounds, unknown keys)
+        raise HTTPException(422, str(e))
+    except Exception:  # noqa: BLE001  engine data missing/broken: fall back to placeholder
+        return None
+
+
 @app.post("/api/locations/{pid}/score")
 def score(pid: str, req: ScoreRequest, resp: Response):
-    """PLACEHOLDER until the engine is wired: re-weights stored per-criterion scores (sum w_i s_i / sum w_i, for value/low/high).
-    Scenario / constraints / allocation / replay_year are echoed but NOT applied."""
+    """Scores via the rotation engine (weights, constraints, market_preference, allocation, replay_year, scenario all applied).
+    Falls back to a placeholder re-weighting of stored scores if the engine can't be imported or run."""
     check_preset(pid)
     for k, v in req.weights.items():
         if k not in DEFAULT_W:
@@ -167,16 +217,24 @@ def score(pid: str, req: ScoreRequest, resp: Response):
     w = {**DEFAULT_W, **req.weights}
     if sum(w.values()) <= 0:
         raise HTTPException(422, "at least one weight must be > 0")
+    items = _engine_score(pid, req, w)
+    if items is not None:
+        items = [normalize_strategy(st) for st in items]
+        out = {"location_id": pid, "request": req.model_dump(), "items": items, "ranking": _rank(items),
+               "note": "scored by backend/engine (rule of thumb, not a model)"}
+        return send(resp, out, "real")
     d, s = resolve("strategies", pid)
     tot = sum(w.values()); items = []
     for st in d["items"]:
         st = json.loads(json.dumps(st)); sc = st["scores"]
-        f = lambda k: round(sum(w[x] * (sc[x][k] if sc[x].get(k) is not None else sc[x]["value"]) for x in w if x in sc) / tot, 1)
+        def f(k):
+            return round(sum(w[x] * (sc[x][k] if sc[x].get(k) is not None else sc[x]["value"])
+                             for x in w if x in sc and sc[x].get("value") is not None) / tot, 1)
         st["composite"] = {"value": f("value"), "low": f("low"), "high": f("high"), "weights_used": w}
         st["exposure"]["scenario"] = req.scenario.model_dump()
-        items.append(st)
+        items.append(normalize_strategy(st))
     out = {"location_id": pid, "request": req.model_dump(), "items": items, "ranking": _rank(items),
-           "note": "api placeholder: composite re-weighted from stored scores; scenario/constraints/allocation/replay not applied"}
+           "note": "api placeholder (engine unavailable): composite re-weighted from stored scores; scenario/constraints/allocation/replay not applied"}
     if s == "fixture":
         out["_fixture"] = True
     return send(resp, out, s)

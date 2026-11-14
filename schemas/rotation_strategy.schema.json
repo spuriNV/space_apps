@@ -26,7 +26,7 @@
           "role": {"type": "string"}, "timing_source": {"type": "string"}
         }}
     },
-    "allocation_rule": {"type": ["string", "null"], "description": "free text rule, e.g. 'applies when allocation < 50%'; null if none"},
+    "allocation_rule": {"type": ["string", "object", "null"], "required": ["text"], "properties": {"text": {"type": "string"}, "threshold_pct_of_contract": {"$ref": "sourced_number.schema.json"}}, "description": "free text rule, e.g. 'applies when allocation < 50%', or {text, threshold_pct_of_contract: SourcedNumber} (engine form); null if none"},
     "exposure": {
       "type": "object",
       "required": ["bare_days_per_year", "exposed_rain_days", "exposed_frost_days", "exposed_heat_days", "exposed_dry_days", "replay", "scenario"],
@@ -83,7 +83,7 @@
     },
     "uncertainty": {
       "type": "object", "required": ["dataset_disagreement", "scale", "agronomic_gap_count", "detector_disagreement_pct"],
-      "properties": {"dataset_disagreement": {"$ref": "#/$defs/sn"}, "scale": {"$ref": "#/$defs/sn"},
+      "properties": {"dataset_disagreement": {"type": "object", "description": "engine emits sources used/missing, not a SourcedNumber"}, "scale": {"type": "object", "description": "engine emits a descriptive object, not a SourcedNumber"},
         "agronomic_gap_count": {"type": "integer"}, "detector_disagreement_pct": {"type": ["number", "null"]}}
     }
   }
