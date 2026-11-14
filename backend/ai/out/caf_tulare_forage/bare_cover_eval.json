@@ -1,0 +1,872 @@
+{
+  "preset_id": "caf_tulare_forage",
+  "generated_at": "2026-11-14T20:55:08+00:00",
+  "n_obs": 12175,
+  "n_clusters": 166,
+  "n_blocks": 12,
+  "labels": {
+    "covered": 8711,
+    "bare": 3464
+  },
+  "labels_by_year": {
+    "2016": {
+      "covered": 420,
+      "bare": 126
+    },
+    "2017": {
+      "covered": 698,
+      "bare": 125
+    },
+    "2018": {
+      "covered": 1152,
+      "bare": 337
+    },
+    "2019": {
+      "covered": 919,
+      "bare": 401
+    },
+    "2020": {
+      "covered": 989,
+      "bare": 428
+    },
+    "2021": {
+      "covered": 1011,
+      "bare": 442
+    },
+    "2022": {
+      "covered": 992,
+      "bare": 671
+    },
+    "2023": {
+      "covered": 1100,
+      "bare": 343
+    },
+    "2024": {
+      "covered": 684,
+      "bare": 261
+    },
+    "2025": {
+      "covered": 746,
+      "bare": 330
+    }
+  },
+  "splits": {
+    "year": {
+      "leakage": [
+        {
+          "train_years": [
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2023
+          ],
+          "test_years": [
+            2022,
+            2024,
+            2025
+          ],
+          "year_overlap": []
+        }
+      ],
+      "rule_ndvi": {
+        "metrics": {
+          "accuracy": 0.8127,
+          "f1_bare": 0.6858,
+          "f1_macro": 0.5175,
+          "n_test": 3684,
+          "accuracy_2022": 0.7763,
+          "f1_bare_2022": 0.6655,
+          "n_2022": 1663,
+          "accuracy_2024": 0.8275,
+          "f1_bare_2024": 0.6597,
+          "n_2024": 945,
+          "accuracy_2025": 0.8559,
+          "f1_bare_2025": 0.7438,
+          "n_2025": 1076,
+          "agreement_scl_pseudo": 0.8809,
+          "n_scl_pseudo": 3603,
+          "transition_mae_days": 38.4,
+          "transition_mae_green_up_days": 44.8,
+          "transition_mae_harvest_days": 34.4,
+          "transition_n": 169
+        },
+        "confusion": [
+          [
+            753,
+            509,
+            0
+          ],
+          [
+            181,
+            2241,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with": {
+          "random_forest": 0.1132,
+          "hist_gbt": 0.1395
+        },
+        "feature_importance": []
+      },
+      "random_forest": {
+        "metrics": {
+          "accuracy": 0.908,
+          "f1_bare": 0.8495,
+          "f1_macro": 0.5944,
+          "n_test": 3684,
+          "accuracy_2022": 0.8298,
+          "f1_bare_2022": 0.7382,
+          "n_2022": 1663,
+          "accuracy_2024": 0.9873,
+          "f1_bare_2024": 0.9773,
+          "n_2024": 945,
+          "accuracy_2025": 0.9591,
+          "f1_bare_2025": 0.9317,
+          "n_2025": 1076,
+          "agreement_scl_pseudo": 0.8751,
+          "n_scl_pseudo": 3603,
+          "transition_mae_days": 40.0,
+          "transition_mae_green_up_days": 47.1,
+          "transition_mae_harvest_days": 33.3,
+          "transition_n": 201
+        },
+        "confusion": [
+          [
+            957,
+            305,
+            0
+          ],
+          [
+            34,
+            2388,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with": {
+          "rule_ndvi": 0.1132,
+          "hist_gbt": 0.0323
+        },
+        "feature_importance": [
+          {
+            "feature": "doy_cos",
+            "importance": 0.1232
+          },
+          {
+            "feature": "ndvi_mean60",
+            "importance": 0.0224
+          },
+          {
+            "feature": "ndvi_max30",
+            "importance": 0.0117
+          },
+          {
+            "feature": "ndvi",
+            "importance": 0.0102
+          },
+          {
+            "feature": "ndvi_min60",
+            "importance": 0.0093
+          },
+          {
+            "feature": "ndvi_min30",
+            "importance": 0.0061
+          },
+          {
+            "feature": "ndvi_max60",
+            "importance": 0.0059
+          },
+          {
+            "feature": "bsi",
+            "importance": 0.0048
+          }
+        ]
+      },
+      "hist_gbt": {
+        "metrics": {
+          "accuracy": 0.8969,
+          "f1_bare": 0.8255,
+          "f1_macro": 0.5841,
+          "n_test": 3684,
+          "accuracy_2022": 0.8112,
+          "f1_bare_2022": 0.6951,
+          "n_2022": 1663,
+          "accuracy_2024": 0.9915,
+          "f1_bare_2024": 0.9848,
+          "n_2024": 945,
+          "accuracy_2025": 0.9461,
+          "f1_bare_2025": 0.9068,
+          "n_2025": 1076,
+          "agreement_scl_pseudo": 0.8485,
+          "n_scl_pseudo": 3603,
+          "transition_mae_days": 40.1,
+          "transition_mae_green_up_days": 47.4,
+          "transition_mae_harvest_days": 33.0,
+          "transition_n": 197
+        },
+        "confusion": [
+          [
+            899,
+            363,
+            0
+          ],
+          [
+            17,
+            2405,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with": {
+          "rule_ndvi": 0.1395,
+          "random_forest": 0.0323
+        },
+        "feature_importance": [
+          {
+            "feature": "doy_cos",
+            "importance": 0.2151
+          },
+          {
+            "feature": "ndvi_max60",
+            "importance": 0.0276
+          },
+          {
+            "feature": "ndvi_mean60",
+            "importance": 0.0234
+          },
+          {
+            "feature": "doy_sin",
+            "importance": 0.0184
+          },
+          {
+            "feature": "ndvi",
+            "importance": 0.0098
+          },
+          {
+            "feature": "ndvi_min60",
+            "importance": 0.004
+          },
+          {
+            "feature": "ndvi_mean30",
+            "importance": 0.0024
+          },
+          {
+            "feature": "ndvi_slope30",
+            "importance": 0.0023
+          }
+        ]
+      },
+      "random_forest_full": {
+        "metrics": {
+          "accuracy": 0.9229,
+          "f1_bare": 0.8779,
+          "f1_macro": 0.6072,
+          "n_test": 3684,
+          "accuracy_2022": 0.8653,
+          "f1_bare_2022": 0.8049,
+          "n_2022": 1663,
+          "accuracy_2024": 0.9894,
+          "f1_bare_2024": 0.9811,
+          "n_2024": 945,
+          "accuracy_2025": 0.9535,
+          "f1_bare_2025": 0.9231,
+          "n_2025": 1076,
+          "agreement_scl_pseudo": 0.8576,
+          "n_scl_pseudo": 3603,
+          "transition_mae_days": 40.2,
+          "transition_mae_green_up_days": 47.2,
+          "transition_mae_harvest_days": 33.6,
+          "transition_n": 201
+        },
+        "confusion": [
+          [
+            1021,
+            241,
+            0
+          ],
+          [
+            43,
+            2379,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "random_forest_noseason": {
+        "metrics": {
+          "accuracy": 0.8874,
+          "f1_bare": 0.8158,
+          "f1_macro": 0.5782,
+          "n_test": 3684,
+          "accuracy_2022": 0.8094,
+          "f1_bare_2022": 0.7035,
+          "n_2022": 1663,
+          "accuracy_2024": 0.9704,
+          "f1_bare_2024": 0.9464,
+          "n_2024": 945,
+          "accuracy_2025": 0.9349,
+          "f1_bare_2025": 0.8943,
+          "n_2025": 1076,
+          "agreement_scl_pseudo": 0.8798,
+          "n_scl_pseudo": 3603,
+          "transition_mae_days": 39.6,
+          "transition_mae_green_up_days": 47.0,
+          "transition_mae_harvest_days": 33.3,
+          "transition_n": 206
+        },
+        "confusion": [
+          [
+            919,
+            343,
+            0
+          ],
+          [
+            72,
+            2350,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with_rule": 0.1202
+      }
+    },
+    "spatial": {
+      "leakage": [
+        {
+          "fold": 0,
+          "test_blocks": [
+            2,
+            3,
+            9
+          ],
+          "block_overlap": [],
+          "cluster_overlap": 0,
+          "year_overlap": null
+        },
+        {
+          "fold": 1,
+          "test_blocks": [
+            4,
+            7,
+            11
+          ],
+          "block_overlap": [],
+          "cluster_overlap": 0,
+          "year_overlap": null
+        },
+        {
+          "fold": 2,
+          "test_blocks": [
+            5,
+            8,
+            10
+          ],
+          "block_overlap": [],
+          "cluster_overlap": 0,
+          "year_overlap": null
+        },
+        {
+          "fold": 3,
+          "test_blocks": [
+            6,
+            14,
+            15
+          ],
+          "block_overlap": [],
+          "cluster_overlap": 0,
+          "year_overlap": null
+        }
+      ],
+      "rule_ndvi": {
+        "metrics": {
+          "accuracy": 0.8541,
+          "f1_bare": 0.7137,
+          "f1_macro": 0.5386,
+          "n_test": 12175,
+          "agreement_scl_pseudo": 0.8807,
+          "n_scl_pseudo": 9097,
+          "transition_mae_days": 40.7,
+          "transition_mae_green_up_days": 47.1,
+          "transition_mae_harvest_days": 37.3,
+          "transition_n": 640
+        },
+        "confusion": [
+          [
+            2214,
+            1250,
+            0
+          ],
+          [
+            526,
+            8185,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with": {
+          "random_forest": 0.1318,
+          "hist_gbt": 0.1372
+        },
+        "feature_importance": []
+      },
+      "random_forest": {
+        "metrics": {
+          "accuracy": 0.9579,
+          "f1_bare": 0.9258,
+          "f1_macro": 0.6321,
+          "n_test": 12175,
+          "agreement_scl_pseudo": 0.8605,
+          "n_scl_pseudo": 9097,
+          "transition_mae_days": 42.3,
+          "transition_mae_green_up_days": 48.6,
+          "transition_mae_harvest_days": 37.2,
+          "transition_n": 873
+        },
+        "confusion": [
+          [
+            3202,
+            262,
+            0
+          ],
+          [
+            251,
+            8460,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with": {
+          "rule_ndvi": 0.1318,
+          "hist_gbt": 0.0167
+        },
+        "feature_importance": []
+      },
+      "hist_gbt": {
+        "metrics": {
+          "accuracy": 0.9583,
+          "f1_bare": 0.9263,
+          "f1_macro": 0.6324,
+          "n_test": 12175,
+          "agreement_scl_pseudo": 0.8534,
+          "n_scl_pseudo": 9097,
+          "transition_mae_days": 42.2,
+          "transition_mae_green_up_days": 48.5,
+          "transition_mae_harvest_days": 37.2,
+          "transition_n": 881
+        },
+        "confusion": [
+          [
+            3193,
+            271,
+            0
+          ],
+          [
+            237,
+            8474,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with": {
+          "rule_ndvi": 0.1372,
+          "random_forest": 0.0167
+        },
+        "feature_importance": []
+      }
+    },
+    "year_spatial": {
+      "leakage": [
+        {
+          "fold": 0,
+          "test_blocks": [
+            2,
+            3,
+            9
+          ],
+          "block_overlap": [],
+          "cluster_overlap": 0,
+          "year_overlap": []
+        },
+        {
+          "fold": 1,
+          "test_blocks": [
+            4,
+            7,
+            11
+          ],
+          "block_overlap": [],
+          "cluster_overlap": 0,
+          "year_overlap": []
+        },
+        {
+          "fold": 2,
+          "test_blocks": [
+            5,
+            8,
+            10
+          ],
+          "block_overlap": [],
+          "cluster_overlap": 0,
+          "year_overlap": []
+        },
+        {
+          "fold": 3,
+          "test_blocks": [
+            6,
+            14,
+            15
+          ],
+          "block_overlap": [],
+          "cluster_overlap": 0,
+          "year_overlap": []
+        }
+      ],
+      "rule_ndvi": {
+        "metrics": {
+          "accuracy": 0.8127,
+          "f1_bare": 0.6858,
+          "f1_macro": 0.5175,
+          "n_test": 3684,
+          "accuracy_2022": 0.7763,
+          "f1_bare_2022": 0.6655,
+          "n_2022": 1663,
+          "accuracy_2024": 0.8275,
+          "f1_bare_2024": 0.6597,
+          "n_2024": 945,
+          "accuracy_2025": 0.8559,
+          "f1_bare_2025": 0.7438,
+          "n_2025": 1076,
+          "agreement_scl_pseudo": 0.8809,
+          "n_scl_pseudo": 3603,
+          "transition_mae_days": 38.4,
+          "transition_mae_green_up_days": 44.8,
+          "transition_mae_harvest_days": 34.4,
+          "transition_n": 169
+        },
+        "confusion": [
+          [
+            753,
+            509,
+            0
+          ],
+          [
+            181,
+            2241,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with": {
+          "random_forest": 0.1192,
+          "hist_gbt": 0.1401
+        },
+        "feature_importance": []
+      },
+      "random_forest": {
+        "metrics": {
+          "accuracy": 0.9026,
+          "f1_bare": 0.8402,
+          "f1_macro": 0.59,
+          "n_test": 3684,
+          "accuracy_2022": 0.8328,
+          "f1_bare_2022": 0.744,
+          "n_2022": 1663,
+          "accuracy_2024": 0.9862,
+          "f1_bare_2024": 0.9754,
+          "n_2024": 945,
+          "accuracy_2025": 0.9368,
+          "f1_bare_2025": 0.8924,
+          "n_2025": 1076,
+          "agreement_scl_pseudo": 0.8734,
+          "n_scl_pseudo": 3603,
+          "transition_mae_days": 40.1,
+          "transition_mae_green_up_days": 47.1,
+          "transition_mae_harvest_days": 33.6,
+          "transition_n": 204
+        },
+        "confusion": [
+          [
+            944,
+            318,
+            0
+          ],
+          [
+            41,
+            2381,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with": {
+          "rule_ndvi": 0.1192,
+          "hist_gbt": 0.0334
+        },
+        "feature_importance": []
+      },
+      "hist_gbt": {
+        "metrics": {
+          "accuracy": 0.8979,
+          "f1_bare": 0.8275,
+          "f1_macro": 0.585,
+          "n_test": 3684,
+          "accuracy_2022": 0.8244,
+          "f1_bare_2022": 0.723,
+          "n_2022": 1663,
+          "accuracy_2024": 0.9884,
+          "f1_bare_2024": 0.979,
+          "n_2024": 945,
+          "accuracy_2025": 0.9322,
+          "f1_bare_2025": 0.8785,
+          "n_2025": 1076,
+          "agreement_scl_pseudo": 0.8482,
+          "n_scl_pseudo": 3603,
+          "transition_mae_days": 40.1,
+          "transition_mae_green_up_days": 47.2,
+          "transition_mae_harvest_days": 33.3,
+          "transition_n": 197
+        },
+        "confusion": [
+          [
+            902,
+            360,
+            0
+          ],
+          [
+            16,
+            2406,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "disagreement_with": {
+          "rule_ndvi": 0.1401,
+          "random_forest": 0.0334
+        },
+        "feature_importance": []
+      }
+    }
+  },
+  "calendar_ml": {
+    "disagreement_with_rule_obs_pct": 24.5,
+    "by_year": {
+      "2016": {
+        "days": {
+          "unknown": 192,
+          "bare": 75,
+          "partial": 0,
+          "covered": 99,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 25,
+          "bare": 116,
+          "partial": 112,
+          "covered": 113,
+          "water": 0
+        },
+        "disagree_pct": 30.8
+      },
+      "2017": {
+        "days": {
+          "unknown": 178,
+          "bare": 48,
+          "partial": 0,
+          "covered": 139,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 68,
+          "bare": 0,
+          "partial": 9,
+          "covered": 288,
+          "water": 0
+        },
+        "disagree_pct": 31.6
+      },
+      "2018": {
+        "days": {
+          "unknown": 26,
+          "bare": 85,
+          "partial": 0,
+          "covered": 254,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 25,
+          "bare": 0,
+          "partial": 31,
+          "covered": 309,
+          "water": 0
+        },
+        "disagree_pct": 21.2
+      },
+      "2019": {
+        "days": {
+          "unknown": 0,
+          "bare": 131,
+          "partial": 0,
+          "covered": 234,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 0,
+          "bare": 0,
+          "partial": 21,
+          "covered": 344,
+          "water": 0
+        },
+        "disagree_pct": 23.1
+      },
+      "2020": {
+        "days": {
+          "unknown": 0,
+          "bare": 99,
+          "partial": 0,
+          "covered": 267,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 0,
+          "bare": 45,
+          "partial": 29,
+          "covered": 292,
+          "water": 0
+        },
+        "disagree_pct": 14.3
+      },
+      "2021": {
+        "days": {
+          "unknown": 34,
+          "bare": 215,
+          "partial": 0,
+          "covered": 116,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 0,
+          "bare": 195,
+          "partial": 45,
+          "covered": 125,
+          "water": 0
+        },
+        "disagree_pct": 22.2
+      },
+      "2022": {
+        "days": {
+          "unknown": 39,
+          "bare": 118,
+          "partial": 0,
+          "covered": 208,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 0,
+          "bare": 121,
+          "partial": 65,
+          "covered": 179,
+          "water": 0
+        },
+        "disagree_pct": 31.4
+      },
+      "2023": {
+        "days": {
+          "unknown": 5,
+          "bare": 246,
+          "partial": 0,
+          "covered": 114,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 0,
+          "bare": 105,
+          "partial": 98,
+          "covered": 162,
+          "water": 0
+        },
+        "disagree_pct": 47.1
+      },
+      "2024": {
+        "days": {
+          "unknown": 39,
+          "bare": 66,
+          "partial": 0,
+          "covered": 261,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 39,
+          "bare": 2,
+          "partial": 14,
+          "covered": 311,
+          "water": 0
+        },
+        "disagree_pct": 14.9
+      },
+      "2025": {
+        "days": {
+          "unknown": 54,
+          "bare": 51,
+          "partial": 0,
+          "covered": 260,
+          "water": 0
+        },
+        "rule_days": {
+          "unknown": 54,
+          "bare": 0,
+          "partial": 18,
+          "covered": 293,
+          "water": 0
+        },
+        "disagree_pct": 17.5
+      }
+    }
+  }
+}

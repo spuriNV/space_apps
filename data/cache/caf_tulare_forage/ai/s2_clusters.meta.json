@@ -1,0 +1,72 @@
+{
+  "dataset": "s2_clusters",
+  "url": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-2-l2a",
+  "params": {
+    "collection": "sentinel-2-l2a",
+    "datetime": "2015-07-01/2025-12-31",
+    "eo:cloud_cover": "< 50",
+    "tile": "10SGF",
+    "thinning": "clearest scene per half-month",
+    "intersects": "backend/field/polygons/caf_tulare_forage_training_box.json",
+    "bands": {
+      "blue": "B02",
+      "green": "B03",
+      "red": "B04",
+      "nir": "B08",
+      "swir1": "B11",
+      "swir2": "B12"
+    },
+    "read_res_m": {
+      "SCL": 20,
+      "reflectance": 40
+    },
+    "cluster": "5x5 CDL 30 m homogeneous in >= 8 years; reflectance median of 40 m pixels within 45 m, SCL fractions over 20 m pixels within 55 m",
+    "clear_rule": "SCL in {2,4,5,6}",
+    "dn_offset": "-1000 for processing baseline >= 04.00"
+  },
+  "fetched_at": "2026-11-14T20:45:54+00:00",
+  "footprint_geojson": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -119.58111866159233,
+          36.190172305235144
+        ],
+        [
+          -119.57719353565852,
+          36.280167101403386
+        ],
+        [
+          -119.68835192892911,
+          36.2833006440397
+        ],
+        [
+          -119.69215016014648,
+          36.19329560408745
+        ],
+        [
+          -119.58111866159233,
+          36.190172305235144
+        ]
+      ]
+    ]
+  },
+  "native_res_m": {
+    "B02-B08": 10,
+    "B11,B12,SCL": 20
+  },
+  "timestep": "per scene (thinned)",
+  "units": {
+    "reflectance": "unitless 0-1",
+    "indices": "unitless"
+  },
+  "fill_value": "NaN",
+  "auth": "none (Planetary Computer anonymous SAS token)",
+  "n_items_found": 1082,
+  "n_scenes_read": 220,
+  "n_clusters": 166,
+  "n_rows": 36520,
+  "errors": [],
+  "seconds": 135
+}
