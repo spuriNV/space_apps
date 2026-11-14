@@ -1,0 +1,24 @@
+{
+ "url": "https://openet-api.org/raster/timeseries/polygon",
+ "params": {
+  "date_range": [
+   "2016-01-01",
+   "2025-12-31"
+  ],
+  "interval": "monthly",
+  "reducer": "mean",
+  "model": "Ensemble",
+  "variable": "ETo",
+  "reference_et": "gridMET",
+  "units": "mm",
+  "file_format": "JSON"
+ },
+ "geometry_source": "backend/field/polygons/caf_tulare_forage.geojson outer ring",
+ "rows": 120,
+ "fetched_at": "2026-11-14T22:09:54.250622+00:00",
+ "raw_keys": [
+  "time",
+  "eto"
+ ],
+ "note": "gridMET grass reference ETo as served by OpenET; validation only"
+}

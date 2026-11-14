@@ -13,7 +13,8 @@ from .model import WYear, cover_metrics, water_metrics
 from .observed import observed_timeline
 from .sources import assumed, blocked, sn, src
 from .timeline import build_timeline, doy0
-from .weather import CHUNK, REPO, load_station_precip, load_weather, station_year_precip, year_weather
+from .validation import openet_matched
+from .weather import CHUNK, DEFAULT_ETO, REPO, load_station_precip, load_weather, station_year_precip, year_weather
 
 MM_PER_AF_AC = 304.8                      # 1 acre-ft/acre = 1 ft depth (exact)
 DEFAULT_YEARS = tuple(range(2015, 2026))  # spec B2 daily master table 2015-2025
@@ -25,7 +26,12 @@ DEFAULT_WEIGHTS = {"water_use": 2, "forage_value": 2, "n_fixation": 2, "erosion"
                    "market": 2, "pest_break": 0, "infiltration": 0, "income": 0, "n_scavenging": 0}
 BARE_THR = (0.20, 0.15, 0.30)   # nominal (spec B5.1 bare < 0.20), range 0.15-0.30 (B4.12)
 RAIN_THR = (25.0, 25.0, 50.0)   # nominal 25 mm (B5.3), range 25-50 (B4.12)
-ETO_F = (1.0, 0.85, 1.15)       # +/-15% (B4.12); POWER-CIMIS bias unknown (CIMIS key blocked)
+ETO_F = (1.0, 0.85, 1.15)       # +/-15% (B4.12) around the PM/station-T ETo; kept (CIMIS still blocked)
+ETO_NOTE = ("ETo = FAO-56 Penman-Monteith (eq. 6) with NOAA GHCN-D station Tmax/Tmin (mean of the 3 regional-chunk "
+            "stations; POWER on days none report) and POWER radiation, humidity (ea, eq. 19) and wind. Hargreaves "
+            "(eq. 52) on POWER was the previous default; FAO-56 ch. 3 gives eq. 52 only as the alternative when "
+            "radiation/humidity/wind are missing, and POWER Tmax reads +3.4-3.8 C warm in Jul-Aug vs the stations "
+            "(backend/regional/README.md). CIMIS station ETo still blocked (key rejected).")
 SLOPE_PCT = {
     "car_colusa_rice": assumed(0.0, "%", low=0.0, high=0.5,
                                note="Laser-levelled rice check (spec B4.4); NASADEM slope not yet supplied by "
@@ -156,6 +162,35 @@ def _root_mean(tl, crops):
     return model.crop_day_mean(tl, arr)
 
 
+@lru_cache(maxsize=8)
+def _openet_years(preset_id: str):
+    base = next(s for s in load_strategies(preset_id) if s["is_baseline"])
+    return openet_matched(preset_id, base)
+
+
+def _openet_check(preset_id: str, strategy: dict, tl, crops):
+    """Spec B4.1 validation line: baseline annual ETc vs OpenET Ensemble actual ET, on the SAME years (those whose
+    CDL crop is the baseline crop), default weather (no scenario). Reported only; never a score input, never fitted."""
+    m = _openet_years(preset_id)
+    if m is None:
+        return None
+    ev = _evaluate(tl, weather_years(preset_id, tuple(m["years"]), 0.0, 0.0), crops)
+    e = _rng(ev["water"], ev["water_nominal"], lambda r: r["etc_year"])
+    o = m["mean"]
+    osrc = {**src("openet"), "cache_path": m["cache_path"]}
+    yrs = ", ".join(map(str, m["years"]))
+    et = sn(o, "mm/yr", low=m["low"], high=m["high"], method="measured", source=osrc, rnd=0,
+            note=f"OpenET Ensemble v2.1 annual ET, field polygon, mean of the years whose CDL crop is "
+                 f"{m['crop']} ({yrs}); low/high = driest/wettest of those years. Independent check only.")
+    pct = sn(100 * (e[0] - o) / o, "%", low=100 * (e[1] - o) / o, high=100 * (e[2] - o) / o, method="computed",
+             source=osrc, rnd=1,
+             note=f"(engine annual ETc - OpenET) / OpenET, both on years {yrs}. Engine {e[0]:.0f} mm "
+                  f"(range {e[1]:.0f}-{e[2]:.0f}) vs OpenET {o:.0f} mm. Positive = engine higher. Default weather; "
+                  f"no engine coefficient is fitted to OpenET. Main remaining gap is May-Oct (FAO-56 Kc above "
+                  f"OpenET's ET/ETo); see backend/engine/README.md.")
+    return et, pct
+
+
 # ------------------------------------------------------------------ main
 def score(preset_id: str, weights: dict | None = None, constraints: dict | None = None,
           market_preference: str = "no_preference", allocation=None, replay_year: int | None = None,
@@ -221,7 +256,8 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
         etc_year = _rng(W, wn, lambda r: r["etc_year"])
         I = _rng(W, wn, lambda r: r["I"])
         I_cy_max = _rng(W, wn, lambda r: float(r["I_cyear"].max()))
-        wnote = (f"{years_note}. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = "
+        wnote = (f"{years_note}. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 "
+                 f"Table 12 where V); range = "
                  f"min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources {psrc_used}.")
         water = {
             "etc_mm_season": _sn_c(etc_season, "mm/yr", wsrc, wnote + " Crop, cover and flood days; bare days excluded."),
@@ -235,13 +271,16 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
             "etc_by_month_mm": [
                 _sn_c(_rng(W, wn, lambda r, m=m: r["etc_month"][m]), "mm/month", wsrc, f"Month {m + 1}; per cycle year")
                 for m in range(12)],
-            "openet_et_mm_season": blocked("mm/yr", "openet", "OpenET API key not available; validation line "
-                                           "(spec B4.1) cannot be computed. Never a score input.", method="measured"),
-            "etc_vs_openet_pct": blocked("%", "openet", "Needs OpenET season ET (key)."),
-            "eto_source_note": "POWER Hargreaves only; CIMIS station ETo (key) and PM ETo [S] not used, so the "
-                               "POWER-CIMIS bias that could widen the +/-15% band is unknown.",
+            "openet_et_mm_season": blocked("mm/yr", "openet", "OpenET measures the crop actually grown on the field "
+                                           "(the baseline); this alternative was not grown there.", method="measured"),
+            "etc_vs_openet_pct": blocked("%", "openet", "Only the baseline can be checked against OpenET."),
+            "eto_source_note": ETO_NOTE,
             "by_crop": [],
         }
+        if s["is_baseline"]:
+            oe = _openet_check(preset_id, s, tl, crops)
+            if oe:
+                water["openet_et_mm_season"], water["etc_vs_openet_pct"] = oe
         for k, sp in enumerate(tl.spans):
             water["by_crop"].append({
                 "crop_id": sp.crop["id"], "year": sp.entry["year"], "plant": sp.entry["plant"],

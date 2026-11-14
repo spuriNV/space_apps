@@ -1,4 +1,5 @@
-"""Weather input: NASA POWER daily + Hargreaves ETo (FAO-56 eq. 52).
+"""Weather input: NASA POWER daily + reference ETo (default FAO-56 Penman-Monteith eq. 6 with NOAA station
+Tmax/Tmin; Hargreaves eq. 52 kept as an alternative method).
 
 Order of preference:
 1. data/cache/<preset_id>/power.parquet  (regional chunk; fills already NaN)
@@ -25,6 +26,7 @@ PRESETS = {
 }
 POWER_PARAMS = "T2M,T2M_MAX,T2M_MIN,RH2M,WS2M,ALLSKY_SFC_SW_DWN,PRECTOTCORR"
 POWER_BASE = "https://power.larc.nasa.gov/api/temporal/daily/point"
+ELEV_M = {"car_colusa_rice": 57.4, "caf_tulare_forage": 106.1}  # POWER cell elevation (regional power.meta.json)
 
 
 def power_url(lat: float, lon: float, start="19810101", end="20251231") -> str:
@@ -54,10 +56,11 @@ def _fetch_power(preset_id: str, dest: Path) -> None:
 class Weather:
     preset_id: str
     lat: float
-    df: pd.DataFrame  # index date; T2M, T2M_MAX, T2M_MIN, PRECTOTCORR
+    df: pd.DataFrame  # index date; T2M, T2M_MAX, T2M_MIN, RH2M, WS2M, ALLSKY_SFC_SW_DWN, PRECTOTCORR
     path: str
     url: str
     provenance: str
+    elev_m: float = 0.0
     notes: list[str] = field(default_factory=list)
 
     def source(self) -> dict:
@@ -83,14 +86,17 @@ def load_weather(preset_id: str) -> Weather:
         path, prov = own, "engine fetch backend/engine/.cache"
         meta_p = own.with_suffix(".meta.json")
     url = power_url(p["lat"], p["lon"])
+    elev = ELEV_M.get(preset_id, 0.0)
     if meta_p.exists():
-        url = json.loads(meta_p.read_text()).get("url", url)
+        meta = json.loads(meta_p.read_text())
+        url = meta.get("url", url)
+        elev = float(meta.get("elevation_m") or elev)
     df = pd.read_parquet(path)
     if "date" in df.columns:
         df = df.set_index(pd.to_datetime(df["date"])).drop(columns=["date"])
     df.index = pd.to_datetime(df.index)
     df = df.replace(-999.0, np.nan).sort_index()
-    w = Weather(preset_id, p["lat"], df, str(path.relative_to(REPO)), url, prov)
+    w = Weather(preset_id, p["lat"], df, str(path.relative_to(REPO)), url, prov, elev_m=elev)
     _CACHE[preset_id] = w
     return w
 
@@ -111,6 +117,43 @@ def hargreaves_eto(tmax: np.ndarray, tmin: np.ndarray, lat_deg: float, doy: np.n
     return 0.0023 * (tmean + 17.8) * np.sqrt(np.clip(tmax - tmin, 0, None)) * 0.408 * ra_mj(lat_deg, doy)
 
 
+def sat_vp(t: np.ndarray) -> np.ndarray:
+    """FAO-56 eq. 11, kPa."""
+    return 0.6108 * np.exp(17.27 * t / (t + 237.3))
+
+
+def power_ea(df: pd.DataFrame) -> np.ndarray:
+    """Actual vapour pressure from POWER daily mean RH2M (FAO-56 eq. 19, the RHmean form), kPa."""
+    es = (sat_vp(df["T2M_MAX"].to_numpy(dtype=float)) + sat_vp(df["T2M_MIN"].to_numpy(dtype=float))) / 2
+    return np.clip(df["RH2M"].to_numpy(dtype=float), 0, 100) / 100 * es
+
+
+def pm_eto(tmax, tmin, ea, rs, u2, lat_deg: float, elev_m: float, doy: np.ndarray) -> np.ndarray:
+    """FAO-56 Penman-Monteith grass reference ETo (eq. 6), daily, soil heat flux G = 0 (eq. 42).
+
+    Tmean = (Tmax+Tmin)/2; es eq. 12; Delta eq. 13; P eq. 7; gamma eq. 8; Rso eq. 37; Rns eq. 38 (albedo 0.23);
+    Rnl eq. 39 with Rs/Rso capped at 1.0. https://www.fao.org/4/x0490e/x0490e06.htm (ch. 2) and x0490e07.htm (ch. 3)
+    """
+    t = (tmax + tmin) / 2
+    es = (sat_vp(tmax) + sat_vp(tmin)) / 2
+    vpd = np.clip(es - ea, 0, None)
+    delta = 4098 * sat_vp(t) / (t + 237.3) ** 2
+    gamma = 0.665e-3 * 101.3 * ((293 - 0.0065 * elev_m) / 293) ** 5.26
+    rso = (0.75 + 2e-5 * elev_m) * ra_mj(lat_deg, doy)
+    ratio = np.clip(rs / rso, 0.25, 1.0)
+    rnl = 4.903e-9 * ((tmax + 273.16) ** 4 + (tmin + 273.16) ** 4) / 2 * (0.34 - 0.14 * np.sqrt(ea)) * (1.35 * ratio - 0.35)
+    rn = 0.77 * rs - rnl
+    eto = (0.408 * delta * rn + gamma * 900 / (t + 273) * u2 * vpd) / (delta + gamma * (1 + 0.34 * u2))
+    return np.clip(eto, 0, None)
+
+
+# ETo methods. Default: FAO-56 Penman-Monteith (eq. 6, the FAO-56 standard; Hargreaves eq. 52 is its fallback when
+# radiation/humidity/wind are missing) with NOAA station Tmax/Tmin (POWER reads +3.4 C (CAR) / +3.8 C (CAF) warm in
+# Jul-Aug vs the 3 nearest GHCN-D stations, backend/regional/README.md) and POWER radiation, humidity (ea) and wind.
+ETO_METHODS = ("pm_station_t", "pm_power", "harg_station", "harg_power")
+DEFAULT_ETO = "pm_station_t"
+
+
 @dataclass
 class YearWeather:
     year: int
@@ -126,8 +169,32 @@ def _no_leap(df: pd.DataFrame) -> pd.DataFrame:
     return df[~((df.index.month == 2) & (df.index.day == 29))]
 
 
-def year_weather(w: Weather, year: int, dT_c: float = 0.0, dP_pct: float = 0.0) -> YearWeather:
-    """365-day arrays for one calendar year, with a uniform scenario shift (spec B4.12)."""
+def eto_series(w: Weather, cur: pd.DataFrame, method: str = DEFAULT_ETO, dT_c: float = 0.0) -> np.ndarray:
+    """Daily ETo (mm) for the rows of `cur` (non-leap POWER rows of one year). dT_c shifts Tmax/Tmin; ea is held
+    fixed (constant absolute humidity under the scenario shift, our assumption)."""
+    doy = np.arange(1, len(cur) + 1)
+    ptx = cur["T2M_MAX"].to_numpy(dtype=float)
+    ptn = cur["T2M_MIN"].to_numpy(dtype=float)
+    if method.endswith("station") or method == "pm_station_t":
+        st = station_temps(w.preset_id)
+        if st is not None:
+            t = st.reindex(cur.index)
+            ptx = t["tmax"].fillna(cur["T2M_MAX"]).to_numpy(dtype=float)
+            ptn = t["tmin"].fillna(cur["T2M_MIN"]).to_numpy(dtype=float)
+    tx, tn = ptx + dT_c, ptn + dT_c
+    if method.startswith("harg"):
+        return hargreaves_eto(tx, tn, w.lat, doy)
+    rs = cur["ALLSKY_SFC_SW_DWN"].to_numpy(dtype=float)
+    u2 = cur["WS2M"].to_numpy(dtype=float)
+    if np.isnan(rs).any() or np.isnan(u2).any():
+        raise ValueError(f"POWER radiation/wind gaps for {w.preset_id}")
+    return pm_eto(tx, tn, power_ea(cur), rs, u2, w.lat, w.elev_m, doy)
+
+
+def year_weather(w: Weather, year: int, dT_c: float = 0.0, dP_pct: float = 0.0,
+                 eto_method: str = DEFAULT_ETO) -> YearWeather:
+    """365-day arrays for one calendar year, with a uniform scenario shift (spec B4.12).
+    tmax/tmin stay POWER (risk days); only ETo uses the station temperatures."""
     df = _no_leap(w.df)
     clim = _p30_climatology(w)
     sl = df.loc[f"{year - 1}-12-01":f"{year}-12-31"]
@@ -142,8 +209,7 @@ def year_weather(w: Weather, year: int, dT_c: float = 0.0, dP_pct: float = 0.0) 
     tmin = cur["T2M_MIN"].to_numpy(dtype=float) + dT_c
     if np.isnan(tmax).any() or np.isnan(tmin).any():
         raise ValueError(f"POWER temperature gaps in {year} for {w.preset_id}")
-    doy = np.arange(1, 366)
-    eto = hargreaves_eto(tmax, tmin, w.lat, doy)
+    eto = eto_series(w, cur, eto_method, dT_c)
     return YearWeather(year, tmax, tmin, p_all[-365:], eto, p30_all[-365:], clim)
 
 
@@ -206,3 +272,23 @@ def station_year_precip(sp: StationPrecip, power_year: YearWeather, year: int, d
     gaps = np.isnan(arr)
     arr[gaps] = power_year.p[gaps]
     return arr
+
+
+_STT: dict[str, pd.DataFrame | None] = {}
+
+
+def station_temps(preset_id: str) -> pd.DataFrame | None:
+    """NOAA NCEI daily Tmax/Tmin (C), mean over the regional chunk's selected stations that report both that day."""
+    if preset_id in _STT:
+        return _STT[preset_id]
+    path = REPO / "data" / "cache" / preset_id / "ncei.parquet"
+    if not path.exists():
+        _STT[preset_id] = None
+        return None
+    df = pd.read_parquet(path)
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.dropna(subset=["tmax_c", "tmin_c"])
+    df = df[df.tmax_c >= df.tmin_c]
+    out = df.groupby("date")[["tmax_c", "tmin_c"]].mean().rename(columns={"tmax_c": "tmax", "tmin_c": "tmin"})
+    _STT[preset_id] = out
+    return out

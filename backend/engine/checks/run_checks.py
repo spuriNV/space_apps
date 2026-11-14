@@ -178,6 +178,21 @@ def main():
         check(f"replay_year=2022 runs on one weather year ({p})",
               rep[0]["model_assumptions"]["weather_years"] == [2022])
 
+    print("\n== OpenET independent check (baseline, CDL-matched years; reported, never tuned) ==")
+    for p, recs in out.items():
+        b = next(r for r in recs if r["is_baseline"])
+        pct, oe = b["water"]["etc_vs_openet_pct"], b["water"]["openet_et_mm_season"]
+        if pct["value"] is None:
+            print(f"SKIP  {p}: {pct['note']}")
+            continue
+        check(f"baseline ETc vs OpenET |bias| <= 25% ({p})", abs(pct["value"]) <= 25,
+              f"{pct['value']:+.1f}% (engine range {pct['low']:+.1f}..{pct['high']:+.1f}%), OpenET {oe['value']:.0f} mm")
+        check(f"OpenET source is measured and not a score input ({p})",
+              oe["method"] == "measured" and "never a score input" in oe["source"]["title"])
+        others = [r for r in recs if not r["is_baseline"]]
+        check(f"alternatives carry no OpenET number ({p})",
+              all(r["water"]["etc_vs_openet_pct"]["value"] is None for r in others))
+
     print("\n== Sanity table: default weather years "
           f"{DEFAULT_YEARS[0]}-{DEFAULT_YEARS[-1]}, POWER precip nominal; value [low-high] ==")
     hdr = f"{'strategy':30s} {'ETc crop days mm/yr':>22s} {'ETc all days mm/yr':>20s} {'I mm/yr':>20s} {'I af/ac/yr':>17s}"

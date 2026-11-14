@@ -30,6 +30,12 @@ SOURCES: dict[str, dict] = {
     "fao56_kc_curve": {
         "title": "FAO-56 Chapter 6, constructing the Kc curve (linear interpolation between stages)",
         "url": "https://www.fao.org/4/x0490e/x0490e0b.htm", "verified": True},
+    "fao56_eq6": {
+        "title": "FAO-56 Chapter 2 eq. 6 (Penman-Monteith grass reference ETo) and Chapter 3 eqs. 7-19, 37-39",
+        "url": "https://www.fao.org/4/x0490e/x0490e06.htm", "verified": True},
+    "ncei_ghcnd": {
+        "title": "NOAA NCEI GHCN-Daily station Tmax/Tmin/PRCP (regional chunk cache, 3 nearest long-record stations)",
+        "url": "https://www.ncei.noaa.gov/access/services/data/v1", "verified": True},
     "nasa_power_daily": {
         "title": "NASA POWER daily point API (AG community)",
         "url": "https://power.larc.nasa.gov/api/temporal/daily/point", "verified": True},
@@ -56,8 +62,9 @@ SOURCES: dict[str, dict] = {
         "title": "Western Cover Crop Council selector (ratings to be transcribed by hand; not yet done)",
         "url": "https://covercrop-selector.org", "verified": False},
     # Blocked sources (keys or downloads we do not have yet)
-    "openet": {"title": "OpenET Ensemble monthly ET (API key required)",
-               "url": "https://openetdata.org/", "verified": False},
+    "openet": {"title": "OpenET Ensemble v2.1 monthly actual ET over the field polygon (backend/ground cache; "
+                         "validation only, never a score input)",
+               "url": "https://openet-api.org/raster/timeseries/polygon", "verified": True},
     "rma_col": {"title": "USDA RMA cause of loss (yearly files not yet downloaded/processed)",
                 "url": "https://www.rma.usda.gov/tools-reports/summary-business/cause-loss", "verified": False},
     "nass_quickstats": {"title": "USDA NASS Quick Stats prices (API key required)",

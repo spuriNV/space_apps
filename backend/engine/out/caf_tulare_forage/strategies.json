@@ -221,10 +221,10 @@
       "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2017-2025 whose CDL crop is the baseline crop: [2017, 2018, 2019, 2020, 2022, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 0 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Dry-spell PROXY: POWER 30-day P < 50% of its 1991-2020 climatology (spec rule uses IMERG/SMAP, both blocked). In the dry Central Valley summer nearly every day qualifies, so this mostly counts bare summer days."
      },
      "irrigation_need_mm": {
-      "value": 1364.5,
+      "value": 1235.2,
       "unit": "mm/yr",
-      "low": 1144.6,
-      "high": 1635.8,
+      "low": 1036.9,
+      "high": 1487.1,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -237,10 +237,10 @@
       "note": "Replay 2022"
      },
      "etc_mm_season": {
-      "value": 1481.1,
+      "value": 1345.3,
       "unit": "mm/yr",
-      "low": 1258.9,
-      "high": 1703.2,
+      "low": 1143.5,
+      "high": 1547.1,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -349,10 +349,10 @@
       "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2017-2025 whose CDL crop is the baseline crop: [2017, 2018, 2019, 2020, 2022, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 0 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Dry-spell PROXY: POWER 30-day P < 50% of its 1991-2020 climatology (spec rule uses IMERG/SMAP, both blocked). In the dry Central Valley summer nearly every day qualifies, so this mostly counts bare summer days."
      },
      "irrigation_need_mm": {
-      "value": 1129.9,
+      "value": 1050.4,
       "unit": "mm/yr",
-      "low": 949.1,
-      "high": 1369.9,
+      "low": 881.5,
+      "high": 1278.4,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -365,10 +365,10 @@
       "note": "Replay 2023"
      },
      "etc_mm_season": {
-      "value": 1344.9,
+      "value": 1243.1,
       "unit": "mm/yr",
-      "low": 1143.2,
-      "high": 1546.7,
+      "low": 1056.7,
+      "high": 1429.6,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -405,10 +405,10 @@
   },
   "water": {
    "etc_mm_season": {
-    "value": 1450.8,
+    "value": 1344.5,
     "unit": "mm/yr",
-    "low": 1233.1,
-    "high": 1668.4,
+    "low": 1142.8,
+    "high": 1546.2,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -418,13 +418,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. Crop, cover and flood days; bare days excluded."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. Crop, cover and flood days; bare days excluded."
    },
    "etc_mm_year": {
-    "value": 1450.8,
+    "value": 1344.5,
     "unit": "mm/yr",
-    "low": 1233.1,
-    "high": 1668.4,
+    "low": 1142.8,
+    "high": 1546.2,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -434,13 +434,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. All days incl. bare soil at Kc 0.15 (U)."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. All days incl. bare soil at Kc 0.15 (U)."
    },
    "irrigation_need_mm": {
-    "value": 1262.4,
+    "value": 1174.3,
     "unit": "mm/yr",
-    "low": 1056.8,
-    "high": 1533.5,
+    "low": 984.6,
+    "high": 1423.8,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -450,13 +450,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. I = sum over irrigated seasons of monthly max(0, ETc - 0.8 P) (0.8 U) + rice F (U); averaged per cycle year."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. I = sum over irrigated seasons of monthly max(0, ETc - 0.8 P) (0.8 U) + rice F (U); averaged per cycle year."
    },
    "irrigation_need_af_ac": {
-    "value": 4.14,
+    "value": 3.85,
     "unit": "acre-ft/acre/yr",
-    "low": 3.47,
-    "high": 5.03,
+    "low": 3.23,
+    "high": 4.67,
     "method": "computed",
     "source": {
      "id": "unit_definition",
@@ -468,10 +468,10 @@
     "note": "irrigation_need_mm / 304.8"
    },
    "irrigation_need_max_cycle_year_mm": {
-    "value": 1262.4,
+    "value": 1174.3,
     "unit": "mm/yr",
-    "low": 1056.8,
-    "high": 1533.5,
+    "low": 984.6,
+    "high": 1423.8,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -485,10 +485,10 @@
    },
    "etc_by_month_mm": [
     {
-     "value": 19.2,
+     "value": 12.6,
      "unit": "mm/month",
-     "low": 16.3,
-     "high": 22.1,
+     "low": 10.7,
+     "high": 14.5,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -501,10 +501,10 @@
      "note": "Month 1; per cycle year"
     },
     {
-     "value": 42.3,
+     "value": 34.5,
      "unit": "mm/month",
-     "low": 36.0,
-     "high": 48.6,
+     "low": 29.3,
+     "high": 39.7,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -517,10 +517,10 @@
      "note": "Month 2; per cycle year"
     },
     {
-     "value": 89.6,
+     "value": 79.9,
      "unit": "mm/month",
-     "low": 76.1,
-     "high": 103.0,
+     "low": 67.9,
+     "high": 91.9,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -533,10 +533,10 @@
      "note": "Month 3; per cycle year"
     },
     {
-     "value": 127.7,
+     "value": 121.8,
      "unit": "mm/month",
-     "low": 108.5,
-     "high": 146.8,
+     "low": 103.6,
+     "high": 140.1,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -549,10 +549,10 @@
      "note": "Month 4; per cycle year"
     },
     {
-     "value": 173.9,
+     "value": 168.8,
      "unit": "mm/month",
-     "low": 147.8,
-     "high": 200.0,
+     "low": 143.5,
+     "high": 194.1,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -565,10 +565,10 @@
      "note": "Month 5; per cycle year"
     },
     {
-     "value": 217.2,
+     "value": 212.4,
      "unit": "mm/month",
-     "low": 184.6,
-     "high": 249.7,
+     "low": 180.6,
+     "high": 244.3,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -581,10 +581,10 @@
      "note": "Month 6; per cycle year"
     },
     {
-     "value": 240.8,
+     "value": 226.7,
      "unit": "mm/month",
-     "low": 204.6,
-     "high": 276.9,
+     "low": 192.7,
+     "high": 260.7,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -597,10 +597,10 @@
      "note": "Month 7; per cycle year"
     },
     {
-     "value": 211.8,
+     "value": 195.6,
      "unit": "mm/month",
-     "low": 180.1,
-     "high": 243.6,
+     "low": 166.3,
+     "high": 225.0,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -613,10 +613,10 @@
      "note": "Month 8; per cycle year"
     },
     {
-     "value": 153.3,
+     "value": 143.1,
      "unit": "mm/month",
-     "low": 130.3,
-     "high": 176.3,
+     "low": 121.7,
+     "high": 164.6,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -629,10 +629,10 @@
      "note": "Month 9; per cycle year"
     },
     {
-     "value": 101.6,
+     "value": 93.5,
      "unit": "mm/month",
-     "low": 86.3,
-     "high": 116.8,
+     "low": 79.4,
+     "high": 107.5,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -645,10 +645,10 @@
      "note": "Month 10; per cycle year"
     },
     {
-     "value": 55.9,
+     "value": 44.3,
      "unit": "mm/month",
-     "low": 47.5,
-     "high": 64.3,
+     "low": 37.6,
+     "high": 50.9,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -661,10 +661,10 @@
      "note": "Month 11; per cycle year"
     },
     {
-     "value": 17.5,
+     "value": 11.3,
      "unit": "mm/month",
-     "low": 14.9,
-     "high": 20.2,
+     "low": 9.6,
+     "high": 13.0,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -678,38 +678,38 @@
     }
    ],
    "openet_et_mm_season": {
-    "value": null,
+    "value": 1112.0,
     "unit": "mm/yr",
-    "low": null,
-    "high": null,
+    "low": 980.0,
+    "high": 1234.0,
     "method": "measured",
     "source": {
      "id": "openet",
-     "title": "OpenET Ensemble monthly ET (API key required)",
-     "url": "https://openetdata.org/",
+     "title": "OpenET Ensemble v2.1 monthly actual ET over the field polygon (backend/ground cache; validation only, never a score input)",
+     "url": "https://openet-api.org/raster/timeseries/polygon",
      "accessed": "2026-11-14",
-     "verified": false
+     "verified": true,
+     "cache_path": "data/cache/caf_tulare_forage/openet.parquet"
     },
-    "note": "BLOCKED: OpenET API key not available; validation line (spec B4.1) cannot be computed. Never a score input.",
-    "blocked": true
+    "note": "OpenET Ensemble v2.1 annual ET, field polygon, mean of the years whose CDL crop is Alfalfa (2017, 2018, 2019, 2020, 2022, 2024, 2025); low/high = driest/wettest of those years. Independent check only."
    },
    "etc_vs_openet_pct": {
-    "value": null,
+    "value": 20.8,
     "unit": "%",
-    "low": null,
-    "high": null,
-    "method": "lookup",
+    "low": 2.6,
+    "high": 38.9,
+    "method": "computed",
     "source": {
      "id": "openet",
-     "title": "OpenET Ensemble monthly ET (API key required)",
-     "url": "https://openetdata.org/",
+     "title": "OpenET Ensemble v2.1 monthly actual ET over the field polygon (backend/ground cache; validation only, never a score input)",
+     "url": "https://openet-api.org/raster/timeseries/polygon",
      "accessed": "2026-11-14",
-     "verified": false
+     "verified": true,
+     "cache_path": "data/cache/caf_tulare_forage/openet.parquet"
     },
-    "note": "BLOCKED: Needs OpenET season ET (key).",
-    "blocked": true
+    "note": "(engine annual ETc - OpenET) / OpenET, both on years 2017, 2018, 2019, 2020, 2022, 2024, 2025. Engine 1343 mm (range 1142-1545) vs OpenET 1112 mm. Positive = engine higher. Default weather; no engine coefficient is fitted to OpenET. Main remaining gap is May-Oct (FAO-56 Kc above OpenET's ET/ETo); see backend/engine/README.md."
    },
-   "eto_source_note": "POWER Hargreaves only; CIMIS station ETo (key) and PM ETo [S] not used, so the POWER-CIMIS bias that could widen the +/-15% band is unknown.",
+   "eto_source_note": "ETo = FAO-56 Penman-Monteith (eq. 6) with NOAA GHCN-D station Tmax/Tmin (mean of the 3 regional-chunk stations; POWER on days none report) and POWER radiation, humidity (ea, eq. 19) and wind. Hargreaves (eq. 52) on POWER was the previous default; FAO-56 ch. 3 gives eq. 52 only as the alternative when radiation/humidity/wind are missing, and POWER Tmax reads +3.4-3.8 C warm in Jul-Aug vs the stations (backend/regional/README.md). CIMIS station ETo still blocked (key rejected).",
    "by_crop": [
     {
      "crop_id": "alfalfa_hay",
@@ -718,10 +718,10 @@
      "harvest": "12-01",
      "irrigated": true,
      "etc_mm": {
-      "value": 1450.8,
+      "value": 1344.5,
       "unit": "mm/season",
-      "low": 1233.1,
-      "high": 1668.4,
+      "low": 1142.8,
+      "high": 1546.2,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -734,10 +734,10 @@
       "note": "mean of 2015-2025 weather years"
      },
      "etc_jun_aug_mm": {
-      "value": 669.8,
+      "value": 634.7,
       "unit": "mm/season",
-      "low": 569.3,
-      "high": 770.2,
+      "low": 539.5,
+      "high": 729.9,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -750,10 +750,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 1262.4,
+      "value": 1174.3,
       "unit": "mm/season",
-      "low": 1056.8,
-      "high": 1533.5,
+      "low": 984.6,
+      "high": 1423.8,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -774,10 +774,10 @@
   },
   "scores": {
    "water_use": {
-    "value": 17.7,
+    "value": 17.5,
     "unit": "score_0_100",
     "low": 0.0,
-    "high": 31.1,
+    "high": 30.8,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -787,7 +787,7 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "spec B4.1 100 x clamp(1 - I/I_max); I_max = 1534 mm = largest I (high end) among this location's strategies, default years (our choice; spec does not define I_max). rule of thumb, not a model"
+    "note": "spec B4.1 100 x clamp(1 - I/I_max); I_max = 1424 mm = largest I (high end) among this location's strategies, default years (our choice; spec does not define I_max). rule of thumb, not a model"
    },
    "forage_value": {
     "value": 66.7,
@@ -1211,10 +1211,10 @@
     "note": "spec B4.1 0.8 P (U)"
    },
    "i_max_mm": {
-    "value": 1534.0,
+    "value": 1424.0,
     "unit": "mm/yr",
-    "low": 1534.0,
-    "high": 1534.0,
+    "low": 1424.0,
+    "high": 1424.0,
     "method": "computed",
     "source": {
      "id": "field_shift_engine",
@@ -1467,10 +1467,10 @@
       "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Dry-spell PROXY: POWER 30-day P < 50% of its 1991-2020 climatology (spec rule uses IMERG/SMAP, both blocked). In the dry Central Valley summer nearly every day qualifies, so this mostly counts bare summer days."
      },
      "irrigation_need_mm": {
-      "value": 1004.6,
+      "value": 877.7,
       "unit": "mm/yr",
-      "low": 783.5,
-      "high": 1289.5,
+      "low": 683.9,
+      "high": 1131.5,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -1483,10 +1483,10 @@
       "note": "Replay 2022"
      },
      "etc_mm_season": {
-      "value": 1125.5,
+      "value": 978.8,
       "unit": "mm/yr",
-      "low": 888.7,
-      "high": 1379.4,
+      "low": 771.3,
+      "high": 1201.7,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -1595,10 +1595,10 @@
       "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Dry-spell PROXY: POWER 30-day P < 50% of its 1991-2020 climatology (spec rule uses IMERG/SMAP, both blocked). In the dry Central Valley summer nearly every day qualifies, so this mostly counts bare summer days."
      },
      "irrigation_need_mm": {
-      "value": 757.9,
+      "value": 685.0,
       "unit": "mm/yr",
-      "low": 586.6,
-      "high": 999.0,
+      "low": 528.8,
+      "high": 898.2,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -1611,10 +1611,10 @@
       "note": "Replay 2023"
      },
      "etc_mm_season": {
-      "value": 1027.8,
+      "value": 926.8,
       "unit": "mm/yr",
-      "low": 814.4,
-      "high": 1255.8,
+      "low": 734.2,
+      "high": 1132.8,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -1651,10 +1651,10 @@
   },
   "water": {
    "etc_mm_season": {
-    "value": 1112.9,
+    "value": 1004.1,
     "unit": "mm/yr",
-    "low": 880.1,
-    "high": 1362.4,
+    "low": 795.1,
+    "high": 1227.6,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -1664,13 +1664,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. Crop, cover and flood days; bare days excluded."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. Crop, cover and flood days; bare days excluded."
    },
    "etc_mm_year": {
-    "value": 1171.0,
+    "value": 1058.4,
     "unit": "mm/yr",
-    "low": 913.1,
-    "high": 1496.0,
+    "low": 825.8,
+    "high": 1352.5,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -1680,13 +1680,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. All days incl. bare soil at Kc 0.15 (U)."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. All days incl. bare soil at Kc 0.15 (U)."
    },
    "irrigation_need_mm": {
-    "value": 902.2,
+    "value": 821.1,
     "unit": "mm/yr",
-    "low": 700.0,
-    "high": 1204.4,
+    "low": 639.9,
+    "high": 1080.9,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -1696,13 +1696,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. I = sum over irrigated seasons of monthly max(0, ETc - 0.8 P) (0.8 U) + rice F (U); averaged per cycle year."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. I = sum over irrigated seasons of monthly max(0, ETc - 0.8 P) (0.8 U) + rice F (U); averaged per cycle year."
    },
    "irrigation_need_af_ac": {
-    "value": 2.96,
+    "value": 2.69,
     "unit": "acre-ft/acre/yr",
-    "low": 2.3,
-    "high": 3.95,
+    "low": 2.1,
+    "high": 3.55,
     "method": "computed",
     "source": {
      "id": "unit_definition",
@@ -1714,10 +1714,10 @@
     "note": "irrigation_need_mm / 304.8"
    },
    "irrigation_need_max_cycle_year_mm": {
-    "value": 902.2,
+    "value": 821.1,
     "unit": "mm/yr",
-    "low": 700.0,
-    "high": 1204.4,
+    "low": 639.9,
+    "high": 1080.9,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -1731,10 +1731,10 @@
    },
    "etc_by_month_mm": [
     {
-     "value": 54.6,
+     "value": 35.8,
      "unit": "mm/month",
-     "low": 42.3,
-     "high": 68.3,
+     "low": 27.7,
+     "high": 44.8,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1747,10 +1747,10 @@
      "note": "Month 1; per cycle year"
     },
     {
-     "value": 69.7,
+     "value": 56.4,
      "unit": "mm/month",
-     "low": 54.1,
-     "high": 87.2,
+     "low": 43.8,
+     "high": 70.5,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1763,10 +1763,10 @@
      "note": "Month 2; per cycle year"
     },
     {
-     "value": 102.0,
+     "value": 90.7,
      "unit": "mm/month",
-     "low": 78.2,
-     "high": 128.8,
+     "low": 69.5,
+     "high": 114.6,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1779,10 +1779,10 @@
      "note": "Month 3; per cycle year"
     },
     {
-     "value": 53.1,
+     "value": 50.4,
      "unit": "mm/month",
-     "low": 32.4,
-     "high": 84.5,
+     "low": 30.8,
+     "high": 80.3,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1795,10 +1795,10 @@
      "note": "Month 4; per cycle year"
     },
     {
-     "value": 56.5,
+     "value": 54.8,
      "unit": "mm/month",
-     "low": 33.9,
-     "high": 86.7,
+     "low": 32.8,
+     "high": 84.1,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1811,10 +1811,10 @@
      "note": "Month 5; per cycle year"
     },
     {
-     "value": 202.7,
+     "value": 197.8,
      "unit": "mm/month",
-     "low": 165.6,
-     "high": 242.3,
+     "low": 161.5,
+     "high": 236.5,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1827,10 +1827,10 @@
      "note": "Month 6; per cycle year"
     },
     {
-     "value": 304.1,
+     "value": 286.3,
      "unit": "mm/month",
-     "low": 258.5,
-     "high": 349.7,
+     "low": 243.4,
+     "high": 329.3,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1843,10 +1843,10 @@
      "note": "Month 7; per cycle year"
     },
     {
-     "value": 191.8,
+     "value": 177.7,
      "unit": "mm/month",
-     "low": 153.1,
-     "high": 234.4,
+     "low": 142.0,
+     "high": 217.1,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1859,10 +1859,10 @@
      "note": "Month 8; per cycle year"
     },
     {
-     "value": 24.2,
+     "value": 22.6,
      "unit": "mm/month",
-     "low": 13.7,
-     "high": 55.7,
+     "low": 12.8,
+     "high": 52.0,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1875,10 +1875,10 @@
      "note": "Month 9; per cycle year"
     },
     {
-     "value": 26.6,
+     "value": 24.1,
      "unit": "mm/month",
-     "low": 17.2,
-     "high": 47.9,
+     "low": 15.6,
+     "high": 43.7,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1891,10 +1891,10 @@
      "note": "Month 10; per cycle year"
     },
     {
-     "value": 44.3,
+     "value": 34.9,
      "unit": "mm/month",
-     "low": 32.5,
-     "high": 57.8,
+     "low": 25.6,
+     "high": 45.6,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1907,10 +1907,10 @@
      "note": "Month 11; per cycle year"
     },
     {
-     "value": 41.5,
+     "value": 26.7,
      "unit": "mm/month",
-     "low": 31.6,
-     "high": 52.8,
+     "low": 20.3,
+     "high": 33.9,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -1931,12 +1931,12 @@
     "method": "measured",
     "source": {
      "id": "openet",
-     "title": "OpenET Ensemble monthly ET (API key required)",
-     "url": "https://openetdata.org/",
+     "title": "OpenET Ensemble v2.1 monthly actual ET over the field polygon (backend/ground cache; validation only, never a score input)",
+     "url": "https://openet-api.org/raster/timeseries/polygon",
      "accessed": "2026-11-14",
-     "verified": false
+     "verified": true
     },
-    "note": "BLOCKED: OpenET API key not available; validation line (spec B4.1) cannot be computed. Never a score input.",
+    "note": "BLOCKED: OpenET measures the crop actually grown on the field (the baseline); this alternative was not grown there.",
     "blocked": true
    },
    "etc_vs_openet_pct": {
@@ -1947,15 +1947,15 @@
     "method": "lookup",
     "source": {
      "id": "openet",
-     "title": "OpenET Ensemble monthly ET (API key required)",
-     "url": "https://openetdata.org/",
+     "title": "OpenET Ensemble v2.1 monthly actual ET over the field polygon (backend/ground cache; validation only, never a score input)",
+     "url": "https://openet-api.org/raster/timeseries/polygon",
      "accessed": "2026-11-14",
-     "verified": false
+     "verified": true
     },
-    "note": "BLOCKED: Needs OpenET season ET (key).",
+    "note": "BLOCKED: Only the baseline can be checked against OpenET.",
     "blocked": true
    },
-   "eto_source_note": "POWER Hargreaves only; CIMIS station ETo (key) and PM ETo [S] not used, so the POWER-CIMIS bias that could widen the +/-15% band is unknown.",
+   "eto_source_note": "ETo = FAO-56 Penman-Monteith (eq. 6) with NOAA GHCN-D station Tmax/Tmin (mean of the 3 regional-chunk stations; POWER on days none report) and POWER radiation, humidity (ea, eq. 19) and wind. Hargreaves (eq. 52) on POWER was the previous default; FAO-56 ch. 3 gives eq. 52 only as the alternative when radiation/humidity/wind are missing, and POWER Tmax reads +3.4-3.8 C warm in Jul-Aug vs the stations (backend/regional/README.md). CIMIS station ETo still blocked (key rejected).",
    "by_crop": [
     {
      "crop_id": "small_grain_silage",
@@ -1964,10 +1964,10 @@
      "harvest": "04-20",
      "irrigated": true,
      "etc_mm": {
-      "value": 370.3,
+      "value": 298.9,
       "unit": "mm/season",
-      "low": 276.2,
-      "high": 478.0,
+      "low": 221.9,
+      "high": 387.2,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -1996,10 +1996,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 175.7,
+      "value": 131.6,
       "unit": "mm/season",
-      "low": 110.5,
-      "high": 325.6,
+      "low": 81.0,
+      "high": 246.1,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -2019,10 +2019,10 @@
      "harvest": "08-23",
      "irrigated": true,
      "etc_mm": {
-      "value": 742.6,
+      "value": 705.2,
       "unit": "mm/season",
-      "low": 604.0,
-      "high": 884.4,
+      "low": 573.2,
+      "high": 840.5,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -2035,10 +2035,10 @@
       "note": "mean of 2015-2025 weather years"
      },
      "etc_jun_aug_mm": {
-      "value": 689.4,
+      "value": 653.5,
       "unit": "mm/season",
-      "low": 572.0,
-      "high": 805.2,
+      "low": 542.1,
+      "high": 763.6,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -2051,10 +2051,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 726.6,
+      "value": 689.5,
       "unit": "mm/season",
-      "low": 589.5,
-      "high": 878.7,
+      "low": 558.9,
+      "high": 834.8,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -2075,10 +2075,10 @@
   },
   "scores": {
    "water_use": {
-    "value": 41.2,
+    "value": 42.3,
     "unit": "score_0_100",
-    "low": 21.5,
-    "high": 54.4,
+    "low": 24.1,
+    "high": 55.1,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -2088,7 +2088,7 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "spec B4.1 100 x clamp(1 - I/I_max); I_max = 1534 mm = largest I (high end) among this location's strategies, default years (our choice; spec does not define I_max). rule of thumb, not a model"
+    "note": "spec B4.1 100 x clamp(1 - I/I_max); I_max = 1424 mm = largest I (high end) among this location's strategies, default years (our choice; spec does not define I_max). rule of thumb, not a model"
    },
    "forage_value": {
     "value": 14.6,
@@ -2309,10 +2309,10 @@
    }
   },
   "composite": {
-   "value": 22.9,
+   "value": 23.1,
    "unit": "score_0_100",
-   "low": 19.5,
-   "high": 32.4,
+   "low": 20.0,
+   "high": 32.5,
    "method": "computed",
    "source": {
     "id": "field_shift_engine",
@@ -2518,10 +2518,10 @@
     "note": "spec B4.1 0.8 P (U)"
    },
    "i_max_mm": {
-    "value": 1534.0,
+    "value": 1424.0,
     "unit": "mm/yr",
-    "low": 1534.0,
-    "high": 1534.0,
+    "low": 1424.0,
+    "high": 1424.0,
     "method": "computed",
     "source": {
      "id": "field_shift_engine",
@@ -2776,10 +2776,10 @@
       "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Dry-spell PROXY: POWER 30-day P < 50% of its 1991-2020 climatology (spec rule uses IMERG/SMAP, both blocked). In the dry Central Valley summer nearly every day qualifies, so this mostly counts bare summer days."
      },
      "irrigation_need_mm": {
-      "value": 1030.5,
+      "value": 908.6,
       "unit": "mm/yr",
-      "low": 833.0,
-      "high": 1293.0,
+      "low": 736.7,
+      "high": 1141.1,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -2792,10 +2792,10 @@
       "note": "Replay 2022"
      },
      "etc_mm_season": {
-      "value": 1155.6,
+      "value": 1013.9,
       "unit": "mm/yr",
-      "low": 942.3,
-      "high": 1382.9,
+      "low": 828.4,
+      "high": 1211.3,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -2904,10 +2904,10 @@
       "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Dry-spell PROXY: POWER 30-day P < 50% of its 1991-2020 climatology (spec rule uses IMERG/SMAP, both blocked). In the dry Central Valley summer nearly every day qualifies, so this mostly counts bare summer days."
      },
      "irrigation_need_mm": {
-      "value": 771.8,
+      "value": 694.1,
       "unit": "mm/yr",
-      "low": 623.4,
-      "high": 988.0,
+      "low": 560.2,
+      "high": 882.9,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -2920,10 +2920,10 @@
       "note": "Replay 2023"
      },
      "etc_mm_season": {
-      "value": 1042.5,
+      "value": 936.7,
       "unit": "mm/yr",
-      "low": 852.1,
-      "high": 1244.9,
+      "low": 766.4,
+      "high": 1117.5,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -2960,10 +2960,10 @@
   },
   "water": {
    "etc_mm_season": {
-    "value": 1130.7,
+    "value": 1018.4,
     "unit": "mm/yr",
-    "low": 922.5,
-    "high": 1352.5,
+    "low": 833.5,
+    "high": 1214.6,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -2973,13 +2973,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. Crop, cover and flood days; bare days excluded."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. Crop, cover and flood days; bare days excluded."
    },
    "etc_mm_year": {
-    "value": 1166.9,
+    "value": 1052.6,
     "unit": "mm/yr",
-    "low": 943.0,
-    "high": 1435.8,
+    "low": 852.9,
+    "high": 1293.4,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -2989,13 +2989,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. All days incl. bare soil at Kc 0.15 (U)."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. All days incl. bare soil at Kc 0.15 (U)."
    },
    "irrigation_need_mm": {
-    "value": 917.8,
+    "value": 832.8,
     "unit": "mm/yr",
-    "low": 738.6,
-    "high": 1194.3,
+    "low": 674.3,
+    "high": 1067.8,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -3005,13 +3005,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. I = sum over irrigated seasons of monthly max(0, ETc - 0.8 P) (0.8 U) + rice F (U); averaged per cycle year."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. I = sum over irrigated seasons of monthly max(0, ETc - 0.8 P) (0.8 U) + rice F (U); averaged per cycle year."
    },
    "irrigation_need_af_ac": {
-    "value": 3.01,
+    "value": 2.73,
     "unit": "acre-ft/acre/yr",
-    "low": 2.42,
-    "high": 3.92,
+    "low": 2.21,
+    "high": 3.5,
     "method": "computed",
     "source": {
      "id": "unit_definition",
@@ -3023,10 +3023,10 @@
     "note": "irrigation_need_mm / 304.8"
    },
    "irrigation_need_max_cycle_year_mm": {
-    "value": 917.8,
+    "value": 832.8,
     "unit": "mm/yr",
-    "low": 738.6,
-    "high": 1194.3,
+    "low": 674.3,
+    "high": 1067.8,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -3040,10 +3040,10 @@
    },
    "etc_by_month_mm": [
     {
-     "value": 54.6,
+     "value": 35.8,
      "unit": "mm/month",
-     "low": 42.3,
-     "high": 68.3,
+     "low": 27.7,
+     "high": 44.8,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3056,10 +3056,10 @@
      "note": "Month 1; per cycle year"
     },
     {
-     "value": 69.7,
+     "value": 56.4,
      "unit": "mm/month",
-     "low": 54.1,
-     "high": 87.2,
+     "low": 43.8,
+     "high": 70.5,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3072,10 +3072,10 @@
      "note": "Month 2; per cycle year"
     },
     {
-     "value": 102.0,
+     "value": 90.7,
      "unit": "mm/month",
-     "low": 78.2,
-     "high": 128.8,
+     "low": 69.5,
+     "high": 114.6,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3088,10 +3088,10 @@
      "note": "Month 3; per cycle year"
     },
     {
-     "value": 53.1,
+     "value": 50.4,
      "unit": "mm/month",
-     "low": 32.4,
-     "high": 84.5,
+     "low": 30.8,
+     "high": 80.3,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3104,10 +3104,10 @@
      "note": "Month 4; per cycle year"
     },
     {
-     "value": 84.3,
+     "value": 81.9,
      "unit": "mm/month",
-     "low": 70.7,
-     "high": 100.7,
+     "low": 68.7,
+     "high": 97.8,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3120,10 +3120,10 @@
      "note": "Month 5; per cycle year"
     },
     {
-     "value": 176.2,
+     "value": 172.2,
      "unit": "mm/month",
-     "low": 149.8,
-     "high": 202.7,
+     "low": 146.3,
+     "high": 198.0,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3136,10 +3136,10 @@
      "note": "Month 6; per cycle year"
     },
     {
-     "value": 228.1,
+     "value": 214.7,
      "unit": "mm/month",
-     "low": 193.9,
-     "high": 262.3,
+     "low": 182.5,
+     "high": 247.0,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3152,10 +3152,10 @@
      "note": "Month 7; per cycle year"
     },
     {
-     "value": 200.7,
+     "value": 185.3,
      "unit": "mm/month",
-     "low": 170.6,
-     "high": 230.8,
+     "low": 157.5,
+     "high": 213.1,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3168,10 +3168,10 @@
      "note": "Month 8; per cycle year"
     },
     {
-     "value": 85.9,
+     "value": 79.5,
      "unit": "mm/month",
-     "low": 69.8,
-     "high": 112.1,
+     "low": 64.5,
+     "high": 104.0,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3184,10 +3184,10 @@
      "note": "Month 9; per cycle year"
     },
     {
-     "value": 26.6,
+     "value": 24.1,
      "unit": "mm/month",
-     "low": 17.2,
-     "high": 47.9,
+     "low": 15.6,
+     "high": 43.7,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3200,10 +3200,10 @@
      "note": "Month 10; per cycle year"
     },
     {
-     "value": 44.3,
+     "value": 34.9,
      "unit": "mm/month",
-     "low": 32.5,
-     "high": 57.8,
+     "low": 25.6,
+     "high": 45.6,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3216,10 +3216,10 @@
      "note": "Month 11; per cycle year"
     },
     {
-     "value": 41.5,
+     "value": 26.7,
      "unit": "mm/month",
-     "low": 31.6,
-     "high": 52.8,
+     "low": 20.3,
+     "high": 33.9,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -3240,12 +3240,12 @@
     "method": "measured",
     "source": {
      "id": "openet",
-     "title": "OpenET Ensemble monthly ET (API key required)",
-     "url": "https://openetdata.org/",
+     "title": "OpenET Ensemble v2.1 monthly actual ET over the field polygon (backend/ground cache; validation only, never a score input)",
+     "url": "https://openet-api.org/raster/timeseries/polygon",
      "accessed": "2026-11-14",
-     "verified": false
+     "verified": true
     },
-    "note": "BLOCKED: OpenET API key not available; validation line (spec B4.1) cannot be computed. Never a score input.",
+    "note": "BLOCKED: OpenET measures the crop actually grown on the field (the baseline); this alternative was not grown there.",
     "blocked": true
    },
    "etc_vs_openet_pct": {
@@ -3256,15 +3256,15 @@
     "method": "lookup",
     "source": {
      "id": "openet",
-     "title": "OpenET Ensemble monthly ET (API key required)",
-     "url": "https://openetdata.org/",
+     "title": "OpenET Ensemble v2.1 monthly actual ET over the field polygon (backend/ground cache; validation only, never a score input)",
+     "url": "https://openet-api.org/raster/timeseries/polygon",
      "accessed": "2026-11-14",
-     "verified": false
+     "verified": true
     },
-    "note": "BLOCKED: Needs OpenET season ET (key).",
+    "note": "BLOCKED: Only the baseline can be checked against OpenET.",
     "blocked": true
    },
-   "eto_source_note": "POWER Hargreaves only; CIMIS station ETo (key) and PM ETo [S] not used, so the POWER-CIMIS bias that could widen the +/-15% band is unknown.",
+   "eto_source_note": "ETo = FAO-56 Penman-Monteith (eq. 6) with NOAA GHCN-D station Tmax/Tmin (mean of the 3 regional-chunk stations; POWER on days none report) and POWER radiation, humidity (ea, eq. 19) and wind. Hargreaves (eq. 52) on POWER was the previous default; FAO-56 ch. 3 gives eq. 52 only as the alternative when radiation/humidity/wind are missing, and POWER Tmax reads +3.4-3.8 C warm in Jul-Aug vs the stations (backend/regional/README.md). CIMIS station ETo still blocked (key rejected).",
    "by_crop": [
     {
      "crop_id": "small_grain_silage",
@@ -3273,10 +3273,10 @@
      "harvest": "04-20",
      "irrigated": true,
      "etc_mm": {
-      "value": 370.3,
+      "value": 298.9,
       "unit": "mm/season",
-      "low": 276.2,
-      "high": 478.0,
+      "low": 221.9,
+      "high": 387.2,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -3305,10 +3305,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 175.7,
+      "value": 131.6,
       "unit": "mm/season",
-      "low": 110.5,
-      "high": 325.6,
+      "low": 81.0,
+      "high": 246.1,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -3328,10 +3328,10 @@
      "harvest": "09-15",
      "irrigated": true,
      "etc_mm": {
-      "value": 760.4,
+      "value": 719.5,
       "unit": "mm/season",
-      "low": 646.3,
-      "high": 874.4,
+      "low": 611.6,
+      "high": 827.4,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -3344,10 +3344,10 @@
       "note": "mean of 2015-2025 weather years"
      },
      "etc_jun_aug_mm": {
-      "value": 605.0,
+      "value": 572.2,
       "unit": "mm/season",
-      "low": 514.2,
-      "high": 695.7,
+      "low": 486.4,
+      "high": 658.1,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -3360,10 +3360,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 742.1,
+      "value": 701.2,
       "unit": "mm/season",
-      "low": 628.1,
-      "high": 868.7,
+      "low": 593.4,
+      "high": 821.7,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -3384,10 +3384,10 @@
   },
   "scores": {
    "water_use": {
-    "value": 40.2,
+    "value": 41.5,
     "unit": "score_0_100",
-    "low": 22.1,
-    "high": 51.8,
+    "low": 25.0,
+    "high": 52.6,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -3397,7 +3397,7 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "spec B4.1 100 x clamp(1 - I/I_max); I_max = 1534 mm = largest I (high end) among this location's strategies, default years (our choice; spec does not define I_max). rule of thumb, not a model"
+    "note": "spec B4.1 100 x clamp(1 - I/I_max); I_max = 1424 mm = largest I (high end) among this location's strategies, default years (our choice; spec does not define I_max). rule of thumb, not a model"
    },
    "forage_value": {
     "value": 25.0,
@@ -3618,10 +3618,10 @@
    }
   },
   "composite": {
-   "value": 27.3,
+   "value": 27.6,
    "unit": "score_0_100",
-   "low": 24.2,
-   "high": 36.5,
+   "low": 24.7,
+   "high": 36.7,
    "method": "computed",
    "source": {
     "id": "field_shift_engine",
@@ -3833,10 +3833,10 @@
     "note": "spec B4.1 0.8 P (U)"
    },
    "i_max_mm": {
-    "value": 1534.0,
+    "value": 1424.0,
     "unit": "mm/yr",
-    "low": 1534.0,
-    "high": 1534.0,
+    "low": 1424.0,
+    "high": 1424.0,
     "method": "computed",
     "source": {
      "id": "field_shift_engine",
@@ -4162,10 +4162,10 @@
       "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Dry-spell PROXY: POWER 30-day P < 50% of its 1991-2020 climatology (spec rule uses IMERG/SMAP, both blocked). In the dry Central Valley summer nearly every day qualifies, so this mostly counts bare summer days."
      },
      "irrigation_need_mm": {
-      "value": 1104.0,
+      "value": 994.1,
       "unit": "mm/yr",
-      "low": 917.8,
-      "high": 1343.0,
+      "low": 828.1,
+      "high": 1212.4,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4178,10 +4178,10 @@
       "note": "Replay 2022"
      },
      "etc_mm_season": {
-      "value": 1219.2,
+      "value": 1098.6,
       "unit": "mm/yr",
-      "low": 1026.9,
-      "high": 1415.0,
+      "low": 925.8,
+      "high": 1274.1,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4290,10 +4290,10 @@
       "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Dry-spell PROXY: POWER 30-day P < 50% of its 1991-2020 climatology (spec rule uses IMERG/SMAP, both blocked). In the dry Central Valley summer nearly every day qualifies, so this mostly counts bare summer days."
      },
      "irrigation_need_mm": {
-      "value": 881.9,
+      "value": 816.0,
       "unit": "mm/yr",
-      "low": 735.0,
-      "high": 1081.1,
+      "low": 680.0,
+      "high": 1001.4,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4306,10 +4306,10 @@
       "note": "Replay 2023"
      },
      "etc_mm_season": {
-      "value": 1100.0,
+      "value": 1010.4,
       "unit": "mm/yr",
-      "low": 926.9,
-      "high": 1276.0,
+      "low": 851.8,
+      "high": 1171.5,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4346,10 +4346,10 @@
   },
   "water": {
    "etc_mm_season": {
-    "value": 1191.1,
+    "value": 1093.4,
     "unit": "mm/yr",
-    "low": 1003.3,
-    "high": 1382.2,
+    "low": 921.8,
+    "high": 1267.7,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -4359,13 +4359,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. Crop, cover and flood days; bare days excluded."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. Crop, cover and flood days; bare days excluded."
    },
    "etc_mm_year": {
-    "value": 1230.5,
+    "value": 1130.9,
     "unit": "mm/yr",
-    "low": 1025.6,
-    "high": 1472.9,
+    "low": 943.0,
+    "high": 1354.0,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -4375,13 +4375,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. All days incl. bare soil at Kc 0.15 (U)."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. All days incl. bare soil at Kc 0.15 (U)."
    },
    "irrigation_need_mm": {
-    "value": 999.8,
+    "value": 922.7,
     "unit": "mm/yr",
-    "low": 828.3,
-    "high": 1241.5,
+    "low": 766.6,
+    "high": 1139.5,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -4391,13 +4391,13 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x Hargreaves ETo (FAO-56 eq. 52, Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. I = sum over irrigated seasons of monthly max(0, ETc - 0.8 P) (0.8 U) + rice F (U); averaged per cycle year."
+    "note": "mean of 2015-2025 weather years. ETc = Kc(d) x ETo (FAO-56 eq. 6 PM, station Tmax/Tmin + POWER Rs/RH/wind; Kc FAO-56 Table 12 where V); range = min/max over Kc low/high, ETo +/-15%, rice F 300-600 mm, precip sources ['NASA POWER PRECTOTCORR', 'NOAA NCEI GHCN-Daily station mean (regional cache)']. I = sum over irrigated seasons of monthly max(0, ETc - 0.8 P) (0.8 U) + rice F (U); averaged per cycle year."
    },
    "irrigation_need_af_ac": {
-    "value": 3.28,
+    "value": 3.03,
     "unit": "acre-ft/acre/yr",
-    "low": 2.72,
-    "high": 4.07,
+    "low": 2.52,
+    "high": 3.74,
     "method": "computed",
     "source": {
      "id": "unit_definition",
@@ -4409,10 +4409,10 @@
     "note": "irrigation_need_mm / 304.8"
    },
    "irrigation_need_max_cycle_year_mm": {
-    "value": 1262.7,
+    "value": 1174.3,
     "unit": "mm/yr",
-    "low": 1056.8,
-    "high": 1543.9,
+    "low": 984.6,
+    "high": 1426.7,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -4426,10 +4426,10 @@
    },
    "etc_by_month_mm": [
     {
-     "value": 27.9,
+     "value": 18.3,
      "unit": "mm/month",
-     "low": 22.7,
-     "high": 33.4,
+     "low": 14.9,
+     "high": 21.9,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4442,10 +4442,10 @@
      "note": "Month 1; per cycle year"
     },
     {
-     "value": 49.2,
+     "value": 40.0,
      "unit": "mm/month",
-     "low": 40.5,
-     "high": 58.3,
+     "low": 32.9,
+     "high": 47.4,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4458,10 +4458,10 @@
      "note": "Month 2; per cycle year"
     },
     {
-     "value": 93.1,
+     "value": 83.0,
      "unit": "mm/month",
-     "low": 77.0,
-     "high": 109.9,
+     "low": 68.7,
+     "high": 98.0,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4474,10 +4474,10 @@
      "note": "Month 3; per cycle year"
     },
     {
-     "value": 109.4,
+     "value": 104.3,
      "unit": "mm/month",
-     "low": 89.8,
-     "high": 131.6,
+     "low": 85.7,
+     "high": 125.5,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4490,10 +4490,10 @@
      "note": "Month 4; per cycle year"
     },
     {
-     "value": 137.3,
+     "value": 133.3,
      "unit": "mm/month",
-     "low": 114.8,
-     "high": 165.8,
+     "low": 111.4,
+     "high": 160.9,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4506,10 +4506,10 @@
      "note": "Month 5; per cycle year"
     },
     {
-     "value": 171.5,
+     "value": 167.7,
      "unit": "mm/month",
-     "low": 143.3,
-     "high": 207.0,
+     "low": 140.2,
+     "high": 202.5,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4522,10 +4522,10 @@
      "note": "Month 6; per cycle year"
     },
     {
-     "value": 190.1,
+     "value": 179.0,
      "unit": "mm/month",
-     "low": 158.9,
-     "high": 229.5,
+     "low": 149.6,
+     "high": 216.1,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4538,10 +4538,10 @@
      "note": "Month 7; per cycle year"
     },
     {
-     "value": 167.2,
+     "value": 154.4,
      "unit": "mm/month",
-     "low": 139.8,
-     "high": 202.0,
+     "low": 129.1,
+     "high": 186.5,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4554,10 +4554,10 @@
      "note": "Month 8; per cycle year"
     },
     {
-     "value": 124.3,
+     "value": 116.1,
      "unit": "mm/month",
-     "low": 104.5,
-     "high": 147.7,
+     "low": 97.6,
+     "high": 137.9,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4570,10 +4570,10 @@
      "note": "Month 9; per cycle year"
     },
     {
-     "value": 87.6,
+     "value": 80.6,
      "unit": "mm/month",
-     "low": 74.4,
-     "high": 100.7,
+     "low": 68.5,
+     "high": 92.6,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4586,10 +4586,10 @@
      "note": "Month 10; per cycle year"
     },
     {
-     "value": 50.0,
+     "value": 39.5,
      "unit": "mm/month",
-     "low": 41.2,
-     "high": 59.2,
+     "low": 32.5,
+     "high": 46.8,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4602,10 +4602,10 @@
      "note": "Month 11; per cycle year"
     },
     {
-     "value": 23.1,
+     "value": 14.9,
      "unit": "mm/month",
-     "low": 18.7,
-     "high": 27.8,
+     "low": 12.0,
+     "high": 17.9,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4626,12 +4626,12 @@
     "method": "measured",
     "source": {
      "id": "openet",
-     "title": "OpenET Ensemble monthly ET (API key required)",
-     "url": "https://openetdata.org/",
+     "title": "OpenET Ensemble v2.1 monthly actual ET over the field polygon (backend/ground cache; validation only, never a score input)",
+     "url": "https://openet-api.org/raster/timeseries/polygon",
      "accessed": "2026-11-14",
-     "verified": false
+     "verified": true
     },
-    "note": "BLOCKED: OpenET API key not available; validation line (spec B4.1) cannot be computed. Never a score input.",
+    "note": "BLOCKED: OpenET measures the crop actually grown on the field (the baseline); this alternative was not grown there.",
     "blocked": true
    },
    "etc_vs_openet_pct": {
@@ -4642,15 +4642,15 @@
     "method": "lookup",
     "source": {
      "id": "openet",
-     "title": "OpenET Ensemble monthly ET (API key required)",
-     "url": "https://openetdata.org/",
+     "title": "OpenET Ensemble v2.1 monthly actual ET over the field polygon (backend/ground cache; validation only, never a score input)",
+     "url": "https://openet-api.org/raster/timeseries/polygon",
      "accessed": "2026-11-14",
-     "verified": false
+     "verified": true
     },
-    "note": "BLOCKED: Needs OpenET season ET (key).",
+    "note": "BLOCKED: Only the baseline can be checked against OpenET.",
     "blocked": true
    },
-   "eto_source_note": "POWER Hargreaves only; CIMIS station ETo (key) and PM ETo [S] not used, so the POWER-CIMIS bias that could widen the +/-15% band is unknown.",
+   "eto_source_note": "ETo = FAO-56 Penman-Monteith (eq. 6) with NOAA GHCN-D station Tmax/Tmin (mean of the 3 regional-chunk stations; POWER on days none report) and POWER radiation, humidity (ea, eq. 19) and wind. Hargreaves (eq. 52) on POWER was the previous default; FAO-56 ch. 3 gives eq. 52 only as the alternative when radiation/humidity/wind are missing, and POWER Tmax reads +3.4-3.8 C warm in Jul-Aug vs the stations (backend/regional/README.md). CIMIS station ETo still blocked (key rejected).",
    "by_crop": [
     {
      "crop_id": "alfalfa_hay",
@@ -4659,10 +4659,10 @@
      "harvest": "12-01",
      "irrigated": true,
      "etc_mm": {
-      "value": 111.5,
+      "value": 96.9,
       "unit": "mm/season",
-      "low": 94.8,
-      "high": 128.3,
+      "low": 82.4,
+      "high": 111.5,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4691,10 +4691,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 70.9,
+      "value": 60.4,
       "unit": "mm/season",
-      "low": 57.0,
-      "high": 101.9,
+      "low": 48.8,
+      "high": 86.7,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4714,10 +4714,10 @@
      "harvest": "12-01",
      "irrigated": true,
      "etc_mm": {
-      "value": 1450.8,
+      "value": 1344.5,
       "unit": "mm/season",
-      "low": 1233.1,
-      "high": 1668.4,
+      "low": 1142.8,
+      "high": 1546.2,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4730,10 +4730,10 @@
       "note": "mean of 2015-2025 weather years"
      },
      "etc_jun_aug_mm": {
-      "value": 669.8,
+      "value": 634.7,
       "unit": "mm/season",
-      "low": 569.3,
-      "high": 770.2,
+      "low": 539.5,
+      "high": 729.9,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4746,10 +4746,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 1262.4,
+      "value": 1174.3,
       "unit": "mm/season",
-      "low": 1056.8,
-      "high": 1533.5,
+      "low": 984.6,
+      "high": 1423.8,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4769,10 +4769,10 @@
      "harvest": "12-01",
      "irrigated": true,
      "etc_mm": {
-      "value": 1450.8,
+      "value": 1344.5,
       "unit": "mm/season",
-      "low": 1233.1,
-      "high": 1668.4,
+      "low": 1142.8,
+      "high": 1546.2,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4785,10 +4785,10 @@
       "note": "mean of 2015-2025 weather years"
      },
      "etc_jun_aug_mm": {
-      "value": 669.8,
+      "value": 634.7,
       "unit": "mm/season",
-      "low": 569.3,
-      "high": 770.2,
+      "low": 539.5,
+      "high": 729.9,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4801,10 +4801,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 1262.4,
+      "value": 1174.3,
       "unit": "mm/season",
-      "low": 1056.8,
-      "high": 1533.5,
+      "low": 984.6,
+      "high": 1423.8,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4824,10 +4824,10 @@
      "harvest": "11-01",
      "irrigated": true,
      "etc_mm": {
-      "value": 1394.8,
+      "value": 1300.2,
       "unit": "mm/season",
-      "low": 1185.6,
-      "high": 1604.0,
+      "low": 1105.2,
+      "high": 1495.2,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4840,10 +4840,10 @@
       "note": "mean of 2015-2025 weather years"
      },
      "etc_jun_aug_mm": {
-      "value": 669.8,
+      "value": 634.7,
       "unit": "mm/season",
-      "low": 569.3,
-      "high": 770.2,
+      "low": 539.5,
+      "high": 729.9,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4856,10 +4856,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 1238.3,
+      "value": 1159.1,
       "unit": "mm/season",
-      "low": 1039.4,
-      "high": 1486.4,
+      "low": 973.5,
+      "high": 1390.0,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4879,10 +4879,10 @@
      "harvest": "04-20",
      "irrigated": true,
      "etc_mm": {
-      "value": 356.5,
+      "value": 287.5,
       "unit": "mm/season",
-      "low": 266.3,
-      "high": 459.7,
+      "low": 213.9,
+      "high": 371.8,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4911,10 +4911,10 @@
       "note": "ETc of this crop falling in Jun-Aug"
      },
      "irrigation_need_mm": {
-      "value": 165.3,
+      "value": 122.8,
       "unit": "mm/season",
-      "low": 103.2,
-      "high": 310.5,
+      "low": 74.8,
+      "high": 233.7,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -4935,10 +4935,10 @@
   },
   "scores": {
    "water_use": {
-    "value": 34.8,
+    "value": 35.2,
     "unit": "score_0_100",
-    "low": 19.0,
-    "high": 46.0,
+    "low": 20.0,
+    "high": 46.2,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -4948,7 +4948,7 @@
      "verified": true,
      "cache_path": "data/cache/caf_tulare_forage/power.parquet"
     },
-    "note": "spec B4.1 100 x clamp(1 - I/I_max); I_max = 1534 mm = largest I (high end) among this location's strategies, default years (our choice; spec does not define I_max). rule of thumb, not a model"
+    "note": "spec B4.1 100 x clamp(1 - I/I_max); I_max = 1424 mm = largest I (high end) among this location's strategies, default years (our choice; spec does not define I_max). rule of thumb, not a model"
    },
    "forage_value": {
     "value": 51.6,
@@ -5169,10 +5169,10 @@
    }
   },
   "composite": {
-   "value": 47.7,
+   "value": 47.8,
    "unit": "score_0_100",
-   "low": 45.1,
-   "high": 49.6,
+   "low": 45.2,
+   "high": 49.7,
    "method": "computed",
    "source": {
     "id": "field_shift_engine",
@@ -5386,10 +5386,10 @@
     "note": "spec B4.1 0.8 P (U)"
    },
    "i_max_mm": {
-    "value": 1534.0,
+    "value": 1424.0,
     "unit": "mm/yr",
-    "low": 1534.0,
-    "high": 1534.0,
+    "low": 1424.0,
+    "high": 1424.0,
     "method": "computed",
     "source": {
      "id": "field_shift_engine",
