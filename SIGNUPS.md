@@ -17,7 +17,9 @@ We are building a NASA Space Apps hackathon tool that pulls NASA Earth-observati
   - `NASA GESDISC DATA ARCHIVE` (IMERG, GRACE)
   - the NSIDC application(s) (SMAP)
   - `LP DAAC Data Pool` (HLS, MODIS, ECOSTRESS)
-  - `AppEEARS` (the subsetting service we use for most downloads)
+  - `AppEEARS` (the subsetting service for SMAP, MODIS and ECOSTRESS); also log in once at https://appeears.earthdatacloud.nasa.gov to accept its terms
+  - `PO.DAAC Data Website` (OPERA surface-water maps), plus `Earthdata Cloud` if it is offered
+  - Exact names may differ slightly; approve the closest match. After setup, `cd backend/nasa && uv run python check_auth.py` reports which approval is missing.
 - **Check it worked:** log in at https://appeears.earthdatacloud.nasa.gov with the same credentials. Without the approvals above, login succeeds but downloads return 401.
 
 ## 2. OpenET API key (highest priority)
