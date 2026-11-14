@@ -47,11 +47,12 @@ We are building a NASA Space Apps hackathon tool that pulls NASA Earth-observati
 - **What you get:** an API key for `https://marsapi.ams.usda.gov/services/v1.2/reports`.
 - **Unblocks:** California hay prices for the income ranges.
 
-## 6. Anthropic API key (lowest priority, paid)
+## 6. LLM API key (lowest priority, paid, optional)
 
-- **Sign up:** https://platform.claude.com (console.anthropic.com redirects here)
-- **What you get:** an API key. Requires billing to be set up.
-- **Unblocks:** the AI-written rotation brief. The app falls back to templates without it, so this can wait.
+- **Use either:** OpenRouter (https://openrouter.ai, one key for many models, prepaid credit) or Anthropic directly (https://platform.claude.com). One is enough.
+- **What you get:** an API key. Put a small prepaid amount on it and set a spend limit if the site offers one.
+- **Unblocks:** the AI-written wording of the rotation brief. The app falls back to fixed templates without it, so this can wait.
+- **Cost stays small by design:** briefs are generated once offline and cached (8 rotations, a few short sentences each), a small model is enough because the text only rephrases numbers we already have, and nothing calls the LLM while someone is using the app.
 
 ---
 
@@ -66,6 +67,7 @@ OPENET_API_KEY=
 CIMIS_APP_KEY=
 NASS_API_KEY=
 AMS_API_KEY=
+OPENROUTER_API_KEY=   # or ANTHROPIC_API_KEY; one is enough
 ANTHROPIC_API_KEY=
 ```
 
