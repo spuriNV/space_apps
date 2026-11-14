@@ -40,7 +40,7 @@ export function ramp(stops: [number, string][], v: number) {
 }
 export const NDVI_RAMP: [number, string][] = [[0.35, '#9fd45f'], [0.6, '#43b04f'], [0.9, '#12733a']];
 export const ET_RAMP: [number, string][] = [[0, '#f4e3a0'], [3, '#8fd3a8'], [6, '#2aa7b8'], [9, '#2456d6']];
-export const SMAP_RAMP: [number, string][] = [[0, '#b0592a'], [35, '#d8b77a'], [60, '#9ccbd9'], [100, '#2b7de0']];
+export const SMAP_RAMP: [number, string][] = [[0, '#b0592a'], [35, '#d8b77a'], [60, '#a5d6cf'], [100, '#17a89c']];
 export const GRACE_RAMP: [number, string][] = [[0, '#8e2148'], [30, '#c9688a'], [60, '#9a9fd8'], [100, '#39c4d8']];
 
 export interface FieldState { cls: CoverClass; ndvi: number; et: number; disagree: boolean; ruleCls: CoverClass; mlCls: CoverClass }

@@ -682,34 +682,8 @@
      },
      "note": ""
     },
-    "openet_et_mm_season": {
-     "value": 1045,
-     "unit": "mm",
-     "low": null,
-     "high": null,
-     "method": "measured",
-     "source": {
-      "id": "openet",
-      "title": "OpenET 30 m monthly ET (ensemble)",
-      "url": "https://openet-api.org/raster/timeseries/point",
-      "verified": false
-     },
-     "note": ""
-    },
-    "etc_vs_openet_pct": {
-     "value": 4,
-     "unit": "%",
-     "low": null,
-     "high": null,
-     "method": "computed",
-     "source": {
-      "id": "openet",
-      "title": "OpenET 30 m monthly ET (ensemble)",
-      "url": "https://openet-api.org/raster/timeseries/point",
-      "verified": false
-     },
-     "note": ""
-    }
+    "openet_et_mm_season": null,
+    "etc_vs_openet_pct": null
    },
    "scores": {
     "water_use": {

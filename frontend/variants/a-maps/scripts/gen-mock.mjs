@@ -74,16 +74,16 @@ const PRESETS = {
     // 1000 m x 600 m laser-levelled check with the NE corner cut by a supply canal (~59 ha)
     pts: [[-500, -300], [500, -300], [500, 150], [350, 300], [-500, 300]],
     area: 58.9,
-    smapOrigin: [-820, -760], // SW corner of the 9 km cell relative to the field centre, metres
-    modisOrigin: [-790, -290],
+    smapOrigin: [-3300, -2600], // SW corner of the 9 km cell relative to the field centre, metres
+    modisOrigin: [-125, -640],
   },
   caf_tulare_forage: {
     c: { lon: -119.6, lat: 36.2 },
     // 400 m x 800 m furrow-irrigated block (32 ha)
     pts: [[-200, -400], [200, -400], [200, 400], [-200, 400]],
     area: 32.0,
-    smapOrigin: [-560, -900],
-    modisOrigin: [-490, -390],
+    smapOrigin: [-3900, -3100],
+    modisOrigin: [-125, -730],
   },
 };
 
@@ -426,7 +426,7 @@ const strategies = {
       months: ['cover', 'cover', 'terminate, prep', 'flood, seed', 'rice', 'rice', 'rice', 'rice', 'harvest', 'drill cover', 'cover', 'cover'], cover: 'ccpwccccppcc',
       bare: [24, 14, 38], rain: [1, 0, 3], heat: [0, 0, 1], frost: [0, 0, 2],
       r22: [0, 0, 'No rice water; cover could still be drilled on rain'], r23: [1, 1020, 'Cover holds soil through Jan-Mar storms; termination may slip'],
-      etc: [1090, 990, 1190], need: [1150, 1010, 1300], openet: 1045,
+      etc: [1090, 990, 1190], need: [1150, 1010, 1300],
       s: [[34, 24, 43], [10, 0, 20], [28, 15, 40], [62, 48, 74], [66, 55, 76], [72, 55, 86], [22, 10, 33], [52, 40, 63], [70, 55, 82]],
       income: [85, 20, 150], rma: RMA_RICE, gaps: 3,
       why: ['Swaps about two months of winter flood water for a rain-fed cover crop.', 'Cuts bare days from 62 to 24 a year in the model.', 'Cover-crop species after rice are still under UC trial; treat the cover as a test strip first.'],

@@ -32,10 +32,14 @@ const LABELS_BEFORE = 'waterway_line_label';
 
 const LOCS = getLocations();
 const ZONES = Object.fromEntries(LOCS.map((l) => [l.id, getZones(l.id)]));
+// colour uses a fixed, readable domain; height is stretched to the range inside this field so differences show
+const HEIGHT_DOM: Record<string, Record<MeasureKey, number[]>> = {};
 const DOMAINS = Object.fromEntries(
   LOCS.map((l) => {
     const f = ZONES[l.id].cells.features.map((c) => c.properties);
     const mm = (k: 'et_mm' | 'bare_days') => [Math.min(...f.map((p) => p[k])), Math.max(...f.map((p) => p[k]))];
+    const nd = f.map((p) => p.ndvi);
+    HEIGHT_DOM[l.id] = { ndvi: [Math.min(...nd), Math.max(...nd)], et_mm: mm('et_mm'), stress: [0, 1], bare_days: mm('bare_days') };
     return [l.id, { ndvi: [0.2, 0.92], et_mm: mm('et_mm'), stress: [0, 1], bare_days: mm('bare_days') }];
   }),
 ) as Record<LocationId, Record<MeasureKey, number[]>>;
@@ -75,9 +79,11 @@ function cellData(measure: MeasureKey, replay: ReplayState, selected: Selected) 
         const v = p[measure];
         t = clamp((v - lo) / (hi - lo || 1), 0, 1);
         col = ramp(RAMPS[measure], t);
+        const [hl, hh] = HEIGHT_DOM[l.id][measure];
+        t = clamp((v - hl) / (hh - hl || 1), 0, 1);
         label = measure === 'ndvi' ? `NDVI ${v.toFixed(2)}` : measure === 'et_mm' ? `${v} mm (${(v / 25.4).toFixed(1)} in) per season` : measure === 'stress' ? `stress score ${v.toFixed(2)}` : `${v} bare days / yr`;
       }
-      feats.push({ type: 'Feature', id: c.id, geometry: c.geometry, properties: { loc: l.id, col, h: 6 + t * H_MAX, label, i: p.i, j: p.j } });
+      feats.push({ type: 'Feature', id: c.id, geometry: c.geometry, properties: { loc: l.id, col, h: 10 + t * H_MAX, label, i: p.i, j: p.j } });
     }
   }
   return { type: 'FeatureCollection', features: feats } as GeoJSON.FeatureCollection;
@@ -117,7 +123,7 @@ export default function MapView(props: Props) {
     });
     mapRef.current = map;
     (window as unknown as { __map: MLMap }).__map = map;
-    map.addControl(new maplibregl.AttributionControl({ compact: false, customAttribution: 'Imagery © Esri, Maxar, Earthstar Geographics' }), 'bottom-right');
+    map.addControl(new maplibregl.AttributionControl({ compact: false, customAttribution: 'Imagery © Esri' }), 'bottom-right');
     map.addControl(new maplibregl.ScaleControl({ unit: 'metric', maxWidth: 90 }), 'bottom-right');
 
     // Scroll-in drill-down: near a field, camera pitch is a function of zoom.

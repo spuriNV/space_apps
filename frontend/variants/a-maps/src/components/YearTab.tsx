@@ -41,9 +41,11 @@ export default function YearTab({ id, onReplayOnMap }: { id: LocationId; onRepla
 
       <div className="legend-row">
         {(['b', 'p', 'c', 'w', 'u'] as const).map((k) => <span key={k}><i className={k === 'u' ? 'sw sw-unknown' : 'sw'} style={{ background: k === 'u' ? undefined : COVER_COLORS[k] }} />{COVER_LABELS[k]}</span>)}
+        <span><i className="sw wk-diff" style={{ background: '#cfe6a3', position: 'relative' }} />Detectors disagree</span>
         <span className="legend-gap" />
         {RISK.map((r) => <span key={r.key}><i className="tick" style={{ background: r.color }} />{r.label}</span>)}
         <span><i className="news-dot" />News</span>
+        <span><i className="vuln vuln-both inline" />Crop stress week</span>
       </div>
 
       <div className="cal">
@@ -66,8 +68,7 @@ export default function YearTab({ id, onReplayOnMap }: { id: LocationId; onRepla
                   </button>
                 ))}
               </div>
-              <span className="cal-cdl">{y.cdl_class ?? <i>CDL not out yet</i>}</span>
-              <span className="cal-bare">{y.bare_days} bare days</span>
+              <span className="cal-cdl">{y.cdl_class ?? <i>Crop map not out yet</i>}<small>{y.bare_days} bare days</small></span>
             </div>
           );
         })}
@@ -77,17 +78,18 @@ export default function YearTab({ id, onReplayOnMap }: { id: LocationId; onRepla
             {latest.stress_weeks.map((s) => <span key={s.week} className={`vuln vuln-${s.flagged_by}`} style={{ left: s.week * STEP }} />)}
             <span className="vuln-line" />
           </div>
-          <span className="cal-cdl muted">Crop stress weeks, {latest.year}</span>
-          <span className="cal-bare"><i className="vuln vuln-both inline" />both models <i className="vuln vuln-one inline" />one</span>
+          <span className="cal-cdl"><small>Crop stress weeks, {latest.year}</small></span>
         </div>
       </div>
 
       {open && (
         <div className="news-pop">
           <button className="icon-btn" onClick={() => setOpen(null)} aria-label="Close"><Icon name="close" size={18} /></button>
-          <div className="news-date">{fmtDate(open.date)} · {open.source}</div>
-          <div className="news-title">{open.url ? <a href={open.url} target="_blank" rel="noreferrer">{open.title}</a> : open.title}</div>
-          {open.signal && <div className="news-meta"><span className="signal-chip">{open.signal.label}: {open.signal.value_pct}</span><span className="muted">Lead time: computing</span></div>}
+          <span className="news-pin static"><Icon name="article" size={12} color="#fff" /></span>
+          <div>
+            <div className="news-title">{open.url ? <a href={open.url} target="_blank" rel="noreferrer">{open.title}</a> : open.title}</div>
+            <div className="news-meta"><span>{fmtDate(open.date)} · {open.source}</span>{open.signal && <><span className="signal-chip">{open.signal.label}: {open.signal.value_pct}</span><span>Lead time: computing</span></>}</div>
+          </div>
         </div>
       )}
 

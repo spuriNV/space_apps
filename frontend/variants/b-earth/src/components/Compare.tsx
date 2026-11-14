@@ -71,7 +71,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
                 <RangeBar n={irr} max={IMAX} color={over ? '#ff7a6b' : within ? '#55c5f0' : '#f2c14e'} mark={allocMm} />
                 <div className="cmp-alloc-line">
                   <span className={`chip ${over ? 'bad' : within ? 'good' : 'tie'}`}>{over ? 'Over your allocation' : within ? 'Within your allocation' : 'May exceed allocation'}</span>
-                  <small>range {irr.low?.toLocaleString()}–{irr.high?.toLocaleString()} mm ({mmToIn(irr.low ?? 0).toFixed(0)}–{mmToIn(irr.high ?? 0).toFixed(0)} in)</small>
+                  <small>{irr.low?.toLocaleString()}–{irr.high?.toLocaleString()} mm ({mmToIn(irr.low ?? 0).toFixed(0)}–{mmToIn(irr.high ?? 0).toFixed(0)} in)</small>
                 </div>
                 {replay !== 'typical' && <p className="replay-note">{s.exposure.replay[replay].note}</p>}
               </div>

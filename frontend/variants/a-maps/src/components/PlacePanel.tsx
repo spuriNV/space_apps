@@ -19,11 +19,12 @@ export const isWide = (t: Tab) => t === 'year' || t === 'compare';
 function Hero({ lon, lat, z, geometry, height = 216, muted }: { lon: number; lat: number; z: number; geometry?: Geometry; height?: number; muted?: boolean }) {
   const W = 408;
   const c = tileXY(lon, lat, z);
+  const dy = geometry ? 26 : 0; // keep the field clear of the search pill
   const tiles = [];
   const x0 = Math.floor(c.x - W / 512), x1 = Math.floor(c.x + W / 512);
-  const y0 = Math.floor(c.y - height / 512), y1 = Math.floor(c.y + height / 512);
-  for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) tiles.push({ x, y, left: (x - c.x) * 256 + W / 2, top: (y - c.y) * 256 + height / 2 });
-  const pts = geometry?.coordinates[0].map(([lo, la]) => { const t = tileXY(lo, la, z); return `${(t.x - c.x) * 256 + W / 2},${(t.y - c.y) * 256 + height / 2}`; }).join(' ');
+  const y0 = Math.floor(c.y - height / 512 - 0.2), y1 = Math.floor(c.y + height / 512);
+  for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) tiles.push({ x, y, left: (x - c.x) * 256 + W / 2, top: (y - c.y) * 256 + height / 2 + dy });
+  const pts = geometry?.coordinates[0].map(([lo, la]) => { const t = tileXY(lo, la, z); return `${(t.x - c.x) * 256 + W / 2},${(t.y - c.y) * 256 + height / 2 + dy}`; }).join(' ');
   return (
     <div className={`hero${muted ? ' hero-muted' : ''}`} style={{ height }}>
       {tiles.map((t) => <img key={`${t.x}-${t.y}`} src={ESRI_TILE(z, t.x, t.y)} style={{ left: t.left, top: t.top }} alt="" draggable={false} />)}
@@ -185,11 +186,8 @@ export default function PlacePanel(p: Props) {
         {!wide && <Hero lon={loc.centroid.lon} lat={loc.centroid.lat} z={15} geometry={loc.geometry} />}
         {wide ? (
           <div className="wide-head">
-            <div>
-              <h1>{loc.name}</h1>
-              <div className="place-sub">{loc.place_line} · {fmt(loc.area_ha.value, 1)} ha ({fmt(haToAc(loc.area_ha.value))} acres)</div>
-            </div>
-            <div className="badges"><span className="badge badge-green"><Icon name="check" size={14} />Ground data: rich</span><span className="badge badge-grey">Example field</span></div>
+            <h1>{loc.name}</h1>
+            <div className="place-sub">{loc.place_line} · {fmt(loc.area_ha.value, 1)} ha ({fmt(haToAc(loc.area_ha.value))} acres)</div>
           </div>
         ) : (
           <>
@@ -210,7 +208,7 @@ export default function PlacePanel(p: Props) {
         )}
         <div className="tabs" role="tablist">
           {TABS.map((t) => <button key={t.id} role="tab" aria-selected={p.tab === t.id} className={p.tab === t.id ? 'tab tab-on' : 'tab'} onClick={() => p.onTab(t.id)}>{t.label}</button>)}
-          {wide && <span className="tabs-right"><button className="pill-btn" onClick={p.onBrief}><Icon name="description" size={16} />Brief</button><button className="pill-btn" onClick={p.onShare}><Icon name="share" size={16} />Share</button></span>}
+          {wide && <span className="tabs-right"><span className="badge badge-green"><Icon name="check" size={14} />Ground data: rich</span><button className="pill-btn" onClick={p.onBrief}><Icon name="description" size={16} />Brief</button><button className="pill-btn" onClick={p.onShare}><Icon name="share" size={16} />Share</button></span>}
         </div>
         {p.tab === 'overview' && <Overview id={loc.id} onDrill={p.onDrill} onTab={p.onTab} />}
         {p.tab === 'year' && <YearTab id={loc.id} onReplayOnMap={p.onReplayOnMap} />}

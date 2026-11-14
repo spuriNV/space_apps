@@ -43,7 +43,7 @@ export default function BriefView({ loc, items, id, allocation, onPick, onClose 
         <div className="paper" id="paper">
           <header className="p-head">
             <div>
-              <div className="p-kicker">Rotation brief · {loc.short_name}</div>
+              <div className="p-kicker">Rotation brief · {loc.short_name}<span className="p-mock">Mock data: numbers are illustrative; dates, events and links are real</span></div>
               <h1>{s.name}</h1>
               <div className="p-sub">{loc.region_label} · {fmt(loc.area_ha.value)} ha ({fmt(haToAc(loc.area_ha.value))} acres) · {loc.soil.texture_class.toLowerCase()}, {loc.soil.drainage_class.toLowerCase()} · prepared 14 Nov 2026</div>
             </div>
@@ -52,7 +52,6 @@ export default function BriefView({ loc, items, id, allocation, onPick, onClose 
               {s.tie && <em>tie within uncertainty</em>}
             </div>
           </header>
-          <div className="p-mock">Prototype: numbers are illustrative mock data. Dates, events and links are real.</div>
 
           {on.calendar && (
             <section className="p-cal">
@@ -103,10 +102,10 @@ export default function BriefView({ loc, items, id, allocation, onPick, onClose 
                   <p className="p-note">{rma.rma_label}: share of crop-insurance payouts by cause. Insurance history, not a forecast. <a className="cite unv" href={getSource('rma_col').url!} target="_blank" rel="noreferrer"><b>{srcIds.indexOf('rma_col') + 1}</b>USDA RMA</a></p>
                 </section>
               )}
-              {on.gaps && (<section><h2>Gaps in the data</h2><ul className="p-gaps">{s.brief.gaps.map((g) => <li key={g}>{g}</li>)}</ul></section>)}
             </div>
           </div>
 
+          <div className="p-bottom">
           {on.review && (
             <section className="p-reviewsec">
                   <h2>Needs local review before anything is seeded</h2>
@@ -120,6 +119,8 @@ export default function BriefView({ loc, items, id, allocation, onPick, onClose 
                   </ul>
             </section>
           )}
+          {on.gaps && (<section className="p-gapsec"><h2>Gaps in the data</h2><ul className="p-gaps">{s.brief.gaps.map((g) => <li key={g}>{g}</li>)}</ul></section>)}
+          </div>
 
           <footer className="p-foot">
             <div className="p-sources">

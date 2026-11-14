@@ -304,15 +304,15 @@ const strategies = [
     brief: {
       why: [
         sent('Your field is typically bare from mid-October to late April unless it is flooded, which is when the heaviest rain arrives.', ['hls'], ['mid-October', 'late April']),
-        sent('A cereal/vetch cover drilled after straw chop keeps the soil covered through that window and cuts bare days from about 62 to about 36 a year.', ['hls', 'covercrop_selector'], ['62', '36']),
+        sent('A cereal/vetch cover drilled after straw chop covers that window and cuts bare days from about 62 to about 36 a year.', ['hls', 'covercrop_selector'], ['62', '36']),
         sent('Skipping the winter flood lowers the season\'s irrigation need from roughly 1,340 mm to 1,120 mm (4.4 to 3.7 acre-ft/acre).', ['fao56_table12'], ['1,340', '1,120', '4.4', '3.7']),
-        sent('Rice timing stays the same: half of fields are planted by 12 May on average, and harvest runs late September into October.', ['uc_rice_blog'], ['12 May']),
+        sent('Rice timing stays the same: half of fields are planted by 12 May on average.', ['uc_rice_blog'], ['12 May']),
       ],
       evidence: [
-        sent('Cover calendar 2016–2025: bare or unknown in 22–30 winter weeks of non-flood years; rule and ML detectors agree on 93% of weeks.', ['hls'], ['22', '30', '93']),
+        sent('Cover calendar 2016–2025: bare or unknown in 22–30 winter weeks of non-flood years; the two detectors agree on 93% of weeks.', ['hls'], ['22', '30', '93']),
         sent('2022: the block was fallow all year, when Sacramento Valley rice acreage was roughly halved.', ['nasa_eo_rice_2022', 'farmprogress_2022'], ['2022']),
         sent('OpenET measured rice ET of about 1,105 mm for the season; our modelled crop water use is within 4% of it.', ['openet'], ['1,105', '4']),
-        sent('Soil is poorly drained silty clay (hydrologic group D): expect a limited infiltration gain from any rotation.', ['ssurgo_sda'], []),
+        sent('Poorly drained silty clay (hydrologic group D): expect limited infiltration gain from any rotation.', ['ssurgo_sda'], []),
       ],
       benefits: [], gaps: ['Cover-crop species and seeding date after rice are not yet backed by a California trial result.', 'Rice flood and percolation water is an estimate until cited.', 'Vetch nitrogen credit to the following rice crop is not quantified.'],
       local_review: RICE_REVIEW, explainer_cards: ['cover_crop', 'nitrogen_fixing'],

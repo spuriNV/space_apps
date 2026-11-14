@@ -60,7 +60,7 @@ export default function App() {
 
   const toast = useCallback((m: string) => { setSnack(m); window.setTimeout(() => setSnack((s) => (s === m ? null : s)), 3600); }, []);
   const select = useCallback((id: Selected) => {
-    setSelected(id); setTab('overview'); setFocus(false); setQuery('');
+    setSelected(id); setTab('overview'); setFocus(false); setQuery(''); (document.activeElement as HTMLElement | null)?.blur?.();
     if (!id) { setReplay((r) => ({ ...r, on: false })); setPlaying(false); }
   }, []);
   const onCamera = useCallback((c: CameraInfo) => setCam((p) => (p.zoom === c.zoom && p.pitch === c.pitch && p.bearing === c.bearing && p.nearId === c.nearId && p.drill === c.drill ? p : c)), []);
@@ -132,6 +132,7 @@ export default function App() {
           value={focus ? query : selName || query}
           placeholder="Search Field Shift"
           onFocus={() => { setFocus(true); setQuery(''); }}
+          onClick={() => setFocus(true)}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && suggestions[0]) select(suggestions[0].id); }}
           aria-label="Search fields"
@@ -201,7 +202,7 @@ export default function App() {
 
         {/* bottom-right: camera controls */}
         <div className="controls">
-          <button className={`ctl ctl-text${tilt3d && cam.pitch > 0 ? ' on' : ''}`} title={tilt3d ? 'Switch to flat view' : 'Switch to 3D view'} onClick={() => setTilt3d(!tilt3d)}>{tilt3d ? '2D' : '3D'}</button>
+          <button className={`ctl ctl-text${tilt3d ? ' on' : ''}`} aria-pressed={tilt3d} title={tilt3d ? '3D drill-down is on: fields rise as you scroll in. Click for flat view.' : 'Turn on 3D drill-down'} onClick={() => setTilt3d(!tilt3d)}>3D</button>
           <button className="ctl" title="Reset north" onClick={() => mapRef.current?.easeTo({ bearing: 0 })}>
             <span style={{ transform: `rotate(${-cam.bearing}deg)`, display: 'inline-flex' }}>
               <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2 8 12h8z" fill="#ea4335" /><path d="M12 22 8 12h8z" fill="#bdc1c6" /></svg>
@@ -247,7 +248,7 @@ function DrillLegend(p: { id: LocationId; measure: MeasureKey; onMeasure: (m: Me
       )}
       <div className="ramp" style={{ background: rampCss(RAMPS[p.replayOn ? 'ndvi' : p.measure]) }} />
       <div className="ramp-labels"><span>{p.replayOn ? 'bare' : `${unit(dom[0])} · ${m.lo}`}</span><span>{p.replayOn ? 'dense cover' : `${m.hi} · ${unit(dom[1])}`}</span></div>
-      <div className="legend-note">{p.tilt3d ? (p.drill > 0 ? 'Taller and darker = more.' : 'Scroll in: cells rise as you get closer.') : 'Flat view. Press 3D to raise the cells.'} {p.replayOn ? 'HLS, 30 m.' : `${meta.label}: ${meta.dataset.toUpperCase()}.`}</div>
+      <div className="legend-note">{p.tilt3d ? (p.drill > 0 ? 'Taller = more. Heights are stretched to show differences inside this field.' : 'Scroll in: cells rise as you get closer.') : 'Flat view. Press 3D to raise the cells.'} {p.replayOn ? 'HLS, 30 m.' : `${meta.label}: ${meta.dataset.toUpperCase()}.`}</div>
       {!p.replayOn && p.measure === 'stress' && <div className="legend-note warn">{zones.hotspot_note}</div>}
       <div className="px">
         <svg width={S + 2} height={S + 2} viewBox={`-1 -1 ${S + 2} ${S + 2}`}>
@@ -300,7 +301,7 @@ function ReplayBar(p: { id: LocationId; replay: { year: number; week: number }; 
   const fy = getFieldYear(p.id);
   const row = fy.years.find((y) => y.year === p.replay.year)!;
   const news = getNews(p.id).filter((n) => n.date.startsWith(String(p.replay.year)));
-  const W = 560, H = 58;
+  const W = 640, H = 58;
   const x = (w: number) => (w / 51) * W;
   const median = Array.from({ length: 52 }, (_, w) => { const v = fy.years.map((y) => y.ndvi[w]).sort((a, b) => a - b); return (v[4] + v[5]) / 2; });
   const yN = (v: number) => H - 4 - v * (H - 10);
@@ -313,8 +314,8 @@ function ReplayBar(p: { id: LocationId; replay: { year: number; week: number }; 
       <div className="replay-top">
         <button className="play" onClick={p.onPlay} aria-label={p.playing ? 'Pause' : 'Play'}><Icon name={p.playing ? 'pause' : 'play'} size={24} color="#fff" /></button>
         <div className="replay-when">
-          <b>{weekLabel(p.replay.year, w)}</b>
-          <span><i className="sw" style={{ background: COVER_COLORS[cls] }} />{COVER_LABELS[cls]} · field NDVI {row.ndvi[w].toFixed(2)} · rain {row.rain_mm[w]} mm ({fmt(mmToIn(row.rain_mm[w]), 1)} in)</span>
+          <b>{weekLabel(p.replay.year, w)}<em><i className="sw" style={{ background: COVER_COLORS[cls] }} />{COVER_LABELS[cls]}</em></b>
+          <span>Field cover (NDVI) {row.ndvi[w].toFixed(2)} · rain this week {row.rain_mm[w]} mm ({fmt(mmToIn(row.rain_mm[w]), 1)} in)</span>
         </div>
         <div className="seg small" role="group" aria-label="Year">
           {REPLAY_YEARS.map((y) => <button key={y} className={p.replay.year === y ? 'on' : ''} onClick={() => p.onYear(y)}>{y}</button>)}
