@@ -127,7 +127,7 @@
   },
   {
     "date": "2023-06-27",
-    "title": "  This water needs to be protected : California tribe calls for preservation of Tulare Lake",
+    "title": "This water needs to be protected : California tribe calls for preservation of Tulare Lake",
     "source": "aol.com",
     "url": "https://www.aol.com/news/water-needs-protected-california-tribe-120012318.html",
     "rank": 3,
@@ -142,6 +142,80 @@
     },
     "_via": "gdelt",
     "_publisher_url": "https://www.aol.com/news/water-needs-protected-california-tribe-120012318.html"
+  },
+  {
+    "date": "2023-06-30",
+    "title": "Agricultural fields in California Tulare Lake Basin could be underwater for years to come , experts say",
+    "source": "wbal.com",
+    "url": "https://www.wbal.com/article/612709/110/agricultural-fields-in-californias-tulare-lake-basin-could-be-underwater-for-years-to-come-experts-say",
+    "rank": 3,
+    "place_match": [
+      "Tulare"
+    ],
+    "query_id": "caf_2023_flood",
+    "signal": {
+      "dataset": "imerg_daily",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.wbal.com/article/612709/110/agricultural-fields-in-californias-tulare-lake-basin-could-be-underwater-for-years-to-come-experts-say"
+  },
+  {
+    "date": "2023-06-30",
+    "title": "Agricultural fields in California Tulare Lake Basin could be underwater for years to come , experts sayJulia Jacobo , Daniel Manzo and Ginger Zee , ABC News",
+    "source": "wttf.com",
+    "url": "https://wttf.com/national-news/agricultural-fields-in-californias-tulare-lake-basin-could-be-underwater-for-years-to-come-experts-sayjulia-jacobo-daniel-manzo-and-ginger-zee-abc-news/",
+    "rank": 3,
+    "place_match": [
+      "Tulare"
+    ],
+    "query_id": "caf_2023_flood",
+    "signal": {
+      "dataset": "imerg_daily",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://wttf.com/national-news/agricultural-fields-in-californias-tulare-lake-basin-could-be-underwater-for-years-to-come-experts-sayjulia-jacobo-daniel-manzo-and-ginger-zee-abc-news/"
+  },
+  {
+    "date": "2023-07-05",
+    "title": "Resurrected Tulare Lake fuels tourism buzz as summer heats up",
+    "source": "thebusinessjournal.com",
+    "url": "https://thebusinessjournal.com/resurrected-tulare-lake-fuels-tourism-buzz-as-summer-heats-up/",
+    "rank": 3,
+    "place_match": [
+      "Tulare"
+    ],
+    "query_id": "caf_2023_flood",
+    "signal": {
+      "dataset": "imerg_daily",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://thebusinessjournal.com/resurrected-tulare-lake-fuels-tourism-buzz-as-summer-heats-up/"
+  },
+  {
+    "date": "2023-07-06",
+    "title": "A dormant California lake that reappeared isn't going anywhere fast",
+    "source": "nbcnews.com",
+    "url": "https://www.nbcnews.com/science/science-news/dormant-california-lake-reappeared-isnt-going-anywhere-fast-rcna92452",
+    "rank": 3,
+    "place_match": [
+      "Tulare",
+      "Kings County",
+      "Corcoran"
+    ],
+    "query_id": "caf_2023_flood",
+    "signal": {
+      "dataset": "imerg_daily",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "spec_cited_page",
+    "_publisher_url": "https://www.nbcnews.com/science/science-news/dormant-california-lake-reappeared-isnt-going-anywhere-fast-rcna92452"
   },
   {
     "date": "2024-04-15",
@@ -287,5 +361,77 @@
     },
     "_via": "gdelt",
     "_publisher_url": "https://www.kmjnow.com/2024/04/19/probation-for-tulare-lake-subbasin-brings-increasing-fees-for-pumping-water/"
+  },
+  {
+    "date": "2024-05-18",
+    "title": "SJV WATER: Sinking land, dry wells and accusations are plentiful in Kings County – but no solutions in sight",
+    "source": "Maven's Notebook",
+    "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPZjQ1WnEtRWFQT3hKSjlyWDJuRC1ydkFkOVdYeWc3TnBLUWV6c0kxUUxmMkNNdURqYkFVWHdzTjEzR1FmaDNhcTc2ZmVBUmZRRS03Vy1qZFRCSHo2UWFWLWZXaTJmWkRiN1VRSUVwRmdTWWdLMXl4b0l1OFZTLVdyRkxPVzhiVWJaaDNIWlBmZlRVSEJBeVFCbUdFdU5FemZBdnZ1c2ljX3FQajlyWWtKbFdWYlFsTXV0LV8yNUdWdTFnZVhMcTRsa05MSFhaYW9WTGpwQk14THlzWUE?oc=5",
+    "rank": 3,
+    "place_match": [
+      "Kings County"
+    ],
+    "query_id": "caf_2024_sgma",
+    "signal": {
+      "dataset": "grace_gw",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "google_news",
+    "_publisher_url": "https://mavensnotebook.com"
+  },
+  {
+    "date": "2024-05-21",
+    "title": "Kings County Farm Bureau sues over state monitoring of groundwater",
+    "source": "thebusinessjournal.com",
+    "url": "https://thebusinessjournal.com/kings-county-farm-bureau-sues-over-state-monitoring-of-groundwater/",
+    "rank": 3,
+    "place_match": [
+      "Kings County"
+    ],
+    "query_id": "caf_2024_sgma",
+    "signal": {
+      "dataset": "grace_gw",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://thebusinessjournal.com/kings-county-farm-bureau-sues-over-state-monitoring-of-groundwater/"
+  },
+  {
+    "date": "2024-05-23",
+    "title": "Kings County Farm Bureau blames one local water board for state intervention",
+    "source": "hanfordsentinel.com",
+    "url": "https://hanfordsentinel.com/business/kings-county-farm-bureau-blames-one-local-water-board-for-state-intervention/article_ef5be590-ed14-5c7d-87a1-ef917f57bdc7.html",
+    "rank": 3,
+    "place_match": [
+      "Kings County"
+    ],
+    "query_id": "caf_2024_sgma",
+    "signal": {
+      "dataset": "grace_gw",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://hanfordsentinel.com/business/kings-county-farm-bureau-blames-one-local-water-board-for-state-intervention/article_ef5be590-ed14-5c7d-87a1-ef917f57bdc7.html"
+  },
+  {
+    "date": "2024-05-31",
+    "title": "Kings County farmers face probation as state demands well registration , detailed pumping reports",
+    "source": "hanfordsentinel.com",
+    "url": "https://hanfordsentinel.com/business/kings-county-farmers-face-probation-as-state-demands-well-registration-detailed-pumping-reports/article_6938bd2a-0d6a-51b9-b773-e8a50c5b6580.html",
+    "rank": 3,
+    "place_match": [
+      "Kings County"
+    ],
+    "query_id": "caf_2024_sgma",
+    "signal": {
+      "dataset": "grace_gw",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://hanfordsentinel.com/business/kings-county-farmers-face-probation-as-state-demands-well-registration-detailed-pumping-reports/article_6938bd2a-0d6a-51b9-b773-e8a50c5b6580.html"
   }
 ]

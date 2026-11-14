@@ -1,6 +1,6 @@
 // Single data-access seam (CONTRACT.md). Today: mock JSON in src/mock.
 // Later: swap each body for fetch(`${API}/api/...`) using the spec B3 routes noted beside each call.
-import type { BCInfo, Calendar, CellGrid, Dataset, Location, NewsItem, Regional, RotationStrategy } from './types';
+import type { Story, BCInfo, Calendar, CellGrid, Dataset, Location, NewsItem, Regional, RotationStrategy } from './types';
 import locations from './mock/locations.json';
 import cells from './mock/cells.json';
 import calendar from './mock/calendar.json';
@@ -9,6 +9,7 @@ import strategies from './mock/strategies.json';
 import news from './mock/news.json';
 import datasets from './mock/datasets.json';
 import bc from './mock/bc.json';
+import story from './mock/story.json';
 
 export const IS_MOCK = true;
 export const API = 'http://localhost:8000';
@@ -31,3 +32,5 @@ export const getNews = (id: string) => ok<NewsItem[]>((news as unknown as ById<N
 export const getDatasets = () => ok<Dataset[]>(datasets);
 /** GET /api/bc/news + static card text */
 export const getBC = () => ok<BCInfo>(bc);
+/** story mode chapters (static editorial content; news joined from /api/locations/{id}/news) */
+export const getStory = (id: string) => ok<Story>((story as unknown as ById<Story>)[id]);

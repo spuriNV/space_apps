@@ -1,0 +1,3232 @@
+{
+ "crops": [
+  {
+   "id": "rice_medium_grain",
+   "name": "Rice (medium grain, water-seeded)",
+   "family": "Poaceae",
+   "role": [
+    "cash"
+   ],
+   "legume": false,
+   "perennial": false,
+   "root": "shallow fibrous",
+   "market_class": "sell",
+   "kc": {
+    "ini": {
+     "value": 1.05,
+     "unit": "Kc",
+     "low": 1.05,
+     "high": 1.05,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Spec B4.1 quote: Rice 1.05 / 1.20 / 0.90-0.60"
+    },
+    "mid": {
+     "value": 1.2,
+     "unit": "Kc",
+     "low": 1.2,
+     "high": 1.2,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    },
+    "end": {
+     "value": 0.75,
+     "unit": "Kc",
+     "low": 0.6,
+     "high": 0.9,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Spec quotes end 0.90-0.60; value = midpoint"
+    }
+   },
+   "stage_lengths_days": {
+    "ini": 30,
+    "dev": 30,
+    "mid": 60,
+    "late": 30,
+    "verified": true,
+    "source": "fao56_table11 Rice May Mediterranean (V)",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+   },
+   "cover_by_stage": {
+    "ini": 0.3,
+    "dev": 0.7,
+    "mid": 1.0,
+    "late": 0.8,
+    "method": "assumed",
+    "verified": false,
+    "note": "Values from the spec B3 Crop example; still U."
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "soil_builder": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "lasting_residue": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_fixation": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_scavenging": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "compaction_reduction": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "forage_harvest_value": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "weed_suppression": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_flood": {
+     "value": 4,
+     "unit": "rating_0_4",
+     "low": 3,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_drought": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    }
+   },
+   "root_depth_class": {
+    "value": 0,
+    "unit": "class_0_2",
+    "low": 0,
+    "high": 1,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "0 shallow, 1 medium, 2 deep; team placeholder (U)"
+   },
+   "flood_percolation_mm": {
+    "value": 450,
+    "unit": "mm/season",
+    "low": 300,
+    "high": 600,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Rice flood-establishment and percolation term F (spec B4.1, U: 300-600 mm)",
+    "to_cite": "UC rice water-use publication (spec B4.1: cite before shipping)"
+   },
+   "yield_range": {
+    "value": 9500,
+    "unit": "kg/ha",
+    "low": 8000,
+    "high": 11000,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Grain yield; spec B3 example, U"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "very poorly drained",
+     "poorly drained",
+     "somewhat poorly drained",
+     "moderately well drained"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": "U. Spec B3 example lists poorly/very poorly/somewhat poor; we added moderately well drained because Capay clay (the CAR preset's SSURGO unit) is a common rice soil. Needs an agronomist."
+   },
+   "seeding_window": {
+    "start": "04-20",
+    "end": "06-01",
+    "best": "by mid-May",
+    "verified": true,
+    "source": "uc_rice_blog",
+    "url": "https://www.ucanr.edu/blog/uc-rice-blog",
+    "note": "50% planted by 12 May; 1 June considered too late (spec B1, V)"
+   },
+   "pest_notes": [
+    "weedy rice (U)",
+    "rice water weevil (U)"
+   ],
+   "cautions": [
+    "herbicide carryover to rotation crops (U)"
+   ],
+   "seed_cost_per_ha": {
+    "value": 150,
+    "unit": "USD/ha",
+    "low": 100,
+    "high": 250,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": false,
+   "explainer_card": null,
+   "sources": [
+    {
+     "id": "fao56_table12",
+     "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    {
+     "id": "fao56_table11",
+     "title": "FAO-56 Chapter 6, Table 11 (lengths of crop development stages)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    {
+     "id": "uc_rice_blog",
+     "title": "UC Rice Blog (planting dates, 145-150 day season)",
+     "url": "https://www.ucanr.edu/blog/uc-rice-blog",
+     "accessed": "2026-11-14",
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "alfalfa_hay",
+   "name": "Alfalfa (hay/haylage, multi-cut)",
+   "family": "Fabaceae",
+   "role": [
+    "forage"
+   ],
+   "legume": true,
+   "perennial": true,
+   "root": "deep taproot",
+   "market_class": "either",
+   "kc": {
+    "ini": {
+     "value": 0.4,
+     "unit": "Kc",
+     "low": 0.4,
+     "high": 0.4,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Spec B4.1 quote: Alfalfa hay, averaged cutting effects 0.40 / 0.95 / 0.90"
+    },
+    "mid": {
+     "value": 0.95,
+     "unit": "Kc",
+     "low": 0.95,
+     "high": 0.95,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    },
+    "end": {
+     "value": 0.9,
+     "unit": "Kc",
+     "low": 0.9,
+     "high": 0.9,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    }
+   },
+   "kc_individual_cutting_periods": {
+    "ini": {
+     "value": 0.4,
+     "unit": "Kc",
+     "low": 0.4,
+     "high": 0.4,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    },
+    "mid": {
+     "value": 1.2,
+     "unit": "Kc",
+     "low": 1.2,
+     "high": 1.2,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    },
+    "end": {
+     "value": 1.15,
+     "unit": "Kc",
+     "low": 1.15,
+     "high": 1.15,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    },
+    "note": "Reference only; engine uses averaged cutting effects over the season."
+   },
+   "stage_lengths_days": {
+    "ini": 62,
+    "dev": 28,
+    "mid": 245,
+    "late": 30,
+    "verified": false,
+    "source": "assumed (U): read off the spec B1 CAF0 calendar (dormant Dec-Jan, growth Feb, cuts Mar-Oct, slow Nov), starting 1 Dec; not FAO-56 Table 11",
+    "url": "planner-spec.md#b4-scoring-model"
+   },
+   "cover_by_stage": {
+    "ini": 0.6,
+    "dev": 0.8,
+    "mid": 0.85,
+    "late": 0.8,
+    "method": "assumed",
+    "verified": false,
+    "note": "U. Established stand; dormant crowns+stubble assumed >= 0.5 cover; mid is a cutting-cycle average."
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "soil_builder": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "lasting_residue": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_fixation": {
+     "value": 4,
+     "unit": "rating_0_4",
+     "low": 3,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_scavenging": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "compaction_reduction": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "forage_harvest_value": {
+     "value": 4,
+     "unit": "rating_0_4",
+     "low": 4,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Spec B4.2: alfalfa rating 4 (stated by spec; not cited)"
+    },
+    "weed_suppression": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_flood": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_drought": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    }
+   },
+   "root_depth_class": {
+    "value": 2,
+    "unit": "class_0_2",
+    "low": 1,
+    "high": 2,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "0 shallow, 1 medium, 2 deep; team placeholder (U)"
+   },
+   "yield_range": {
+    "value": 17500,
+    "unit": "kg DM/ha/yr",
+    "low": 15000,
+    "high": 20000,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Spec B4.2: alfalfa 15-20 t DM/ha SJV (U: cite UC/NASS county yields)"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "well drained",
+     "moderately well drained",
+     "somewhat excessively drained"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": "U"
+   },
+   "seeding_window": {
+    "start": "09-15",
+    "end": "10-31",
+    "best": "mid-Sept to Oct (central SJV)",
+    "verified": true,
+    "source": "uc_alfalfa",
+    "url": "https://alfalfa.ucdavis.edu/IrrigatedAlfalfa"
+   },
+   "pest_notes": [
+    "alfalfa weevil (U)"
+   ],
+   "cautions": [],
+   "seed_cost_per_ha": {
+    "value": 300,
+    "unit": "USD/ha",
+    "low": 200,
+    "high": 450,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": true,
+   "explainer_card": "nitrogen_fixing",
+   "sources": [
+    {
+     "id": "fao56_table12",
+     "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    {
+     "id": "uc_alfalfa",
+     "title": "UC Alfalfa & Forage, irrigated alfalfa (SJV planting window, cutting schedule)",
+     "url": "https://alfalfa.ucdavis.edu/IrrigatedAlfalfa",
+     "accessed": "2026-11-14",
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "silage_corn",
+   "name": "Corn for silage",
+   "family": "Poaceae",
+   "role": [
+    "forage"
+   ],
+   "legume": false,
+   "perennial": false,
+   "root": "fibrous, medium",
+   "market_class": "feed",
+   "kc": {
+    "ini": {
+     "value": 0.3,
+     "unit": "Kc",
+     "low": 0.2,
+     "high": 0.4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "U: spec B4.1 says maize ini is U. Placeholder.",
+     "to_cite": "FAO-56 Table 12 maize entry"
+    },
+    "mid": {
+     "value": 1.2,
+     "unit": "Kc",
+     "low": 1.2,
+     "high": 1.2,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Spec B4.1 quote: Maize field (grain) mid 1.20"
+    },
+    "end": {
+     "value": 1.0,
+     "unit": "Kc",
+     "low": 0.85,
+     "high": 1.05,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "U (spec B4.1): silage harvested before end stage, Kc ~1.0 at harvest. Grain maize end 0.60-0.35 (V) does not apply."
+    }
+   },
+   "stage_lengths_days": {
+    "ini": 20,
+    "dev": 35,
+    "mid": 40,
+    "late": 15,
+    "verified": false,
+    "source": "assumed (U): 110-day May-Aug SJV silage corn placeholder",
+    "url": "planner-spec.md#b4-scoring-model"
+   },
+   "cover_by_stage": {
+    "ini": 0.1,
+    "dev": 0.6,
+    "mid": 1.0,
+    "late": 0.9,
+    "method": "assumed",
+    "verified": false,
+    "note": "Modelled canopy cover fraction by stage; team placeholder (U)."
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "soil_builder": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "lasting_residue": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_fixation": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_scavenging": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "compaction_reduction": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "forage_harvest_value": {
+     "value": 4,
+     "unit": "rating_0_4",
+     "low": 4,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Spec B4.2: silage corn rating 4 (stated by spec; not cited)"
+    },
+    "weed_suppression": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_flood": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_drought": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    }
+   },
+   "root_depth_class": {
+    "value": 1,
+    "unit": "class_0_2",
+    "low": 0,
+    "high": 2,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "0 shallow, 1 medium, 2 deep; team placeholder (U)"
+   },
+   "yield_range": {
+    "value": 25000,
+    "unit": "kg DM/ha",
+    "low": 20000,
+    "high": 30000,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Spec B4.2: silage corn 20-30 t DM/ha (U: cite UC/NASS county yields)"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "well drained",
+     "moderately well drained",
+     "somewhat poorly drained"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": "U"
+   },
+   "seeding_window": {
+    "start": "04-15",
+    "end": "06-15",
+    "best": "May (U)",
+    "verified": false,
+    "source": "assumed",
+    "url": "planner-spec.md#b4-scoring-model"
+   },
+   "pest_notes": [],
+   "cautions": [],
+   "seed_cost_per_ha": {
+    "value": 250,
+    "unit": "USD/ha",
+    "low": 180,
+    "high": 350,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": false,
+   "explainer_card": null,
+   "sources": [
+    {
+     "id": "fao56_table12",
+     "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "winter_wheat",
+   "name": "Winter wheat (grain)",
+   "family": "Poaceae",
+   "role": [
+    "cash"
+   ],
+   "legume": false,
+   "perennial": false,
+   "root": "fibrous, medium",
+   "market_class": "sell",
+   "kc": {
+    "ini": {
+     "value": 0.7,
+     "unit": "Kc",
+     "low": 0.7,
+     "high": 0.7,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Spec B4.1 quote: Winter wheat non-frozen soils 0.7 / 1.15 / 0.25-0.4"
+    },
+    "mid": {
+     "value": 1.15,
+     "unit": "Kc",
+     "low": 1.15,
+     "high": 1.15,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    },
+    "end": {
+     "value": 0.325,
+     "unit": "Kc",
+     "low": 0.25,
+     "high": 0.4,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Range quoted; value = midpoint"
+    }
+   },
+   "stage_lengths_days": {
+    "ini": 20,
+    "dev": 60,
+    "mid": 70,
+    "late": 30,
+    "verified": true,
+    "source": "fao56_table11 Winter wheat December California (V)",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+   },
+   "cover_by_stage": {
+    "ini": 0.1,
+    "dev": 0.6,
+    "mid": 1.0,
+    "late": 0.7,
+    "method": "assumed",
+    "verified": false,
+    "note": "Modelled canopy cover fraction by stage; team placeholder (U)."
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "soil_builder": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "lasting_residue": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_fixation": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_scavenging": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "compaction_reduction": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "forage_harvest_value": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "weed_suppression": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_flood": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_drought": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    }
+   },
+   "root_depth_class": {
+    "value": 1,
+    "unit": "class_0_2",
+    "low": 0,
+    "high": 2,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "0 shallow, 1 medium, 2 deep; team placeholder (U)"
+   },
+   "yield_range": {
+    "value": 6500,
+    "unit": "kg/ha",
+    "low": 5000,
+    "high": 8000,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Grain yield placeholder (U)"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "well drained",
+     "moderately well drained",
+     "somewhat poorly drained",
+     "poorly drained"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": "U"
+   },
+   "seeding_window": {
+    "start": "11-01",
+    "end": "12-31",
+    "best": "December (FAO-56 Table 11 Calif.)",
+    "verified": true,
+    "source": "fao56_table11",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+   },
+   "pest_notes": [],
+   "cautions": [],
+   "seed_cost_per_ha": {
+    "value": 80,
+    "unit": "USD/ha",
+    "low": 50,
+    "high": 120,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": true,
+   "explainer_card": null,
+   "sources": [
+    {
+     "id": "fao56_table12",
+     "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    {
+     "id": "fao56_table11",
+     "title": "FAO-56 Chapter 6, Table 11 (lengths of crop development stages)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "small_grain_silage",
+   "name": "Winter small-grain silage (triticale/wheat)",
+   "family": "Poaceae",
+   "role": [
+    "forage"
+   ],
+   "legume": false,
+   "perennial": false,
+   "root": "fibrous, medium",
+   "market_class": "feed",
+   "kc": {
+    "ini": {
+     "value": 0.7,
+     "unit": "Kc",
+     "low": 0.6,
+     "high": 0.8,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Spec B4.1: winter triticale -> winter wheat values (assumed +/-0.1)"
+    },
+    "mid": {
+     "value": 1.15,
+     "unit": "Kc",
+     "low": 1.05,
+     "high": 1.25,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Spec B4.1: winter wheat values (assumed +/-0.1)"
+    },
+    "end": {
+     "value": 0.325,
+     "unit": "Kc",
+     "low": 0.15,
+     "high": 0.5,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Wheat end 0.25-0.40 widened +/-0.1 (assumed). Silage is cut before maturity, so the true Kc at harvest is likely higher (doubt)."
+    }
+   },
+   "stage_lengths_days": {
+    "ini": 20,
+    "dev": 60,
+    "mid": 70,
+    "late": 30,
+    "verified": false,
+    "source": "assumed (U): borrowed from FAO-56 winter wheat December California and scaled to a late-Oct planting / April silage cut",
+    "url": "planner-spec.md#b4-scoring-model"
+   },
+   "cover_by_stage": {
+    "ini": 0.1,
+    "dev": 0.6,
+    "mid": 1.0,
+    "late": 0.8,
+    "method": "assumed",
+    "verified": false,
+    "note": "Modelled canopy cover fraction by stage; team placeholder (U)."
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "soil_builder": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "lasting_residue": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_fixation": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_scavenging": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "compaction_reduction": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "forage_harvest_value": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "weed_suppression": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_flood": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_drought": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    }
+   },
+   "root_depth_class": {
+    "value": 1,
+    "unit": "class_0_2",
+    "low": 0,
+    "high": 2,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "0 shallow, 1 medium, 2 deep; team placeholder (U)"
+   },
+   "yield_range": {
+    "value": 11000,
+    "unit": "kg DM/ha",
+    "low": 8000,
+    "high": 14000,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder (U)"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "well drained",
+     "moderately well drained",
+     "somewhat poorly drained",
+     "poorly drained"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": "U"
+   },
+   "seeding_window": {
+    "start": "10-01",
+    "end": "11-30",
+    "best": "Oct-Nov (U)",
+    "verified": false,
+    "source": "assumed",
+    "url": "planner-spec.md#b4-scoring-model"
+   },
+   "pest_notes": [],
+   "cautions": [],
+   "seed_cost_per_ha": {
+    "value": 80,
+    "unit": "USD/ha",
+    "low": 50,
+    "high": 120,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": true,
+   "explainer_card": null,
+   "sources": [
+    {
+     "id": "fao56_table12",
+     "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "sorghum_sudan",
+   "name": "Sorghum-sudangrass (summer forage, multi-cut)",
+   "family": "Poaceae",
+   "role": [
+    "forage"
+   ],
+   "legume": false,
+   "perennial": false,
+   "root": "fibrous, deep-ish",
+   "market_class": "feed",
+   "kc": {
+    "ini": {
+     "value": 0.5,
+     "unit": "Kc",
+     "low": 0.5,
+     "high": 0.5,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Spec B4.1 quote: Sudan grass hay averaged 0.50 / 0.90 / 0.85"
+    },
+    "mid": {
+     "value": 0.9,
+     "unit": "Kc",
+     "low": 0.9,
+     "high": 0.9,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    },
+    "end": {
+     "value": 0.85,
+     "unit": "Kc",
+     "low": 0.85,
+     "high": 0.85,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    }
+   },
+   "stage_lengths_days": {
+    "ini": 25,
+    "dev": 25,
+    "mid": 15,
+    "late": 10,
+    "verified": true,
+    "source": "fao56_table11 Sudan first cutting cycle 25/25/15/10 (V); later cycles (mid stretched to the terminate date) are U",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+   },
+   "cover_by_stage": {
+    "ini": 0.1,
+    "dev": 0.6,
+    "mid": 0.9,
+    "late": 0.8,
+    "method": "assumed",
+    "verified": false,
+    "note": "Modelled canopy cover fraction by stage; team placeholder (U)."
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "soil_builder": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "lasting_residue": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_fixation": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_scavenging": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "compaction_reduction": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "forage_harvest_value": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "weed_suppression": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_flood": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_drought": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    }
+   },
+   "root_depth_class": {
+    "value": 1,
+    "unit": "class_0_2",
+    "low": 0,
+    "high": 2,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "0 shallow, 1 medium, 2 deep; team placeholder (U)"
+   },
+   "yield_range": {
+    "value": 14000,
+    "unit": "kg DM/ha",
+    "low": 10000,
+    "high": 18000,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder (U)"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "well drained",
+     "moderately well drained",
+     "somewhat poorly drained"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": "U"
+   },
+   "seeding_window": {
+    "start": "04-15",
+    "end": "06-30",
+    "best": "May (U)",
+    "verified": false,
+    "source": "assumed",
+    "url": "planner-spec.md#b4-scoring-model"
+   },
+   "pest_notes": [],
+   "cautions": [
+    "prussic acid/nitrate in young regrowth (U)"
+   ],
+   "seed_cost_per_ha": {
+    "value": 60,
+    "unit": "USD/ha",
+    "low": 40,
+    "high": 100,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": true,
+   "explainer_card": "drought_tolerant",
+   "sources": [
+    {
+     "id": "fao56_table12",
+     "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    {
+     "id": "fao56_table11",
+     "title": "FAO-56 Chapter 6, Table 11 (lengths of crop development stages)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "safflower",
+   "name": "Safflower",
+   "family": "Asteraceae",
+   "role": [
+    "cash"
+   ],
+   "legume": false,
+   "perennial": false,
+   "root": "deep taproot",
+   "market_class": "sell",
+   "kc": {
+    "ini": {
+     "value": 0.35,
+     "unit": "Kc",
+     "low": 0.25,
+     "high": 0.45,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "U: spec B4.1 says safflower ini is U",
+     "to_cite": "FAO-56 Table 12 safflower entry"
+    },
+    "mid": {
+     "value": 1.075,
+     "unit": "Kc",
+     "low": 1.0,
+     "high": 1.15,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Spec B4.1 quote: Safflower mid 1.0-1.15, end 0.25; value = midpoint"
+    },
+    "end": {
+     "value": 0.25,
+     "unit": "Kc",
+     "low": 0.25,
+     "high": 0.25,
+     "method": "lookup",
+     "source": {
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": ""
+    }
+   },
+   "stage_lengths_days": {
+    "ini": 20,
+    "dev": 35,
+    "mid": 45,
+    "late": 25,
+    "verified": true,
+    "source": "fao56_table11 Safflower April California (V)",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+   },
+   "cover_by_stage": {
+    "ini": 0.1,
+    "dev": 0.5,
+    "mid": 0.9,
+    "late": 0.6,
+    "method": "assumed",
+    "verified": false,
+    "note": "Modelled canopy cover fraction by stage; team placeholder (U)."
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "soil_builder": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "lasting_residue": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_fixation": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_scavenging": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "compaction_reduction": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "forage_harvest_value": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "weed_suppression": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_flood": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_drought": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    }
+   },
+   "root_depth_class": {
+    "value": 2,
+    "unit": "class_0_2",
+    "low": 1,
+    "high": 2,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "0 shallow, 1 medium, 2 deep; team placeholder (U)"
+   },
+   "yield_range": {
+    "value": 2800,
+    "unit": "kg/ha",
+    "low": 2000,
+    "high": 3500,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Seed yield placeholder (U)"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "well drained",
+     "moderately well drained",
+     "somewhat poorly drained"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": "U"
+   },
+   "seeding_window": {
+    "start": "03-15",
+    "end": "04-30",
+    "best": "April (FAO-56 Table 11 Calif.)",
+    "verified": true,
+    "source": "fao56_table11",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+   },
+   "pest_notes": [],
+   "cautions": [
+    "often grown on stored soil water with 0-1 irrigations (U)"
+   ],
+   "seed_cost_per_ha": {
+    "value": 40,
+    "unit": "USD/ha",
+    "low": 25,
+    "high": 70,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": true,
+   "explainer_card": "deep_rooting",
+   "sources": [
+    {
+     "id": "fao56_table12",
+     "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    {
+     "id": "fao56_table11",
+     "title": "FAO-56 Chapter 6, Table 11 (lengths of crop development stages)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "cereal_vetch_cover",
+   "name": "Winter cover: cereal + vetch mix",
+   "family": "Poaceae+Fabaceae",
+   "families": [
+    "Poaceae",
+    "Fabaceae"
+   ],
+   "role": [
+    "cover"
+   ],
+   "legume": true,
+   "perennial": false,
+   "root": "fibrous + taproot",
+   "market_class": "none",
+   "kc": {
+    "ini": {
+     "value": 0.4,
+     "unit": "Kc",
+     "low": 0.3,
+     "high": 0.7,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Spec B4.1: vetch cover -> clover hay values 0.40/0.90/0.85 (assumed). Range widened toward winter-wheat values for the cereal share (assumed)."
+    },
+    "mid": {
+     "value": 0.9,
+     "unit": "Kc",
+     "low": 0.8,
+     "high": 1.15,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "As above (assumed)"
+    },
+    "end": {
+     "value": 0.85,
+     "unit": "Kc",
+     "low": 0.75,
+     "high": 0.95,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "As above (assumed)"
+    }
+   },
+   "stage_lengths_days": {
+    "ini": 30,
+    "dev": 60,
+    "mid": 50,
+    "late": 10,
+    "verified": false,
+    "source": "assumed (U): winter-sown cover, mid stretched to termination",
+    "url": "planner-spec.md#b4-scoring-model"
+   },
+   "cover_by_stage": {
+    "ini": 0.1,
+    "dev": 0.5,
+    "mid": 0.9,
+    "late": 0.8,
+    "method": "assumed",
+    "verified": false,
+    "note": "Modelled canopy cover fraction by stage; team placeholder (U)."
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 4,
+     "unit": "rating_0_4",
+     "low": 3,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "soil_builder": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "lasting_residue": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_fixation": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "nitrogen_scavenging": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "compaction_reduction": {
+     "value": 2,
+     "unit": "rating_0_4",
+     "low": 1,
+     "high": 3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "forage_harvest_value": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "weed_suppression": {
+     "value": 3,
+     "unit": "rating_0_4",
+     "low": 2,
+     "high": 4,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_flood": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    },
+    "tolerance_drought": {
+     "value": 1,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 2,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
+     "to_cite": "https://covercrop-selector.org"
+    }
+   },
+   "root_depth_class": {
+    "value": 1,
+    "unit": "class_0_2",
+    "low": 0,
+    "high": 2,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "0 shallow, 1 medium, 2 deep; team placeholder (U)"
+   },
+   "yield_range": {
+    "value": null,
+    "unit": "kg DM/ha",
+    "low": null,
+    "high": null,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Not harvested; no yield"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "well drained",
+     "moderately well drained",
+     "somewhat poorly drained",
+     "poorly drained"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": "U"
+   },
+   "seeding_window": {
+    "start": "10-01",
+    "end": "11-30",
+    "best": "after rice straw chop (U)",
+    "verified": false,
+    "source": "assumed",
+    "url": "planner-spec.md#b4-scoring-model",
+    "note": "Species and seeding after rice are U (spec B1: UC trials exist, results not located)"
+   },
+   "pest_notes": [],
+   "cautions": [
+    "termination timing before rice field prep (U)"
+   ],
+   "seed_cost_per_ha": {
+    "value": 120,
+    "unit": "USD/ha",
+    "low": 70,
+    "high": 180,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": true,
+   "explainer_card": "cover_crop",
+   "sources": [
+    {
+     "id": "fao56_table12",
+     "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    {
+     "id": "covercrop_selector",
+     "title": "Western Cover Crop Council selector (ratings to be transcribed by hand; not yet done)",
+     "url": "https://covercrop-selector.org",
+     "accessed": "2026-11-14",
+     "verified": false
+    }
+   ]
+  },
+  {
+   "id": "fallow_bare",
+   "name": "Fallow / bare soil",
+   "family": "none",
+   "role": [
+    "fallow"
+   ],
+   "legume": false,
+   "perennial": false,
+   "root": "none",
+   "market_class": "none",
+   "kc": {
+    "ini": {
+     "value": 0.15,
+     "unit": "Kc",
+     "low": 0.1,
+     "high": 0.3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Spec B4.1: bare Kc 0.15 (U). Range is ours (U); wet winter bare soil likely evaporates more than 0.15 x ETo (doubt)."
+    },
+    "mid": {
+     "value": 0.15,
+     "unit": "Kc",
+     "low": 0.1,
+     "high": 0.3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Constant"
+    },
+    "end": {
+     "value": 0.15,
+     "unit": "Kc",
+     "low": 0.1,
+     "high": 0.3,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Constant"
+    }
+   },
+   "stage_lengths_days": null,
+   "cover_by_stage": {
+    "ini": 0.0,
+    "dev": 0.0,
+    "mid": 0.0,
+    "late": 0.0,
+    "method": "assumed",
+    "verified": false,
+    "note": "Bare"
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    },
+    "soil_builder": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    },
+    "lasting_residue": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    },
+    "nitrogen_fixation": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    },
+    "nitrogen_scavenging": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    },
+    "compaction_reduction": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    },
+    "forage_harvest_value": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    },
+    "weed_suppression": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    },
+    "tolerance_flood": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    },
+    "tolerance_drought": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Bare soil"
+    }
+   },
+   "root_depth_class": {
+    "value": 0,
+    "unit": "class_0_2",
+    "low": 0,
+    "high": 0,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Bare"
+   },
+   "yield_range": {
+    "value": null,
+    "unit": "kg/ha",
+    "low": null,
+    "high": null,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "No yield"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "any"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": ""
+   },
+   "seeding_window": null,
+   "pest_notes": [],
+   "cautions": [],
+   "seed_cost_per_ha": {
+    "value": 0,
+    "unit": "USD/ha",
+    "low": 0,
+    "high": 0,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": false,
+   "explainer_card": null,
+   "sources": []
+  },
+  {
+   "id": "open_water_flood",
+   "name": "Flooded field (winter flood / pre-seeding flood)",
+   "family": "none",
+   "role": [
+    "water"
+   ],
+   "legume": false,
+   "perennial": false,
+   "root": "none",
+   "market_class": "none",
+   "kc": {
+    "ini": {
+     "value": 1.05,
+     "unit": "Kc",
+     "low": 1.0,
+     "high": 1.1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "U. FAO-56 Table 12 has an open-water entry, but the spec does not quote it, so it is unverified here."
+    },
+    "mid": {
+     "value": 1.05,
+     "unit": "Kc",
+     "low": 1.0,
+     "high": 1.1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Constant"
+    },
+    "end": {
+     "value": 1.05,
+     "unit": "Kc",
+     "low": 1.0,
+     "high": 1.1,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Constant"
+    }
+   },
+   "stage_lengths_days": null,
+   "cover_by_stage": {
+    "ini": 0.0,
+    "dev": 0.0,
+    "mid": 0.0,
+    "late": 0.0,
+    "method": "assumed",
+    "verified": false,
+    "note": "Water surface: not cover, not bare (spec B5.1/B5.4)"
+   },
+   "ratings_0_4": {
+    "erosion_reduction": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    },
+    "soil_builder": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    },
+    "lasting_residue": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    },
+    "nitrogen_fixation": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    },
+    "nitrogen_scavenging": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    },
+    "compaction_reduction": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    },
+    "forage_harvest_value": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    },
+    "weed_suppression": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    },
+    "tolerance_flood": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    },
+    "tolerance_drought": {
+     "value": 0,
+     "unit": "rating_0_4",
+     "low": 0,
+     "high": 0,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Not a crop"
+    }
+   },
+   "root_depth_class": {
+    "value": 0,
+    "unit": "class_0_2",
+    "low": 0,
+    "high": 0,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Not a crop"
+   },
+   "yield_range": {
+    "value": null,
+    "unit": "kg/ha",
+    "low": null,
+    "high": null,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "No yield"
+   },
+   "drainage_classes_ok": {
+    "value": [
+     "any"
+    ],
+    "method": "assumed",
+    "verified": false,
+    "note": ""
+   },
+   "seeding_window": null,
+   "pest_notes": [],
+   "cautions": [
+    "flood fill depth and seepage water are not modelled (U); habitat value not scored"
+   ],
+   "seed_cost_per_ha": {
+    "value": 0,
+    "unit": "USD/ha",
+    "low": 0,
+    "high": 0,
+    "method": "assumed",
+    "source": {
+     "id": "assumed",
+     "title": "Team assumption marked U in planner-spec; not from a cited source",
+     "url": "planner-spec.md#b4-scoring-model",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "Placeholder order of magnitude only; no cited source. Needed for B4.10 income.",
+    "to_cite": "UC ANR cost-and-return studies (https://coststudies.ucdavis.edu/)"
+   },
+   "needs_drill": false,
+   "explainer_card": null,
+   "sources": []
+  }
+ ]
+}

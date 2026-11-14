@@ -4,14 +4,14 @@ WINDOWS = {
         preset="car_colusa_rice", start="2022-02-01", end="2022-11-30", hl="en-US", gl="US", ceid="US:en",
         q='(Colusa OR Glenn OR "Sacramento Valley" OR "Glenn-Colusa") AND rice AND (drought OR fallow* OR allocation OR "Central Valley Project")',
         gdelt='(Colusa OR Glenn OR "Sacramento Valley") rice (drought OR fallowing OR fallow OR allocation OR "Central Valley Project")',
-        place=["colusa", "glenn", "sacramento valley", "glenn-colusa"], dataset="smap_l3"),
+        place=["colusa", "glenn", "sacramento valley", "glenn-colusa", "california rice", "sacramento river", "butte county", "sutter"], dataset="smap_l3"),
     "car_2023_wet": dict(
         preset="car_colusa_rice", start="2022-12-20", end="2023-11-15", hl="en-US", gl="US", ceid="US:en",
         q='("Sacramento Valley" OR Colusa OR Glenn) AND (rice OR farm*) AND ("atmospheric river" OR flood* OR "late planting")',
         gdelt='("Sacramento Valley" OR Colusa OR Glenn) (rice OR farm OR farmers) ("atmospheric river" OR flood OR flooding OR "late planting")',
         # used ONLY because the exact spec query returns 0 Google News items; documented in README
         q_fallback='("Sacramento Valley" OR Colusa OR Glenn) AND rice AND (flood* OR "atmospheric river" OR "late planting" OR harvest OR planting)',
-        place=["colusa", "glenn", "sacramento valley"], dataset="imerg_daily"),
+        place=["colusa", "glenn", "sacramento valley", "california rice", "sacramento river", "butte county", "sutter"], dataset="imerg_daily"),
     "caf_2023_flood": dict(
         preset="caf_tulare_forage", start="2023-03-01", end="2023-08-31", hl="en-US", gl="US", ceid="US:en",
         q='("Tulare Lake" OR Kings County OR Corcoran OR Tulare) AND (flood* OR "atmospheric river") AND (dairy OR farm* OR alfalfa OR crop*)',

@@ -1,0 +1,152 @@
+[
+  {
+    "query_id": "car_2022_drought",
+    "marker_date": "2022-05-23",
+    "note": "proposed; date = earliest chosen headline's publisher date, not necessarily the event date; signal/lead_days not computed",
+    "headlines": [
+      {
+        "date": "2022-05-23",
+        "title": "‘Everyone loses’: Sacramento Valley struggles to survive unprecedented water cuts",
+        "source": "CalMatters",
+        "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQSExjbEpKM2FEejlZQXROcVdOSlNvQTRtQXBXRGNsakJoUnZSMHJ3YlBOQ3NNNXhsTmI4Y054RnpPSUpiVkVsT09VTFhnZDIxMk9IQnhzWFJkeWdzYnJPZjJTcjJnb2FfLTFpZEZtbk5SaGFjWmxGLVpyc2xsNjFjSg?oc=5"
+      },
+      {
+        "date": "2022-10-03",
+        "title": "A Rough Year for Rice in California - NASA Science",
+        "source": "science.nasa.gov",
+        "url": "https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/"
+      },
+      {
+        "date": "2022-09-02",
+        "title": "Drought putting a dent in California rice crop",
+        "source": "abc10.com",
+        "url": "https://www.abc10.com/article/weather/california-drought/drought-hurting-california-rice-yield/103-d1bdaa04-11d9-40e6-ab6e-f92e8ba55259"
+      }
+    ]
+  },
+  {
+    "query_id": "car_2023_wet",
+    "marker_date": "2022-12-28",
+    "note": "proposed; date = earliest chosen headline's publisher date, not necessarily the event date; signal/lead_days not computed",
+    "headlines": [
+      {
+        "date": "2023-03-09",
+        "title": "Warm California storm could bring flooding to areas along Sacramento River, Interstate 5",
+        "source": "Record Searchlight",
+        "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQUG5fRDFzdG9sM09TSUdkazNrZW9QYWlhak5YcGRSaFpKcVlUX1BWd3hzbmFoSldCamtDRDAzN0JWNzlyekc4WUdlY3RfRmFZclBlVVA5Wkk3Q1lYZlZyZ0IyTDBuZzdiM09URnowd21aVkYzR0tKcVVzdlgxZVBaY1VnM3paYS1qZ0hpTFBkYzNoTFRzSGlkYjR3dXVrMllCQlR2Nnd5dF9JOE5jbVY2WW1DTUtOQU15QU5BUnJhOGNXUQ?oc=5"
+      },
+      {
+        "date": "2023-01-04",
+        "title": "Road officials prepping for storm in Butte County",
+        "source": "KRCR",
+        "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOWTVHQnNWY0kyQVdzc2ZhRWtDVXJ2UXdHNkVPZHVLb0lXRVVJU19tWWprVHJtT3I0cl92UFkyNk45ekRxLVY4ZGVtcmlJUmFTZHUxNWd1eFk2aUFYNE0tTS1JTXBiM254SndCbldtYUZIYUstalFmS1dGU0o4SDZvZ0ppOU1Vdw?oc=5"
+      },
+      {
+        "date": "2022-12-28",
+        "title": "Q&A: Tim Johnson, California Rice Commission",
+        "source": "Capitol Weekly",
+        "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE8zNnM2Vjc1RDdBWEVTajRnQ1A2dHVfMEtWY19xT1ZpMDZsa2E3TDJlSzcxU1hFVzVyWTNxVllvWFFKUnpOWjh6VjFyREZWRXlCY1RxS0w1NnF1RU5KRmRSSS1pb2dUUnhsLUJCaEhuTF9vWjJaMEYw?oc=5"
+      }
+    ]
+  },
+  {
+    "query_id": "caf_2023_flood",
+    "marker_date": "2023-03-22",
+    "note": "proposed; date = earliest chosen headline's publisher date, not necessarily the event date; signal/lead_days not computed",
+    "headlines": [
+      {
+        "date": "2023-03-22",
+        "title": "Tulare Lake being used for flood control as rains continue",
+        "source": "Farm Progress",
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNZkNPVURYQ1Q0ODBjaWtJT2w1cHNBQ2h0MG91VHFWaUx2UExnTVNiTFB3VHVOR2xXVjhhbWx5a2dubnZGV081a3BVOTNDNHU1WFFPNnFudV9jMEgzclFhbUFwOERzZzBXMHpBRzBHZ01nd3l5MzBEaEtwQm5DM1RDMEE0UWdlQXhTQzhNWTExQTAzTzRuNE84cHpxbkFPcEV3?oc=5"
+      },
+      {
+        "date": "2023-04-24",
+        "title": "The Mad Dash to Save Dairy Cattle as Tulare Basin Flooded",
+        "source": "Public Policy Institute of California",
+        "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQcmk0anItc0VRc1VuX0dyMDFicGF4cWFUUzJicnhiSGExa1NYZEdOcXk4MUR2NHB5LXFGVk5KZWRjVHVLeXRVUHljRk1Rd0wxUUpoa0ROcThqV3c5aXlfYXVxUF9GcXVJczdrdW9iQTVtVXhjd2FiV2hCRnpaM19VSmh6SVZXLVc5V215MQ?oc=5"
+      },
+      {
+        "date": "2023-06-07",
+        "title": "California revived Tulare Lake may be at peak size . Here how big",
+        "source": "sfchronicle.com",
+        "url": "https://www.sfchronicle.com/california/article/tulare-lake-peak-18128743.php"
+      }
+    ]
+  },
+  {
+    "query_id": "caf_2024_sgma",
+    "marker_date": "2024-04-15",
+    "note": "proposed; date = earliest chosen headline's publisher date, not necessarily the event date; signal/lead_days not computed",
+    "headlines": [
+      {
+        "date": "2024-04-15",
+        "title": "State Water Board Takes Action to Protect Groundwater in Kings and Tulare Counties",
+        "source": "water.waterboards.ca.gov",
+        "url": "https://water.waterboards.ca.gov/press_room/press_releases/2024/pr20240415-tulare-lake-probationary-hearing.html"
+      },
+      {
+        "date": "2024-04-16",
+        "title": "California acts to halt Kings County’s groundwater overpumping",
+        "source": "CalMatters",
+        "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOVklBTWd3b3doUldpd0hVczFJaEdJbkhLV2pCNWN2dU42V2RlV0JlYzVMbHF5aGUzOVhSdkhLaW5NdkVIbmFmWkdmQkRmSW5WdW1CLUhxblpldVlYazZUN0tEd2o2U0xNdGZpdi12QkVzeGNoSFY5Z29lbXYzQWFQYk5TMDVkanJjbU92NjV5a2ItVlVOSmR6Q1dPVTM?oc=5"
+      },
+      {
+        "date": "2024-04-16",
+        "title": "California places Tulare Lake Subbasin on probation — one year after historic flooding in the region",
+        "source": "KVPR",
+        "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxPcjBlWU5fY2tCLUNjcnBJYmFoQlF3bXh3ZHduVDVzelB0SnViRV9PUjBmVi1IWnJxRG5xZFQtbHBSMzVac2FFTmZrRU5teFVabk9Udk04MUxxTVYxV2tlbW5SOEt2YlFlOEtSU216eUJWM2t3UkplOEgtd21GUUpKOTM3LXdaRG5mYTZXSldHaFExMk52X3dnc0w5MjZrd0RvQm9xV2Zja3FQbk1KUEJqMkhPUDRFVmlKeGdBbWI4ZjFWQUppZm1hOER5dF92c2ZyRFk5QkVNZGc?oc=5"
+      }
+    ]
+  },
+  {
+    "query_id": "bc_salmon_2023",
+    "marker_date": "2023-08-16",
+    "note": "proposed; date = earliest chosen headline's publisher date, not necessarily the event date; signal/lead_days not computed",
+    "headlines": [
+      {
+        "date": "2023-08-16",
+        "title": "Targeted actions protect chinook runs in Thompson Okanagan",
+        "source": "news.gov.bc.ca",
+        "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305"
+      },
+      {
+        "date": "2023-08-17",
+        "title": "Salmon River , Bessette Creek protection orders issued to save water for salmon - Vernon News",
+        "source": "castanet.net",
+        "url": "https://www.castanet.net/news/Vernon/442121/Salmon-River-Bessette-Creek-protection-orders-issued-to-save-water-for-salmon"
+      },
+      {
+        "date": "2023-09-13",
+        "title": "Foregoing a salmon return not an option , minister says of Westwold water dispute - Vernon News",
+        "source": "castanet.net",
+        "url": "https://www.castanet.net/news/Vernon/446557/Foregoing-a-salmon-return-not-an-option-minister-says-of-Westwold-water-dispute"
+      }
+    ]
+  },
+  {
+    "query_id": "bc_sumas_2021",
+    "marker_date": "2021-11-17",
+    "note": "proposed; date = earliest chosen headline's publisher date, not necessarily the event date; signal/lead_days not computed",
+    "headlines": [
+      {
+        "date": "2021-11-17",
+        "title": "Catastrophic flooding hits Fraser Valley",
+        "source": "countrylifeinbc.com",
+        "url": "https://www.countrylifeinbc.com/catastrophic-flooding-hits-fraser-valley/"
+      },
+      {
+        "date": "2021-11-18",
+        "title": "VIDEO (1:15 min): Farmers use boats, jet skis to rescue hundreds of cows trapped in Abbotsford, B.C. flood",
+        "source": "FarmersForum.com",
+        "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOY2NQbTVFNU5IZTVYck9xNnRPSzlseW9Ga0lwN2lSUXd3Y0pBQ0ZQLTQ5MlJkYW1iRml1S21CUlM3MjBPZ3UzMGstWFlKUmptd3lUN2FCcTlHaGh1cjZaa2laLVdEN0t0SEh0aHFkZ2lTMmd3SThTeExvbl95TnF4cmE0dFRFbWI3MlJpcUxNMUdDWUpKdDZEZUM3TWRTb3RqWW0wb3Jmd1VCajFxTnpZZDB3dEU3M3VtWHJTdkliVldTcFE?oc=5"
+      },
+      {
+        "date": "2021-11-19",
+        "title": "With 40,000 chickens dead, Sumas Prairie farmer braces for a difficult rebuild",
+        "source": "CBC",
+        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQeFpiU2xMV0d6TEs1RDczMXhEYjI2VWR1MXh2REJQVUV1X1k2azBFOVZPSDdkekVnbFM1MnNQdlA1dDBFZGNWVktGeUlualZVVV94WnpnbTBmTkhUY194WEVFbTR0RkRKTnZhSVBNM3NTZEQ0X1gyWUU3Qm05bUp3ZktRSWNUNWFfaGJKQXln?oc=5"
+      }
+    ]
+  }
+]

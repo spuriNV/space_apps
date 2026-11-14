@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { DEFAULT_WEIGHTS, MM_PER_AF_AC, PRIORITIES, getLocation, haToAc, scoreStrategies } from './api';
+import type maplibregl from 'maplibre-gl';
 import MapView from './MapView';
 import type { MeasureKey } from './measures';
 import type { CellProps, PriorityKey, Weights } from './types';

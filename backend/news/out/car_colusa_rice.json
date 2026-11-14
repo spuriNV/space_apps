@@ -52,5 +52,185 @@
     },
     "_via": "google_news",
     "_publisher_url": "https://calmatters.org"
+  },
+  {
+    "date": "2022-08-12",
+    "title": "Drought Takes Toll on Northern California Rice Fields",
+    "source": "NBC Bay Area",
+    "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQYXEwejhTNkV5RWRELVdpN3RGSmRpVGpqaHl2ZEpNNUZxTGxGUGtraUJYblJuZFIxLVNmWThlUlpOX0pZUkJ3NGYyV09rWUxiNlQtN0psREhITU8yQ0xXZmRnRlVJNzFNNFhuTU55SnllX2oyRWt6b2RjdjdLNWl1aEJ5bUxrWUJxZDRrMUdKTVk0VlZxdElrV05NOGdYYmN2R1JZYVptNEFhcTlpdU8xN9IBuAFBVV95cUxOczB0aDhSRGotdzJyYjd1bjVZM3BnLXdkdHBzcEtZTzU4aDJSWVNFWE5JbFVoVjBGTDBSQlpQa1hCMDRtNXVOTmNnSmFZREMtOFRrdVhMaEFFWDZyMGNJUUpLbmhsREt1c0tkMlFmb29nOWxuVGJVcVl5cENqRTcybDBXR3hOWWpWMjBCYnB3NVVtVi02TmFELXI4cUZCYW9qTWs1YTFvRHg2aklDb3cxamFIelBoU2dL?oc=5",
+    "rank": 3,
+    "place_match": [
+      "California Rice"
+    ],
+    "query_id": "car_2022_drought",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "google_news",
+    "_publisher_url": "https://www.nbcbayarea.com"
+  },
+  {
+    "date": "2022-09-02",
+    "title": "Drought putting a dent in California rice crop",
+    "source": "abc10.com",
+    "url": "https://www.abc10.com/article/weather/california-drought/drought-hurting-california-rice-yield/103-d1bdaa04-11d9-40e6-ab6e-f92e8ba55259",
+    "rank": 3,
+    "place_match": [
+      "California Rice"
+    ],
+    "query_id": "car_2022_drought",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.abc10.com/article/weather/california-drought/drought-hurting-california-rice-yield/103-d1bdaa04-11d9-40e6-ab6e-f92e8ba55259"
+  },
+  {
+    "date": "2022-09-08",
+    "title": "Effects of drought , freeze on the minds of Colusa Co . farmers",
+    "source": "appeal-democrat.com",
+    "url": "https://www.appeal-democrat.com/news/effects-of-drought-freeze-on-the-minds-of-colusa-co-farmers/article_776f3414-2f17-11ed-ac63-63846bdce8d3.html",
+    "rank": 3,
+    "place_match": [
+      "Colusa"
+    ],
+    "query_id": "car_2022_drought",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.appeal-democrat.com/news/effects-of-drought-freeze-on-the-minds-of-colusa-co-farmers/article_776f3414-2f17-11ed-ac63-63846bdce8d3.html"
+  },
+  {
+    "date": "2022-09-11",
+    "title": "Report : More than Half of California Rice Fields Left Barren in Drought",
+    "source": "breitbart.com",
+    "url": "https://www.breitbart.com:443/economy/2022/09/11/report-more-than-half-of-california-rice-fields-left-barren-in-drought/",
+    "rank": 3,
+    "place_match": [
+      "California Rice"
+    ],
+    "query_id": "car_2022_drought",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.breitbart.com:443/economy/2022/09/11/report-more-than-half-of-california-rice-fields-left-barren-in-drought/"
+  },
+  {
+    "date": "2022-09-11",
+    "title": "Satellite Image Reveals Agriculture Wasteland Across California Rice Capital",
+    "source": "zerohedge.com",
+    "url": "https://www.zerohedge.com/weather/satellite-image-reveals-agriculture-wasteland-across-californias-rice-capital",
+    "rank": 3,
+    "place_match": [
+      "California Rice"
+    ],
+    "query_id": "car_2022_drought",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.zerohedge.com/weather/satellite-image-reveals-agriculture-wasteland-across-californias-rice-capital"
+  },
+  {
+    "date": "2022-09-14",
+    "title": "Serious drought damage to $5 billion California rice industry",
+    "source": "ktvu.com",
+    "url": "https://www.ktvu.com/news/serious-drought-damage-to-5-billion-california-rice-industry",
+    "rank": 3,
+    "place_match": [
+      "California Rice"
+    ],
+    "query_id": "car_2022_drought",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.ktvu.com/news/serious-drought-damage-to-5-billion-california-rice-industry"
+  },
+  {
+    "date": "2022-12-20",
+    "title": "Amid climate change, a question: What’s the future of California rice?",
+    "source": "Capitol Weekly",
+    "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOdWtVLUh4LU9FMlMzNlJrU2cyNjFlLXY3dWxNcmViMTlfVElVc0JZM2tweVFFUV84TWVaNkhMVVRSRnNLb2YyUExfaDdUS0pzZUdJRXZFWjBEM0JSSnB6VUxCTWNCNzZqbjlySXB5LWlrOFBWYXlWcWxTcmtsRWtwVE1tVVExN09hMERXNVZ1emxzZ3NrSjVKWQ?oc=5",
+    "rank": 3,
+    "place_match": [
+      "California Rice"
+    ],
+    "query_id": "car_2023_wet",
+    "signal": {
+      "dataset": "imerg_daily",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "google_news_fallback",
+    "_publisher_url": "https://capitolweekly.net"
+  },
+  {
+    "date": "2022-12-28",
+    "title": "Q&A: Tim Johnson, California Rice Commission",
+    "source": "Capitol Weekly",
+    "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE8zNnM2Vjc1RDdBWEVTajRnQ1A2dHVfMEtWY19xT1ZpMDZsa2E3TDJlSzcxU1hFVzVyWTNxVllvWFFKUnpOWjh6VjFyREZWRXlCY1RxS0w1NnF1RU5KRmRSSS1pb2dUUnhsLUJCaEhuTF9vWjJaMEYw?oc=5",
+    "rank": 3,
+    "place_match": [
+      "California Rice"
+    ],
+    "query_id": "car_2023_wet",
+    "signal": {
+      "dataset": "imerg_daily",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "google_news_fallback",
+    "_publisher_url": "https://capitolweekly.net"
+  },
+  {
+    "date": "2023-01-04",
+    "title": "Road officials prepping for storm in Butte County",
+    "source": "KRCR",
+    "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOWTVHQnNWY0kyQVdzc2ZhRWtDVXJ2UXdHNkVPZHVLb0lXRVVJU19tWWprVHJtT3I0cl92UFkyNk45ekRxLVY4ZGVtcmlJUmFTZHUxNWd1eFk2aUFYNE0tTS1JTXBiM254SndCbldtYUZIYUstalFmS1dGU0o4SDZvZ0ppOU1Vdw?oc=5",
+    "rank": 3,
+    "place_match": [
+      "Butte County"
+    ],
+    "query_id": "car_2023_wet",
+    "signal": {
+      "dataset": "imerg_daily",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "google_news_fallback",
+    "_publisher_url": "https://krcrtv.com"
+  },
+  {
+    "date": "2023-03-09",
+    "title": "Warm California storm could bring flooding to areas along Sacramento River, Interstate 5",
+    "source": "Record Searchlight",
+    "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQUG5fRDFzdG9sM09TSUdkazNrZW9QYWlhak5YcGRSaFpKcVlUX1BWd3hzbmFoSldCamtDRDAzN0JWNzlyekc4WUdlY3RfRmFZclBlVVA5Wkk3Q1lYZlZyZ0IyTDBuZzdiM09URnowd21aVkYzR0tKcVVzdlgxZVBaY1VnM3paYS1qZ0hpTFBkYzNoTFRzSGlkYjR3dXVrMllCQlR2Nnd5dF9JOE5jbVY2WW1DTUtOQU15QU5BUnJhOGNXUQ?oc=5",
+    "rank": 3,
+    "place_match": [
+      "Sacramento River"
+    ],
+    "query_id": "car_2023_wet",
+    "signal": {
+      "dataset": "imerg_daily",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "google_news_fallback",
+    "_publisher_url": "https://www.redding.com"
   }
 ]

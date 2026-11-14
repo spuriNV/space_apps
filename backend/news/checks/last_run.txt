@@ -1,0 +1,25 @@
+PASS every item has date, title, source, url (59 items)
+PASS signal.lead_days is null everywhere (not computed)
+PASS dates inside their window []
+PASS no duplicate urls or titles
+PASS window car_2022_drought has 9 item(s)
+PASS window car_2023_wet has 4 item(s)
+PASS window caf_2023_flood has 12 item(s)
+PASS window caf_2024_sgma has 12 item(s)
+PASS window bc_salmon_2023 has 10 item(s)
+PASS window bc_sumas_2021 has 12 item(s)
+PASS ranking order holds (rank ascending within each window)
+PASS every item has a place match
+INFO HTTP 200 https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-15041  final=https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice
+PASS url resolves: A Rough Year for Rice in California - NASA Science
+INFO HTTP 403 https://www.abc10.com/article/weather/california-drought/drought-hurting-california-rice-y  final=https://www.abc10.com/article/weather/california-drought/drought-hurti
+FAIL url resolves: Drought putting a dent in California rice crop
+INFO HTTP 429 https://www.appeal-democrat.com/news/effects-of-drought-freeze-on-the-minds-of-colusa-co-f  final=https://www.appeal-democrat.com/news/effects-of-drought-freeze-on-the-
+FAIL url resolves: Effects of drought , freeze on the minds of Colusa
+INFO HTTP 200 https://news.google.com/rss/articles/CBMijwFBVV95cUxPUVBnYWlyNm9QSVhPd21VQlpYeTBVelY5MDZsT  final=https://news.google.com/rss/articles/CBMijwFBVV95cUxPUVBnYWlyNm9QSVhPd
+PASS url resolves: Tulare Lake flap reveals the politics of water
+INFO HTTP 200 https://news.google.com/rss/articles/CBMisAFBVV95cUxQYXEwejhTNkV5RWRELVdpN3RGSmRpVGpqaHl2Z  final=https://news.google.com/rss/articles/CBMisAFBVV95cUxQYXEwejhTNkV5RWREL
+PASS url resolves: Drought Takes Toll on Northern California Rice Fie
+INFO HTTP 200 https://news.google.com/rss/articles/CBMijgFBVV95cUxQeFpiU2xMV0d6TEs1RDczMXhEYjI2VWR1MXh2R  final=https://news.google.com/rss/articles/CBMijgFBVV95cUxQeFpiU2xMV0d6TEs1R
+PASS url resolves: With 40,000 chickens dead, Sumas Prairie farmer br
+DONE 2 failed

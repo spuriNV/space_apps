@@ -1,7 +1,7 @@
 [project]
 name = "rotation-engine"
 version = "0.1.0"
-description = "Add your description here"
+description = "Field Shift rotation engine (spec B4): crops, 8 strategies, scoring"
 authors = [
     { name = "Caiden", email = "caiden.merklin@gmail.com" }
 ]
@@ -15,3 +15,6 @@ dependencies = [
 [build-system]
 requires = ["uv_build>=0.11.30,<0.12.0"]
 build-backend = "uv_build"
+
+[project.scripts]
+rotation-engine = "rotation_engine.cli:main"

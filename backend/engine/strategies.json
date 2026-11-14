@@ -1,0 +1,425 @@
+{
+ "strategies": [
+  {
+   "id": "car0_rice_winterflood",
+   "location_id": "car_colusa_rice",
+   "is_baseline": true,
+   "cycle_years": 1,
+   "name": "Continuous rice with winter flood (current)",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "open_water_flood",
+     "plant": "11-01",
+     "harvest": "02-01",
+     "role": "water",
+     "irrigated": true,
+     "harvest_months": [],
+     "stage_mode": "fixed",
+     "timing_source": "assumed (U)",
+     "note": "Winter flood for straw decomposition / waterfowl; flood dates U. Only ET is counted as need."
+    },
+    {
+     "year": 1,
+     "crop_id": "open_water_flood",
+     "plant": "04-25",
+     "harvest": "05-10",
+     "role": "water",
+     "irrigated": true,
+     "harvest_months": [],
+     "stage_mode": "fixed",
+     "timing_source": "spec B1 calendar 'flood, water-seed late Apr-May' (V month); day U"
+    },
+    {
+     "year": 1,
+     "crop_id": "rice_medium_grain",
+     "plant": "05-10",
+     "harvest": "10-07",
+     "role": "cash",
+     "irrigated": true,
+     "harvest_months": [
+      10
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "uc_rice_blog (V avg: 50% planted by 12 May; 145-150 d); end = plant + FAO-56 Table 11 150 d",
+     "flooded_until": "09-07",
+     "note": "Paddy flooded from seeding to drain ~30 d before harvest (drain date U)"
+    }
+   ],
+   "allocation_rule": null
+  },
+  {
+   "id": "car1_rice_wintercover",
+   "location_id": "car_colusa_rice",
+   "is_baseline": false,
+   "cycle_years": 1,
+   "name": "Rice + winter cover (cereal/vetch) instead of winter flood",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "open_water_flood",
+     "plant": "04-25",
+     "harvest": "05-10",
+     "role": "water",
+     "irrigated": true,
+     "harvest_months": [],
+     "stage_mode": "fixed",
+     "timing_source": "spec B1 calendar 'flood, water-seed late Apr-May' (V month); day U"
+    },
+    {
+     "year": 1,
+     "crop_id": "rice_medium_grain",
+     "plant": "05-10",
+     "harvest": "10-07",
+     "role": "cash",
+     "irrigated": true,
+     "harvest_months": [
+      10
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "uc_rice_blog (V avg: 50% planted by 12 May; 145-150 d); end = plant + FAO-56 Table 11 150 d",
+     "flooded_until": "09-07",
+     "note": "Paddy flooded from seeding to drain ~30 d before harvest (drain date U)"
+    },
+    {
+     "year": 1,
+     "crop_id": "cereal_vetch_cover",
+     "plant": "10-25",
+     "harvest": "03-20",
+     "role": "cover",
+     "irrigated": false,
+     "harvest_months": [],
+     "stage_mode": "stretch_mid",
+     "timing_source": "assumed (U): drill after straw chop; terminate before field prep",
+     "note": "Rainfed cover; ETc counted but not irrigation need"
+    }
+   ],
+   "allocation_rule": null
+  },
+  {
+   "id": "car2_dryyear_safflower",
+   "location_id": "car_colusa_rice",
+   "is_baseline": false,
+   "cycle_years": 1,
+   "name": "Dry-year plan: safflower instead of rice (allocation < 50%)",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "cereal_vetch_cover",
+     "plant": "01-01",
+     "harvest": "03-01",
+     "role": "cover",
+     "irrigated": false,
+     "harvest_months": [],
+     "stage_mode": "truncate",
+     "timing_source": "assumed (U): cover sown the previous fall (spec 'cover/bare' Jan-Feb)",
+     "stage_override": {
+      "ini": 0,
+      "dev": 0,
+      "mid": 59,
+      "late": 1
+     },
+     "note": "Carried over from the previous (rice) year; modelled at full cover"
+    },
+    {
+     "year": 1,
+     "crop_id": "safflower",
+     "plant": "04-01",
+     "harvest": "08-04",
+     "role": "cash",
+     "irrigated": true,
+     "harvest_months": [
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "fao56_table11 Safflower April California 20/35/45/25 (V); spec calendar says harvest July (U), FAO lengths give early Aug",
+     "note": "Marked irrigated; the I formula has no stored-soil-water term, so I is likely an upper bound"
+    }
+   ],
+   "allocation_rule": {
+    "text": "Use this plan when surface-water allocation is below 50% of contract",
+    "threshold_pct_of_contract": {
+     "value": 50,
+     "unit": "%",
+     "low": 50,
+     "high": 50,
+     "method": "assumed",
+     "source": {
+      "id": "assumed",
+      "title": "Team assumption marked U in planner-spec; not from a cited source",
+      "url": "planner-spec.md#b4-scoring-model",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "Spec B1 CAR2 trigger (U)"
+    }
+   }
+  },
+  {
+   "id": "car3_rice_wheat",
+   "location_id": "car_colusa_rice",
+   "is_baseline": false,
+   "cycle_years": 2,
+   "name": "Rice - winter wheat rotation (2-year)",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "open_water_flood",
+     "plant": "04-25",
+     "harvest": "05-10",
+     "role": "water",
+     "irrigated": true,
+     "harvest_months": [],
+     "stage_mode": "fixed",
+     "timing_source": "spec B1 calendar 'flood, water-seed late Apr-May' (V month); day U"
+    },
+    {
+     "year": 1,
+     "crop_id": "rice_medium_grain",
+     "plant": "05-10",
+     "harvest": "10-07",
+     "role": "cash",
+     "irrigated": true,
+     "harvest_months": [
+      10
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "uc_rice_blog (V avg: 50% planted by 12 May; 145-150 d); end = plant + FAO-56 Table 11 150 d",
+     "flooded_until": "09-07",
+     "note": "Paddy flooded from seeding to drain ~30 d before harvest (drain date U)"
+    },
+    {
+     "year": 1,
+     "crop_id": "winter_wheat",
+     "plant": "12-01",
+     "harvest": "05-30",
+     "role": "cash",
+     "irrigated": true,
+     "harvest_months": [
+      6
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "fao56_table11 Winter wheat December California 20/60/70/30 (V); spec says harvest June (U)",
+     "note": "Sacramento Valley wheat is often rain-fed or 1-2 irrigations (U); I is an upper bound"
+    }
+   ],
+   "calendar_note": "Spec B1 shows only the wheat year (wheat Jan-May, bare Jul-Oct, drill wheat Nov-Dec). We model a 2-year cycle: year 1 rice then wheat drilled 1 Dec; year 2 wheat to 30 May, bare until the next rice flood. Confirm with the team.",
+   "allocation_rule": null
+  },
+  {
+   "id": "caf0_alfalfa",
+   "location_id": "caf_tulare_forage",
+   "is_baseline": true,
+   "cycle_years": 1,
+   "name": "Alfalfa hay, 7-8 cuts, 4-5 year stand (current)",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "alfalfa_hay",
+     "plant": "12-01",
+     "harvest": "12-01",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "uc_alfalfa (V: 28-day cutting schedule); stage dates read off spec B1 calendar (U)",
+     "note": "Established stand in steady state; establishment year not modelled"
+    }
+   ],
+   "allocation_rule": null
+  },
+  {
+   "id": "caf1_smallgrain_corn",
+   "location_id": "caf_tulare_forage",
+   "is_baseline": false,
+   "cycle_years": 1,
+   "name": "Winter small-grain silage + silage corn double crop",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "small_grain_silage",
+     "plant": "10-25",
+     "harvest": "04-20",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      4
+     ],
+     "stage_mode": "scale",
+     "timing_source": "spec B1 CAF calendar: drill Oct-Nov, silage harvest Apr-May (U)"
+    },
+    {
+     "year": 1,
+     "crop_id": "silage_corn",
+     "plant": "05-05",
+     "harvest": "08-23",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "assumed (U): spec B1 'plant corn May, harvest Aug-Sept'"
+    }
+   ],
+   "allocation_rule": null
+  },
+  {
+   "id": "caf2_smallgrain_sorghumsudan",
+   "location_id": "caf_tulare_forage",
+   "is_baseline": false,
+   "cycle_years": 1,
+   "name": "Winter small-grain silage + sorghum-sudan summer forage",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "small_grain_silage",
+     "plant": "10-25",
+     "harvest": "04-20",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      4
+     ],
+     "stage_mode": "scale",
+     "timing_source": "spec B1 CAF calendar: drill Oct-Nov, silage harvest Apr-May (U)"
+    },
+    {
+     "year": 1,
+     "crop_id": "sorghum_sudan",
+     "plant": "05-05",
+     "harvest": "09-15",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      7,
+      8
+     ],
+     "stage_mode": "stretch_mid",
+     "timing_source": "assumed (U): spec B1 'plant May, cuts Jun-Aug, terminate Sept'"
+    }
+   ],
+   "allocation_rule": null
+  },
+  {
+   "id": "caf3_alfalfa_break",
+   "location_id": "caf_tulare_forage",
+   "is_baseline": false,
+   "cycle_years": 4,
+   "name": "Alfalfa 3-year stand, winter cereal break year, re-seed",
+   "calendar": [
+    {
+     "year": 4,
+     "crop_id": "alfalfa_hay",
+     "plant": "09-20",
+     "harvest": "12-01",
+     "role": "establishing",
+     "irrigated": true,
+     "harvest_months": [],
+     "stage_mode": "truncate",
+     "timing_source": "uc_alfalfa (V window mid-Sept-Oct); establishment stages U",
+     "stage_override": {
+      "ini": 30,
+      "dev": 42,
+      "mid": 0,
+      "late": 0
+     },
+     "cover_override": {
+      "ini": 0.1,
+      "dev": 0.5,
+      "mid": 0.5,
+      "late": 0.5
+     }
+    },
+    {
+     "year": 4,
+     "crop_id": "alfalfa_hay",
+     "plant": "12-01",
+     "harvest": "12-01",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "as CAF0 (U stage dates)",
+     "note": "Stand year 1"
+    },
+    {
+     "year": 1,
+     "crop_id": "alfalfa_hay",
+     "plant": "12-01",
+     "harvest": "12-01",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "as CAF0 (U stage dates)",
+     "note": "Stand year 2"
+    },
+    {
+     "year": 2,
+     "crop_id": "alfalfa_hay",
+     "plant": "12-01",
+     "harvest": "11-01",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "stage_mode": "truncate",
+     "timing_source": "as CAF0; stand removed after the Oct cut (U)",
+     "note": "Stand year 3"
+    },
+    {
+     "year": 3,
+     "crop_id": "small_grain_silage",
+     "plant": "11-01",
+     "harvest": "04-20",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      4
+     ],
+     "stage_mode": "scale",
+     "timing_source": "spec B1 CAF3: cereal Jan-Apr, harvest silage Apr (U)"
+    }
+   ],
+   "calendar_note": "Cycle = 3 alfalfa production years + 1 break year (cereal to April, unirrigated summer fallow May-Aug, re-seed 20 Sept). Year numbering wraps: the stand seeded in year 4 produces in years 1-3 (labelled by the year its Dec-Nov season starts).",
+   "allocation_rule": null
+  }
+ ]
+}

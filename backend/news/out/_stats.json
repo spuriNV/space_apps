@@ -1,0 +1,96 @@
+{
+  "stats": {
+    "car_2022_drought": {
+      "fetched": {
+        "google_news": 10,
+        "gdelt": 72,
+        "spec_cited_page": 1
+      },
+      "in_window": 83,
+      "place_match": 13,
+      "kept": 9,
+      "kept_by_via": {
+        "gdelt": 5,
+        "google_news": 3,
+        "spec_cited_page": 1
+      }
+    },
+    "car_2023_wet": {
+      "fetched": {
+        "google_news_fallback": 7,
+        "gdelt": 100
+      },
+      "in_window": 107,
+      "place_match": 4,
+      "kept": 4,
+      "kept_by_via": {
+        "google_news_fallback": 4
+      }
+    },
+    "caf_2023_flood": {
+      "fetched": {
+        "google_news": 9,
+        "gdelt": 69,
+        "spec_cited_page": 1
+      },
+      "in_window": 79,
+      "place_match": 21,
+      "kept": 12,
+      "kept_by_via": {
+        "gdelt": 6,
+        "google_news": 5,
+        "spec_cited_page": 1
+      }
+    },
+    "caf_2024_sgma": {
+      "fetched": {
+        "google_news": 13,
+        "gdelt": 55,
+        "spec_cited_page": 1
+      },
+      "in_window": 69,
+      "place_match": 19,
+      "kept": 12,
+      "kept_by_via": {
+        "gdelt": 5,
+        "google_news": 6,
+        "spec_cited_page": 1
+      }
+    },
+    "bc_salmon_2023": {
+      "fetched": {
+        "google_news": 7,
+        "gdelt": 100,
+        "spec_cited_page": 1,
+        "bc_gov_rss": 20
+      },
+      "in_window": 102,
+      "place_match": 10,
+      "kept": 10,
+      "kept_by_via": {
+        "gdelt": 8,
+        "google_news": 1,
+        "spec_cited_page": 1
+      }
+    },
+    "bc_sumas_2021": {
+      "fetched": {
+        "google_news": 10,
+        "gdelt": 100,
+        "spec_cited_page": 2,
+        "bc_gov_rss": 20
+      },
+      "in_window": 112,
+      "place_match": 44,
+      "kept": 12,
+      "kept_by_via": {
+        "gdelt": 9,
+        "google_news": 2,
+        "spec_cited_page": 1
+      }
+    }
+  },
+  "blocked": [
+    "https://www.agalert.com/california-ag-news/archives/january-3-2024/later-rice-harvest-deals-minor-yield-quality-impacts/: could not parse date/title from page"
+  ]
+}

@@ -11,7 +11,7 @@ from .windows import WINDOWS, OUTPUT, CITED, GOV, FARM
 ROOT = Path(__file__).resolve().parent.parent
 CACHE, OUT = ROOT / "cache", ROOT / "out"
 UA = {"User-Agent": "Mozilla/5.0 (Field Shift hackathon news cache)"}
-TOP_N = 8
+TOP_N = 12
 BLOCKED: list[str] = []
 _last_gdelt = [0.0]
 
