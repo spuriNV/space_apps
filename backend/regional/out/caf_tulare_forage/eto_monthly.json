@@ -18,6 +18,7 @@
   "11": 59.4,
   "12": 43.6
  },
+ "partial_year_note": "2026 months after the last POWER day are null; the last month with data is a partial month.",
  "by_year": {
   "1981": [
    52.4,
@@ -648,6 +649,20 @@
    98.1,
    57.0,
    42.8
+  ],
+  "2026": [
+   51.6,
+   60.8,
+   115.5,
+   134.4,
+   188.9,
+   231.5,
+   248.6,
+   230.1,
+   159.0,
+   108.1,
+   26.2,
+   null
   ]
  }
 }

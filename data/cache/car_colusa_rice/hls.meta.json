@@ -6,7 +6,7 @@
    "hls2-l30 (HLSL30 v2.0)",
    "hls2-s30 (HLSS30 v2.0)"
   ],
-  "datetime": "2016-01-01/2025-12-31",
+  "datetime": "2016-01-01/2026-11-14",
   "intersects": "backend/field/polygons/car_colusa_rice.geojson",
   "bands": {
    "hls2-l30": {
@@ -24,7 +24,7 @@
   "scale": "reflectance = DN * 1e-4, fill -9999",
   "indices": "NDVI=(NIR-Red)/(NIR+Red) with narrow NIR (B05 / B8A); NDWI=(Green-NIR)/(Green+NIR)"
  },
- "fetched_at": "2026-11-14T22:30:26+00:00",
+ "fetched_at": "2026-11-14T22:58:29+00:00",
  "footprint_geojson": {
   "type": "Polygon",
   "coordinates": [
@@ -159,22 +159,22 @@
  "auth": "none (Planetary Computer anonymous SAS token; NASA LP DAAC copy needs Earthdata login)",
  "credit": "HLS v2.0, NASA/USGS (Masek et al. 2021, doi:10.5067/HLS/HLSL30.002 and HLSS30.002); hosted by Microsoft Planetary Computer",
  "availability_note": "PC collections start 2020-01-01 (hls2-s30) and 2017-08 (first L30 item over these fields); nothing earlier exists there",
- "n_items_found": 857,
- "n_rows": 857,
+ "n_items_found": 968,
+ "n_rows": 968,
  "by_platform": [
   {
    "platform": "HLSL30",
-   "n": 440,
+   "n": 491,
    "first": "2017-08-17",
-   "last": "2025-12-29"
+   "last": "2026-10-29"
   },
   {
    "platform": "HLSS30",
-   "n": 417,
+   "n": 477,
    "first": "2020-01-05",
-   "last": "2025-12-29"
+   "last": "2026-11-04"
   }
  ],
  "errors": [],
- "seconds": 186
+ "seconds": 266
 }

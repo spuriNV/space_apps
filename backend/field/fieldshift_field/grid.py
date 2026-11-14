@@ -30,9 +30,9 @@ from shapely.geometry import box, mapping
 from .common import PRESETS, WORK_CRS, cache, now, out, polygon_in, to_crs, today, write_json
 
 CELL = 30.0
-KEY_YEARS = (2021, 2022, 2023)
+KEY_YEARS = (2021, 2022, 2023, 2026)
 KEY_DAYS = ("01-15", "04-15", "07-15", "10-15")
-SEASON_YEARS = range(2016, 2026)
+SEASON_YEARS = range(2016, 2027)
 
 
 def _tf(t):

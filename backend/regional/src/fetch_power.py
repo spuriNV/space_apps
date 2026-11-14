@@ -1,4 +1,5 @@
-"""NASA POWER daily point, 1981-2025, both presets -> data/cache/<id>/power.parquet + power.meta.json"""
+"""NASA POWER daily point, 1981 through today (last days may be missing), both presets -> data/cache/<id>/power.parquet + power.meta.json"""
+import datetime as dt
 import pandas as pd, numpy as np
 from common import *
 
@@ -10,7 +11,7 @@ RANGES = {"T2M": (-30, 50), "T2M_MAX": (-30, 55), "T2M_MIN": (-40, 45), "RH2M": 
 def main():
     for pid, p in PRESETS.items():
         q = dict(parameters=PARAMS, community="AG", longitude=p["lon"], latitude=p["lat"],
-                 start="19810101", end="20251231", format="JSON")
+                 start="19810101", end=dt.date.today().strftime("%Y%m%d"), format="JSON")
         r = get(URL, q)
         j = r.json()
         fill = j["header"]["fill_value"]
@@ -19,6 +20,8 @@ def main():
         df.index = pd.to_datetime(df.index, format="%Y%m%d"); df.index.name = "date"
         n_fill = int((df == fill).sum().sum())
         df = df.replace(fill, np.nan).astype("float64")
+        # POWER publishes with a lag of a few days; trailing days with no data at all are dropped
+        df = df[df[["T2M", "T2M_MAX", "T2M_MIN", "PRECTOTCORR"]].notna().any(axis=1)]
         for c, (lo, hi) in RANGES.items():
             v = df[c].dropna()
             assert v.between(lo, hi).all(), f"{pid} {c} out of range {v.min()} {v.max()}"

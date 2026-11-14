@@ -32,7 +32,8 @@ def main():
         d["eto_hargreaves_mm"] = hargreaves_eto(d.T2M_MAX, d.T2M_MIN, p["lat"], d["doy"].values)
         d["eto_hargreaves_plus2C_mm"] = hargreaves_eto(d.T2M_MAX + 2, d.T2M_MIN + 2, p["lat"], d["doy"].values)
         pr = d.PRECTOTCORR
-        wet = pr[pr >= 1.0]
+        base = d.index.year <= 2025   # thresholds and climatologies stay on the 1981-2025 baseline; 2026 is a partial year
+        wet = pr[(pr >= 1.0) & base]
         p95 = float(wet.quantile(0.95))
         d["frost"] = d.T2M_MIN <= 0
         d["hard_frost"] = d.T2M_MIN <= -2
@@ -56,6 +57,9 @@ def main():
             row["heatwave_events"] = int((starts & m["heatwave_day"]).sum())
             row["precip_mm"] = round(float(m.PRECTOTCORR.sum()), 1)
             row["eto_hargreaves_mm"] = round(float(m.eto_hargreaves_mm.sum()), 1)
+            row["days_with_data"] = int(len(m))
+            if len(m) < 365 + int(y % 4 == 0):
+                row["partial_year_through"] = str(m.index.max().date())  # not a full calendar year: counts are year-to-date
             byyear[str(y)] = row
         write_json(out / "risk_days_by_year.json", {
             "preset_id": pid, "source": "NASA POWER daily point (MERRA-2/SYN1DEG, 0.5 deg), data/cache/%s/power.parquet" % pid,
@@ -70,13 +74,14 @@ def main():
             "caveat": "POWER rain is a coarse (~50 km) reanalysis product and smooths convective/extreme rain; extreme-rain counts are likely low-biased vs gauges. Calendar years. POWER time standard is LST.",
             "by_year": byyear})
         em = d.groupby([yr, d.index.month]).eto_hargreaves_mm.sum().round(1)
-        clim = em.groupby(level=1).mean().round(1)
+        clim = em[em.index.get_level_values(0) <= 2025].groupby(level=1).mean().round(1)
         write_json(out / "eto_monthly.json", {
             "preset_id": pid, "unit": "mm/month", "method": "Hargreaves, FAO-56 eq. 52 (Tmean=(Tmax+Tmin)/2, Ra from latitude %.2f and day of year)" % p["lat"],
             "source": "NASA POWER T2M_MAX/T2M_MIN", "caveat": "Hargreaves is a temperature-only estimate (+/-15%% planning range per spec B4.12); validate against CIMIS when key available.",
             "climatology_1981_2025": {str(m): float(v) for m, v in clim.items()},
-            "by_year": {str(y): [float(em.get((y, m), np.nan)) for m in range(1, 13)] for y in sorted(set(yr))}})
-        print(pid, len(d), "p95wet", round(p95, 1), "annual ETo mean", round(d.eto_hargreaves_mm.groupby(yr).sum().mean()))
+            "partial_year_note": "2026 months after the last POWER day are null; the last month with data is a partial month.",
+            "by_year": {str(y): [(None if np.isnan(em.get((y, m), np.nan)) else float(em.get((y, m)))) for m in range(1, 13)] for y in sorted(set(yr))}})
+        print(pid, len(d), d.index.max().date(), "p95wet", round(p95, 1), "annual ETo mean 1981-2025", round(d.eto_hargreaves_mm[base].groupby(yr[base]).sum().mean()))
 
 if __name__ == "__main__":
     main()

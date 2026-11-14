@@ -236,7 +236,7 @@ def ml_calendar(preset: str, model, feats, rule_cal_path):
     Ps = P.rolling(3, center=True, min_periods=1).mean()  # 3-observation smoothing
     d["ml_raw"] = P.idxmax(axis=1)
     d["ml"] = Ps.idxmax(axis=1)
-    days = pd.date_range("2015-07-01", "2025-12-31", freq="D")
+    days = pd.date_range("2015-07-01", f"{CAL_LAST_YEAR}-12-31", freq="D")
     t = d["date"].values.astype("datetime64[D]")
     A = Ps.values
     res = []
@@ -269,7 +269,7 @@ def ml_calendar(preset: str, model, feats, rule_cal_path):
     classes["water"]["label"] = "Water (ML: random forest)"
     classes["partial"]["label"] = "Partial (not predicted: the CDL labels have no partial class)"
     years, dis_all = [], []
-    for y in range(2016, 2026):
+    for y in range(2016, CAL_LAST_YEAR + 1):
         s = full[str(y)]
         dy = d[d.date.dt.year == y]
         segs = segments(s, list(dy.date))
@@ -305,7 +305,10 @@ def ml_calendar(preset: str, model, feats, rule_cal_path):
                    "daily_fill": f"linear interpolation of smoothed probabilities between observations <= {MAX_GAP} days "
                                  "apart, argmax; longer gaps unknown",
                    "markers": "green_up = smoothed class becomes covered; senescence_harvest = covered -> bare",
-                   "out_of_sample_years": TEST_YEARS},
+                   "out_of_sample_years": TEST_YEARS,
+                   "forward_years": [y for y in range(2016, CAL_LAST_YEAR + 1) if y not in YEARS],
+                   "forward_years_note": "years after the CDL labels end (no labels, never trained on); classified with the same frozen train-years model"},
+        "data_through": d["date"].max().strftime("%Y-%m-%d"),
         "sources": rule.get("sources", []) + [
             {"id": "usda_cdl_croplandcros", "title": "USDA NASS Cropland Data Layer via CroplandCROS (training labels)",
              "url": "https://pdi.scinet.usda.gov/image/rest/services/CDL_WM/ImageServer", "accessed": today(),
@@ -315,6 +318,22 @@ def ml_calendar(preset: str, model, feats, rule_cal_path):
     }
     write_json(out(preset) / "calendar_ml.json", doc)
     return doc
+
+
+CAL_LAST_YEAR = 2026   # calendar_ml covers 2016..CAL_LAST_YEAR; labels / training stay on YEARS (<= 2025)
+
+
+def calendar_only(preset: str):
+    """Rewrite calendar_ml.json only (new S2 observations, e.g. 2026), without touching models.json / bare_cover_eval.json.
+    Models are not persisted, so the year-split random forest is refitted on the unchanged TRAIN_YEARS table with the same
+    seed (deterministic), so earlier years reproduce exactly. No 2026 data is in the training table (labels end with CDL 2025)."""
+    d = training_table(preset)
+    assert d.year.max() <= 2025 and set(d.year[d.year.isin(TRAIN_YEARS)]) <= set(TRAIN_YEARS)
+    _, _, model, _ = split_preds(d, "year", "random_forest", CORE)
+    cal = ml_calendar(preset, model, CORE, FIELD_DIR / "out" / preset / "calendar.json")
+    print(f"{preset}: calendar_ml rewritten through {cal['data_through']}; disagreement with rule {cal['disagreement_with_rule_obs_pct']}%")
+    for y in cal["years"]:
+        print("  ", y["year"], y["summary"]["days_by_class"], "n_obs", y["summary"]["n_obs"])
 
 
 # ---------------------------------------------------------------- report
@@ -424,5 +443,6 @@ def run(preset: str):
 
 
 if __name__ == "__main__":
-    for p in (sys.argv[1:] or PRESETS):
-        run(p)
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    for p in (args or PRESETS):
+        (calendar_only if "--calendar-only" in sys.argv else run)(p)

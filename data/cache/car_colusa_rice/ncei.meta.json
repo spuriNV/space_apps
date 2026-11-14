@@ -1,5 +1,5 @@
 {
- "url": "https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USC00049677%2CUSC00041948%2CUSC00042640%2CUSC00041112%2CUSC00045385%2CUSC00049699%2CUSC00048580%2CUSC00041806%2CUSW00093216%2CUSC00049781%2CUSC00048587%2CUSC00046521&startDate=1981-01-01&endDate=2025-12-31&dataTypes=PRCP%2CTMAX%2CTMIN&units=metric&includeStationName=true&includeStationLocation=true&format=csv",
+ "url": "https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USC00049677%2CUSC00041948%2CUSC00042640%2CUSC00041112%2CUSC00045385%2CUSC00049699%2CUSC00048580%2CUSC00041806%2CUSW00093216%2CUSC00049781%2CUSC00048587%2CUSC00046521&startDate=1981-01-01&endDate=2026-11-14&dataTypes=PRCP%2CTMAX%2CTMIN&units=metric&includeStationName=true&includeStationLocation=true&format=csv",
  "search_url": "https://www.ncei.noaa.gov/access/services/search/v1/data",
  "params": {
   "dataset": "daily-summaries",
@@ -9,11 +9,11 @@
    "USC00049781"
   ],
   "startDate": "1981-01-01",
-  "endDate": "2025-12-31",
+  "endDate": "2026-11-14",
   "dataTypes": "PRCP,TMAX,TMIN",
   "units": "metric"
  },
- "fetched_at": "2026-11-14T20:01:51Z",
+ "fetched_at": "2026-11-14T22:58:13Z",
  "timestep": "daily (local station time, observation-day convention varies by station; compare monthly or +/-1 day)",
  "units": {
   "prcp_mm": "mm",
@@ -38,7 +38,7 @@
     "TMIN": 0.932
    },
    "first_obs": "1981-01-01",
-   "last_obs": "2025-11-30"
+   "last_obs": "2026-09-30"
   },
   {
    "station": "USC00049699",
@@ -53,7 +53,7 @@
     "TMIN": 0.954
    },
    "first_obs": "1981-01-01",
-   "last_obs": "2025-12-31"
+   "last_obs": "2026-09-30"
   },
   {
    "station": "USC00049781",
@@ -100,7 +100,7 @@
     "TMIN": 0.932
    },
    "first_obs": "1981-01-01",
-   "last_obs": "2025-11-30"
+   "last_obs": "2026-09-30"
   },
   {
    "station": "USC00042640",
@@ -160,7 +160,7 @@
     "TMIN": 0.954
    },
    "first_obs": "1981-01-01",
-   "last_obs": "2025-12-31"
+   "last_obs": "2026-09-30"
   },
   {
    "station": "USC00048580",
@@ -190,7 +190,7 @@
     "TMIN": 0.718
    },
    "first_obs": "1981-01-01",
-   "last_obs": "2025-12-31"
+   "last_obs": "2026-11-09"
   },
   {
    "station": "USW00093216",
@@ -205,7 +205,7 @@
     "TMIN": 0.022
    },
    "first_obs": "2025-01-01",
-   "last_obs": "2025-12-31"
+   "last_obs": "2026-11-06"
   },
   {
    "station": "USC00049781",
@@ -235,7 +235,7 @@
     "TMIN": 0.969
    },
    "first_obs": "1981-01-01",
-   "last_obs": "2025-12-31"
+   "last_obs": "2026-10-01"
   },
   {
    "station": "USC00046521",
@@ -250,10 +250,11 @@
     "TMIN": 0.866
    },
    "first_obs": "1982-11-01",
-   "last_obs": "2025-12-31"
+   "last_obs": "2026-09-30"
   }
  ],
- "rows": 48051,
+ "rows": 48535,
+ "date_max": "2026-09-30",
  "selection_rule": "nearest 3 of the 12 nearest candidate GHCN-D stations (bbox +/-0.8 deg, record starting <=1985) with >=70% daily coverage of PRCP,TMAX,TMIN over 1981-2025",
  "footprint_geojson": null
 }

@@ -1,6 +1,6 @@
 """HLS v2.0 (NASA/USGS Harmonized Landsat Sentinel-2) from Planetary Computer `hls2-l30` / `hls2-s30`, anonymous.
 Field-median NDVI/NDWI per scene, same definitions as backend/field timeseries.py. Only the polygon window is read.
-Usage: uv run python -m nasa_open.hls [preset ...] [--start 2016-01-01] [--end 2025-12-31]"""
+Usage: uv run python -m nasa_open.hls [preset ...] [--start 2016-01-01] [--end YYYY-MM-DD, default today]"""
 from __future__ import annotations
 import argparse, concurrent.futures as cf, math, time, warnings
 import numpy as np, pandas as pd, planetary_computer as pc, pystac_client, rasterio
@@ -89,6 +89,6 @@ def run(preset, start, end):
     print(preset, len(df), "rows", len(errors), "errors", f"{time.time()-t0:.0f}s", flush=True)
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("presets", nargs="*"); ap.add_argument("--start", default="2016-01-01"); ap.add_argument("--end", default="2025-12-31")
+    ap = argparse.ArgumentParser(); ap.add_argument("presets", nargs="*"); ap.add_argument("--start", default="2016-01-01"); ap.add_argument("--end", default=__import__("datetime").date.today().isoformat())
     a = ap.parse_args()
     for p in a.presets or PRESETS: run(p, a.start, a.end)

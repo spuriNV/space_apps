@@ -4,12 +4,12 @@ Own `uv` project (Python 3.12). Run from this directory:
 
 ```
 uv sync
-uv run python src/fetch_power.py   # NASA POWER 1981-2025 -> data/cache/<id>/power.{parquet,meta.json}
+uv run python src/fetch_power.py   # NASA POWER 1981 -> today (latest published day) -> data/cache/<id>/power.{parquet,meta.json}
 uv run python src/derive.py        # Hargreaves ETo + risk days -> out/<id>/{daily_derived.parquet,risk_days_by_year.json,eto_monthly.json}
 uv run python src/fetch_cdec.py    # CDEC SHA/ORO/PNF storage 2015-2025 -> cdec.*
 uv run python src/fetch_usdm.py    # US Drought Monitor county weekly 2015-2025 -> usdm.*
 uv run python src/fetch_ssurgo.py  # SSURGO soil (reads backend/field/polygons/<id>.geojson if present) -> soil.json
-uv run python src/fetch_ncei.py    # GHCN-Daily nearest long-record stations -> ncei.*
+uv run python src/fetch_ncei.py    # GHCN-Daily nearest long-record stations, 1981 -> today -> ncei.*
 uv run python checks/run_checks.py # PASS/FAIL (last output saved in out/checks_output.txt)
 ```
 Each script is independent. Caches: `data/cache/<preset_id>/`. Every `*.meta.json` records url, params, fetched_at, units, native resolution, fill value, auth.
@@ -45,3 +45,7 @@ Each script is independent. Caches: `data/cache/<preset_id>/`. Every `*.meta.jso
 | HLS / MODIS / ECOSTRESS | Earthdata login (owned by field chunk) | same Earthdata account |
 | NASS Quick Stats, AMS My Market News | API keys | NASS Quick Stats key; AMS MARS API key |
 No endpoint in the no-auth set failed.
+
+## 2026 update (run 2026-11-14)
+- POWER now runs 1981-01-01..2026-11-11 (16751 days, the latest day POWER had; values for 2026 are identical to `backend/nasa` `power_nrt.parquet`, which is the same near-real-time service, so treat 2026 as provisional). `derive.py` recomputed ETo and risk days; the 95th-percentile rain threshold (CAR 32.4 mm, CAF 22.6 mm) and the monthly ETo climatology stay on 1981-2025. 2026 rows in `risk_days_by_year.json` carry `partial_year_through` and `days_with_data`; `eto_monthly.json` has `null` for months with no data.
+- NCEI GHCN-Daily is fetched through today; station selection still uses 1981-2025 coverage, so the same stations are kept. Latest observed day: CAR Colusa 2 SSW 2026-09-30, Willows 6 W 2026-06-14 (precipitation and temperatures), Woodland 1 WNW 2024-10-22 (no 2026 data); CAF Corcoran 2026-10-28, Hanford 2026-11-09, Visalia 2026-11-10 (precip and Tmax/Tmin; row dated 11-11). CAR station data therefore ends in autumn; POWER fills the gap.

@@ -10,6 +10,7 @@ cd backend/ai
 uv sync
 uv run python -m fieldshift_ai.sample        # 1. clusters + S2 medians -> data/cache/<id>/ai/  (network, ~2.5 min per preset)
 uv run python -m fieldshift_ai.bare_cover    # 2. rule vs RF vs HGB -> out/<id>/{models.json, calendar_ml.json, bare_cover_eval.json} (~4 min CAR)
+uv run python -m fieldshift_ai.bare_cover --calendar-only  # only rewrite calendar_ml.json (new S2 obs, e.g. 2026); no metrics rewritten
 uv run python -m fieldshift_ai.stress        # 3. z-score vs isolation forest -> out/<id>/stress_weekly.json (+ items in models.json)
 uv run python checks/run_checks.py           # PASS/FAIL for B10.1 checks 8-9 (local files only)
 ```
@@ -182,3 +183,6 @@ PASS | check 9 caf_tulare_forage 2023 flood weeks are water, not stress | 0 wate
 | OpenET monthly ET anomaly (B6.2) | OpenET API key | Measured field-scale ET deficit component |
 | Cross-valley test, split (c) [S] and split (b) | none (not done for time) | Train CAR, test CAF |
 | B6.3 LLM layer | LLM API key | Not in this chunk's scope here |
+
+## 2026 update (run 2026-11-14)
+`calendar_ml.json` now covers 2016-2026 (`method.forward_years` = [2026], `data_through` 2026-11-11). Models are not saved, so `--calendar-only` refits the same year-split random forest on the unchanged 2016-2021 + 2023 table (seed 0, so earlier years reproduce exactly) and classifies the new S2 scenes. Nothing is trained on 2026 (CDL labels end in 2025), and `models.json`, `bare_cover_eval.json` and the stress outputs are untouched. Years 2016-2024 are identical to the previous file; only the last 2025 observation's probability moves, because the 3-observation smoothing now sees a 2026 neighbour. Rule-vs-ML disagreement on the field's S2 observations over 2016-2026 is 15.8 % (CAR) and 22.3 % (CAF); 2026 alone is 15.1 % and 2.0 %. 2026 is out of sample for the model.

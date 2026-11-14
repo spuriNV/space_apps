@@ -5,7 +5,7 @@ Three outputs that raise the "Relevance" score (rubric section 4) without accoun
 ```bash
 cd backend/nasa_open && uv sync
 uv run python -m nasa_open.terrain      # NASADEM  -> out/<id>/terrain.json
-uv run python -m nasa_open.hls          # HLS      -> data/cache/<id>/hls.parquet + hls.meta.json (~4 min)
+uv run python -m nasa_open.hls          # HLS      -> data/cache/<id>/hls.parquet + hls.meta.json (~12 min through today)
 uv run python -m nasa_open.iss          # ISS      -> data/cache/<id>/iss/{iss.json,*.jpg}
 uv run python checks/run_checks.py      # PASS/FAIL (ISS URL check needs the network)
 ```
@@ -38,3 +38,6 @@ Needs `backend/field/polygons/<id>.geojson`, `backend/field/out/<id>/grid.geojso
 - HLS before mid-2017 (before 2020 for HLSS30) on Planetary Computer; NASA's full 2013+ archive requires Earthdata login.
 - ISS photos of 2021-2023 events over these two areas: none cataloged with a centre point. The Gateway's JSON API needs a key; the website's own search endpoints were slow and sometimes returned 502 (feature searches for "tulare lake" returned nothing).
 - NASADEM vertical noise limits slope and low spots on flat fields (see above).
+
+## 2026 update (run 2026-11-14)
+`nasa_open.hls` now defaults to `--end` today. Planetary Computer HLS reaches 2026-11-04 at CAR (968 scenes, 111 in 2026, 82 usable) and 2026-11-01 at CAF (1477 scenes, 180 in 2026, 128 usable; last usable 2026-10-27). Rows through 2025 are unchanged (no scene dropped).

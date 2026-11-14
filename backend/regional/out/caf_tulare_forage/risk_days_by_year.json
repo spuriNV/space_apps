@@ -25,7 +25,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 2,
    "precip_mm": 387.6,
-   "eto_hargreaves_mm": 1609.4
+   "eto_hargreaves_mm": 1609.4,
+   "days_with_data": 365
   },
   "1982": {
    "frost": 8,
@@ -38,7 +39,8 @@
    "extreme_rain_p95wet": 6,
    "heatwave_events": 7,
    "precip_mm": 665.3,
-   "eto_hargreaves_mm": 1459.7
+   "eto_hargreaves_mm": 1459.7,
+   "days_with_data": 365
   },
   "1983": {
    "frost": 0,
@@ -51,7 +53,8 @@
    "extreme_rain_p95wet": 5,
    "heatwave_events": 6,
    "precip_mm": 732.7,
-   "eto_hargreaves_mm": 1429.6
+   "eto_hargreaves_mm": 1429.6,
+   "days_with_data": 365
   },
   "1984": {
    "frost": 2,
@@ -64,7 +67,8 @@
    "extreme_rain_p95wet": 0,
    "heatwave_events": 6,
    "precip_mm": 275.0,
-   "eto_hargreaves_mm": 1600.8
+   "eto_hargreaves_mm": 1600.8,
+   "days_with_data": 366
   },
   "1985": {
    "frost": 8,
@@ -77,7 +81,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 5,
    "precip_mm": 305.2,
-   "eto_hargreaves_mm": 1577.8
+   "eto_hargreaves_mm": 1577.8,
+   "days_with_data": 365
   },
   "1986": {
    "frost": 0,
@@ -90,7 +95,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 5,
    "precip_mm": 404.9,
-   "eto_hargreaves_mm": 1561.3
+   "eto_hargreaves_mm": 1561.3,
+   "days_with_data": 365
   },
   "1987": {
    "frost": 12,
@@ -103,7 +109,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 12,
    "precip_mm": 333.7,
-   "eto_hargreaves_mm": 1623.3
+   "eto_hargreaves_mm": 1623.3,
+   "days_with_data": 365
   },
   "1988": {
    "frost": 5,
@@ -116,7 +123,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 7,
    "precip_mm": 313.4,
-   "eto_hargreaves_mm": 1631.5
+   "eto_hargreaves_mm": 1631.5,
+   "days_with_data": 366
   },
   "1989": {
    "frost": 9,
@@ -129,7 +137,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 6,
    "precip_mm": 196.8,
-   "eto_hargreaves_mm": 1592.0
+   "eto_hargreaves_mm": 1592.0,
+   "days_with_data": 365
   },
   "1990": {
    "frost": 14,
@@ -142,7 +151,8 @@
    "extreme_rain_p95wet": 0,
    "heatwave_events": 3,
    "precip_mm": 222.5,
-   "eto_hargreaves_mm": 1602.1
+   "eto_hargreaves_mm": 1602.1,
+   "days_with_data": 365
   },
   "1991": {
    "frost": 0,
@@ -155,7 +165,8 @@
    "extreme_rain_p95wet": 3,
    "heatwave_events": 8,
    "precip_mm": 367.5,
-   "eto_hargreaves_mm": 1561.2
+   "eto_hargreaves_mm": 1561.2,
+   "days_with_data": 365
   },
   "1992": {
    "frost": 1,
@@ -168,7 +179,8 @@
    "extreme_rain_p95wet": 4,
    "heatwave_events": 12,
    "precip_mm": 357.0,
-   "eto_hargreaves_mm": 1596.4
+   "eto_hargreaves_mm": 1596.4,
+   "days_with_data": 366
   },
   "1993": {
    "frost": 2,
@@ -181,7 +193,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 9,
    "precip_mm": 426.8,
-   "eto_hargreaves_mm": 1537.1
+   "eto_hargreaves_mm": 1537.1,
+   "days_with_data": 365
   },
   "1994": {
    "frost": 3,
@@ -194,7 +207,8 @@
    "extreme_rain_p95wet": 0,
    "heatwave_events": 6,
    "precip_mm": 320.1,
-   "eto_hargreaves_mm": 1604.5
+   "eto_hargreaves_mm": 1604.5,
+   "days_with_data": 365
   },
   "1995": {
    "frost": 0,
@@ -207,7 +221,8 @@
    "extreme_rain_p95wet": 4,
    "heatwave_events": 7,
    "precip_mm": 533.4,
-   "eto_hargreaves_mm": 1508.3
+   "eto_hargreaves_mm": 1508.3,
+   "days_with_data": 365
   },
   "1996": {
    "frost": 2,
@@ -220,7 +235,8 @@
    "extreme_rain_p95wet": 5,
    "heatwave_events": 5,
    "precip_mm": 500.4,
-   "eto_hargreaves_mm": 1615.1
+   "eto_hargreaves_mm": 1615.1,
+   "days_with_data": 366
   },
   "1997": {
    "frost": 2,
@@ -233,7 +249,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 11,
    "precip_mm": 305.8,
-   "eto_hargreaves_mm": 1601.8
+   "eto_hargreaves_mm": 1601.8,
+   "days_with_data": 365
   },
   "1998": {
    "frost": 5,
@@ -246,7 +263,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 5,
    "precip_mm": 520.7,
-   "eto_hargreaves_mm": 1441.4
+   "eto_hargreaves_mm": 1441.4,
+   "days_with_data": 365
   },
   "1999": {
    "frost": 1,
@@ -259,7 +277,8 @@
    "extreme_rain_p95wet": 0,
    "heatwave_events": 9,
    "precip_mm": 211.4,
-   "eto_hargreaves_mm": 1572.5
+   "eto_hargreaves_mm": 1572.5,
+   "days_with_data": 365
   },
   "2000": {
    "frost": 0,
@@ -272,7 +291,8 @@
    "extreme_rain_p95wet": 0,
    "heatwave_events": 7,
    "precip_mm": 288.7,
-   "eto_hargreaves_mm": 1588.2
+   "eto_hargreaves_mm": 1588.2,
+   "days_with_data": 366
   },
   "2001": {
    "frost": 3,
@@ -285,7 +305,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 13,
    "precip_mm": 429.4,
-   "eto_hargreaves_mm": 1621.4
+   "eto_hargreaves_mm": 1621.4,
+   "days_with_data": 365
   },
   "2002": {
    "frost": 3,
@@ -298,7 +319,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 7,
    "precip_mm": 307.9,
-   "eto_hargreaves_mm": 1613.7
+   "eto_hargreaves_mm": 1613.7,
+   "days_with_data": 365
   },
   "2003": {
    "frost": 0,
@@ -311,7 +333,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 9,
    "precip_mm": 282.9,
-   "eto_hargreaves_mm": 1593.1
+   "eto_hargreaves_mm": 1593.1,
+   "days_with_data": 365
   },
   "2004": {
    "frost": 1,
@@ -324,7 +347,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 12,
    "precip_mm": 351.5,
-   "eto_hargreaves_mm": 1617.9
+   "eto_hargreaves_mm": 1617.9,
+   "days_with_data": 366
   },
   "2005": {
    "frost": 0,
@@ -337,7 +361,8 @@
    "extreme_rain_p95wet": 4,
    "heatwave_events": 3,
    "precip_mm": 491.2,
-   "eto_hargreaves_mm": 1535.7
+   "eto_hargreaves_mm": 1535.7,
+   "days_with_data": 365
   },
   "2006": {
    "frost": 0,
@@ -350,7 +375,8 @@
    "extreme_rain_p95wet": 5,
    "heatwave_events": 5,
    "precip_mm": 463.4,
-   "eto_hargreaves_mm": 1537.7
+   "eto_hargreaves_mm": 1537.7,
+   "days_with_data": 365
   },
   "2007": {
    "frost": 8,
@@ -363,7 +389,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 6,
    "precip_mm": 265.5,
-   "eto_hargreaves_mm": 1607.3
+   "eto_hargreaves_mm": 1607.3,
+   "days_with_data": 365
   },
   "2008": {
    "frost": 1,
@@ -376,7 +403,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 7,
    "precip_mm": 321.1,
-   "eto_hargreaves_mm": 1624.1
+   "eto_hargreaves_mm": 1624.1,
+   "days_with_data": 366
   },
   "2009": {
    "frost": 4,
@@ -389,7 +417,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 8,
    "precip_mm": 319.1,
-   "eto_hargreaves_mm": 1604.8
+   "eto_hargreaves_mm": 1604.8,
+   "days_with_data": 365
   },
   "2010": {
    "frost": 1,
@@ -402,7 +431,8 @@
    "extreme_rain_p95wet": 5,
    "heatwave_events": 7,
    "precip_mm": 703.1,
-   "eto_hargreaves_mm": 1514.9
+   "eto_hargreaves_mm": 1514.9,
+   "days_with_data": 365
   },
   "2011": {
    "frost": 2,
@@ -415,7 +445,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 6,
    "precip_mm": 306.2,
-   "eto_hargreaves_mm": 1488.1
+   "eto_hargreaves_mm": 1488.1,
+   "days_with_data": 365
   },
   "2012": {
    "frost": 0,
@@ -428,7 +459,8 @@
    "extreme_rain_p95wet": 4,
    "heatwave_events": 6,
    "precip_mm": 339.4,
-   "eto_hargreaves_mm": 1630.2
+   "eto_hargreaves_mm": 1630.2,
+   "days_with_data": 366
   },
   "2013": {
    "frost": 7,
@@ -441,7 +473,8 @@
    "extreme_rain_p95wet": 0,
    "heatwave_events": 9,
    "precip_mm": 117.0,
-   "eto_hargreaves_mm": 1645.3
+   "eto_hargreaves_mm": 1645.3,
+   "days_with_data": 365
   },
   "2014": {
    "frost": 1,
@@ -454,7 +487,8 @@
    "extreme_rain_p95wet": 3,
    "heatwave_events": 9,
    "precip_mm": 257.7,
-   "eto_hargreaves_mm": 1682.6
+   "eto_hargreaves_mm": 1682.6,
+   "days_with_data": 365
   },
   "2015": {
    "frost": 2,
@@ -467,7 +501,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 9,
    "precip_mm": 268.1,
-   "eto_hargreaves_mm": 1623.2
+   "eto_hargreaves_mm": 1623.2,
+   "days_with_data": 365
   },
   "2016": {
    "frost": 1,
@@ -480,7 +515,8 @@
    "extreme_rain_p95wet": 4,
    "heatwave_events": 6,
    "precip_mm": 395.0,
-   "eto_hargreaves_mm": 1625.5
+   "eto_hargreaves_mm": 1625.5,
+   "days_with_data": 366
   },
   "2017": {
    "frost": 0,
@@ -493,7 +529,8 @@
    "extreme_rain_p95wet": 5,
    "heatwave_events": 6,
    "precip_mm": 475.6,
-   "eto_hargreaves_mm": 1575.8
+   "eto_hargreaves_mm": 1575.8,
+   "days_with_data": 365
   },
   "2018": {
    "frost": 0,
@@ -506,7 +543,8 @@
    "extreme_rain_p95wet": 3,
    "heatwave_events": 6,
    "precip_mm": 322.6,
-   "eto_hargreaves_mm": 1626.9
+   "eto_hargreaves_mm": 1626.9,
+   "days_with_data": 365
   },
   "2019": {
    "frost": 2,
@@ -519,7 +557,8 @@
    "extreme_rain_p95wet": 6,
    "heatwave_events": 7,
    "precip_mm": 522.5,
-   "eto_hargreaves_mm": 1536.8
+   "eto_hargreaves_mm": 1536.8,
+   "days_with_data": 365
   },
   "2020": {
    "frost": 0,
@@ -532,7 +571,8 @@
    "extreme_rain_p95wet": 1,
    "heatwave_events": 8,
    "precip_mm": 219.6,
-   "eto_hargreaves_mm": 1608.9
+   "eto_hargreaves_mm": 1608.9,
+   "days_with_data": 366
   },
   "2021": {
    "frost": 0,
@@ -545,7 +585,8 @@
    "extreme_rain_p95wet": 3,
    "heatwave_events": 5,
    "precip_mm": 308.9,
-   "eto_hargreaves_mm": 1661.2
+   "eto_hargreaves_mm": 1661.2,
+   "days_with_data": 365
   },
   "2022": {
    "frost": 0,
@@ -558,7 +599,8 @@
    "extreme_rain_p95wet": 2,
    "heatwave_events": 7,
    "precip_mm": 275.6,
-   "eto_hargreaves_mm": 1629.3
+   "eto_hargreaves_mm": 1629.3,
+   "days_with_data": 365
   },
   "2023": {
    "frost": 1,
@@ -571,7 +613,8 @@
    "extreme_rain_p95wet": 6,
    "heatwave_events": 7,
    "precip_mm": 625.0,
-   "eto_hargreaves_mm": 1482.7
+   "eto_hargreaves_mm": 1482.7,
+   "days_with_data": 365
   },
   "2024": {
    "frost": 0,
@@ -584,7 +627,8 @@
    "extreme_rain_p95wet": 5,
    "heatwave_events": 6,
    "precip_mm": 417.8,
-   "eto_hargreaves_mm": 1627.1
+   "eto_hargreaves_mm": 1627.1,
+   "days_with_data": 366
   },
   "2025": {
    "frost": 0,
@@ -597,7 +641,23 @@
    "extreme_rain_p95wet": 5,
    "heatwave_events": 5,
    "precip_mm": 444.1,
-   "eto_hargreaves_mm": 1581.6
+   "eto_hargreaves_mm": 1581.6,
+   "days_with_data": 365
+  },
+  "2026": {
+   "frost": 0,
+   "hard_frost": 0,
+   "heat": 114,
+   "severe_heat": 52,
+   "heatwave_day": 113,
+   "extreme_rain_25mm": 3,
+   "rain_3day_75mm": 0,
+   "extreme_rain_p95wet": 3,
+   "heatwave_events": 9,
+   "precip_mm": 258.1,
+   "eto_hargreaves_mm": 1554.5,
+   "days_with_data": 315,
+   "partial_year_through": "2026-11-11"
   }
  }
 }

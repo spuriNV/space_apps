@@ -1,7 +1,8 @@
 {
   "preset_id": "car_colusa_rice",
-  "generated_at": "2026-11-14T20:21:04+00:00",
+  "generated_at": "2026-11-14T22:53:44+00:00",
   "detector": "rule_ndvi",
+  "data_through": "2026-11-11",
   "classes": {
     "unknown": {
       "label": "No clear observation within 30 days",
@@ -11347,6 +11348,1210 @@
           "bsi": 0.155,
           "clear_frac": 1.0,
           "class": "partial"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "segments": [
+        {
+          "start": "2026-01-01",
+          "end": "2026-01-31",
+          "start_doy": 1,
+          "end_doy": 31,
+          "days": 31,
+          "class": "partial",
+          "n_obs": 5
+        },
+        {
+          "start": "2026-02-01",
+          "end": "2026-02-02",
+          "start_doy": 32,
+          "end_doy": 33,
+          "days": 2,
+          "class": "bare",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-02-03",
+          "end": "2026-02-06",
+          "start_doy": 34,
+          "end_doy": 37,
+          "days": 4,
+          "class": "partial",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-02-07",
+          "end": "2026-02-10",
+          "start_doy": 38,
+          "end_doy": 41,
+          "days": 4,
+          "class": "bare",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-02-11",
+          "end": "2026-03-03",
+          "start_doy": 42,
+          "end_doy": 62,
+          "days": 21,
+          "class": "partial",
+          "n_obs": 4
+        },
+        {
+          "start": "2026-03-04",
+          "end": "2026-03-09",
+          "start_doy": 63,
+          "end_doy": 68,
+          "days": 6,
+          "class": "bare",
+          "n_obs": 3
+        },
+        {
+          "start": "2026-03-10",
+          "end": "2026-03-12",
+          "start_doy": 69,
+          "end_doy": 71,
+          "days": 3,
+          "class": "partial",
+          "n_obs": 2
+        },
+        {
+          "start": "2026-03-13",
+          "end": "2026-03-16",
+          "start_doy": 72,
+          "end_doy": 75,
+          "days": 4,
+          "class": "bare",
+          "n_obs": 2
+        },
+        {
+          "start": "2026-03-17",
+          "end": "2026-03-18",
+          "start_doy": 76,
+          "end_doy": 77,
+          "days": 2,
+          "class": "partial",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-03-19",
+          "end": "2026-03-25",
+          "start_doy": 78,
+          "end_doy": 84,
+          "days": 7,
+          "class": "bare",
+          "n_obs": 2
+        },
+        {
+          "start": "2026-03-26",
+          "end": "2026-04-01",
+          "start_doy": 85,
+          "end_doy": 91,
+          "days": 7,
+          "class": "partial",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-04-02",
+          "end": "2026-04-03",
+          "start_doy": 92,
+          "end_doy": 93,
+          "days": 2,
+          "class": "bare",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-04-04",
+          "end": "2026-04-04",
+          "start_doy": 94,
+          "end_doy": 94,
+          "days": 1,
+          "class": "partial",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-04-05",
+          "end": "2026-04-20",
+          "start_doy": 95,
+          "end_doy": 110,
+          "days": 16,
+          "class": "bare",
+          "n_obs": 2
+        },
+        {
+          "start": "2026-04-21",
+          "end": "2026-04-23",
+          "start_doy": 111,
+          "end_doy": 113,
+          "days": 3,
+          "class": "partial",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-04-24",
+          "end": "2026-05-25",
+          "start_doy": 114,
+          "end_doy": 145,
+          "days": 32,
+          "class": "bare",
+          "n_obs": 7
+        },
+        {
+          "start": "2026-05-26",
+          "end": "2026-06-04",
+          "start_doy": 146,
+          "end_doy": 155,
+          "days": 10,
+          "class": "water",
+          "n_obs": 3
+        },
+        {
+          "start": "2026-06-05",
+          "end": "2026-06-06",
+          "start_doy": 156,
+          "end_doy": 157,
+          "days": 2,
+          "class": "bare",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-06-07",
+          "end": "2026-06-10",
+          "start_doy": 158,
+          "end_doy": 161,
+          "days": 4,
+          "class": "water",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-06-11",
+          "end": "2026-06-14",
+          "start_doy": 162,
+          "end_doy": 165,
+          "days": 4,
+          "class": "partial",
+          "n_obs": 1
+        },
+        {
+          "start": "2026-06-15",
+          "end": "2026-10-03",
+          "start_doy": 166,
+          "end_doy": 276,
+          "days": 111,
+          "class": "covered",
+          "n_obs": 38
+        },
+        {
+          "start": "2026-10-04",
+          "end": "2026-10-28",
+          "start_doy": 277,
+          "end_doy": 301,
+          "days": 25,
+          "class": "partial",
+          "n_obs": 7
+        },
+        {
+          "start": "2026-10-29",
+          "end": "2026-11-11",
+          "start_doy": 302,
+          "end_doy": 315,
+          "days": 14,
+          "class": "bare",
+          "n_obs": 4
+        },
+        {
+          "start": "2026-11-12",
+          "end": "2026-12-31",
+          "start_doy": 316,
+          "end_doy": 365,
+          "days": 50,
+          "class": "unknown",
+          "n_obs": 0
+        }
+      ],
+      "transitions": [
+        {
+          "date": "2026-02-01",
+          "from": "partial",
+          "to": "bare",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-02-03",
+          "from": "bare",
+          "to": "partial",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-02-07",
+          "from": "partial",
+          "to": "bare",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-02-11",
+          "from": "bare",
+          "to": "partial",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-03-04",
+          "from": "partial",
+          "to": "bare",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-03-10",
+          "from": "bare",
+          "to": "partial",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-03-13",
+          "from": "partial",
+          "to": "bare",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-03-17",
+          "from": "bare",
+          "to": "partial",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-03-19",
+          "from": "partial",
+          "to": "bare",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-03-26",
+          "from": "bare",
+          "to": "partial",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-04-02",
+          "from": "partial",
+          "to": "bare",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-04-04",
+          "from": "bare",
+          "to": "partial",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-04-05",
+          "from": "partial",
+          "to": "bare",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-04-21",
+          "from": "bare",
+          "to": "partial",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-04-24",
+          "from": "partial",
+          "to": "bare",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-05-26",
+          "from": "bare",
+          "to": "water",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-06-05",
+          "from": "water",
+          "to": "bare",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-06-07",
+          "from": "bare",
+          "to": "water",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-06-11",
+          "from": "water",
+          "to": "partial",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-06-15",
+          "from": "partial",
+          "to": "covered",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-10-04",
+          "from": "covered",
+          "to": "partial",
+          "after_unknown_gap": false
+        },
+        {
+          "date": "2026-10-29",
+          "from": "partial",
+          "to": "bare",
+          "after_unknown_gap": false
+        }
+      ],
+      "markers": [
+        {
+          "date": "2026-05-28",
+          "type": "senescence_harvest",
+          "ndvi": -0.067,
+          "from_30d_max": 0.19
+        },
+        {
+          "date": "2026-06-15",
+          "type": "green_up",
+          "ndvi": 0.351
+        },
+        {
+          "date": "2026-09-18",
+          "type": "senescence_harvest",
+          "ndvi": 0.66,
+          "from_30d_max": 0.89
+        },
+        {
+          "date": "2026-10-29",
+          "type": "senescence_harvest",
+          "ndvi": 0.192,
+          "from_30d_max": 0.412
+        }
+      ],
+      "summary": {
+        "days_by_class": {
+          "unknown": 50,
+          "bare": 89,
+          "partial": 101,
+          "covered": 111,
+          "water": 14
+        },
+        "n_obs": 90,
+        "n_obs_s2": 53,
+        "n_obs_landsat": 37
+      },
+      "observations": [
+        {
+          "date": "2026-01-06",
+          "sensor": "landsat",
+          "ndvi": 0.274,
+          "ndwi": -0.41,
+          "bsi": 0.021,
+          "clear_frac": 0.95,
+          "class": "partial"
+        },
+        {
+          "date": "2026-01-08",
+          "sensor": "s2",
+          "ndvi": 0.246,
+          "ndwi": -0.427,
+          "bsi": 0.095,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-01-13",
+          "sensor": "s2",
+          "ndvi": 0.232,
+          "ndwi": -0.4,
+          "bsi": 0.116,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-01-18",
+          "sensor": "s2",
+          "ndvi": 0.213,
+          "ndwi": -0.367,
+          "bsi": 0.125,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-01-22",
+          "sensor": "landsat",
+          "ndvi": 0.252,
+          "ndwi": -0.373,
+          "bsi": 0.139,
+          "clear_frac": 0.6,
+          "class": "partial"
+        },
+        {
+          "date": "2026-02-02",
+          "sensor": "s2",
+          "ndvi": 0.191,
+          "ndwi": -0.335,
+          "bsi": 0.219,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-02-06",
+          "sensor": "landsat",
+          "ndvi": 0.227,
+          "ndwi": -0.343,
+          "bsi": 0.214,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-02-07",
+          "sensor": "s2",
+          "ndvi": 0.168,
+          "ndwi": -0.281,
+          "bsi": 0.186,
+          "clear_frac": 0.95,
+          "class": "bare"
+        },
+        {
+          "date": "2026-02-12",
+          "sensor": "s2",
+          "ndvi": 0.215,
+          "ndwi": -0.388,
+          "bsi": 0.161,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-02-22",
+          "sensor": "landsat",
+          "ndvi": 0.287,
+          "ndwi": -0.407,
+          "bsi": 0.074,
+          "clear_frac": 0.97,
+          "class": "partial"
+        },
+        {
+          "date": "2026-03-02",
+          "sensor": "landsat",
+          "ndvi": 0.259,
+          "ndwi": -0.374,
+          "bsi": 0.162,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-03-03",
+          "sensor": "landsat",
+          "ndvi": 0.25,
+          "ndwi": -0.363,
+          "bsi": 0.175,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-03-04",
+          "sensor": "s2",
+          "ndvi": 0.198,
+          "ndwi": -0.326,
+          "bsi": 0.195,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-03-06",
+          "sensor": "s2",
+          "ndvi": 0.191,
+          "ndwi": -0.321,
+          "bsi": 0.218,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-03-09",
+          "sensor": "s2",
+          "ndvi": 0.181,
+          "ndwi": -0.287,
+          "bsi": 0.189,
+          "clear_frac": 0.61,
+          "class": "bare"
+        },
+        {
+          "date": "2026-03-10",
+          "sensor": "landsat",
+          "ndvi": 0.233,
+          "ndwi": -0.335,
+          "bsi": 0.203,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-03-11",
+          "sensor": "landsat",
+          "ndvi": 0.229,
+          "ndwi": -0.339,
+          "bsi": 0.208,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-03-14",
+          "sensor": "s2",
+          "ndvi": 0.175,
+          "ndwi": -0.3,
+          "bsi": 0.237,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-03-16",
+          "sensor": "s2",
+          "ndvi": 0.188,
+          "ndwi": -0.306,
+          "bsi": 0.219,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-03-18",
+          "sensor": "landsat",
+          "ndvi": 0.233,
+          "ndwi": -0.339,
+          "bsi": 0.221,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-03-19",
+          "sensor": "s2",
+          "ndvi": 0.188,
+          "ndwi": -0.305,
+          "bsi": 0.226,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-03-24",
+          "sensor": "s2",
+          "ndvi": 0.185,
+          "ndwi": -0.301,
+          "bsi": 0.258,
+          "clear_frac": 0.7,
+          "class": "bare"
+        },
+        {
+          "date": "2026-03-27",
+          "sensor": "landsat",
+          "ndvi": 0.225,
+          "ndwi": -0.283,
+          "bsi": 0.133,
+          "clear_frac": 0.92,
+          "class": "partial"
+        },
+        {
+          "date": "2026-04-03",
+          "sensor": "s2",
+          "ndvi": 0.193,
+          "ndwi": -0.339,
+          "bsi": 0.272,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-04-04",
+          "sensor": "landsat",
+          "ndvi": 0.203,
+          "ndwi": -0.304,
+          "bsi": 0.225,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-04-05",
+          "sensor": "s2",
+          "ndvi": 0.167,
+          "ndwi": -0.299,
+          "bsi": 0.272,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-04-13",
+          "sensor": "s2",
+          "ndvi": 0.173,
+          "ndwi": -0.32,
+          "bsi": 0.253,
+          "clear_frac": 0.95,
+          "class": "bare"
+        },
+        {
+          "date": "2026-04-23",
+          "sensor": "s2",
+          "ndvi": 0.21,
+          "ndwi": -0.36,
+          "bsi": 0.267,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-04-28",
+          "sensor": "s2",
+          "ndvi": 0.158,
+          "ndwi": -0.277,
+          "bsi": 0.247,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-05-08",
+          "sensor": "s2",
+          "ndvi": 0.149,
+          "ndwi": -0.269,
+          "bsi": 0.258,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-05-13",
+          "sensor": "s2",
+          "ndvi": 0.141,
+          "ndwi": -0.269,
+          "bsi": 0.247,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-05-14",
+          "sensor": "landsat",
+          "ndvi": 0.171,
+          "ndwi": -0.289,
+          "bsi": 0.234,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-05-15",
+          "sensor": "s2",
+          "ndvi": 0.149,
+          "ndwi": -0.275,
+          "bsi": 0.232,
+          "clear_frac": 0.91,
+          "class": "bare"
+        },
+        {
+          "date": "2026-05-21",
+          "sensor": "landsat",
+          "ndvi": 0.174,
+          "ndwi": -0.25,
+          "bsi": 0.003,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-05-22",
+          "sensor": "landsat",
+          "ndvi": 0.19,
+          "ndwi": -0.261,
+          "bsi": 0.014,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-05-28",
+          "sensor": "s2",
+          "ndvi": -0.067,
+          "ndwi": 0.045,
+          "bsi": -0.156,
+          "clear_frac": 0.77,
+          "class": "water"
+        },
+        {
+          "date": "2026-05-30",
+          "sensor": "landsat",
+          "ndvi": -0.054,
+          "ndwi": 0.002,
+          "bsi": 0.001,
+          "clear_frac": 1.0,
+          "class": "water"
+        },
+        {
+          "date": "2026-06-02",
+          "sensor": "s2",
+          "ndvi": -0.017,
+          "ndwi": -0.052,
+          "bsi": -0.082,
+          "clear_frac": 0.76,
+          "class": "water"
+        },
+        {
+          "date": "2026-06-06",
+          "sensor": "landsat",
+          "ndvi": 0.092,
+          "ndwi": -0.158,
+          "bsi": -0.059,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-06-07",
+          "sensor": "s2",
+          "ndvi": -0.016,
+          "ndwi": -0.019,
+          "bsi": -0.111,
+          "clear_frac": 0.5,
+          "class": "water"
+        },
+        {
+          "date": "2026-06-14",
+          "sensor": "landsat",
+          "ndvi": 0.296,
+          "ndwi": -0.268,
+          "bsi": -0.085,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-06-15",
+          "sensor": "landsat",
+          "ndvi": 0.351,
+          "ndwi": -0.303,
+          "bsi": -0.122,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-06-22",
+          "sensor": "s2",
+          "ndvi": 0.603,
+          "ndwi": -0.466,
+          "bsi": -0.182,
+          "clear_frac": 0.87,
+          "class": "covered"
+        },
+        {
+          "date": "2026-06-23",
+          "sensor": "landsat",
+          "ndvi": 0.628,
+          "ndwi": -0.536,
+          "bsi": -0.18,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-06-24",
+          "sensor": "s2",
+          "ndvi": 0.653,
+          "ndwi": -0.531,
+          "bsi": -0.179,
+          "clear_frac": 0.87,
+          "class": "covered"
+        },
+        {
+          "date": "2026-06-27",
+          "sensor": "s2",
+          "ndvi": 0.678,
+          "ndwi": -0.546,
+          "bsi": -0.225,
+          "clear_frac": 0.87,
+          "class": "covered"
+        },
+        {
+          "date": "2026-06-30",
+          "sensor": "landsat",
+          "ndvi": 0.706,
+          "ndwi": -0.617,
+          "bsi": -0.243,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-01",
+          "sensor": "landsat",
+          "ndvi": 0.706,
+          "ndwi": -0.619,
+          "bsi": -0.24,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-02",
+          "sensor": "s2",
+          "ndvi": 0.735,
+          "ndwi": -0.612,
+          "bsi": -0.244,
+          "clear_frac": 0.98,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-07",
+          "sensor": "s2",
+          "ndvi": 0.831,
+          "ndwi": -0.716,
+          "bsi": -0.347,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-08",
+          "sensor": "landsat",
+          "ndvi": 0.832,
+          "ndwi": -0.749,
+          "bsi": -0.367,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-09",
+          "sensor": "landsat",
+          "ndvi": 0.836,
+          "ndwi": -0.739,
+          "bsi": -0.367,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-14",
+          "sensor": "s2",
+          "ndvi": 0.892,
+          "ndwi": -0.792,
+          "bsi": -0.391,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-16",
+          "sensor": "landsat",
+          "ndvi": 0.9,
+          "ndwi": -0.831,
+          "bsi": -0.469,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-17",
+          "sensor": "s2",
+          "ndvi": 0.904,
+          "ndwi": -0.815,
+          "bsi": -0.454,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-22",
+          "sensor": "s2",
+          "ndvi": 0.931,
+          "ndwi": -0.845,
+          "bsi": -0.462,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-24",
+          "sensor": "landsat",
+          "ndvi": 0.934,
+          "ndwi": -0.871,
+          "bsi": -0.524,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-25",
+          "sensor": "landsat",
+          "ndvi": 0.908,
+          "ndwi": -0.833,
+          "bsi": -0.499,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-07-27",
+          "sensor": "s2",
+          "ndvi": 0.93,
+          "ndwi": -0.849,
+          "bsi": -0.506,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-01",
+          "sensor": "s2",
+          "ndvi": 0.929,
+          "ndwi": -0.85,
+          "bsi": -0.501,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-02",
+          "sensor": "landsat",
+          "ndvi": 0.909,
+          "ndwi": -0.837,
+          "bsi": -0.518,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-03",
+          "sensor": "s2",
+          "ndvi": 0.934,
+          "ndwi": -0.857,
+          "bsi": -0.499,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-06",
+          "sensor": "s2",
+          "ndvi": 0.933,
+          "ndwi": -0.85,
+          "bsi": -0.507,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-09",
+          "sensor": "landsat",
+          "ndvi": 0.914,
+          "ndwi": -0.844,
+          "bsi": -0.531,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-11",
+          "sensor": "s2",
+          "ndvi": 0.927,
+          "ndwi": -0.84,
+          "bsi": -0.497,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-18",
+          "sensor": "landsat",
+          "ndvi": 0.867,
+          "ndwi": -0.79,
+          "bsi": -0.467,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-23",
+          "sensor": "s2",
+          "ndvi": 0.89,
+          "ndwi": -0.766,
+          "bsi": -0.458,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-26",
+          "sensor": "s2",
+          "ndvi": 0.865,
+          "ndwi": -0.73,
+          "bsi": -0.457,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-08-31",
+          "sensor": "s2",
+          "ndvi": 0.515,
+          "ndwi": -0.463,
+          "bsi": -0.227,
+          "clear_frac": 0.99,
+          "class": "covered"
+        },
+        {
+          "date": "2026-09-05",
+          "sensor": "s2",
+          "ndvi": 0.825,
+          "ndwi": -0.697,
+          "bsi": -0.412,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-09-10",
+          "sensor": "s2",
+          "ndvi": 0.769,
+          "ndwi": -0.648,
+          "bsi": -0.339,
+          "clear_frac": 0.53,
+          "class": "covered"
+        },
+        {
+          "date": "2026-09-11",
+          "sensor": "landsat",
+          "ndvi": 0.736,
+          "ndwi": -0.664,
+          "bsi": -0.349,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-09-12",
+          "sensor": "s2",
+          "ndvi": 0.754,
+          "ndwi": -0.651,
+          "bsi": -0.327,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-09-15",
+          "sensor": "s2",
+          "ndvi": 0.724,
+          "ndwi": -0.64,
+          "bsi": -0.324,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-09-18",
+          "sensor": "landsat",
+          "ndvi": 0.66,
+          "ndwi": -0.633,
+          "bsi": -0.289,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-09-19",
+          "sensor": "landsat",
+          "ndvi": 0.631,
+          "ndwi": -0.611,
+          "bsi": -0.255,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-09-27",
+          "sensor": "landsat",
+          "ndvi": 0.49,
+          "ndwi": -0.536,
+          "bsi": -0.114,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-09-30",
+          "sensor": "s2",
+          "ndvi": 0.412,
+          "ndwi": -0.491,
+          "bsi": -0.032,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-10-02",
+          "sensor": "s2",
+          "ndvi": 0.368,
+          "ndwi": -0.477,
+          "bsi": 0.005,
+          "clear_frac": 1.0,
+          "class": "covered"
+        },
+        {
+          "date": "2026-10-05",
+          "sensor": "s2",
+          "ndvi": 0.335,
+          "ndwi": -0.458,
+          "bsi": 0.038,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-10-10",
+          "sensor": "s2",
+          "ndvi": 0.302,
+          "ndwi": -0.438,
+          "bsi": 0.06,
+          "clear_frac": 0.9,
+          "class": "partial"
+        },
+        {
+          "date": "2026-10-12",
+          "sensor": "landsat",
+          "ndvi": 0.339,
+          "ndwi": -0.461,
+          "bsi": 0.031,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-10-13",
+          "sensor": "landsat",
+          "ndvi": 0.336,
+          "ndwi": -0.455,
+          "bsi": 0.034,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-10-15",
+          "sensor": "s2",
+          "ndvi": 0.311,
+          "ndwi": -0.457,
+          "bsi": 0.058,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-10-20",
+          "sensor": "s2",
+          "ndvi": 0.214,
+          "ndwi": -0.389,
+          "bsi": 0.154,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-10-28",
+          "sensor": "landsat",
+          "ndvi": 0.228,
+          "ndwi": -0.378,
+          "bsi": 0.167,
+          "clear_frac": 1.0,
+          "class": "partial"
+        },
+        {
+          "date": "2026-10-29",
+          "sensor": "landsat",
+          "ndvi": 0.192,
+          "ndwi": -0.303,
+          "bsi": 0.081,
+          "clear_frac": 0.51,
+          "class": "bare"
+        },
+        {
+          "date": "2026-10-30",
+          "sensor": "s2",
+          "ndvi": 0.163,
+          "ndwi": -0.318,
+          "bsi": 0.173,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-11-04",
+          "sensor": "s2",
+          "ndvi": 0.184,
+          "ndwi": -0.365,
+          "bsi": 0.161,
+          "clear_frac": 1.0,
+          "class": "bare"
+        },
+        {
+          "date": "2026-11-11",
+          "sensor": "s2",
+          "ndvi": 0.181,
+          "ndwi": -0.356,
+          "bsi": 0.22,
+          "clear_frac": 1.0,
+          "class": "bare"
         }
       ]
     }

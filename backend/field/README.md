@@ -68,12 +68,12 @@ Masks: S2 clear = SCL ∈ {2 dark area, 4 vegetation, 5 not vegetated, 6 water} 
       "summary":    { "days_by_class": {"unknown":0,"bare":317,...}, "n_obs":56, "n_obs_s2":51, "n_obs_landsat":5 },
       "observations":[ {"date","sensor":"s2|landsat","ndvi","ndwi","bsi","clear_frac","class"} ] } ] }
 ```
-Segments tile every day of the year (Jan 1 → Dec 31) with no overlaps, so a strip can draw `start_doy..end_doy` rectangles directly in `classes[class].color`; `unknown` is hatched. Markers and transitions are point events on the same axis. Years 2016-2025.
+Segments tile every day of the year (Jan 1 → Dec 31) with no overlaps, so a strip can draw `start_doy..end_doy` rectangles directly in `classes[class].color`; `unknown` is hatched. Markers and transitions are point events on the same axis. Years 2016-2026. 2026 is a partial year: top-level `data_through` (2026-11-11) is the last observation, and days after it are `unknown` (not yet observed). Earlier years are unchanged by the 2026 extension.
 
 Rules (spec B5.1, thresholds U, not tuned): observation used if field clear fraction ≥ 0.5 and ≥ 20 clear pixels; same date S2 over Landsat. water if NDWI median > 0.3 or > 50 % of clear pixels flagged water (SCL 6 / QA bit 7); else NDVI median < 0.20 bare, ≤ 0.35 partial, > 0.35 covered. Days between two observations ≤ 30 days apart take the class of linearly interpolated NDVI (nearest observation if either is water); longer gaps are unknown. green_up = first of 3 consecutive obs > 0.35 after one ≤ 0.35; senescence_harvest = first of 2 consecutive obs each > 0.2 below the 30-day running max (alfalfa cuttings show up as this marker too).
 
 ### `out/<preset_id>/grid.geojson` (3D drill-down)
-30 m cells in EPSG:32610 (edges on multiples of 30 m) clipped to the polygon, written in EPSG:4326. Feature properties: `cell_id, row, col, area_m2, frac_in_field`, then per layer `ndvi_<key>` (null if no clear pixel) and `n_ndvi_<key>`. Layers (listed in the top-level `layers` array): `ndvi_<year>_q<1-4>` = median over S2 scenes (field clear ≥ 0.5) of the cell mean, 2016-2025, with `n_` = scenes; `ndvi_d_<YYYYMMDD>` = single clear (≥ 0.95) scene nearest 15 Jan/Apr/Jul/Oct of 2021-2023, with `n_` = 10 m pixels. Cell value = mean of the 10 m S2 pixels whose centre is in the cell (10 → 30 m mean, B2.14). For CAF the S2/HLS tiles are in UTM 11, so CAF cells are not HLS-aligned (S2 pixels are reprojected point-wise into the 32610 cells).
+30 m cells in EPSG:32610 (edges on multiples of 30 m) clipped to the polygon, written in EPSG:4326. Feature properties: `cell_id, row, col, area_m2, frac_in_field`, then per layer `ndvi_<key>` (null if no clear pixel) and `n_ndvi_<key>`. Layers (listed in the top-level `layers` array): `ndvi_<year>_q<1-4>` = median over S2 scenes (field clear ≥ 0.5) of the cell mean, 2016-2026 (Q4 2026 runs to 11 Nov), with `n_` = scenes; `ndvi_d_<YYYYMMDD>` = single clear (≥ 0.95) scene nearest 15 Jan/Apr/Jul/Oct of 2021-2023 and 2026, with `n_` = 10 m pixels. Cell value = mean of the 10 m S2 pixels whose centre is in the cell (10 → 30 m mean, B2.14). For CAF the S2/HLS tiles are in UTM 11, so CAF cells are not HLS-aligned (S2 pixels are reprojected point-wise into the 32610 cells).
 
 ## Verified / results
 Run on 2026-11-14 under Python 3.12.13 with rasterio 1.5.2 (GDAL 3.12) wheels. uv installed them without problems.
@@ -109,13 +109,13 @@ PASS | NDVI in [-1,1] s2 caf_tulare_forage | 1605 values, min -0.003, max 0.987;
 PASS | clear_frac in [0,1] s2 caf_tulare_forage | median 1.00; scenes with clear_frac>=0.5: 496
 PASS | NDVI in [-1,1] landsat caf_tulare_forage | 1119 values, min -0.009, max 0.938; 489 scenes 2016-01-13..2026-11-08
 PASS | clear_frac in [0,1] landsat caf_tulare_forage | median 0.98; scenes with clear_frac>=0.5: 362
-PASS | usable obs per year car_colusa_rice (total(S2/Landsat), need >=12) | 2016:66(10/56) 2017:67(16/51) 2018:90(47/43) 2019:81(40/41) 2020:98(51/47) 2021:89(45/44) 2022:96(51/45) 2023:104(48/56) 2024:103(49/54) 2025:94(51/43)
-PASS | usable obs per year caf_tulare_forage (total(S2/Landsat), need >=12) | 2016:46(13/33) 2017:50(19/31) 2018:81(52/29) 2019:77(52/25) 2020:77(49/28) 2021:82(54/28) 2022:70(51/19) 2023:91(51/40) 2024:74(47/27) 2025:80(57/23)
+PASS | usable obs per year car_colusa_rice (total(S2/Landsat), need >=12) | 2016:66(10/56) 2017:67(16/51) 2018:90(47/43) 2019:81(40/41) 2020:98(51/47) 2021:89(45/44) 2022:96(51/45) 2023:104(48/56) 2024:103(49/54) 2025:94(51/43) 2026:90(53/37)
+PASS | usable obs per year caf_tulare_forage (total(S2/Landsat), need >=12) | 2016:46(13/33) 2017:50(19/31) 2018:81(52/29) 2019:77(52/25) 2020:77(49/28) 2021:82(54/28) 2022:70(51/19) 2023:91(51/40) 2024:74(47/27) 2025:80(57/23) 2026:73(49/24)
 PASS | CAR 2022 calendar mostly bare | bare 297 of 365 known days (81%); all: {'unknown': 0, 'bare': 297, 'partial': 34, 'covered': 0, 'water': 34}
 FAIL | CAR winter (Nov-Feb after a CDL rice year) reads water rather than bare | 3/6 winters with water days > bare days | 2017/18: water 19 bare 54 partial 5 covered 0 unknown 42; 2018/19: water 0 bare 74 partial 46 covered 0 unknown 0; 2019/20: water 48 bare 37 partial 35 covered 0 unknown 0; 2021/22: water 37 bare 58 partial 25 covered 0 unknown 0; 2023/24: water 38 bare 36 partial 46 covered 0 unknown 0; 2024/25: water 31 bare 25 partial 64 covered 0 unknown 0
 INFO | CAF spring 2023 (Mar-Jun) water on the field | no water seen: days {'unknown': 0, 'bare': 34, 'partial': 42, 'covered': 46, 'water': 0}; 36 obs, max field-median NDWI -0.241
-PASS | grid car_colusa_rice | 724 cells, clipped area 60.25 ha, 52 NDVI layers, values in [-1,1]: True
-PASS | grid caf_tulare_forage | 365 cells, clipped area 29.47 ha, 52 NDVI layers, values in [-1,1]: True
+PASS | grid car_colusa_rice | 724 cells, clipped area 60.25 ha, 60 NDVI layers, values in [-1,1]: True
+PASS | grid caf_tulare_forage | 365 cells, clipped area 29.47 ha, 60 NDVI layers, values in [-1,1]: True
 ---- 23 PASS, 1 FAIL, 2 INFO
 ```
 
@@ -127,6 +127,9 @@ What the data says:
 - B10.1 check 7's "consensus vs modelled baseline >= 60%" needs the engine's modelled cover. It is not part of this chunk and is not run here.
 - Cross-sensor note: over bare soil in 2022, Landsat field NDVI is about 0.04 higher than S2 (0.19 vs 0.15). No harmonisation is applied, and S2 wins when both sensors observe the same day.
 
+
+## 2026 update (run 2026-11-14)
+`s2.parquet` / `landsat.parquet` already held 2026 (STAC search on 14 Nov found no scene that is not cached; the other items are same-day duplicates of another tile). Latest scenes: CAR S2 2026-11-11 (75 scenes in 2026, 53 usable), Landsat 2026-10-29 (70, 37 usable on days without S2); CAF S2 2026-11-11 (72, 49 usable), Landsat 2026-11-08 (38, 24 usable). `detector.py` now covers 2016-2026 and `grid.py` adds 2026 quarter medians and 2026 key-date scenes. Re-running `timeseries` re-reads the whole archive, so only do it when new scenes exist.
 
 ## Blocked
 - **HLS (B2.4), MODIS (B2.7), ECOSTRESS (B2.8), OPERA DSWx (B2.11)**: these need a NASA Earthdata login, which we do not have, so nothing was attempted. With a login, DSWx would give an independent water check for the CAR winter floods and the CAF 2023 flood extent. HLS would be the spec's primary 30 m record.

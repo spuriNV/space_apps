@@ -35,7 +35,7 @@ BARE, COVER = 0.20, 0.35
 NDWI_WATER, WATER_FRAC = 0.3, 0.5
 MAX_GAP = 30
 GREENUP_N, DROP, DROP_N, DROP_WIN = 3, 0.2, 2, 30
-YEARS = range(2016, 2026)
+YEARS = range(2016, 2027)
 
 CLASSES = {
     "unknown": {"label": "No clear observation within 30 days", "color": "#bdbdbd", "pattern": "hatched"},
@@ -132,7 +132,7 @@ def transitions(segs):
 
 def build(preset: str):
     d = load_obs(preset)
-    full = daily(d, "2015-07-01", "2025-12-31")
+    full = daily(d, "2015-07-01", "2026-12-31")
     marks = markers(d)
     years = []
     for y in YEARS:
@@ -155,6 +155,7 @@ def build(preset: str):
         })
     doc = {
         "preset_id": preset, "generated_at": now(), "detector": "rule_ndvi",
+        "data_through": d.date.max().strftime("%Y-%m-%d"),  # days after this date are 'unknown' (not yet observed)
         "classes": CLASSES,
         "method": {"bare_lt": BARE, "covered_gt": COVER, "water": f"NDWI > {NDWI_WATER} or water mask > {WATER_FRAC}",
                    "max_interp_gap_days": MAX_GAP, "min_clear_frac": MIN_CLEAR, "min_clear_pixels": MIN_PIXELS,

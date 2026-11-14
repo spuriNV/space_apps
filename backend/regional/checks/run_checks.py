@@ -31,8 +31,10 @@ for pid, pr in PRESETS.items():
     rep(meta["units"]["PRECTOTCORR"] == "mm/day" and meta["units"]["T2M"] == "C" and meta["units"]["ALLSKY_SFC_SW_DWN"].startswith("MJ"), "POWER units mm/day, C, MJ/m^2/day", str(meta["units"]))
     rep(bool((pw.T2M_MAX >= pw.T2M_MIN).all()), "POWER Tmax >= Tmin every day")
     # 2. rows / coverage
-    exp = pd.date_range("1981-01-01", "2025-12-31")
-    rep(len(pw) == len(exp) and pw.index.equals(exp), "POWER row count and daily coverage 1981-01-01..2025-12-31", f"{len(pw)} rows vs {len(exp)} expected")
+    # POWER now runs from 1981-01-01 through the latest published day (a few days behind today), with no gaps
+    exp = pd.date_range("1981-01-01", pw.index.max())
+    rep(len(pw) == len(exp) and pw.index.equals(exp) and pw.index.max() >= pd.Timestamp("2026-01-01"),
+        f"POWER row count and daily coverage 1981-01-01..{pw.index.max().date()} (no gaps, includes 2026)", f"{len(pw)} rows vs {len(exp)} expected")
     # 3. fill values
     rep(not (pw == -999).any().any(), "POWER fill value -999 replaced by NaN", f"NaN counts: { {k:int(v) for k,v in pw.isna().sum().items() if v} }")
     na_other = int(pw.drop(columns="ALLSKY_SFC_SW_DWN").isna().sum().sum())
@@ -40,7 +42,7 @@ for pid, pr in PRESETS.items():
     d = load(pid, "../../../backend/regional/out/%s/daily_derived.parquet" % pid) if False else pd.read_parquet(OUT / pid / "daily_derived.parquet").set_index("date")
     rep(d.eto_hargreaves_mm.between(0, 15).all() and d.eto_hargreaves_mm.notna().all(), "Hargreaves ETo 0-15 mm/day, no NaN", f"max {d.eto_hargreaves_mm.max():.2f}")
     # 4. Jan-Mar 2023 rank
-    p = pw.PRECTOTCORR
+    p = pw.PRECTOTCORR[pw.index.year <= 2025]   # 2026 is a partial year; rank stays on 1981-2025
     jm = p[p.index.month <= 3].groupby(p[p.index.month <= 3].index.year).sum().sort_values(ascending=False)
     rank = list(jm.index).index(2023) + 1
     info("Jan-Mar precip by year (top 5)", ", ".join(f"{y}:{v:.0f}mm" for y, v in jm.head(5).items()) + f"; 2023 = {jm[2023]:.0f} mm")
