@@ -57,20 +57,20 @@ recs = score("car_colusa_rice", weights={"water_use": 4, "erosion": 3}, constrai
 | `irrigation_need_mm` | B4.1 | Over each **irrigated** calendar entry, per (cycle-year, month): Σ max(0, ETc − 0.8 P). Rice adds F (U, 300-600 mm). Averaged per cycle year. Covers are rain-fed: their ETc is counted but there is no I |
 | `allocation_check` | B4.1 | Compares the largest single cycle-year I with the allocation × 304.8 mm. `exceeds_allocation` if value > allocation; `may_exceed_allocation` if only high > allocation. Either adds a local_review item |
 | `water_use` | B4.1 | 100 × clamp(1 − I/I_max). I_max = the largest I (high end) among the location's strategies under default weather. **The spec does not define I_max** |
-| `forage_value` | B4.2 | 100 × Σ(rating/4 × harvest months/12 × min(yield/10000, 1)) / cycle_years |
-| `n_fixation` | B4.3 | Legume days × rating/4 / 365 / cycle_years |
-| `erosion` | B4.4 | E = Σ_d (1−cover)·rain_risk·(1+slope%/5), with water days excluded. Score = 0.7 × clamp(100(1−E/E_baseline)) + 0.3 × 100 × lasting_residue/4. The unblended term is output as `exposure_component` |
-| `organic_matter` | B4.5 | As spec. Ratings are crop-day means over non-bare, non-water days |
+| `forage_value` | B4.2 (fixed) | 100 × Σ(rating/4 × **months in field**/12 × min(yield/10000, 1)) / cycle_years over harvested forage crops. "Harvestable months share" read as the share of the year the forage crop is in the field, not the count of harvest months (see "Scoring fixes"). Range = rating × yield ranges |
+| `n_fixation` | B4.3 | Legume days × rating/4 / 365 / cycle_years. Range = rating range |
+| `erosion` | B4.4 (fixed) | E = Σ_d (1−cover)·rain_risk·(1+slope%/5), with water days excluded. **Score = 100 × E_b / (E_b + E)**: today's rotation = 50, no exposure = 100, twice today's E = 33, half = 67; no clamping. `exposure_component` = 100(1 − E/E_b) **unclamped**, unit "% vs baseline" (0 today, negative = more exposure). The residue rating is reported as `residue_component` and is not in the score (see "Scoring fixes") |
+| `organic_matter` | B4.5 | As spec. Ratings are crop-day means over non-bare, non-water days. Range = cover combos and rating ranges |
 | `market` | B4.6 | 50 + 25 × (share of products matching the preference − share not matching). Our reading of the "±25" table |
-| `pest_break` | B4.7 | As spec. "Longest same-family run" = circular run of cycle years that contain the family, capped at cycle_years |
-| `infiltration` | B4.8 | As spec. cover_months = days with cover ≥ 0.5 / 30.4. SSURGO hydrologic group is noted (D → "rotation effect limited") |
-| `n_scavenging` | B4.9 | 100 × Σ over Oct-Mar days with cover ≥ 0.5 of rating/4, divided by 6 months |
+| `pest_break` | B4.7 (fixed) | 100 × min(1, distinct families/3) × min(1, extra host-free years / 3). Host = today's main crop (rice, alfalfa). Extra host-free years = (longest circular stretch without the host − today's) / 365. 3 years (range 2-4) from UC IPM alfalfa "3- to 4-year nonhost rotation is ideal"; applied to rice by assumption (U). A host never grown in the cycle = full break |
+| `infiltration` | B4.8 | As spec. cover_months = days with cover ≥ 0.5 / 30.4. SSURGO hydrologic group is noted (D → "rotation effect limited"). Range = rating and root-class ranges |
+| `n_scavenging` | B4.9 | 100 × Σ over Oct-Mar days with cover ≥ 0.5 of rating/4, divided by 6 months. Range = rating range |
 | `income` | B4.10 | **null (blocked)**. Seed-cost placeholder shown as a component |
 | `risk_profile` | B4.11 | **null (blocked)** |
 | Risk days | B5.3 | Extreme rain: P ≥ 25 mm or 3-day ≥ 75 mm. Frost: Tmin ≤ 0. Heat: Tmax ≥ 35. Dry: **POWER proxy** (30-day P < 50 % of the 1991-2020 climatology), because IMERG and SMAP are blocked |
 | Exposure | B5.4 | Σ [cover < 0.5 and not water] × risk. The **baseline** uses observed consensus cover from `backend/field/out/<id>/calendar.json` (`observed.py`): per day of year, the most common satellite class over the calendar years whose CDL crop is the baseline crop (CAR 2017-19, 2021, 2023-25 rice years; CAF 2017-20, 2022, 2024-25 alfalfa years), mapped bare 0.10 / partial 0.35 / covered 0.80, water -> water flag (this class-to-cover mapping is **ours, U**). Alternatives use modelled cover. Only exposure and erosion use it; infiltration, n-scavenging and the other calendar scores still read the modelled baseline timeline. Falls back to modelled cover if the field outputs are missing |
 | Composite, ties | B4.12 | Σ w_i s_i / Σ w_i over non-null scores. low/high apply the same weights to the score lows/highs. Tie = overlap / shorter interval > 0.5. A zero-width interval ties if the point lies inside the other interval |
-| Ranges | B4.12 | Deterministic min/max over: nominal plus every corner of {Kc low/high, ETo ×0.85/×1.15, rice F 300/600, P source POWER/NOAA} for water, and {bare threshold 0.15/0.30, rain threshold 25/50 mm (3-day = 3×), P source} for cover. Rating and yield ranges are **not** propagated, because the spec does not list them |
+| Ranges | B4.12 | Deterministic min/max over: nominal plus every corner of {Kc low/high, ETo ×0.85/×1.15, rice F 300/600, P source POWER/NOAA} for water, and {bare threshold 0.15/0.30, rain threshold 25/50 mm (3-day = 3×), P source} for cover. Rating (±1, U), root-class and yield ranges are now propagated into the rating-based scores (forage, N fixation, organic matter, infiltration, N scavenging, the residue component); every one of those formulas rises with the ratings, so low/high = all ratings at their low/high end. Pest break uses 2-4 years. These rating ranges are shared by every strategy that grows the same crop, so the interval-overlap tie rule treats correlated uncertainty as independent and overstates ties (doubt 6) |
 | Replay | B5.4 | `replay_year` runs every cycle year on that year's weather. `exposure.replay` always carries 2022 and 2023 (exposure, I, ETc) |
 | Scenario | B4.12 | Adds ΔT to Tmax and Tmin and scales P by (1+ΔP). ETo, ETc, I, risk days and exposure are recomputed. I_max stays at its default-weather value so that the scenario shows up in the score |
 
@@ -82,13 +82,13 @@ recs = score("car_colusa_rice", weights={"water_use": 4, "erosion": 3}, constrai
 - **Yields:** alfalfa 15-20 t DM/ha and silage corn 20-30 t DM/ha (spec ranges, U). Rice 8-11 t/ha (spec example). Wheat 5-8, small-grain silage 8-14, sorghum-sudan 10-18 and safflower 2-3.5 t/ha are our placeholders.
 - **Seed costs (USD/ha, placeholders):** rice 100-250, alfalfa 200-450, silage corn 180-350, wheat 50-120, small grain 50-120, sorghum-sudan 40-100, safflower 25-70, cereal/vetch 70-180.
 - **Kc values:**
-  - silage corn: ini 0.30 (0.2-0.4), end 1.0 (0.85-1.05)
+  - silage corn: end 1.0 (0.85-1.05). Ini 0.30 is now the FAO-56 Table 12 cereals-group value (the maize Kc ini cell is blank), re-checked 2026-11-14
   - safflower: ini 0.35 (0.25-0.45)
   - small-grain silage: wheat values ±0.1, end widened to 0.15-0.50
   - cereal/vetch cover: clover 0.40/0.90/0.85, widened toward wheat
   - bare soil: 0.15 (0.10-0.30)
   - flooded field: 1.05 (1.0-1.1). FAO-56 lists open water, but the spec doesn't quote it.
-- **Stage lengths:** alfalfa (read off the B1 calendar: dormant Dec-Jan, growth Feb, cuts Mar-Oct, slow Nov), silage corn 20/35/40/15, small-grain silage (wheat lengths scaled to Oct 25 → Apr 20), cover 30/60/x/10, sorghum-sudan cycles after the first, and alfalfa establishment 30/42.
+- **Stage lengths:** alfalfa (read off the B1 calendar: dormant Dec-Jan, growth Feb, cuts Mar-Oct, slow Nov), silage corn = FAO-56 Table 11 maize (grain) April Calif. 30/40/50/30 **scaled** to the 110-day silage season (the scaling is U), small-grain silage (wheat lengths scaled to Oct 25 → Apr 20), cover 30/60/x/10, sorghum-sudan cycles after the first, and alfalfa establishment 30/42.
 - **Rice F term:** 450 (300-600) mm. Effective rain fraction: 0.8. Exposure cover threshold: 0.5. Extreme-rain rule: 25 mm/day or 3-day 75 mm. Heat: 35 °C.
 - **Calendar dates marked U:** winter-flood dates (1 Nov - 1 Feb), spring flood from 25 Apr, rice drain 30 days before harvest, cover crop 25 Oct - 20 Mar, small grain 25 Oct - 20 Apr, corn 5 May - 23 Aug, sorghum-sudan 5 May - 15 Sep, wheat harvest, CAR2 allocation trigger (< 50 %).
 - **Field slope:** CAR 0 % (laser-levelled), CAF 0.5 %. Slope cancels in E/E_baseline. The market base of 50 and its linear rule are also ours.
@@ -113,9 +113,9 @@ Default output, 2015-2025, POWER precipitation as nominal (see `checks/run_check
 
 - **Rice:** rice-season ETc 1057 mm (crop span May 10 - Oct 7), 1286 mm/yr including the winter and spring floods; I with F is 1583 mm (5.2 af/ac). Applied water for Sacramento Valley rice is commonly quoted around 4-5.5 af/ac, so I is plausible, at the high end. Annual ETo (PM, station temperatures) is 1415 mm at CAR and 1464 mm at CAF (it was 1512 / 1598 with Hargreaves on POWER).
 - **Alfalfa (SJV):** ETc 1344 mm/yr, I 3.85 af/ac. SJV alfalfa ET is usually quoted around 1200-1400 mm; OpenET on this field says ~1110 mm (see below).
-- **Silage corn:** ETc 705 mm. **Small-grain silage:** 299 mm. **Wheat:** 441 mm. **Safflower:** 624 mm. All of these are within typical ranges.
+- **Silage corn:** ETc 708 mm. **Small-grain silage:** 299 mm. **Wheat:** 441 mm. **Safflower:** 624 mm. All of these are within typical ranges.
 - **Safflower and wheat I are upper bounds.** The B4.1 formula has no stored-soil-water term, and both crops are often grown on residual moisture.
-- **Sorghum-sudan ETc (720 mm) comes out higher than silage corn (705 mm).** This is because it is in the field longer (May to mid-Sept). The spec's "lower water than corn" premise is therefore **not reproduced** with FAO-56 averaged hay Kc and our calendar. The premise is U in the spec anyway.
+- **Sorghum-sudan ETc (720 mm) is still higher than silage corn (708 mm), and its irrigation need too (701 vs 692 mm).** The calendar and Kc were re-checked against FAO-56 (see "Scoring fixes", item 3) and are consistent with it; per day in the field sorghum-sudan uses less (5.4 vs 6.4 mm/day), but it stays in the field 133 days (5 May - 15 Sep) against corn's 110. The spec's "lower water than corn" premise is therefore **not reproduced** with our calendar. The premise was U in the spec, and we did not shorten the season to make it hold.
 - **Precipitation sources disagree strongly.** POWER PRECTOTCORR averages 633 mm/yr at CAR and 389 at CAF, against NOAA station means of about 410 and 220 mm. The resulting irrigation-need ranges are wide, and POWER (the nominal) gives the lower I.
 
 ## Validation against OpenET (independent; never tuned)
@@ -162,34 +162,81 @@ OpenET ET ÷ gridMET ETo (an "observed" Kc, shown for diagnosis only, not used) 
 
 **Honest reading.** After the two justified fixes the baseline is +16 % (rice) and +21 % (alfalfa) above OpenET, inside the ±25 % target but still high. OpenET falls inside the engine range for rice (−4 % to +39 %) and just below it for alfalfa (+3 % to +39 %). The remaining excess is in the irrigation season and is consistent with FAO-56 Kc describing a well-watered, unstressed reference crop, while OpenET measures this field under real management. Plausible reasons are a saline-alkali soil at CAF (SSURGO Kimberlina, saline-alkali phase), cutting and dry-down cycles, and the rice drain before harvest. OpenET's own model uncertainty also plays a part; we did not fetch the per-model data (`openet.py --models`), so we cannot size it. So the engine's water numbers are best read as **"well-watered FAO-56 demand", an upper-side estimate**. backend/ground's `run_checks.py` still uses the old mixed-years method (engine 2015-2025 vs OpenET 2019-2024 incl. fallow years), so it now prints +54.2 % (CAR) and +33.3 % (CAF). Changing that check to CDL-matched years (as here) is a backend/ground change.
 
+## Scoring fixes (14 Nov; team decision "fix the formula")
+
+Each fix has a reason and a source, or is marked U. Nothing was tuned to make a given rotation win; the rank order at default weights is unchanged in both presets. Numbers: default weights, 2015-2025 weather; value [low-high].
+
+1. **Erosion (B4.4) is now a clean relative score.**
+   - Before: `0.7 × clamp(100(1 − E/E_b)) + 0.3 × 100 × residue/4`. Today's rotation scored 15 (CAR) and 7.5 (CAF) instead of being the reference, and any alternative with more exposure than today was clamped to the same exposure term as today.
+   - After: `erosion = 100 × E_b / (E_b + E)`. Today = 50 exactly; less rain-weighted bare exposure scores above 50 (none = 100), more scores below (2× today = 33, ½ = 67). It is monotonic, bounded and never clamped, and doubling or halving E moves the score equally far from 50. `exposure_component` is now the **unclamped** change `100(1 − E/E_b)` in "% vs baseline" (negative = worse than today).
+   - Residue: the 30 % blend was removed from the score. An absolute 0-4 rating mixed into a relative score is what stopped the baseline being the reference. Physically, residue acts on soil loss through surface cover (RUSLE soil-loss-ratio subfactors, USDA Agriculture Handbook 703), so it belongs inside the cover term, and we have no daily residue cover. It is kept as `residue_component` (100 × residue/4, rating range) for context.
+   - CAR: CAR0 15.0 → **50.0**, CAR1 49.0 → **66.0** (+48.6 %), CAR2 31.4 → **59.1** (+30.7 %), CAR3 19.1 (exposure clamped to 0) → **49.6** (−1.7 %, slightly worse than today).
+   - CAF: CAF0 7.5 → **50.0**, CAF1 4.6 → **47.1** (−12.3 %), CAF2 10.7 → **47.1** (−12.4 %), CAF3 7.5 → **40.8** (−45.2 %, the summer-fallow break year).
+   - Check 12 now reads "today's rotation is the reference" (change 0 and score 50).
+2. **Pest-cycle break (B4.7) no longer scores 0 for everything.**
+   - Before: `min(1, families/3) × (1 − longest same-family run / cycle years)`. Every 1-year cycle scored 0, and so did any family present every year. All eight strategies scored 0.
+   - After: `100 × min(1, families/3) × min(1, extra host-free years / 3)`. The host is today's main crop (rice at CAR, alfalfa at CAF). Extra host-free years = (longest circular stretch of the cycle without the host − today's longest stretch) / 365, so today's rotation scores 0 and the normal winter gap earns nothing.
+   - Sources: UC IPM Alfalfa, "Crop rotation impacts on pests" (https://ipm.ucanr.edu/agriculture/alfalfa/crop-rotation-impacts-on-pests/): "a 3- to 4-year nonhost crop rotation is ideal"; at least 1 year helps for weeds and clover root curculio; small grains, corn and sorghum are listed as nonhosts (dodder). UC IPM Rice, Integrated weed management (https://ipm.ucanr.edu/agriculture/rice/integrated-weed-management/): rotating out of rice to "tomato, safflower, sunflower, beans, or cereal crops", or dry fallow, reduces the weed seedbank. That is why the host is the **crop**, not the family: a cereal after rice is a UC-recommended break even though both are Poaceae.
+   - Assumed (U): the 3-year full-break scale (range 2-4 years gives low/high), its use for rice (UC gives no years for rice), and keeping the spec's family factor.
+   - CAR0 0 → **0**, CAR1 0 → **0** (rice every summer), CAR2 0 → **100** (no rice in the modelled year; real break length depends on the years around it), CAR3 0 → **11.1 [8.3-16.7]** (one extra rice-free year, one family).
+   - CAF0 0 → **0**, CAF1 and CAF2 0 → **33.3** (no alfalfa, one family), CAF3 0 → **19.7 [14.7-29.5]** (0.88 years without alfalfa, two families).
+   - Default weight is still 0, so the composite is unchanged by this.
+3. **Sorghum-sudan vs silage corn water: checked; one placeholder replaced; still higher.**
+   - Re-checked FAO-56 Tables 11/12 on 2026-11-14 (https://www.fao.org/4/x0490e/x0490e0b.htm). Sudan grass hay averaged cutting effects 0.50/0.90/0.85 and first cutting cycle 25/25/15/10 (Calif. Desert) are what the engine uses. Later cycles (Table 11: 3/15/12/7) are covered by stretching mid at the averaged Kc, which is what the "averaged cutting effects" row is for.
+   - Corn: the maize Kc ini cell is blank in Table 12, and the cereals group value is 0.3, the same as our former placeholder; it is now cited.
+   - The corn stage lengths 20/35/40/15 (U) are replaced by FAO-56 Table 11 maize (grain) April, Spain/Calif. 30/40/50/30, scaled to the 110-day silage season (the scaling is U). Corn ETc 705 → **708 mm**, I 690 → **692 mm**.
+   - Sorghum-sudan stays at **720 mm** ETc and **701 mm** I: lower per day (5.4 vs 6.4 mm/day) but 23 days longer in the field (5 May - 15 Sep, spec B1 calendar U).
+   - We did not locate a UC/NRCS seasonal water-use comparison in this pass, so the spec's "lower water than corn" claim stays U. We did not shorten the sorghum-sudan season to make the claim hold. The difference (+12 mm, +9 mm I) is far inside both ranges.
+4. **Rice-then-wheat bare days: no calendar or cover logic error found.**
+   - A new check rebuilds the occupied days from the calendar dates independently and confirms that every bare day is either a harvest-to-planting gap or a seedling (ini/dev) day with cover < 0.20. No strategy has bare days in a mid or late stage.
+   - CAR3's 205.5 bare days/yr = 192.5 gap + 13 seedling days. The gaps are 55 days (rice harvest 7 Oct → wheat drilled 1 Dec, FAO-56 Table 11 Calif. December planting) plus 330 days (wheat harvest 30 May → next rice flood 25 Apr), over a 2-year cycle.
+   - That 11-month fallow after wheat is the real cost of a rice-wheat sequence with no summer crop, not a bug. Spec B1's wheat-year row (bare Jul-Oct, then drill wheat) is a wheat→wheat year, not a return to rice. Adding a summer crop or a winter flood in year 2 would be a different strategy (team question below).
+5. **Forage value and ranges.**
+   - Forage: `harvest months/12` became `months in field/12` (our reading of the spec's "harvestable months share"). Counting harvest months gave a one-cut silage crop 1/12 of the credit of a crop in the field for the same time. Yield already carries how much is cut.
+   - CAF0 66.7 → **100**, CAF1 14.6 → **66.5 [49.5-78.6]**, CAF2 25.0 → **63.7 [37.6-84.9]**, CAF3 51.6 → **81.7 [77.6-84.6]**.
+   - Remaining limit: `min(yield/10000, 1)` caps every forage at 10 t DM/ha per crop, so CAF1's two crops (≈36 t DM) do not get credit for more dry matter than alfalfa (17.5 t). That cap is the spec's.
+   - Rice forage is fixed at 0 with no range, as the spec states ("Rice forage 0").
+   - Ranges: rating (±1, U), root-class and yield ranges now flow into the rating-based scores. Composite ranges widen; ties at default weights went from 2 pairs to 3 (see below).
+
+**Composite at default weights, before → after (rank; ties):**
+- CAR:
+  - CAR2 31.1 → 35.7 [31.5-40.4] (1; ties CAR1)
+  - CAR1 29.8 → 32.6 [25.1-39.2] (2; ties CAR2, CAR3)
+  - CAR3 26.0 → 31.1 [26.9-35.7] (3; ties CAR1)
+  - CAR0 19.3 → 25.1 [20.0-30.1] (4; no tie)
+  - The tie pairs are the same as before.
+- CAF:
+  - CAF0 52.8 → 65.4 [56.2-69.7] (1; ties CAF3, new)
+  - CAF3 47.8 → 58.4 [49.8-64.3] (2; ties CAF0)
+  - CAF2 27.6 → 40.1 [30.8-51.8] (3; ties CAF1)
+  - CAF1 23.1 → 38.8 [31.1-49.3] (4; ties CAF2)
+
 ## Doubts about the scoring model (reported, not tuned)
 
-1. **Baseline erosion is not 0.** B4.4 blends 70 % of `100(1−E/E_b)` with 30 % of a residue rating, so the baseline scores 15 (CAR) and 7.5 (CAF), not 0. Check 12 fails as written. The exposure component is 0, and that check passes.
-2. **Erosion is clamped at 0 when E > E_baseline.** CAR2 and CAR3 have more exposed bare days in the rain season than the winter-flooded baseline, so their exposure terms go negative and are clamped. They can't be told apart from "same as baseline".
-3. **Erosion ranks alfalfa below winter small grain.** CAF0 alfalfa scores worse than CAF1/CAF2 because `(1−cover)` uses our dormant-alfalfa cover of 0.6. That cover assumption drives the result.
-4. **Pest break is 0 for every strategy.** Any family present every cycle year gives `(1 − run/N) = 0`, and every 1-year cycle scores 0, including CAR2, which does break the rice cycle. The formula needs rethinking (for example, judging it against the baseline or over a multi-year horizon).
-5. **Forage value strongly favours multi-cut crops.** The `harvest months/12` term gives CAF1 (two big silage harvests) 15 against alfalfa's 67, even though its DM yield is comparable or higher.
-6. **I_max is undefined in the spec.** Our choice (the location max) makes water_use relative within a preset.
-7. **The irrigation-need time step is unspecified.** We use monthly balances. A daily max(0, ·) would be much larger. Winter-flood fill and seepage water are not modelled, so CAR0 vs CAR1 winter water is only ET.
-8. **The rain-threshold range dominates exposure ranges.** The 50 mm threshold gives about 0 extreme days. Ratings ranges are not propagated, so rating-only scores have zero-width ranges. That makes ties rarer for those components.
-9. **The dry-spell proxy counts nearly every summer day,** because Central Valley summer climatology is near 0 mm.
-10. **The ETc ranges come almost entirely from Kc and ETo ±15 %.** Ranges for annual ETc are about ±17 %.
-11. **Water is FAO-56 well-watered demand.** It sits +16-21 % above OpenET on the real fields (see the validation section above); no water-stress (Ks) or salinity term is modelled.
+1. **Erosion ranks alfalfa above the double crops only narrowly.** CAF1/CAF2 sit at 47 vs alfalfa's 50, driven by our dormant-alfalfa cover of 0.6 (U). Residue cover is not in E (fix 1).
+2. **Pest break is a host-crop rule of thumb.** The 3-year scale comes from UC IPM alfalfa and is assumed for rice. CAR2 is scored as a stand-alone dry year, so it gets a full break. Weight 0 by default.
+3. **Sorghum-sudan uses slightly more water than silage corn** with our calendar (fix 3). The season dates are U on both sides.
+4. **I_max is undefined in the spec.** Our choice (the location max) makes water_use relative within a preset.
+5. **The irrigation-need time step is unspecified.** We use monthly balances. A daily max(0, ·) would be much larger. Winter-flood fill and seepage water are not modelled, so CAR0 vs CAR1 winter water is only ET.
+6. **Rating ranges are correlated but the tie rule treats intervals as independent.** The same ±1 rating range moves every strategy that grows that crop, so overlapping composite intervals overstate how uncertain the *difference* is. The rain-threshold range still dominates exposure ranges (the 50 mm threshold gives about 0 extreme days).
+7. **The dry-spell proxy counts nearly every summer day,** because Central Valley summer climatology is near 0 mm.
+8. **The ETc ranges come almost entirely from Kc and ETo ±15 %.** Ranges for annual ETc are about ±17 %.
+9. **Water is FAO-56 well-watered demand.** It sits +16-21 % above OpenET on the real fields (see the validation section above); no water-stress (Ks) or salinity term is modelled.
+10. **Forage caps each crop at 10 t DM/ha** (spec), so a double crop's extra dry matter is not credited.
 
 ## Open questions for the team
 
-- **CAR3 calendar:** B1 shows only the wheat year (wheat → wheat). We modelled a 2-year rice/wheat cycle with wheat drilled 1 Dec after rice. Is that right?
+- **CAR3 calendar:** B1 shows only the wheat year (wheat → wheat). We modelled a 2-year rice/wheat cycle with wheat drilled 1 Dec after rice; that leaves an 11-month fallow after the wheat harvest (fix 4). Should the wheat year carry a summer crop or a winter flood instead?
 - **CAF3 cycle:** we used 3 production years + 1 break year (cycle_years = 4). Is that the intended cycle?
 - **CAR2:** we treat it as a single dry year (cycle 1). Should it be scored as one year inside a rice sequence?
-- **Erosion:** should the check-12 "baseline erosion 0" refer to the exposure component, or should the blend be relative to the baseline?
 - **I_max, tie definition and market base:** what definitions does the team want? Overlap over the shorter interval vs over the union changes the number of ties.
-- **Ranges:** should rating and yield ranges be propagated into score ranges? This would widen ties.
+- **Tie rule with correlated ranges:** should ties be judged on paired differences (same rating draw for every strategy) rather than independent intervals? See doubt 6.
 - **Winter flood:** should the irrigation need include fill and percolation water (needs a cited source)?
-- **API contract:** we added extra fields beyond the B3 example: `water.by_crop`, `water.allocation_check`, `water.etc_mm_year`, `irrigation_need_af_ac`, `exposure.erosion_index_E`, `scores.erosion.exposure_component`, `constraints_check`, `filtered_out` and `model_assumptions`. `stage_lengths_days` and `cover_by_stage` stay plain numbers, as in the B3 Crop example.
+- **API contract:** we added extra fields beyond the B3 example: `water.by_crop`, `water.allocation_check`, `water.etc_mm_year`, `irrigation_need_af_ac`, `exposure.erosion_index_E`, `scores.erosion.exposure_component` (now unclamped, "% vs baseline"), `scores.erosion.residue_component`, `constraints_check`, `filtered_out` and `model_assumptions`. `stage_lengths_days` and `cover_by_stage` stay plain numbers, as in the B3 Crop example.
 - **For backend/field:** observed cover is now consumed. Still needed: NASADEM slope (Earthdata) and, ideally, DSWx water to confirm the winter floods.
 - **Soil:** the engine reads `data/cache/<id>/soil.json` at each call; with the polygon-based SSURGO run CAR is Capay clay loam (group D) and CAF is Kimberlina fine sandy loam, saline-alkali (group C, AWC 50 mm/m). Soil only feeds notes and the drainage constraint check; no score uses AWC yet.
 
 ## Verified vs not
 
-- **Verified:** Kc and stage lengths marked `verified: true` are only the FAO-56 values the spec quotes as V: rice, alfalfa (averaged), maize mid, winter wheat, safflower mid/end, sudan, and Table 11 rice/safflower/wheat/sudan first cycle. Also verified: the POWER data and the NOAA station data (regional cache), and the OpenET Ensemble ET used as the independent check. The FAO-56 chapter 2, 3 and 6 URLs were fetched and checked on 2026-11-14 (eq. 6, the eq. 52 "alternative when data are missing" text, the Table 12 alfalfa/rice rows and eq. 62).
+- **Verified:** Kc and stage lengths marked `verified: true` are only the FAO-56 values the spec quotes as V: rice, alfalfa (averaged), maize mid and the cereals-group Kc ini 0.3 used for maize, winter wheat, safflower mid/end, sudan, and Table 11 rice/safflower/wheat/sudan first cycle and maize (grain) April Calif. 30/40/50/30. UC IPM alfalfa rotation and rice weed-management pages (pest break) were fetched 2026-11-14. Also verified: the POWER data and the NOAA station data (regional cache), and the OpenET Ensemble ET used as the independent check. The FAO-56 chapter 2, 3 and 6 URLs were fetched and checked on 2026-11-14 (eq. 6, the eq. 52 "alternative when data are missing" text, the Table 12 alfalfa/rice rows and eq. 62).
 - **Not verified:** everything else is U or blocked, as listed above.

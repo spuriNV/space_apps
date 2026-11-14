@@ -267,8 +267,8 @@
      "harvest_months": [
       8
      ],
-     "stage_mode": "fixed",
-     "timing_source": "assumed (U): spec B1 'plant corn May, harvest Aug-Sept'"
+     "stage_mode": "scale",
+     "timing_source": "assumed (U): spec B1 'plant corn May, harvest Aug-Sept'; FAO-56 Table 11 maize stages scaled to the 110-d season (FAO-56 advises scaling stage lengths to the local season)"
     }
    ],
    "allocation_rule": null

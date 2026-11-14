@@ -45,6 +45,15 @@ SOURCES: dict[str, dict] = {
     "uc_alfalfa": {
         "title": "UC Alfalfa & Forage, irrigated alfalfa (SJV planting window, cutting schedule)",
         "url": "https://alfalfa.ucdavis.edu/IrrigatedAlfalfa", "verified": True},
+    "uc_ipm_alfalfa_rotation": {
+        "title": "UC IPM Alfalfa, Crop rotation impacts on pests ('a 3- to 4-year nonhost crop rotation is ideal'; "
+                 "at least 1 year for weeds and clover root curculio; small grains, corn and sorghum listed as "
+                 "nonhost rotation crops for dodder)",
+        "url": "https://ipm.ucanr.edu/agriculture/alfalfa/crop-rotation-impacts-on-pests/", "verified": True},
+    "uc_ipm_rice_weeds": {
+        "title": "UC IPM Rice, Integrated weed management (rotate out of rice to tomato, safflower, sunflower, "
+                 "beans or cereal crops, or dry fallow, to reduce the weed seedbank)",
+        "url": "https://ipm.ucanr.edu/agriculture/rice/integrated-weed-management/", "verified": True},
     "ssurgo_sda": {
         "title": "USDA NRCS SSURGO via Soil Data Access (regional chunk cache)",
         "url": "https://sdmdataaccess.sc.egov.usda.gov/", "verified": True},

@@ -177,7 +177,7 @@
      "value": 0,
      "unit": "rating_0_4",
      "low": 0,
-     "high": 1,
+     "high": 0,
      "method": "assumed",
      "source": {
       "id": "assumed",
@@ -186,8 +186,7 @@
       "accessed": "2026-11-14",
       "verified": false
      },
-     "note": "Hand rating 0-4, team placeholder. To cite: Western cover-crop selector goal table / USDA PLANTS (spec B3).",
-     "to_cite": "https://covercrop-selector.org"
+     "note": "Spec B4.2: 'Rice forage 0' (stated by spec; no range)"
     },
     "weed_suppression": {
      "value": 2,
@@ -742,16 +741,15 @@
      "unit": "Kc",
      "low": 0.2,
      "high": 0.4,
-     "method": "assumed",
+     "method": "lookup",
      "source": {
-      "id": "assumed",
-      "title": "Team assumption marked U in planner-spec; not from a cited source",
-      "url": "planner-spec.md#b4-scoring-model",
+      "id": "fao56_table12",
+      "title": "FAO-56 Chapter 6, Table 12 (single crop coefficients Kc ini/mid/end)",
+      "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
       "accessed": "2026-11-14",
-      "verified": false
+      "verified": true
      },
-     "note": "U: spec B4.1 says maize ini is U. Placeholder.",
-     "to_cite": "FAO-56 Table 12 maize entry"
+     "note": "FAO-56 Table 12 leaves the maize Kc ini cell blank; the cereals group row gives Kc ini 0.3 (re-checked 2026-11-14), used here. Range 0.2-0.4 kept (ours)."
     },
     "mid": {
      "value": 1.2,
@@ -785,13 +783,13 @@
     }
    },
    "stage_lengths_days": {
-    "ini": 20,
-    "dev": 35,
-    "mid": 40,
-    "late": 15,
-    "verified": false,
-    "source": "assumed (U): 110-day May-Aug SJV silage corn placeholder",
-    "url": "planner-spec.md#b4-scoring-model"
+    "ini": 30,
+    "dev": 40,
+    "mid": 50,
+    "late": 30,
+    "verified": true,
+    "source": "fao56_table11 Maize (grain) April, Spain/Calif. 30/40/50/30 = 150 d (V, re-checked 2026-11-14); scaled to the 110-d silage season in the calendar (scaling U). Replaces the earlier 20/35/40/15 placeholder (U)",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
    },
    "cover_by_stage": {
     "ini": 0.1,

@@ -44,11 +44,12 @@ The judging sheet scores five criteria, 1–5 each, 25 total. This file quotes e
 **Gaps (most important first)**
 1. **Measured-water check: done (14 Nov).** On years the baseline crop was actually grown, our FAO-56 estimate runs +16% above OpenET for Colusa rice and +21% for Kings alfalfa, inside the ±25% target and on the high side as expected for a fully watered crop. Nothing was fitted to OpenET. Details in `backend/engine/README.md` ("Validation against OpenET").
 2. **POWER runs hot and wet** compared with the stations: about +3.5 °C summer highs, 54–68% more rain, and 51 vs 12–30 days at or above 40 °C at Colusa in 2022. Heat-day and rain counts must use stations or show both sources.
-3. **Scoring-formula problems are open** (`backend/engine/README.md`):
-   - the erosion baseline cannot reach 0 as the spec requires;
-   - pest-break scores 0 for every rotation;
-   - sorghum-sudan comes out using slightly more water than corn;
-   - the rice-then-wheat rotation shows about 205 bare days a year.
+3. **Scoring-formula problems: fixed (14 Nov), one honest exception** (`backend/engine/README.md`, "Scoring fixes"):
+   - Erosion is now relative to today's rotation: today scores 50, and worse rotations score below 50 instead of being clamped (Kings break year 41, rice-wheat 49.6).
+   - Pest-break counts extra years out of today's crop, using UC IPM's "3- to 4-year nonhost rotation" rule of thumb. Continuous rice and alfalfa score 0, and rotations out of them score above 0.
+   - The rice-then-wheat bare days were checked and are real: an 11-month fallow after the wheat harvest, not a bug.
+   - Forage no longer penalises one-cut silage, and rating and yield ranges now widen the score ranges.
+   - **Still open:** with FAO-56 coefficients and our calendar, sorghum-sudan uses slightly more water than silage corn (720 vs 708 mm), because it is in the field longer. We say so rather than adjust it. The spec's "lower water" claim is uncited.
 4. **Machine-learning accuracy is inflated at Colusa:** about 99%, mostly because the models learned how the labels were made. Quote the Kings result (83%, below target) and the comparison against the simple rule instead.
 5. **Usability is unproven.** The farmer-first panel is new; the printable brief is still jargon. A 10-minute session with a real grower or farm adviser (UC Cooperative Extension, NRCS, an irrigation district) would be the strongest evidence here.
 

@@ -57,7 +57,9 @@ CROPS = [
         "stage_lengths_days": {"ini": 30, "dev": 30, "mid": 60, "late": 30, "verified": True,
                                "source": "fao56_table11 Rice May Mediterranean (V)", "url": src("fao56_table11")["url"]},
         "cover_by_stage": cover_stage(0.3, 0.7, 1.0, 0.8, note="Values from the spec B3 Crop example; still U."),
-        "ratings_0_4": ratings(1, 1, 2, 0, 1, 0, 0, 2, 4, 0),
+        "ratings_0_4": {**ratings(1, 1, 2, 0, 1, 0, 0, 2, 4, 0),
+                        "forage_harvest_value": assumed(0, "rating_0_4", low=0, high=0,
+                                                        note="Spec B4.2: 'Rice forage 0' (stated by spec; no range)")},
         "root_depth_class": root_class(0),
         "flood_percolation_mm": assumed(450, "mm/season", low=300, high=600,
                                         note="Rice flood-establishment and percolation term F (spec B4.1, U: 300-600 mm)",
@@ -110,16 +112,18 @@ CROPS = [
     {
         "id": "silage_corn", "name": "Corn for silage", "family": "Poaceae",
         "role": ["forage"], "legume": False, "perennial": False, "root": "fibrous, medium", "market_class": "feed",
-        "kc": {"ini": assumed(0.30, "Kc", low=0.20, high=0.40,
-                              note="U: spec B4.1 says maize ini is U. Placeholder.",
-                              to_cite="FAO-56 Table 12 maize entry"),
+        "kc": {"ini": lookup(0.30, "Kc", "fao56_table12", low=0.20, high=0.40,
+                             note="FAO-56 Table 12 leaves the maize Kc ini cell blank; the cereals group row gives "
+                                  "Kc ini 0.3 (re-checked 2026-11-14), used here. Range 0.2-0.4 kept (ours)."),
                "mid": lookup(1.20, "Kc", "fao56_table12", note="Spec B4.1 quote: Maize field (grain) mid 1.20"),
                "end": assumed(1.00, "Kc", low=0.85, high=1.05,
                               note="U (spec B4.1): silage harvested before end stage, Kc ~1.0 at harvest. "
                                    "Grain maize end 0.60-0.35 (V) does not apply.")},
-        "stage_lengths_days": {"ini": 20, "dev": 35, "mid": 40, "late": 15, "verified": False,
-                               "source": STAGE_U + ": 110-day May-Aug SJV silage corn placeholder",
-                               "url": src("assumed")["url"]},
+        "stage_lengths_days": {"ini": 30, "dev": 40, "mid": 50, "late": 30, "verified": True,
+                               "source": "fao56_table11 Maize (grain) April, Spain/Calif. 30/40/50/30 = 150 d (V, "
+                                         "re-checked 2026-11-14); scaled to the 110-d silage season in the calendar "
+                                         "(scaling U). Replaces the earlier 20/35/40/15 placeholder (U)",
+                               "url": src("fao56_table11")["url"]},
         "cover_by_stage": cover_stage(0.1, 0.6, 1.0, 0.9),
         "ratings_0_4": {**ratings(1, 1, 0, 0, 1, 1, 4, 1, 1, 1),
                         "forage_harvest_value": assumed(4, "rating_0_4", low=4, high=4,
@@ -368,8 +372,9 @@ STRATEGIES = [
      "name": "Winter small-grain silage + silage corn double crop",
      "calendar": [
          SMALL_GRAIN(),
-         e(1, "silage_corn", "05-05", "08-23", "forage", irrigated=True, harvest_months=[8],
-           timing_source=U_T + ": spec B1 'plant corn May, harvest Aug-Sept'")],
+         e(1, "silage_corn", "05-05", "08-23", "forage", irrigated=True, harvest_months=[8], stage_mode="scale",
+           timing_source=U_T + ": spec B1 'plant corn May, harvest Aug-Sept'; FAO-56 Table 11 maize stages scaled "
+                               "to the 110-d season (FAO-56 advises scaling stage lengths to the local season)")],
      "allocation_rule": None},
     {"id": "caf2_smallgrain_sorghumsudan", "location_id": "caf_tulare_forage", "is_baseline": False,
      "cycle_years": 1, "name": "Winter small-grain silage + sorghum-sudan summer forage",

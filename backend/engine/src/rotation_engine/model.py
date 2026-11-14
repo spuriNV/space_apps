@@ -111,8 +111,9 @@ def cover_metrics(tl: Timeline, wys: list[WYear], *, bare_thr=0.20, rain_thr=25.
 
 
 # ------------------------------------------------------------------- calendar-only metrics
-def rating_day_array(tl: Timeline, crops: dict, key: str) -> np.ndarray:
-    vals = {cid: (crops[cid]["ratings_0_4"][key]["value"] if key in crops[cid]["ratings_0_4"] else 0)
+def rating_day_array(tl: Timeline, crops: dict, key: str, var: str = "value") -> np.ndarray:
+    """Daily 0-4 rating; var = "value" | "low" | "high" (the rating's own U range)."""
+    vals = {cid: (crops[cid]["ratings_0_4"][key][var] if key in crops[cid]["ratings_0_4"] else 0)
             for cid in set(tl.crop_id)}
     return np.array([vals[c] for c in tl.crop_id], dtype=float)
 
@@ -120,6 +121,39 @@ def rating_day_array(tl: Timeline, crops: dict, key: str) -> np.ndarray:
 def crop_day_mean(tl: Timeline, arr: np.ndarray) -> float:
     m = (tl.crop_id != "fallow_bare") & (tl.crop_id != "open_water_flood")
     return float(arr[m].mean()) if m.any() else 0.0
+
+
+def erosion_relative(E: float, E_b: float) -> float:
+    """Erosion score relative to the baseline (fix of spec B4.4, see README).
+
+    score = 100 x E_b / (E_b + E): the baseline scores exactly 50, E = 0 scores 100, twice the baseline's
+    rain-weighted exposure scores 33.3 and half scores 66.7. Monotonic in E, bounded 0-100 without clamping,
+    symmetric in the ratio E/E_b (x2 and /2 sit equally far from 50). Both zero -> 50 (same as baseline);
+    E_b = 0 and E > 0 -> 0."""
+    if E_b + E <= 0:
+        return 50.0
+    return 100.0 * E_b / (E_b + E)
+
+
+def erosion_change_pct(E: float, E_b: float) -> float | None:
+    """Unclamped change in rain-weighted exposure vs the baseline, % (positive = less exposure than today;
+    negative = more). None when E_b = 0 (undefined)."""
+    return None if E_b <= 0 else 100.0 * (1 - E / E_b)
+
+
+def longest_gap_days(present: np.ndarray) -> float:
+    """Longest circular run of days on which `present` is False (np.inf if never present)."""
+    if not present.any():
+        return float("inf")
+    if present.all():
+        return 0.0
+    k = int(np.argmax(present))          # rotate so the series starts on a present day
+    p = np.roll(present, -k)
+    best = run = 0
+    for v in p:
+        run = 0 if v else run + 1
+        best = max(best, run)
+    return float(best)
 
 
 def families_by_year(tl: Timeline, crops: dict) -> list[set]:
@@ -133,19 +167,3 @@ def families_by_year(tl: Timeline, crops: dict) -> list[set]:
             fams.update(c.get("families", [c["family"]]))
         out.append(fams)
     return out
-
-
-def max_consecutive_run(fam_years: list[set]) -> int:
-    """Longest circular run of cycle years containing the same family (capped at N)."""
-    N = len(fam_years)
-    best = 0
-    for f in set().union(*fam_years) if fam_years else set():
-        pres = [f in s for s in fam_years]
-        if all(pres):
-            best = max(best, N)
-            continue
-        run = 0
-        for v in pres + pres:
-            run = run + 1 if v else 0
-            best = max(best, min(run, N))
-    return best

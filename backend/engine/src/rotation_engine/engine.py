@@ -153,13 +153,31 @@ def _sn_c(v3, unit, source, note, rnd=1, **extra):
     return sn(v3[0], unit, low=v3[1], high=v3[2], method="computed", source=source, note=note, rnd=rnd, **extra)
 
 
-def _ratings_mean(tl, crops, key):
-    return model.crop_day_mean(tl, model.rating_day_array(tl, crops, key))
+def _ratings_mean(tl, crops, key, var="value"):
+    return model.crop_day_mean(tl, model.rating_day_array(tl, crops, key, var))
 
 
-def _root_mean(tl, crops):
-    arr = np.array([crops[c]["root_depth_class"]["value"] for c in tl.crop_id], dtype=float)
+def _root_mean(tl, crops, var="value"):
+    arr = np.array([crops[c]["root_depth_class"][var] for c in tl.crop_id], dtype=float)
     return model.crop_day_mean(tl, arr)
+
+
+RVARS = ("value", "low", "high")  # rating/yield range ends; every rating-based score is non-decreasing in them
+
+
+def _host_crop(tl) -> str:
+    """The baseline's main crop: the cash/forage crop with the most days in the cycle."""
+    days = {}
+    for sp in tl.spans:
+        if set(sp.crop["role"]) & {"cash", "forage"}:
+            days[sp.crop["id"]] = days.get(sp.crop["id"], 0) + len(sp.idx)
+    return max(days, key=days.get)
+
+
+# Pest-break scale: years out of the host crop for a full break. UC IPM alfalfa "Crop rotation impacts on pests":
+# "a 3- to 4-year nonhost crop rotation is ideal", at least 1 year for weeds and clover root curculio, 2-3 years for
+# root-knot nematode. We use 3 years (range 2-4); applying it to rice is our assumption (UC IPM rice gives no years).
+PEST_FULL_BREAK_YEARS = (3.0, 4.0, 2.0)   # value, low-score end, high-score end
 
 
 @lru_cache(maxsize=8)
@@ -238,6 +256,8 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
     revs = {y: {sid: _evaluate(tl, rw, crops, ctls.get(sid)) for sid, tl in tls.items()} for y, rw in replay_wys.items()}
     base = next(s for s in strategies if s["is_baseline"])
     base_crops = {sp.crop["id"] for sp in tls[base["id"]].spans}
+    host = _host_crop(tls[base["id"]])                       # pest-break host (today's main crop)
+    host_gap_b = model.longest_gap_days(tls[base["id"]].crop_id == host)
 
     years_note = (f"replay year {replay_year}" if replay_year else
                   f"mean of {years[0]}-{years[-1]} weather years") + \
@@ -368,58 +388,84 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
                                     f"end) among this location's strategies, default years (our choice; spec does "
                                     f"not define I_max). {RULE}")
         # forage (B4.2)
-        fsum = 0.0
-        for sp in tl.spans:
-            rat = sp.crop["ratings_0_4"]["forage_harvest_value"]["value"]
-            yv = sp.crop["yield_range"]["value"]
-            hm = len(sp.entry.get("harvest_months", []))
-            if rat and yv and hm:
-                fsum += rat / 4 * hm / 12 * min(yv / 10000, 1)
-        scores["forage_value"] = sn(100 * fsum / N, "score_0_100", method="computed", source=src("field_shift_engine"),
-                                    note=f"spec B4.2 100 x sum(rating/4 x harvest months/12 x min(yield/10000,1)) / "
-                                         f"cycle_years; ratings and yields U. {RULE}", rnd=1)
+        def forage(var):
+            fsum = 0.0
+            for sp in tl.spans:
+                rat = sp.crop["ratings_0_4"]["forage_harvest_value"][var]
+                yv = sp.crop["yield_range"][var]
+                if rat and yv and sp.entry.get("harvest_months"):
+                    # harvestable share = months this harvested forage crop is in the field / 12 (our reading of
+                    # "harvestable_months_share"; counting harvest months penalised one-cut crops, see README)
+                    fsum += rat / 4 * len(sp.idx) / 365 * min(yv / 10000, 1)
+            return 100 * fsum / N
+
+        scores["forage_value"] = sn(forage("value"), "score_0_100", low=forage("low"), high=forage("high"),
+                                    method="computed", source=src("field_shift_engine"),
+                                    note=f"spec B4.2 100 x sum(rating/4 x months in field/12 x min(yield/10000,1)) / "
+                                         f"cycle_years, over harvested forage crops. Months in field replaces the "
+                                         f"count of harvest months (that count scored a one-cut silage crop below "
+                                         f"a multi-cut hay of similar dry matter). Range = rating and yield ranges "
+                                         f"(both U). {RULE}", rnd=1)
         # N fixation (B4.3)
-        nf = model.rating_day_array(tl, crops, "nitrogen_fixation")
         leg = np.array([crops[c]["legume"] for c in tl.crop_id])
-        scores["n_fixation"] = sn(100 * float((nf * leg).sum()) / 4 / 365 / N, "score_0_100", method="computed",
+        nfx = [100 * float((model.rating_day_array(tl, crops, "nitrogen_fixation", v) * leg).sum()) / 4 / 365 / N
+               for v in RVARS]
+        scores["n_fixation"] = sn(nfx[0], "score_0_100", low=nfx[1], high=nfx[2], method="computed",
                                   source=src("field_shift_engine"),
                                   note=f"spec B4.3 100 x sum(rating_nfix/4 x months growing/12)/cycle_years, "
-                                       f"legumes only; ratings U. {RULE}", rnd=1)
+                                       f"legumes only; ratings U, range = rating range. {RULE}", rnd=1)
         # erosion (B4.4)
-        resid = _ratings_mean(tl, crops, "lasting_residue")
+        resid3 = [_ratings_mean(tl, crops, "lasting_residue", v) for v in RVARS]
+        resid = resid3[0]
 
         def ero(c):
-            E, Eb = C[c]["E"], Wb[c]["E"]
-            expo = 0.0 if (Eb == 0 and E == 0) else (-np.inf if Eb == 0 else 100 * (1 - E / Eb))
-            return _clamp(0.7 * _clamp(expo) + 0.3 * 100 * resid / 4)
+            return model.erosion_relative(C[c]["E"], Wb[c]["E"])
 
         def ero_raw(c):
-            E, Eb = C[c]["E"], Wb[c]["E"]
-            return None if Eb == 0 else 100 * (1 - E / Eb)
+            return model.erosion_change_pct(C[c]["E"], Wb[c]["E"])
 
         er = (ero(cn), min(ero(c) for c in C), max(ero(c) for c in C))
+        raws = [x for x in (ero_raw(c) for c in C) if x is not None]
         raw = ero_raw(cn)
         scores["erosion"] = _sn_c(er, "score_0_100", wsrc,
-                                  f"spec B4.4: 0.7 x 100 x (1 - E/E_baseline) [clamped 0-100; unclamped nominal = "
-                                  f"{'undefined (E_baseline = 0)' if raw is None else f'{raw:.1f}'}] + 0.3 x 100 x "
-                                  f"lasting_residue/4 (crop-day mean {resid:.2f}, U). {RULE}",
-                                  exposure_component=_sn_c(
-                                      tuple(_clamp(x) if x is not None else None for x in
-                                            (raw, min((ero_raw(c) for c in C if ero_raw(c) is not None), default=None),
-                                             max((ero_raw(c) for c in C if ero_raw(c) is not None), default=None))),
-                                      "score_0_100", wsrc, "100 x (1 - E/E_baseline), clamped; 0 for the baseline"),
+                                  f"Relative to today's rotation (fix of spec B4.4, see backend/engine/README.md): "
+                                  f"100 x E_baseline / (E_baseline + E). Today's rotation = 50; less rain-weighted "
+                                  f"bare exposure scores above 50 (no exposure = 100), more scores below 50 (twice "
+                                  f"today's = 33). Not clamped. Change in E vs today: "
+                                  f"{'undefined (E_baseline = 0)' if raw is None else f'{raw:+.1f}%'}. The 30% "
+                                  f"residue-rating blend was dropped from the score (it made today's rotation score "
+                                  f"non-zero and mixed an absolute rating into a relative score); it is reported as "
+                                  f"residue_component. {RULE}",
+                                  exposure_component=sn(raw, "% vs baseline",
+                                                        low=min(raws) if raw is not None and raws else None,
+                                                        high=max(raws) if raw is not None and raws else None,
+                                                        method="computed", source=wsrc, rnd=1,
+                                                        note="100 x (1 - E/E_baseline), NOT clamped: 0 for today's "
+                                                             "rotation, negative = more rain-weighted bare exposure "
+                                                             "than today; null if E_baseline = 0"),
+                                  residue_component=sn(100 * resid / 4, "score_0_100", low=100 * resid3[1] / 4,
+                                                       high=100 * resid3[2] / 4, method="computed",
+                                                       source=src("field_shift_engine"), rnd=1,
+                                                       note="100 x lasting_residue/4, crop-day mean rating (U). Shown "
+                                                            "for context, not part of the erosion score: residue "
+                                                            "would belong inside the cover term (RUSLE soil-loss-"
+                                                            "ratio subfactors, USDA Agriculture Handbook 703), which "
+                                                            "needs daily residue cover we do not have"),
                                   slope_pct=slope)
         # organic matter (B4.5)
-        sb = _ratings_mean(tl, crops, "soil_builder")
+        sb3 = [_ratings_mean(tl, crops, "soil_builder", v) for v in RVARS]
+        sb = sb3[0]
         perennial_years = sum(len(sp.idx) for sp in tl.spans if sp.crop.get("perennial")) / 365
 
-        def om(c):
-            return 100 * (0.5 * (sb + resid) / 2 / 4 + 0.3 * perennial_years / N + 0.2 * (1 - C[c]["bare_days"] / 365))
+        def om(c, i=0):
+            return 100 * (0.5 * (sb3[i] + resid3[i]) / 2 / 4 + 0.3 * perennial_years / N
+                          + 0.2 * (1 - C[c]["bare_days"] / 365))
 
-        scores["organic_matter"] = _sn_c((om(cn), min(map(om, C)), max(map(om, C))), "score_0_100",
-                                         src("field_shift_engine"),
+        scores["organic_matter"] = _sn_c((om(cn), min(om(c, 1) for c in C), max(om(c, 2) for c in C)),
+                                         "score_0_100", src("field_shift_engine"),
                                          f"spec B4.5; soil_builder {sb:.2f}, lasting_residue {resid:.2f} (crop-day "
-                                         f"means, U), perennial years {perennial_years:.2f}/{N}. {RULE}")
+                                         f"means, U), perennial years {perennial_years:.2f}/{N}. Range = bare "
+                                         f"threshold/rain/precip combos and the rating ranges. {RULE}")
         # market (B4.6)
         classes = [sp.crop["market_class"] for sp in tl.spans if sp.crop["market_class"] != "none"]
         if market_preference == "no_preference" or not classes:
@@ -436,32 +482,49 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
         scores["market"]["method"] = "computed"
         # pest break (B4.7)
         fy = model.families_by_year(tl, crops)
-        distinct = len(set().union(*fy))
-        run = model.max_consecutive_run(fy)
-        scores["pest_break"] = sn(100 * min(1, distinct / 3) * (1 - run / N), "score_0_100", method="computed",
-                                  source=src("field_shift_engine"),
-                                  note=f"spec B4.7: families {sorted(set().union(*fy))}, longest same-family run "
-                                       f"{run}/{N} years. Any family present every cycle year scores 0. No pest "
-                                       f"dataset exists. {RULE}", rnd=1)
+        fams = sorted(set().union(*fy))
+        distinct = len(fams)
+        gap = model.longest_gap_days(tl.crop_id == host)
+        extra_y = 1e9 if np.isinf(gap) else max(0.0, (gap - host_gap_b) / 365)
+        pb = [100 * min(1, distinct / 3) * min(1.0, extra_y / yrs) for yrs in PEST_FULL_BREAK_YEARS]
+        gap_txt = (f"{crops[host]['name']} never grown in the modelled cycle (counted as a full break; the real "
+                   f"break depends on the years around it)" if np.isinf(gap) else
+                   f"longest stretch without {crops[host]['name']} {gap:.0f} d vs {host_gap_b:.0f} d today "
+                   f"= {extra_y:.2f} extra host-free years")
+        scores["pest_break"] = sn(pb[0], "score_0_100", low=pb[1], high=pb[2], method="computed",
+                                  source=src("uc_ipm_alfalfa_rotation"),
+                                  note=f"Fix of spec B4.7 (see README): 100 x min(1, distinct families/3) x "
+                                       f"min(1, extra host-free years / 3). Host = today's main crop "
+                                       f"({crops[host]['name']}); extra host-free years = (longest circular "
+                                       f"stretch without the host - today's) / 365, so today's rotation scores 0 "
+                                       f"and the normal winter gap earns nothing. 3 years for a full break from UC IPM "
+                                       f"alfalfa ('a 3- to 4-year nonhost crop rotation is ideal'); range 2-4 years; "
+                                       f"using it for rice is our assumption (U); UC IPM rice "
+                                       f"({src('uc_ipm_rice_weeds')['url']}) names cereals, safflower and dry fallow "
+                                       f"as rotations out of rice. Families {fams}; {gap_txt}. No pest dataset "
+                                       f"exists. {RULE}", rnd=1)
         # infiltration (B4.8)
-        comp = _ratings_mean(tl, crops, "compaction_reduction")
-        rootc = _root_mean(tl, crops)
+        comp3 = [_ratings_mean(tl, crops, "compaction_reduction", v) for v in RVARS]
+        root3 = [_root_mean(tl, crops, v) for v in RVARS]
+        comp, rootc = comp3[0], root3[0]
         cover_months = float((tl.cover >= 0.5).sum()) / N / model.DAYS_PER_MONTH
         hg = (soil or {}).get("hydrologic_group")
-        scores["infiltration"] = sn(100 * (0.5 * comp / 4 + 0.3 * rootc / 2 + 0.2 * min(cover_months, 12) / 12),
-                                    "score_0_100", method="computed", source=src("field_shift_engine"),
+        inf3 = [100 * (0.5 * comp3[i] / 4 + 0.3 * root3[i] / 2 + 0.2 * min(cover_months, 12) / 12) for i in range(3)]
+        scores["infiltration"] = sn(inf3[0], "score_0_100", low=inf3[1], high=inf3[2],
+                                    method="computed", source=src("field_shift_engine"),
                                     note=f"spec B4.8; compaction {comp:.2f}, root class {rootc:.2f} (U), cover months "
-                                         f"{cover_months:.1f}. SSURGO hydrologic group {hg or 'unknown'}"
+                                         f"{cover_months:.1f}; range = rating/root-class ranges. SSURGO hydrologic group {hg or 'unknown'}"
                                          f"{': low intrinsic infiltration; rotation effect limited' if hg == 'D' else ''}"
                                          f". {RULE}", rnd=1)
         # N scavenging (B4.9)
-        ns = model.rating_day_array(tl, crops, "nitrogen_scavenging")
         fw = np.isin(tl.month, model.FW_MONTHS) & (tl.cover >= 0.5)
         fw_months = float(fw.sum()) / N / model.DAYS_PER_MONTH
-        nsv = 100 * float((ns * fw).sum()) / N / model.DAYS_PER_MONTH / 4 / 6
-        scores["n_scavenging"] = sn(min(100, nsv), "score_0_100", method="computed", source=src("field_shift_engine"),
+        nsv = [min(100.0, 100 * float((model.rating_day_array(tl, crops, "nitrogen_scavenging", v) * fw).sum())
+                   / N / model.DAYS_PER_MONTH / 4 / 6) for v in RVARS]
+        scores["n_scavenging"] = sn(nsv[0], "score_0_100", low=nsv[1], high=nsv[2], method="computed",
+                                    source=src("field_shift_engine"),
                                     note=f"spec B4.9 100 x rating/4 x fall-winter cover months/6, computed day by "
-                                         f"day over Oct-Mar with cover >= 0.5 ({fw_months:.1f} months); ratings U. "
+                                         f"day over Oct-Mar with cover >= 0.5 ({fw_months:.1f} months); ratings U, range = rating range. "
                                          f"{RULE}", rnd=1)
         # income (B4.10) - blocked
         seed_cost = sum(sp.crop["seed_cost_per_ha"]["value"] for sp in tl.spans) / N
@@ -579,7 +642,8 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
                 "scale": {"weather": "POWER 0.5 deg cell (~50 km); NOAA stations within ~25 km where cached"},
                 "agronomic_gap_count": u_inputs, "detector_disagreement_pct": None,
                 "range_inputs": "Kc low/high, ETo +/-15%, precip sources, bare threshold 0.15-0.30, rain threshold "
-                                "25-50 mm, rice F 300-600 mm (spec B4.12). Rating/yield ranges are NOT propagated."},
+                                "25-50 mm, rice F 300-600 mm (spec B4.12); rating, root-class and yield ranges (U) for the "
+                                "rating-based scores; 2-4 years for a full pest break."},
             "model_assumptions": {
                 "effective_rain_fraction": assumed(0.8, "fraction", low=0.8, high=0.8, note="spec B4.1 0.8 P (U)"),
                 "i_max_mm": sn(imax, "mm/yr", method="computed", source=src("field_shift_engine"),

@@ -15,7 +15,8 @@ import numpy as np
 
 from rotation_engine import af_to_mm, mm_to_af, score
 from rotation_engine.engine import DEFAULT_YEARS, intervals_tie, load_crops, load_strategies, weather_years
-from rotation_engine.model import cover_metrics
+from rotation_engine.model import cover_metrics, erosion_relative, longest_gap_days
+from rotation_engine.timeline import doy0
 from rotation_engine.timeline import build_timeline
 from rotation_engine.weather import CHUNK, PRESETS
 
@@ -35,16 +36,52 @@ def main():
     out = {p: score(p) for p in PRESETS}
     car, caf = by_id(out["car_colusa_rice"]), by_id(out["caf_tulare_forage"])
 
-    print("== Spec B10.1 check 12 ==")
+    print("== Spec B10.1 check 12 (erosion is relative to today's rotation; README 'Scoring fixes') ==")
     for p, recs in out.items():
         b = next(r for r in recs if r["is_baseline"])
         e = b["scores"]["erosion"]
-        check(f"baseline erosion 0 ({p}, blended score as specified)", e["value"] == 0,
-              f"value={e['value']}. Spec B4.4 blends 70% exposure term with 30% crop residue rating, so the "
-              f"baseline gets 0.3 x 100 x residue/4 > 0 unless its residue rating is 0. Formula/check conflict; "
-              f"not tuned.")
-        check(f"baseline erosion exposure component 0 ({p})", e["exposure_component"]["value"] == 0,
+        check(f"baseline erosion change vs today = 0 ({p})", e["exposure_component"]["value"] == 0,
               f"100 x (1 - E/E_baseline) = {e['exposure_component']['value']}")
+        check(f"baseline erosion score = 50, the reference point ({p})", e["value"] == 50 and e["low"] == e["high"] == 50,
+              f"value={e['value']} [{e['low']}-{e['high']}]")
+        for r in recs:
+            if r["is_baseline"]:
+                continue
+            er, ch = r["scores"]["erosion"]["value"], r["scores"]["erosion"]["exposure_component"]["value"]
+            if ch is None:
+                continue
+            check(f"erosion score and change vs today agree ({r['id']})",
+                  abs(er - 100 / (2 - ch / 100)) < 0.2 and (er > 50) == (ch > 0) and (er < 50) == (ch < 0),
+                  f"score {er}, change {ch:+.1f}% (score = 100/(2 - change/100))")
+        worse = [r for r in recs if not r["is_baseline"] and (r["scores"]["erosion"]["exposure_component"]["value"] or 0) < 0]
+        check(f"an alternative with more exposure than today scores below 50, not clamped to the baseline ({p})",
+              bool(worse) and all(r["scores"]["erosion"]["value"] < 50 for r in worse),
+              ", ".join(f"{r['id']} {r['scores']['erosion']['value']} ({r['scores']['erosion']['exposure_component']['value']:+.1f}%)"
+                        for r in worse) or "none worse than today")
+    rel = erosion_relative
+    check("erosion formula: E=0 -> 100, E=E_b -> 50, 2E_b -> 33.3, E_b/2 -> 66.7, 10E_b -> 9.1 (no clamp)",
+          rel(0, 2) == 100 and rel(2, 2) == 50 and abs(rel(4, 2) - 33.33) < 0.01 and abs(rel(1, 2) - 66.67) < 0.01
+          and abs(rel(20, 2) - 9.09) < 0.01 and rel(0, 0) == 50 and rel(1, 0) == 0)
+    xs = np.linspace(0, 50, 501)
+    check("erosion formula strictly decreasing in E", bool(np.all(np.diff([rel(x, 3.0) for x in xs]) < 0)))
+
+    print("== Pest-cycle break (README 'Scoring fixes') ==")
+    for p, recs in out.items():
+        b = next(r for r in recs if r["is_baseline"])
+        check(f"today's rotation scores 0 on pest break ({p})", b["scores"]["pest_break"]["value"] == 0)
+    pb = lambda d, k: d[k]["scores"]["pest_break"]["value"]
+    for d, k, b in ((car, "car2_dryyear_safflower", "car0_rice_winterflood"), (car, "car3_rice_wheat", "car0_rice_winterflood"),
+                    (caf, "caf1_smallgrain_corn", "caf0_alfalfa"), (caf, "caf2_smallgrain_sorghumsudan", "caf0_alfalfa"),
+                    (caf, "caf3_alfalfa_break", "caf0_alfalfa")):
+        check(f"rotation out of the host crop scores above continuous cropping ({k})", pb(d, k) > pb(d, b),
+              f"{pb(d, k)} vs {pb(d, b)}")
+    check("winter cover with rice every summer is no host break (car1 = car0)",
+          pb(car, "car1_rice_wintercover") == pb(car, "car0_rice_winterflood"))
+    check("longest_gap_days: circular gap and edge cases",
+          longest_gap_days(np.array([1, 0, 0, 1, 0, 0, 0], bool)) == 3
+          and longest_gap_days(np.array([0, 0, 1, 0, 0, 0, 1, 0], bool)) == 3
+          and longest_gap_days(np.array([0, 1, 0, 0, 0, 0, 1, 0, 0], bool)) == 4
+          and longest_gap_days(np.ones(5, bool)) == 0 and np.isinf(longest_gap_days(np.zeros(5, bool))))
 
     crops = load_crops()
     full_cover = {"id": "synthetic_full_cover", "cycle_years": 1, "calendar": [
@@ -56,6 +93,28 @@ def main():
         check(f"full-year cover -> exposed rain days ~ 0 ({p})", cm["rain"] < 0.5,
               f"exposed_rain_days={cm['rain']:.2f} (unexposed field still sees {cm['rain_days_total']:.1f} "
               f"extreme-rain days/yr)")
+
+    print("== Bare days are calendar gaps or seedling stages only ==")
+    for p in PRESETS:
+        for st in load_strategies(p):
+            tl = build_timeline(st, crops)
+            T = tl.n_years * 365
+            occ = np.zeros(T, bool)          # occupied days recomputed from the calendar dates, independently
+            for e in st["calendar"]:
+                a0 = (e["year"] - 1) * 365 + doy0(e["plant"])
+                b0 = (e["year"] - 1) * 365 + doy0(e["harvest"])
+                b0 = b0 + 365 if b0 <= a0 else b0
+                occ[np.arange(a0, b0) % T] = True
+            stage = np.full(T, -1)
+            for sp in tl.spans:
+                stage[sp.idx] = sp.stage
+            bare = (tl.cover < 0.20) & ~tl.water
+            gap_ok = np.array_equal(~occ, tl.crop_id == "fallow_bare")
+            late_bare = int((bare & occ & ~np.isin(stage, (0, 1))).sum())
+            n_gap, n_seed = int((bare & ~occ).sum()), int((bare & occ).sum())
+            check(f"bare days = harvest-to-planting gaps + seedling days only ({st['id']})", gap_ok and late_bare == 0,
+                  f"{bare.sum() / tl.n_years:.1f} d/yr = {n_gap / tl.n_years:.1f} gap + {n_seed / tl.n_years:.1f} "
+                  f"seedling (ini/dev, cover < 0.20); bare days in mid/late stages: {late_bare}")
 
     alf = next(b for b in caf["caf0_alfalfa"]["water"]["by_crop"] if b["crop_id"] == "alfalfa_hay")
     sg = next(b for b in caf["caf1_smallgrain_corn"]["water"]["by_crop"] if b["crop_id"] == "small_grain_silage")
