@@ -56,7 +56,7 @@
     },
     "regional_cell": {
       "type": "object", "required": ["grid", "row", "col", "footprint"],
-      "properties": {"grid": {"const": "EASE2_G9km"}, "row": {"type": "integer"}, "col": {"type": "integer"}, "footprint": {"$ref": "#/$defs/polygon"}}
+      "properties": {"grid": {"type": "string", "description": "EASE2_G9km (SMAP) or POWER_MERRA2_0.5x0.625 (the cell the real regional data comes from)"}, "row": {"type": "integer"}, "col": {"type": "integer"}, "footprint": {"$ref": "#/$defs/polygon"}}
     },
     "datasets": {
       "type": "object",

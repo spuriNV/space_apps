@@ -11,25 +11,28 @@ from pydantic import BaseModel, Field
 ROOT = Path(os.environ.get("FIELDSHIFT_ROOT", Path(__file__).resolve().parents[3]))
 FIX = ROOT / "fixtures"
 PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
-LAYERS = ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly"]
+LAYERS = ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly", "usdm_d2_weeks", "reservoir_storage"]
 DEFAULT_W = {"water_use": 1, "forage_value": 1, "n_fixation": 1, "erosion": 1, "organic_matter": 1, "market": 1,
              "pest_break": 0, "infiltration": 0, "n_scavenging": 0, "income": 0}
 
 # Real-output lookup paths, relative to ROOT, first existing wins. {p}=preset id, {l}=trend layer, {c}=crop id.
 LOOKUP = {
-    "location": ["data/cache/{p}/location.json", "backend/field/out/{p}/location.json", "backend/engine/out/{p}/location.json"],
-    "daily": ["data/cache/{p}/daily.json", "backend/regional/out/{p}/daily.json"],
-    "features_weekly": ["data/cache/{p}/features_weekly.json", "backend/field/out/{p}/features_weekly.json"],
+    "location": ["backend/api/out/{p}/location.json", "data/cache/{p}/location.json", "backend/field/out/{p}/location.json", "backend/engine/out/{p}/location.json"],
+    "daily": ["backend/api/out/{p}/daily.json", "data/cache/{p}/daily.json", "backend/regional/out/{p}/daily.json"],
+    "features_weekly": ["backend/api/out/{p}/features_weekly.json", "data/cache/{p}/features_weekly.json", "backend/field/out/{p}/features_weekly.json"],
     "strategies": ["backend/engine/out/{p}/strategies.json", "data/cache/{p}/strategies.json"],
     "models": ["data/cache/{p}/models.json", "backend/ai/out/{p}/models.json", "backend/field/out/{p}/models.json"],
-    "zones": ["data/cache/{p}/zones.json", "backend/field/out/{p}/zones.json"],
-    "trends": ["backend/regional/out/{p}/trends_{l}.json", "data/cache/{p}/trends_{l}.json"],
+    "zones": ["backend/api/out/{p}/zones.json", "data/cache/{p}/zones.json", "backend/field/out/{p}/zones.json"],
+    "trends": ["backend/api/out/{p}/trends_{l}.json", "backend/regional/out/{p}/trends_{l}.json", "data/cache/{p}/trends_{l}.json"],
     "news": ["backend/news/out/{p}.json", "data/cache/{p}/news.json"],
-    "validation": ["backend/regional/out/{p}/validation.json", "backend/field/out/{p}/validation.json", "data/cache/{p}/validation.json"],
+    "validation": ["backend/api/out/{p}/validation.json", "backend/regional/out/{p}/validation.json", "backend/field/out/{p}/validation.json", "data/cache/{p}/validation.json"],
     "bc_news": ["backend/news/out/bc_opener.json", "backend/news/out/bc_news.json", "data/cache/bc/news.json"],
     "bc_signal": ["backend/regional/out/bc_signal.json", "data/cache/bc/signal.json"],
     "glossary": ["backend/engine/out/glossary.json", "data/cache/glossary.json"],
     "crop": ["backend/engine/out/crops/{c}.json"],
+    "calendar": ["backend/field/out/{p}/calendar.json"],
+    "crop_history": ["backend/field/out/{p}/crop_history.json"],
+    "grid": ["backend/field/out/{p}/grid.geojson"],
 }
 FIXTURE = {
     "location": "{p}/location.json", "daily": "{p}/daily.json", "features_weekly": "{p}/features_weekly.json",
@@ -256,9 +259,24 @@ def trends(pid: str, resp: Response, layer: str = "smap_anomaly", year: int | No
     if layer not in LAYERS:
         raise HTTPException(422, f"layer must be one of {LAYERS}")
     d, s = resolve("trends", pid, l=layer)
-    if year is not None:
-        d["year"] = year  # fixture/real files hold one year; echo requested year only for fixtures
+    if "by_year" in d:  # real files hold every year: pick one, default_year when `year` is omitted
+        y = year if year is not None else d.get("default_year")
+        if str(y) not in d["by_year"]:
+            raise HTTPException(404, f"no {layer} data for year {y}; available: {d.get('years')}")
+        d = {k: v for k, v in d.items() if k != "by_year"}
+        d["year"] = int(y)
+        d["cells"] = _read_by_year(pid, layer)[str(y)]
+    elif year is not None:
+        d["year"] = year  # fixtures hold one year; echo requested year
     return send(resp, d, s)
+
+
+def _read_by_year(pid: str, layer: str) -> dict:
+    for rel in LOOKUP["trends"]:
+        f = ROOT / rel.format(p=pid, l=layer)
+        if f.is_file():
+            return _read(f)["by_year"]
+    return {}
 
 
 @app.get("/api/locations/{pid}/news")
@@ -292,3 +310,43 @@ def crop(cid: str, resp: Response):
     if not cid.replace("_", "").isalnum():
         raise HTTPException(404, "bad crop id")
     d, s = resolve("crop", c=cid); return send(resp, d, s)
+
+
+def _real_only(kind: str, pid: str) -> dict:
+    for rel in LOOKUP[kind]:
+        f = ROOT / rel.format(p=pid)
+        if f.is_file():
+            return _read(f)
+    raise HTTPException(404, f"no {kind} output for {pid} (run backend/field to build it)")
+
+
+@app.get("/api/locations/{pid}/calendar")
+def calendar(pid: str, resp: Response, year: int | None = None):
+    """Observed field calendar (backend/field rule detector) + CDL crop history. Real only; 404 if backend/field has not run."""
+    check_preset(pid)
+    d = _real_only("calendar", pid)
+    if year is not None:
+        d = {**d, "years": [y for y in d["years"] if y["year"] == year]}
+    try:
+        h = _real_only("crop_history", pid)
+        d = {**d, "crop_history": {k: h[k] for k in ("by_year", "source", "years", "caveats") if k in h}}
+    except HTTPException:
+        pass
+    d["location_id"] = pid
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/grid")
+def grid(pid: str, resp: Response, layer: list[str] | None = Query(None)):
+    """30 m field grid (GeoJSON, EPSG:4326) with NDVI layers. `layer` (repeatable) keeps only those ndvi_* keys. Real only."""
+    check_preset(pid)
+    d = _real_only("grid", pid)
+    if layer:
+        keep = set(layer) | {"cell_id", "row", "col", "area_m2", "frac_in_field"}
+        unknown = set(layer) - {l["key"] for l in d.get("layers", [])}
+        if unknown:
+            raise HTTPException(422, f"unknown layer(s) {sorted(unknown)}")
+        d = {**d, "layers": [l for l in d["layers"] if l["key"] in keep],
+             "features": [{**f, "properties": {k: v for k, v in f["properties"].items() if k in keep or (k.startswith("n_") and k[2:] in keep)}} for f in d["features"]]}
+    d["location_id"] = pid
+    return send(resp, d, "real")

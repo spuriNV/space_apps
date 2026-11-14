@@ -10,6 +10,7 @@ import numpy as np
 
 from . import model
 from .model import WYear, cover_metrics, water_metrics
+from .observed import observed_timeline
 from .sources import assumed, blocked, sn, src
 from .timeline import build_timeline, doy0
 from .weather import CHUNK, REPO, load_station_precip, load_weather, station_year_precip, year_weather
@@ -91,7 +92,7 @@ def _cover_combos():
     return nominal, [nominal] + corners
 
 
-def _evaluate(tl, wys, crops):
+def _evaluate(tl, wys, crops, cov_tl=None):
     rice_F = crops["rice_medium_grain"]["flood_percolation_mm"]
     wn, wcs = _water_combos(rice_F)
     cn, ccs = _cover_combos()
@@ -102,7 +103,7 @@ def _evaluate(tl, wys, crops):
             water[c] = r
     cover = {}
     for c in ccs:
-        r = cover_metrics(tl, list(wys), bare_thr=c[0], rain_thr=c[1], psrc=c[2])
+        r = cover_metrics(cov_tl or tl, list(wys), bare_thr=c[0], rain_thr=c[1], psrc=c[2])
         if r is not None:
             cover[c] = r
     return {"water": water, "water_nominal": wn, "cover": cover, "cover_nominal": cn}
@@ -191,8 +192,15 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
     psrc_used, psrc_missing = _psources(preset_id, wys)
 
     tls = {s["id"]: build_timeline(s, crops) for s in strategies}
-    evs = {sid: _evaluate(tl, wys, crops) for sid, tl in tls.items()}
-    revs = {y: {sid: _evaluate(tl, rw, crops) for sid, tl in tls.items()} for y, rw in replay_wys.items()}
+    # spec B5.4: the baseline's exposure/erosion use observed consensus cover (backend/field) when available
+    ctls, obs_info = {}, {}
+    for s in strategies:
+        if s["is_baseline"]:
+            ctl, info = observed_timeline(tls[s["id"]], preset_id, s)
+            if ctl is not None:
+                ctls[s["id"]], obs_info[s["id"]] = ctl, info
+    evs = {sid: _evaluate(tl, wys, crops, ctls.get(sid)) for sid, tl in tls.items()}
+    revs = {y: {sid: _evaluate(tl, rw, crops, ctls.get(sid)) for sid, tl in tls.items()} for y, rw in replay_wys.items()}
     base = next(s for s in strategies if s["is_baseline"])
     base_crops = {sp.crop["id"] for sp in tls[base["id"]].spans}
 
@@ -261,8 +269,15 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
         water["allocation_check"] = ac
 
         # ---------------- exposure (B5.3/B5.4)
-        enote = (f"{years_note}. Modelled cover from the calendar (alternatives and, until backend/field supplies "
-                 f"observed consensus cover, the baseline too). Exposed = cover < 0.5 and not water.")
+        if s["id"] in obs_info:
+            oi = obs_info[s["id"]]
+            cover_note = (f"Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years "
+                          f"{oi['years'][0]}-{oi['years'][-1]} whose CDL crop is the baseline crop: {oi['years']}; "
+                          f"class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; "
+                          f"{oi['n_unknown_days']} days with no observation keep modelled cover)")
+        else:
+            cover_note = "Modelled cover from the calendar"
+        enote = f"{years_note}. {cover_note}. Exposed = cover < 0.5 and not water."
 
         def exposure_block(Cd, nominal):
             return {

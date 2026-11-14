@@ -66,10 +66,10 @@
       "type": "object", "required": ["location_id", "layer", "unit", "grid", "cells", "field_cell_series", "event_markers"],
       "properties": {
         "location_id": {"type": "string"},
-        "layer": {"enum": ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly"]},
+        "layer": {"enum": ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly", "usdm_d2_weeks", "reservoir_storage"]},
         "year": {"type": ["integer", "null"]},
         "unit": {"type": "string"},
-        "grid": {"const": "EASE2_G9km"},
+        "grid": {"type": "string", "description": "EASE2_G9km for SMAP/GRACE layers; POWER_MERRA2_0.5x0.625, county_<fips> or cdec_<stations> for the real single-cell layers"},
         "source": {"$ref": "sourced_number.schema.json#/$defs/Source"},
         "cells": {"type": "array", "description": "11 x 11 neighbourhood; plain numbers (grid layer); null = no data",
           "items": {"type": "object", "required": ["row", "col", "value"], "properties": {"row": {"type": "integer"}, "col": {"type": "integer"}, "value": {"type": ["number", "null"]}}}},
@@ -87,7 +87,7 @@
       "type": "object", "required": ["location_id", "checks"],
       "properties": {"location_id": {"type": "string"},
         "checks": {"type": "array", "items": {"type": "object", "required": ["id", "title", "status", "metrics"],
-          "properties": {"id": {"enum": ["openet_vs_etc", "cimis_vs_power", "station_vs_imerg"]}, "title": {"type": "string"},
+          "properties": {"id": {"enum": ["openet_vs_etc", "cimis_vs_power", "station_vs_imerg", "power_vs_ncei_precip", "power_vs_ncei_tmax", "power_vs_ncei_tmin", "power_vs_ncei_heat40"]}, "title": {"type": "string"},
             "status": {"enum": ["computed", "pending", "blocked"]},
             "metrics": {"type": "object", "additionalProperties": {"$ref": "sourced_number.schema.json"}}, "note": {"type": "string"}}}}}
     },

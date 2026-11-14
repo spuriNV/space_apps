@@ -27,6 +27,13 @@ def validator(file, defname=None):
 
 client = TestClient(app)
 fails = 0
+SOURCES = {}  # route label (preset id replaced by {id}) -> set of X-Data-Source values seen
+# Routes that must be served from real output (a regression to fixture is a FAIL). Everything else may be fixture.
+EXPECT_REAL = ["/api/locations", "/api/locations/{id}", "/daily", "/features/weekly", "/strategies", "/score", "/zones",
+               "/trends?layer=heatwave_days", "/trends?layer=precip_anomaly", "/trends?layer=usdm_d2_weeks", "/trends?layer=reservoir_storage", "/news", "/validation", "/calendar", "/grid", "/api/bc/news", "/api/crops/{cid}"]
+EXPECT_FIXTURE_OK = {"/models": "no producer (AI workstream)", "/api/bc/signal": "SMAP/GRACE need Earthdata (blocked)",
+                     "/api/glossary": "no producer", "/trends?layer=smap_anomaly": "SMAP needs Earthdata (blocked)",
+                     "/trends?layer=grace_gw_pct": "GRACE needs Earthdata (blocked)", "/trends?layer=modis_ndvi_anomaly": "MODIS needs Earthdata (blocked)"}
 
 
 def check(method, url, validator_, body=None, expect=200):
@@ -42,6 +49,16 @@ def check(method, url, validator_, body=None, expect=200):
             src = r.headers.get("X-Data-Source")
             if src not in ("fixture", "real") or data.get("_source") != src:
                 errs.append(f"missing/inconsistent source marker header={src} field={data.get('_source')}")
+            key = url.split("?")[0]
+            if key.endswith("/trends"):
+                key += "?layer=" + url.split("layer=")[1].split("&")[0]
+            for pid in PRESETS:
+                key = key.replace(pid, "{id}")
+            if "/api/crops/" in key:
+                key = "/api/crops/{cid}"
+            if "/api/locations/{id}/" in key:
+                key = "/" + key.split("/api/locations/{id}/")[1] if key.split("/api/locations/{id}/")[1] != "" else key
+            SOURCES.setdefault(key, set()).add(src)
             if src == "fixture" and data.get("_fixture") is not True:
                 errs.append("fixture response lacks _fixture:true")
             errs += [f"{'/'.join(map(str, e.absolute_path))}: {e.message[:100]}" for e in list(validator_.iter_errors(data))[:3]]
@@ -72,6 +89,10 @@ for p in PRESETS:
         check("GET", L + f"/trends?layer={layer}&year=2023", validator("responses.schema.json", "Trends"))
     check("GET", L + "/news", validator("responses.schema.json", "News"))
     check("GET", L + "/validation", validator("responses.schema.json", "Validation"))
+    check("GET", L + "/calendar", ANY)
+    check("GET", L + "/calendar?year=2022", ANY)
+    check("GET", L + "/grid?layer=ndvi_2023_q3", ANY)
+    check("GET", L + "/grid?layer=bogus", ANY, expect=422)
     crop_ids = sorted({c["crop_id"] for s in (r.json()["items"] if r else []) for c in s["calendar"]})
     for cid in crop_ids:
         check("GET", f"/api/crops/{cid}", validator("crop.schema.json"))
@@ -79,6 +100,16 @@ check("GET", "/api/locations/nope", ANY, expect=404)
 check("GET", "/api/bc/news", validator("responses.schema.json", "News"))
 check("GET", "/api/bc/signal", validator("responses.schema.json", "BcSignal"))
 check("GET", "/api/glossary", validator("responses.schema.json", "Glossary"))
+# real vs fixture report
+print("\nroute data source (X-Data-Source over both presets):")
+for k in sorted(SOURCES):
+    v = "/".join(sorted(SOURCES[k]))
+    flag = ""
+    if k in EXPECT_REAL and v != "real":
+        fails += 1; flag = "  <- FAIL expected real"
+    elif k in EXPECT_FIXTURE_OK and v != "real":
+        flag = f"  (fixture: {EXPECT_FIXTURE_OK[k]})"
+    print(f"  {v:8s} {k}{flag}")
 # CORS
 r = client.options("/api/locations", headers={"Origin": "http://localhost:5171", "Access-Control-Request-Method": "GET"})
 ok = r.headers.get("access-control-allow-origin") == "http://localhost:5171"

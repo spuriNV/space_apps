@@ -64,7 +64,7 @@ recs = score("car_colusa_rice", weights={"water_use": 4, "erosion": 3}, constrai
 | `income` | B4.10 | **null (blocked)**. Seed-cost placeholder shown as a component |
 | `risk_profile` | B4.11 | **null (blocked)** |
 | Risk days | B5.3 | Extreme rain: P ≥ 25 mm or 3-day ≥ 75 mm. Frost: Tmin ≤ 0. Heat: Tmax ≥ 35. Dry: **POWER proxy** (30-day P < 50 % of the 1991-2020 climatology), because IMERG and SMAP are blocked |
-| Exposure | B5.4 | Σ [cover < 0.5 and not water] × risk. Cover is modelled from the calendar for **all** strategies, including the baseline, until backend/field supplies observed consensus cover |
+| Exposure | B5.4 | Σ [cover < 0.5 and not water] × risk. The **baseline** uses observed consensus cover from `backend/field/out/<id>/calendar.json` (`observed.py`): per day of year, the most common satellite class over the calendar years whose CDL crop is the baseline crop (CAR 2017-19, 2021, 2023-25 rice years; CAF 2017-20, 2022, 2024-25 alfalfa years), mapped bare 0.10 / partial 0.35 / covered 0.80, water -> water flag (this class-to-cover mapping is **ours, U**). Alternatives use modelled cover. Only exposure and erosion use it; infiltration, n-scavenging and the other calendar scores still read the modelled baseline timeline. Falls back to modelled cover if the field outputs are missing |
 | Composite, ties | B4.12 | Σ w_i s_i / Σ w_i over non-null scores. low/high apply the same weights to the score lows/highs. Tie = overlap / shorter interval > 0.5. A zero-width interval ties if the point lies inside the other interval |
 | Ranges | B4.12 | Deterministic min/max over: nominal plus every corner of {Kc low/high, ETo ×0.85/×1.15, rice F 300/600, P source POWER/NOAA} for water, and {bare threshold 0.15/0.30, rain threshold 25/50 mm (3-day = 3×), P source} for cover. Rating and yield ranges are **not** propagated, because the spec does not list them |
 | Replay | B5.4 | `replay_year` runs every cycle year on that year's weather. `exposure.replay` always carries 2022 and 2023 (exposure, I, ETc) |
@@ -101,7 +101,7 @@ recs = score("car_colusa_rice", weights={"water_use": 4, "erosion": 3}, constrai
 | ETo bias widening | CIMIS key (POWER-vs-CIMIS bias unknown, so ±15 % is used) |
 | Precip source #3 | GPM IMERG (Earthdata login). POWER and NOAA station means only |
 | Dry-spell rule | IMERG and SMAP blocked; a POWER 30-day proxy is used |
-| Observed baseline cover | backend/field consensus cover not available yet; the baseline uses modelled cover |
+| Observed baseline cover | **now used** (see Exposure above). Remaining gap: the detector sees winter flooding in only 3 of 6 winters (backend/field), so CAR's baseline reads only 15 consensus water days vs ~3.5 modelled flood months; its exposed days rise from 108 to 231/yr, which lowers the other CAR strategies' relative erosion penalty. DSWx (Earthdata) would settle it |
 | "2050s" scenario preset | Cal-Adapt values not transcribed |
 
 ## Sanity: are the magnitudes plausible?
@@ -138,7 +138,8 @@ Default output, 2015-2025, POWER precipitation as nominal (see `checks/run_check
 - **Ranges:** should rating and yield ranges be propagated into score ranges? This would widen ties.
 - **Winter flood:** should the irrigation need include fill and percolation water (needs a cited source)?
 - **API contract:** we added extra fields beyond the B3 example: `water.by_crop`, `water.allocation_check`, `water.etc_mm_year`, `irrigation_need_af_ac`, `exposure.erosion_index_E`, `scores.erosion.exposure_component`, `constraints_check`, `filtered_out` and `model_assumptions`. `stage_lengths_days` and `cover_by_stage` stay plain numbers, as in the B3 Crop example.
-- **For backend/field:** please supply observed consensus cover (per day of year) and NASADEM slope. The baseline exposure should use them.
+- **For backend/field:** observed cover is now consumed. Still needed: NASADEM slope (Earthdata) and, ideally, DSWx water to confirm the winter floods.
+- **Soil:** the engine reads `data/cache/<id>/soil.json` at each call; with the polygon-based SSURGO run CAR is Capay clay loam (group D) and CAF is Kimberlina fine sandy loam, saline-alkali (group C, AWC 50 mm/m). Soil only feeds notes and the drainage constraint check; no score uses AWC yet.
 
 ## Verified vs not
 
