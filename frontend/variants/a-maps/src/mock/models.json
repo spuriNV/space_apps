@@ -1,0 +1,132 @@
+{
+ "car_colusa_rice": [
+  {
+   "id": "bare_rule_car_v1",
+   "task": "bare_cover",
+   "method": "rule_ndvi",
+   "features": [
+    "ndvi",
+    "bsi",
+    "ndwi"
+   ],
+   "labels": "cdl_year_class + season_rules",
+   "split": {
+    "train_years": [],
+    "test_years": [
+     2022,
+     2024,
+     2025
+    ]
+   },
+   "metrics": {
+    "accuracy": 0.88,
+    "f1_bare": 0.84,
+    "transition_mae_days": 11
+   },
+   "notes": "NDVI < 0.20 bare, 0.20-0.35 partial, > 0.35 covered. Illustrative metrics."
+  },
+  {
+   "id": "bare_rf_car_v1",
+   "task": "bare_cover",
+   "method": "random_forest",
+   "features": [
+    "ndvi",
+    "bsi",
+    "ndwi",
+    "ndvi_slope_30d",
+    "doy"
+   ],
+   "labels": "cdl_year_class + season_rules",
+   "split": {
+    "train_years": [
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2023
+    ],
+    "test_years": [
+     2022,
+     2024,
+     2025
+    ]
+   },
+   "metrics": {
+    "accuracy": 0.92,
+    "f1_bare": 0.89,
+    "transition_mae_days": 8
+   },
+   "disagreement_with": {
+    "rule_ndvi": 0.07
+   },
+   "notes": "2022 (the fallow year) is held out. Spatial hold-out by field. Illustrative metrics."
+  }
+ ],
+ "caf_tulare_forage": [
+  {
+   "id": "bare_rule_caf_v1",
+   "task": "bare_cover",
+   "method": "rule_ndvi",
+   "features": [
+    "ndvi",
+    "bsi",
+    "ndwi"
+   ],
+   "labels": "cdl_year_class + season_rules",
+   "split": {
+    "train_years": [],
+    "test_years": [
+     2022,
+     2024,
+     2025
+    ]
+   },
+   "metrics": {
+    "accuracy": 0.9,
+    "f1_bare": 0.8,
+    "transition_mae_days": 9
+   },
+   "notes": "Illustrative metrics."
+  },
+  {
+   "id": "bare_rf_caf_v1",
+   "task": "bare_cover",
+   "method": "random_forest",
+   "features": [
+    "ndvi",
+    "bsi",
+    "ndwi",
+    "ndvi_slope_30d",
+    "doy"
+   ],
+   "labels": "cdl_year_class + season_rules",
+   "split": {
+    "train_years": [
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2023
+    ],
+    "test_years": [
+     2022,
+     2024,
+     2025
+    ]
+   },
+   "metrics": {
+    "accuracy": 0.93,
+    "f1_bare": 0.86,
+    "transition_mae_days": 7
+   },
+   "disagreement_with": {
+    "rule_ndvi": 0.06
+   },
+   "notes": "Illustrative metrics."
+  }
+ ]
+}

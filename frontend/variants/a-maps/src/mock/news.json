@@ -1,0 +1,133 @@
+{
+ "car_colusa_rice": [
+  {
+   "date": "2022-05-01",
+   "title": "A Rough Year for Rice in California",
+   "source": "NASA Earth Observatory",
+   "url": "https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/",
+   "rank": 1,
+   "place_match": [
+    "Sacramento Valley"
+   ],
+   "query_id": "car_2022_drought",
+   "verified": true,
+   "signal": {
+    "dataset": "smap_l3",
+    "label": "SMAP soil moisture percentile",
+    "value_pct": 9,
+    "lead_days": null
+   }
+  },
+  {
+   "date": "2022-05-20",
+   "title": "Calif. rice acreage to drop to 39-year low",
+   "source": "Farm Progress",
+   "url": "https://www.farmprogress.com/rice/calif-rice-acreage-to-drop-to-39-year-low",
+   "rank": 2,
+   "place_match": [
+    "Sacramento Valley"
+   ],
+   "query_id": "car_2022_drought",
+   "verified": true,
+   "signal": {
+    "dataset": "smap_l3",
+    "label": "SMAP soil moisture percentile",
+    "value_pct": 9,
+    "lead_days": null
+   }
+  },
+  {
+   "date": "2023-01-09",
+   "title": "Atmospheric rivers hit the Sacramento Valley (Jan-Mar 2023); late planting follows",
+   "source": "headline to cache Saturday",
+   "url": null,
+   "rank": 3,
+   "place_match": [
+    "Sacramento Valley",
+    "Colusa"
+   ],
+   "query_id": "car_2023_storms",
+   "verified": false,
+   "signal": {
+    "dataset": "imerg",
+    "label": "IMERG 3-day rain percentile",
+    "value_pct": 97,
+    "lead_days": null
+   }
+  }
+ ],
+ "caf_tulare_forage": [
+  {
+   "date": "2023-03-20",
+   "title": "Tulare Lake re-floods; about 114,000 acres under water at peak",
+   "source": "headline to cache Saturday",
+   "url": null,
+   "rank": 3,
+   "place_match": [
+    "Tulare Lake",
+    "Corcoran"
+   ],
+   "query_id": "caf_2023_flood",
+   "verified": false,
+   "signal": {
+    "dataset": "imerg",
+    "label": "IMERG 3-day rain percentile",
+    "value_pct": 96,
+    "lead_days": null
+   }
+  },
+  {
+   "date": "2024-04-16",
+   "title": "State Water Board places Tulare Lake Subbasin on SGMA probation",
+   "source": "State Water Resources Control Board",
+   "url": "https://www.waterboards.ca.gov/sgma/",
+   "rank": 1,
+   "place_match": [
+    "Tulare Lake Subbasin",
+    "Kings County"
+   ],
+   "query_id": "caf_2024_probation",
+   "verified": true,
+   "signal": {
+    "dataset": "grace",
+    "label": "GRACE groundwater percentile",
+    "value_pct": 4,
+    "lead_days": null
+   }
+  },
+  {
+   "date": "2022-07-15",
+   "title": "2021-22 drought: heavy groundwater pumping across the Tulare Lake bed",
+   "source": "headline to cache Saturday",
+   "url": null,
+   "rank": 3,
+   "place_match": [
+    "Kings County"
+   ],
+   "query_id": "caf_2022_drought",
+   "verified": false,
+   "signal": {
+    "dataset": "grace",
+    "label": "GRACE groundwater percentile",
+    "value_pct": 3,
+    "lead_days": null
+   }
+  }
+ ],
+ "bc": [
+  {
+   "date": "2023-08-16",
+   "title": "Fish population protection order: Salmon River and Bessette Creek",
+   "source": "BC Gov News",
+   "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+   "rank": 1,
+   "place_match": [
+    "Salmon River",
+    "Bessette Creek"
+   ],
+   "query_id": "bc_salmon_2023",
+   "verified": true,
+   "signal": null
+  }
+ ]
+}

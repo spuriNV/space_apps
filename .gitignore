@@ -1,0 +1,17 @@
+# secrets
+.env
+.env.*
+!.env.example
+.netrc
+
+# dependencies and build output
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.vite/
+
+# OS
+.DS_Store

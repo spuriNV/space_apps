@@ -1,0 +1,17 @@
+[project]
+name = "rotation-engine"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Caiden", email = "caiden.merklin@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.5.4",
+    "pandas>=3.1.1",
+    "pyarrow>=26.0.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.30,<0.12.0"]
+build-backend = "uv_build"

@@ -1,0 +1,153 @@
+{
+ "_fixture": true,
+ "location_id": "caf_tulare_forage",
+ "items": [
+  {
+   "id": "bare_rule_caf_tulare_forage_v1",
+   "task": "bare_cover",
+   "method": "rule_ndvi",
+   "features": [
+    "ndvi_median",
+    "bsi",
+    "nbr2",
+    "ndvi_p10"
+   ],
+   "labels": "cdl_year_class + season_rules",
+   "split": {
+    "train_years": [
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2023
+    ],
+    "test_years": [
+     2022,
+     2024,
+     2025
+    ]
+   },
+   "metrics": {
+    "accuracy": 0.88,
+    "f1_bare": 0.85
+   },
+   "confusion": [
+    [
+     90,
+     10
+    ],
+    [
+     8,
+     92
+    ]
+   ],
+   "feature_importance": [],
+   "disagreement_with": {},
+   "notes": "[fixture placeholder] numbers are not model output"
+  },
+  {
+   "id": "bare_rf_caf_tulare_forage_v1",
+   "task": "bare_cover",
+   "method": "random_forest",
+   "features": [
+    "ndvi_median",
+    "bsi",
+    "nbr2",
+    "ndvi_p10"
+   ],
+   "labels": "cdl_year_class + season_rules",
+   "split": {
+    "train_years": [
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2023
+    ],
+    "test_years": [
+     2022,
+     2024,
+     2025
+    ]
+   },
+   "metrics": {
+    "accuracy": 0.92,
+    "f1_bare": 0.89,
+    "transition_mae_days": 8
+   },
+   "confusion": [
+    [
+     90,
+     10
+    ],
+    [
+     8,
+     92
+    ]
+   ],
+   "feature_importance": [
+    {
+     "feature": "ndvi_median",
+     "importance": 0.4
+    },
+    {
+     "feature": "bsi",
+     "importance": 0.3
+    },
+    {
+     "feature": "nbr2",
+     "importance": 0.2
+    },
+    {
+     "feature": "ndvi_p10",
+     "importance": 0.1
+    }
+   ],
+   "disagreement_with": {
+    "rule_ndvi": 0.07
+   },
+   "notes": "[fixture placeholder] numbers are not model output"
+  },
+  {
+   "id": "stress_if_caf_tulare_forage_v1",
+   "task": "stress_anomaly",
+   "method": "isolation_forest",
+   "features": [
+    "ndvi_median",
+    "bsi",
+    "nbr2",
+    "ndvi_p10"
+   ],
+   "labels": "s2_scl_pseudo",
+   "split": {
+    "train_years": [
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2023
+    ],
+    "test_years": [
+     2022,
+     2024,
+     2025
+    ]
+   },
+   "metrics": {
+    "precision_at_k": 0.6
+   },
+   "confusion": [],
+   "feature_importance": [],
+   "disagreement_with": {
+    "rule_ndvi": 0.07
+   },
+   "notes": "[fixture placeholder] numbers are not model output"
+  }
+ ]
+}

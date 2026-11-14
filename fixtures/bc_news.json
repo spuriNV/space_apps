@@ -1,0 +1,21 @@
+{
+ "_fixture": true,
+ "items": [
+  {
+   "date": "2023-08-16",
+   "title": "[fixture placeholder] Salmon River fish protection order headline",
+   "source": "fixture",
+   "url": null,
+   "rank": 1,
+   "place_match": [
+    "Salmon River"
+   ],
+   "query_id": "bc_salmon_2023",
+   "signal": {
+    "dataset": "smap_l3",
+    "value_pct": null,
+    "lead_days": null
+   }
+  }
+ ]
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldshift.local/schemas/crop.schema.json",
+  "title": "Crop",
+  "type": "object",
+  "required": ["id", "name", "family", "role", "legume", "root", "kc", "stage_lengths_days", "cover_by_stage", "ratings_0_4", "yield_range", "drainage_classes_ok", "seeding_window", "pest_notes", "cautions", "seed_cost_per_ha", "sources"],
+  "properties": {
+    "id": {"type": "string"},
+    "name": {"type": "string"},
+    "family": {"type": "string"},
+    "role": {"type": "array", "items": {"enum": ["cash", "cover", "forage", "fallow", "break"]}},
+    "legume": {"type": "boolean"},
+    "root": {"type": "string"},
+    "kc": {
+      "type": "object", "required": ["ini", "mid", "end"],
+      "properties": {"ini": {"$ref": "sourced_number.schema.json"}, "mid": {"$ref": "sourced_number.schema.json"}, "end": {"$ref": "sourced_number.schema.json"}}
+    },
+    "stage_lengths_days": {
+      "type": "object", "required": ["ini", "dev", "mid", "late", "source"],
+      "properties": {"ini": {"type": "integer"}, "dev": {"type": "integer"}, "mid": {"type": "integer"}, "late": {"type": "integer"}, "source": {"type": "string"}}
+    },
+    "cover_by_stage": {
+      "type": "object", "required": ["ini", "dev", "mid", "late"],
+      "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}
+    },
+    "ratings_0_4": {
+      "type": "object",
+      "required": ["erosion_reduction", "soil_builder", "lasting_residue", "nitrogen_fixation", "nitrogen_scavenging", "compaction_reduction", "forage_harvest_value", "weed_suppression", "tolerance_flood", "tolerance_drought"],
+      "additionalProperties": {"$ref": "sourced_number.schema.json"}
+    },
+    "yield_range": {"$ref": "sourced_number.schema.json"},
+    "drainage_classes_ok": {"type": "array", "items": {"type": "string"}},
+    "seeding_window": {
+      "type": "object", "required": ["start", "end", "verified"],
+      "properties": {
+        "start": {"type": "string", "pattern": "^\\d\\d-\\d\\d$"}, "end": {"type": "string", "pattern": "^\\d\\d-\\d\\d$"},
+        "best": {"type": "string"}, "verified": {"type": "boolean"}
+      }
+    },
+    "pest_notes": {"type": "array", "items": {"type": "string"}},
+    "cautions": {"type": "array", "items": {"type": "string"}},
+    "seed_cost_per_ha": {"$ref": "sourced_number.schema.json"},
+    "explainer_card": {"type": ["string", "null"]},
+    "sources": {
+      "type": "array",
+      "items": {"type": "object", "required": ["id", "url"], "properties": {"id": {"type": "string"}, "url": {"type": "string"}}}
+    }
+  }
+}

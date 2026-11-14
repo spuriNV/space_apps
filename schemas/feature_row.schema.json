@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldshift.local/schemas/feature_row.schema.json",
+  "title": "FeatureRow",
+  "description": "One row of features_weekly.parquet (spec B2.14). Table rows: plain nullable numbers; provenance lives in <dataset>.meta.json, not per cell.",
+  "type": "object",
+  "required": ["week_start", "iso_year", "iso_week"],
+  "properties": {
+    "week_start": {"type": "string", "format": "date"},
+    "iso_year": {"type": "integer"},
+    "iso_week": {"type": "integer", "minimum": 1, "maximum": 53},
+    "ndvi_median": {"type": ["number", "null"]},
+    "ndvi_p10": {"type": ["number", "null"]},
+    "ndvi_p90": {"type": ["number", "null"]},
+    "bsi": {"type": ["number", "null"]},
+    "nbr2": {"type": ["number", "null"]},
+    "lst_anomaly_k": {"type": ["number", "null"]},
+    "esi": {"type": ["number", "null"]},
+    "openet_et_mm_month": {"type": ["number", "null"], "description": "monthly OpenET carried to weeks"},
+    "smap_sm": {"type": ["number", "null"]},
+    "smap_sm_pct": {"type": ["number", "null"]},
+    "imerg_7d_mm": {"type": ["number", "null"]},
+    "power_tmax_c": {"type": ["number", "null"]},
+    "power_tmin_c": {"type": ["number", "null"]},
+    "power_eto_mm": {"type": ["number", "null"]},
+    "grace_sfsm_pct": {"type": ["number", "null"]},
+    "grace_rzsm_pct": {"type": ["number", "null"]},
+    "grace_gws_pct": {"type": ["number", "null"]},
+    "modis_ndvi_anomaly": {"type": ["number", "null"]},
+    "usdm_category": {"enum": [null, "None", "D0", "D1", "D2", "D3", "D4"]}
+  }
+}

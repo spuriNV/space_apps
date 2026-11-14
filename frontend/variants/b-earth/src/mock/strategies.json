@@ -1,0 +1,4083 @@
+[
+ {
+  "id": "car0_continuous_rice",
+  "location_id": "car_colusa_rice",
+  "name": "Continuous rice, winter flood",
+  "short_name": "Rice + winter flood",
+  "is_baseline": true,
+  "cycle_years": 1,
+  "calendar": [
+   {
+    "year": 1,
+    "crop_id": "rice_medium_grain",
+    "plant": "05-10",
+    "harvest": "10-05",
+    "role": "cash",
+    "timing_source": "uc_rice_blog (V avg)"
+   }
+  ],
+  "calendar_months": [
+   "winter flood",
+   "drain",
+   "field prep",
+   "flood, water-seed",
+   "rice",
+   "rice",
+   "rice",
+   "rice",
+   "drain, harvest",
+   "straw, re-flood",
+   "winter flood",
+   "winter flood"
+  ],
+  "month_cover": "wwbwpcccpbww",
+  "allocation_rule": null,
+  "exposure": {
+   "bare_days_per_year": {
+    "value": 58,
+    "low": 40,
+    "high": 75,
+    "unit": "days",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_rain_days": {
+    "value": 3,
+    "low": 1,
+    "high": 6,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_frost_days": {
+    "value": 2,
+    "low": 0,
+    "high": 4,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_heat_days": {
+    "value": 0,
+    "low": 0,
+    "high": 1,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_dry_days": {
+    "value": 4,
+    "low": 1,
+    "high": 9,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "replay": {
+    "2022": {
+     "irrigation_need_mm": {
+      "value": 1420,
+      "low": 1260,
+      "high": 1620,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 2,
+      "low": 0,
+      "high": 6,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Allocation cut: this plan could not be watered in 2022"
+    },
+    "2023": {
+     "irrigation_need_mm": {
+      "value": 1180,
+      "low": 1040,
+      "high": 1350,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 7,
+      "low": 3,
+      "high": 15,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Late planting; harvest ran into October rain"
+    }
+   },
+   "scenario": {
+    "dT_c": 0,
+    "dP_pct": 0
+   },
+   "cover_basis": "observed consensus cover"
+  },
+  "water": {
+   "etc_mm_season": {
+    "value": 1010,
+    "low": 930,
+    "high": 1090,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "fao56_table12",
+     "title": "FAO-56 Table 12",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "note": "Kc × ETo, FAO-56 single coefficient; ETo values are mock"
+   },
+   "irrigation_need_mm": {
+    "value": 1300,
+    "low": 1150,
+    "high": 1500,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "I = Σ max(0, ETc − 0.8 P); rice adds flood-establishment term (U)"
+   },
+   "etc_by_month_mm": [
+    35,
+    45,
+    30,
+    95,
+    150,
+    185,
+    210,
+    180,
+    110,
+    40,
+    30,
+    30
+   ],
+   "openet_et_mm_season": {
+    "value": 1060,
+    "low": 980,
+    "high": 1140,
+    "unit": "mm",
+    "method": "measured",
+    "source": {
+     "id": "openet",
+     "title": "OpenET ensemble (mock value)",
+     "url": "https://openetdata.org/",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "etc_vs_openet_pct": {
+    "value": -5,
+    "low": null,
+    "high": null,
+    "unit": "%",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   }
+  },
+  "scores": {
+   "water_use": {
+    "value": 28,
+    "low": 18,
+    "high": 38,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "forage_value": {
+    "value": 0,
+    "low": 0,
+    "high": 0,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_fixation": {
+    "value": 0,
+    "low": 0,
+    "high": 0,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "erosion": {
+    "value": 55,
+    "low": 42,
+    "high": 66,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "organic_matter": {
+    "value": 52,
+    "low": 42,
+    "high": 61,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "market": {
+    "value": 78,
+    "low": 62,
+    "high": 90,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "pest_break": {
+    "value": 10,
+    "low": 5,
+    "high": 18,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "infiltration": {
+    "value": 30,
+    "low": 20,
+    "high": 40,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_scavenging": {
+    "value": 20,
+    "low": 10,
+    "high": 32,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   }
+  },
+  "composite": {
+   "value": 52,
+   "low": 44,
+   "high": 60,
+   "unit": "score 0–100",
+   "method": "model",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "",
+   "weights_used": {
+    "water_use": 3,
+    "forage_value": 2,
+    "n_fixation": 1,
+    "erosion": 2,
+    "organic_matter": 2,
+    "market": 3
+   }
+  },
+  "risk_profile": {
+   "rma_share_drought": {
+    "value": 0.62,
+    "low": 0.5,
+    "high": 0.72,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_excess_moisture": {
+    "value": 0.21,
+    "low": 0.14,
+    "high": 0.3,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_heat": {
+    "value": 0.05,
+    "low": 0.02,
+    "high": 0.08,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_years": [
+    2010,
+    2024
+   ],
+   "crop": "Rice, Colusa County",
+   "note": "insurance history, not a forecast"
+  },
+  "funding": [],
+  "brief": {
+   "why": [
+    {
+     "text": "This is what the field does now: rice May to October, then a winter flood to break down straw.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    },
+    {
+     "text": "It uses the most water of the four plans and depends on a full surface allocation.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    }
+   ],
+   "local_review": [
+    {
+     "item": "Irrigation need is above the allocation you entered",
+     "severity": "high"
+    },
+    {
+     "item": "Waterfowl habitat and straw-management obligations",
+     "severity": "medium"
+    }
+   ],
+   "explainer_cards": [],
+   "llm_report": {
+    "sentences": 2,
+    "numbers_checked": 0,
+    "rejected": 0,
+    "model": "template (mock)",
+    "cached_at": null
+   }
+  },
+  "uncertainty": {
+   "agronomic_gap_count": 2,
+   "detector_disagreement_pct": 7
+  }
+ },
+ {
+  "id": "car1_rice_wintercover",
+  "location_id": "car_colusa_rice",
+  "name": "Rice + winter cover (no winter flood)",
+  "short_name": "Rice + winter cover",
+  "is_baseline": false,
+  "cycle_years": 1,
+  "calendar": [
+   {
+    "year": 1,
+    "crop_id": "rice_medium_grain",
+    "plant": "05-10",
+    "harvest": "10-05",
+    "role": "cash",
+    "timing_source": "uc_rice_blog (V avg)"
+   },
+   {
+    "year": 1,
+    "crop_id": "cereal_vetch_cover",
+    "plant": "10-25",
+    "terminate": "03-20",
+    "role": "cover",
+    "timing_source": "assumed (U)"
+   }
+  ],
+  "calendar_months": [
+   "cover",
+   "cover",
+   "terminate, prep",
+   "flood, seed",
+   "rice",
+   "rice",
+   "rice",
+   "rice",
+   "harvest",
+   "drill cover",
+   "cover",
+   "cover"
+  ],
+  "month_cover": "ccbwpcccpbpc",
+  "allocation_rule": null,
+  "exposure": {
+   "bare_days_per_year": {
+    "value": 34,
+    "low": 20,
+    "high": 52,
+    "unit": "days",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_rain_days": {
+    "value": 1,
+    "low": 0,
+    "high": 3,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_frost_days": {
+    "value": 1,
+    "low": 0,
+    "high": 2,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_heat_days": {
+    "value": 0,
+    "low": 0,
+    "high": 1,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_dry_days": {
+    "value": 2,
+    "low": 0,
+    "high": 6,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "replay": {
+    "2022": {
+     "irrigation_need_mm": {
+      "value": 1210,
+      "low": 1060,
+      "high": 1400,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 0,
+      "low": 0,
+      "high": 3,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Cover crop would still have grown on winter rain"
+    },
+    "2023": {
+     "irrigation_need_mm": {
+      "value": 1000,
+      "low": 880,
+      "high": 1160,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 3,
+      "low": 1,
+      "high": 9,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Cover held the soil through the Jan–Mar storms"
+    }
+   },
+   "scenario": {
+    "dT_c": 0,
+    "dP_pct": 0
+   },
+   "cover_basis": "modelled cover"
+  },
+  "water": {
+   "etc_mm_season": {
+    "value": 1040,
+    "low": 950,
+    "high": 1130,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "fao56_table12",
+     "title": "FAO-56 Table 12",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "note": "Kc × ETo, FAO-56 single coefficient; ETo values are mock"
+   },
+   "irrigation_need_mm": {
+    "value": 1100,
+    "low": 960,
+    "high": 1280,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "I = Σ max(0, ETc − 0.8 P); rice adds flood-establishment term (U)"
+   },
+   "etc_by_month_mm": [
+    40,
+    55,
+    45,
+    95,
+    150,
+    185,
+    210,
+    180,
+    110,
+    35,
+    30,
+    30
+   ],
+   "openet_et_mm_season": null,
+   "etc_vs_openet_pct": null
+  },
+  "scores": {
+   "water_use": {
+    "value": 42,
+    "low": 30,
+    "high": 53,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "forage_value": {
+    "value": 12,
+    "low": 5,
+    "high": 22,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_fixation": {
+    "value": 38,
+    "low": 20,
+    "high": 55,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "erosion": {
+    "value": 74,
+    "low": 60,
+    "high": 85,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "organic_matter": {
+    "value": 70,
+    "low": 58,
+    "high": 80,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "market": {
+    "value": 70,
+    "low": 52,
+    "high": 84,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "pest_break": {
+    "value": 48,
+    "low": 34,
+    "high": 60,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "infiltration": {
+    "value": 58,
+    "low": 44,
+    "high": 70,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_scavenging": {
+    "value": 66,
+    "low": 50,
+    "high": 80,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   }
+  },
+  "composite": {
+   "value": 61,
+   "low": 50,
+   "high": 70,
+   "unit": "score 0–100",
+   "method": "model",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "",
+   "weights_used": {
+    "water_use": 3,
+    "forage_value": 2,
+    "n_fixation": 1,
+    "erosion": 2,
+    "organic_matter": 2,
+    "market": 3
+   }
+  },
+  "risk_profile": {
+   "rma_share_drought": {
+    "value": 0.62,
+    "low": 0.5,
+    "high": 0.72,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_excess_moisture": {
+    "value": 0.21,
+    "low": 0.14,
+    "high": 0.3,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_heat": {
+    "value": 0.05,
+    "low": 0.02,
+    "high": 0.08,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_years": [
+    2010,
+    2024
+   ],
+   "crop": "Rice, Colusa County",
+   "note": "insurance history, not a forecast"
+  },
+  "funding": [
+   {
+    "program": "USDA EQIP practice 340 Cover Crop",
+    "rate_per_acre_usd": {
+     "value": null,
+     "method": "assumed"
+    },
+    "url": "https://www.nrcs.usda.gov/programs-initiatives/eqip-environmental-quality-incentives-program",
+    "verified": false
+   }
+  ],
+  "brief": {
+   "why": [
+    {
+     "text": "A cereal and vetch cover replaces the winter flood, so the field is not bare or ponded through the heavy-rain months.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    },
+    {
+     "text": "It saves the winter-flood water, and vetch adds some nitrogen.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    }
+   ],
+   "local_review": [
+    {
+     "item": "Cover-crop species and seeding after rice are unverified (UC trials under way)",
+     "severity": "high"
+    },
+    {
+     "item": "Straw decomposition without a winter flood",
+     "severity": "high"
+    },
+    {
+     "item": "Waterfowl habitat obligations",
+     "severity": "medium"
+    },
+    {
+     "item": "Herbicide carryover to the cover crop",
+     "severity": "medium"
+    }
+   ],
+   "explainer_cards": [
+    "cover_crop",
+    "nitrogen_fixing"
+   ],
+   "llm_report": {
+    "sentences": 2,
+    "numbers_checked": 0,
+    "rejected": 0,
+    "model": "template (mock)",
+    "cached_at": null
+   }
+  },
+  "uncertainty": {
+   "agronomic_gap_count": 3,
+   "detector_disagreement_pct": 7
+  }
+ },
+ {
+  "id": "car2_dry_year_plan",
+  "location_id": "car_colusa_rice",
+  "name": "Dry-year plan: fallow with cover or safflower when allocation < 50%",
+  "short_name": "Dry-year plan",
+  "is_baseline": false,
+  "cycle_years": 1,
+  "calendar": [
+   {
+    "year": 1,
+    "crop_id": "safflower",
+    "plant": "04-05",
+    "harvest": "08-10",
+    "role": "cash",
+    "timing_source": "fao56_table11 Safflower April California (V)"
+   }
+  ],
+  "calendar_months": [
+   "cover / bare",
+   "cover / bare",
+   "plant safflower",
+   "safflower",
+   "safflower",
+   "safflower",
+   "harvest",
+   "bare",
+   "bare",
+   "bare",
+   "bare",
+   "bare"
+  ],
+  "month_cover": "ppbpccpbbbbb",
+  "allocation_rule": "Applies in years when the surface allocation is under 50%",
+  "exposure": {
+   "bare_days_per_year": {
+    "value": 150,
+    "low": 110,
+    "high": 190,
+    "unit": "days",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_rain_days": {
+    "value": 5,
+    "low": 2,
+    "high": 9,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_frost_days": {
+    "value": 3,
+    "low": 1,
+    "high": 5,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_heat_days": {
+    "value": 6,
+    "low": 3,
+    "high": 10,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_dry_days": {
+    "value": 12,
+    "low": 6,
+    "high": 20,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "replay": {
+    "2022": {
+     "irrigation_need_mm": {
+      "value": 470,
+      "low": 370,
+      "high": 600,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 4,
+      "low": 0,
+      "high": 9,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Built for a year like 2022: a crop on about a third of rice water"
+    },
+    "2023": {
+     "irrigation_need_mm": {
+      "value": 330,
+      "low": 250,
+      "high": 430,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 11,
+      "low": 5,
+      "high": 21,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Not the plan for a wet year: field sits bare from August"
+    }
+   },
+   "scenario": {
+    "dT_c": 0,
+    "dP_pct": 0
+   },
+   "cover_basis": "modelled cover"
+  },
+  "water": {
+   "etc_mm_season": {
+    "value": 520,
+    "low": 450,
+    "high": 600,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "fao56_table12",
+     "title": "FAO-56 Table 12",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "note": "Kc × ETo, FAO-56 single coefficient; ETo values are mock"
+   },
+   "irrigation_need_mm": {
+    "value": 420,
+    "low": 330,
+    "high": 540,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "I = Σ max(0, ETc − 0.8 P); rice adds flood-establishment term (U)"
+   },
+   "etc_by_month_mm": [
+    25,
+    30,
+    45,
+    80,
+    120,
+    110,
+    50,
+    15,
+    12,
+    10,
+    12,
+    11
+   ],
+   "openet_et_mm_season": null,
+   "etc_vs_openet_pct": null
+  },
+  "scores": {
+   "water_use": {
+    "value": 82,
+    "low": 72,
+    "high": 90,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "forage_value": {
+    "value": 0,
+    "low": 0,
+    "high": 0,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_fixation": {
+    "value": 8,
+    "low": 0,
+    "high": 18,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "erosion": {
+    "value": 38,
+    "low": 24,
+    "high": 52,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "organic_matter": {
+    "value": 40,
+    "low": 28,
+    "high": 52,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "market": {
+    "value": 46,
+    "low": 28,
+    "high": 64,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "pest_break": {
+    "value": 72,
+    "low": 58,
+    "high": 84,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "infiltration": {
+    "value": 50,
+    "low": 36,
+    "high": 62,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_scavenging": {
+    "value": 18,
+    "low": 8,
+    "high": 30,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   }
+  },
+  "composite": {
+   "value": 57,
+   "low": 43,
+   "high": 68,
+   "unit": "score 0–100",
+   "method": "model",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "",
+   "weights_used": {
+    "water_use": 3,
+    "forage_value": 2,
+    "n_fixation": 1,
+    "erosion": 2,
+    "organic_matter": 2,
+    "market": 3
+   }
+  },
+  "risk_profile": {
+   "rma_share_drought": {
+    "value": 0.48,
+    "low": 0.3,
+    "high": 0.64,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_excess_moisture": {
+    "value": 0.12,
+    "low": 0.05,
+    "high": 0.22,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_heat": {
+    "value": 0.14,
+    "low": 0.06,
+    "high": 0.24,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_years": [
+    2010,
+    2024
+   ],
+   "crop": "Safflower, Colusa County",
+   "note": "insurance history, not a forecast"
+  },
+  "funding": [
+   {
+    "program": "USDA EQIP practice 340 Cover Crop",
+    "rate_per_acre_usd": {
+     "value": null,
+     "method": "assumed"
+    },
+    "url": "https://www.nrcs.usda.gov/programs-initiatives/eqip-environmental-quality-incentives-program",
+    "verified": false
+   }
+  ],
+  "brief": {
+   "why": [
+    {
+     "text": "When the allocation is under half, a deep-rooted safflower crop or a cover uses about a third of the water rice needs.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    },
+    {
+     "text": "The field is bare from August, so autumn and winter rain exposure goes up.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    }
+   ],
+   "local_review": [
+    {
+     "item": "Safflower market and contract nearby",
+     "severity": "high"
+    },
+    {
+     "item": "Heavy clay rice soil: drainage for a dryland crop",
+     "severity": "high"
+    },
+    {
+     "item": "Herbicide carryover from rice",
+     "severity": "medium"
+    }
+   ],
+   "explainer_cards": [
+    "drought_tolerant",
+    "deep_rooting"
+   ],
+   "llm_report": {
+    "sentences": 2,
+    "numbers_checked": 0,
+    "rejected": 0,
+    "model": "template (mock)",
+    "cached_at": null
+   }
+  },
+  "uncertainty": {
+   "agronomic_gap_count": 4,
+   "detector_disagreement_pct": 7
+  }
+ },
+ {
+  "id": "car3_rice_winter_wheat",
+  "location_id": "car_colusa_rice",
+  "name": "Rice–winter wheat",
+  "short_name": "Rice–winter wheat",
+  "is_baseline": false,
+  "cycle_years": 2,
+  "calendar": [
+   {
+    "year": 1,
+    "crop_id": "rice_medium_grain",
+    "plant": "05-10",
+    "harvest": "10-05",
+    "role": "cash",
+    "timing_source": "uc_rice_blog (V avg)"
+   },
+   {
+    "year": 2,
+    "crop_id": "winter_wheat",
+    "plant": "11-20",
+    "harvest": "06-15",
+    "role": "cash",
+    "timing_source": "fao56_table11 Winter wheat December California (V)"
+   }
+  ],
+  "calendar_months": [
+   "wheat",
+   "wheat",
+   "wheat",
+   "wheat",
+   "heading",
+   "harvest",
+   "bare",
+   "bare",
+   "bare",
+   "bare",
+   "drill wheat",
+   "wheat"
+  ],
+  "month_cover": "pccccpbbbbbp",
+  "allocation_rule": null,
+  "exposure": {
+   "bare_days_per_year": {
+    "value": 96,
+    "low": 70,
+    "high": 125,
+    "unit": "days",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_rain_days": {
+    "value": 2,
+    "low": 0,
+    "high": 4,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_frost_days": {
+    "value": 1,
+    "low": 0,
+    "high": 3,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_heat_days": {
+    "value": 5,
+    "low": 2,
+    "high": 9,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_dry_days": {
+    "value": 7,
+    "low": 3,
+    "high": 12,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "replay": {
+    "2022": {
+     "irrigation_need_mm": {
+      "value": 860,
+      "low": 720,
+      "high": 1020,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 1,
+      "low": 0,
+      "high": 4,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Wheat year needs little irrigation; rice year still exposed to cuts"
+    },
+    "2023": {
+     "irrigation_need_mm": {
+      "value": 690,
+      "low": 570,
+      "high": 830,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 5,
+      "low": 2,
+      "high": 11,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Wheat stood in water during the Jan–Mar storms"
+    }
+   },
+   "scenario": {
+    "dT_c": 0,
+    "dP_pct": 0
+   },
+   "cover_basis": "modelled cover"
+  },
+  "water": {
+   "etc_mm_season": {
+    "value": 760,
+    "low": 680,
+    "high": 850,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "fao56_table12",
+     "title": "FAO-56 Table 12",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "note": "Kc × ETo, FAO-56 single coefficient; ETo values are mock"
+   },
+   "irrigation_need_mm": {
+    "value": 780,
+    "low": 650,
+    "high": 930,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "I = Σ max(0, ETc − 0.8 P); rice adds flood-establishment term (U)"
+   },
+   "etc_by_month_mm": [
+    40,
+    60,
+    95,
+    120,
+    110,
+    45,
+    15,
+    14,
+    12,
+    12,
+    20,
+    30
+   ],
+   "openet_et_mm_season": null,
+   "etc_vs_openet_pct": null
+  },
+  "scores": {
+   "water_use": {
+    "value": 60,
+    "low": 50,
+    "high": 70,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "forage_value": {
+    "value": 10,
+    "low": 4,
+    "high": 18,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_fixation": {
+    "value": 0,
+    "low": 0,
+    "high": 0,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "erosion": {
+    "value": 68,
+    "low": 56,
+    "high": 78,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "organic_matter": {
+    "value": 58,
+    "low": 48,
+    "high": 68,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "market": {
+    "value": 80,
+    "low": 68,
+    "high": 90,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "pest_break": {
+    "value": 34,
+    "low": 24,
+    "high": 44,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "infiltration": {
+    "value": 48,
+    "low": 36,
+    "high": 60,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_scavenging": {
+    "value": 56,
+    "low": 42,
+    "high": 70,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   }
+  },
+  "composite": {
+   "value": 66,
+   "low": 58,
+   "high": 73,
+   "unit": "score 0–100",
+   "method": "model",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "",
+   "weights_used": {
+    "water_use": 3,
+    "forage_value": 2,
+    "n_fixation": 1,
+    "erosion": 2,
+    "organic_matter": 2,
+    "market": 3
+   }
+  },
+  "risk_profile": {
+   "rma_share_drought": {
+    "value": 0.55,
+    "low": 0.42,
+    "high": 0.68,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_excess_moisture": {
+    "value": 0.24,
+    "low": 0.15,
+    "high": 0.34,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_heat": {
+    "value": 0.06,
+    "low": 0.02,
+    "high": 0.1,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_years": [
+    2010,
+    2024
+   ],
+   "crop": "Rice and wheat, Colusa County",
+   "note": "insurance history, not a forecast"
+  },
+  "funding": [],
+  "brief": {
+   "why": [
+    {
+     "text": "Wheat grows on winter rain in alternate years, roughly halving irrigation need across the two-year cycle.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    },
+    {
+     "text": "Both crops are grasses, so the pest and weed break is modest.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    }
+   ],
+   "local_review": [
+    {
+     "item": "Wheat on a levelled rice check: winter drainage",
+     "severity": "high"
+    },
+    {
+     "item": "Herbicide carryover between rice and wheat",
+     "severity": "medium"
+    }
+   ],
+   "explainer_cards": [],
+   "llm_report": {
+    "sentences": 2,
+    "numbers_checked": 0,
+    "rejected": 0,
+    "model": "template (mock)",
+    "cached_at": null
+   }
+  },
+  "uncertainty": {
+   "agronomic_gap_count": 2,
+   "detector_disagreement_pct": 7
+  }
+ },
+ {
+  "id": "caf0_alfalfa",
+  "location_id": "caf_tulare_forage",
+  "name": "Alfalfa, 7–8 cuts, 4–5 year stand",
+  "short_name": "Alfalfa (baseline)",
+  "is_baseline": true,
+  "cycle_years": 5,
+  "calendar": [
+   {
+    "year": 1,
+    "crop_id": "alfalfa_hay",
+    "plant": "09-25",
+    "harvest": "cuts Mar–Oct",
+    "role": "forage",
+    "timing_source": "uc_alfalfa (V window)"
+   }
+  ],
+  "calendar_months": [
+   "dormant / slow",
+   "growth",
+   "cut 1",
+   "cut 2",
+   "cut 3",
+   "cut 4",
+   "cut 5",
+   "cut 6",
+   "cut 7",
+   "cut 8",
+   "slow",
+   "dormant"
+  ],
+  "month_cover": "pccccccccccp",
+  "allocation_rule": null,
+  "exposure": {
+   "bare_days_per_year": {
+    "value": 8,
+    "low": 2,
+    "high": 18,
+    "unit": "days",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_rain_days": {
+    "value": 0,
+    "low": 0,
+    "high": 1,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_frost_days": {
+    "value": 0,
+    "low": 0,
+    "high": 1,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_heat_days": {
+    "value": 0,
+    "low": 0,
+    "high": 1,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_dry_days": {
+    "value": 1,
+    "low": 0,
+    "high": 3,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "replay": {
+    "2022": {
+     "irrigation_need_mm": {
+      "value": 1480,
+      "low": 1320,
+      "high": 1640,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": -1,
+      "low": 0,
+      "high": 1,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "All of it pumped in a year like 2022"
+    },
+    "2023": {
+     "irrigation_need_mm": {
+      "value": 1150,
+      "low": 1000,
+      "high": 1300,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 1,
+      "low": 0,
+      "high": 5,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Stand lost where water stood for weeks"
+    }
+   },
+   "scenario": {
+    "dT_c": 0,
+    "dP_pct": 0
+   },
+   "cover_basis": "observed consensus cover"
+  },
+  "water": {
+   "etc_mm_season": {
+    "value": 1380,
+    "low": 1260,
+    "high": 1500,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "fao56_table12",
+     "title": "FAO-56 Table 12",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "note": "Kc × ETo, FAO-56 single coefficient; ETo values are mock"
+   },
+   "irrigation_need_mm": {
+    "value": 1350,
+    "low": 1200,
+    "high": 1500,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "I = Σ max(0, ETc − 0.8 P); rice adds flood-establishment term (U)"
+   },
+   "etc_by_month_mm": [
+    35,
+    55,
+    95,
+    130,
+    170,
+    195,
+    210,
+    185,
+    140,
+    95,
+    45,
+    25
+   ],
+   "openet_et_mm_season": {
+    "value": 1290,
+    "low": 1200,
+    "high": 1390,
+    "unit": "mm",
+    "method": "measured",
+    "source": {
+     "id": "openet",
+     "title": "OpenET ensemble (mock value)",
+     "url": "https://openetdata.org/",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "etc_vs_openet_pct": {
+    "value": 7,
+    "low": null,
+    "high": null,
+    "unit": "%",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   }
+  },
+  "scores": {
+   "water_use": {
+    "value": 22,
+    "low": 12,
+    "high": 32,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "forage_value": {
+    "value": 92,
+    "low": 82,
+    "high": 98,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_fixation": {
+    "value": 88,
+    "low": 76,
+    "high": 96,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "erosion": {
+    "value": 84,
+    "low": 74,
+    "high": 92,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "organic_matter": {
+    "value": 76,
+    "low": 66,
+    "high": 85,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "market": {
+    "value": 72,
+    "low": 56,
+    "high": 84,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "pest_break": {
+    "value": 30,
+    "low": 20,
+    "high": 40,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "infiltration": {
+    "value": 74,
+    "low": 62,
+    "high": 84,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_scavenging": {
+    "value": 30,
+    "low": 18,
+    "high": 42,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   }
+  },
+  "composite": {
+   "value": 55,
+   "low": 47,
+   "high": 63,
+   "unit": "score 0–100",
+   "method": "model",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "",
+   "weights_used": {
+    "water_use": 3,
+    "forage_value": 2,
+    "n_fixation": 1,
+    "erosion": 2,
+    "organic_matter": 2,
+    "market": 3
+   }
+  },
+  "risk_profile": {
+   "rma_share_drought": {
+    "value": 0.44,
+    "low": 0.3,
+    "high": 0.58,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_excess_moisture": {
+    "value": 0.2,
+    "low": 0.1,
+    "high": 0.32,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_heat": {
+    "value": 0.18,
+    "low": 0.1,
+    "high": 0.28,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_years": [
+    2010,
+    2024
+   ],
+   "crop": "Alfalfa / forage, Tulare and Kings Counties",
+   "note": "insurance history, not a forecast"
+  },
+  "funding": [],
+  "brief": {
+   "why": [
+    {
+     "text": "This is what the field does now: alfalfa cut seven or eight times a year for four to five years.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    },
+    {
+     "text": "It gives the most feed and fixes its own nitrogen, and it needs the most pumped water.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    }
+   ],
+   "local_review": [
+    {
+     "item": "Irrigation need is above the allocation you entered",
+     "severity": "high"
+    },
+    {
+     "item": "SGMA status: Tulare Lake Subbasin probation (16 Apr 2024), in litigation",
+     "severity": "high"
+    }
+   ],
+   "explainer_cards": [],
+   "llm_report": {
+    "sentences": 2,
+    "numbers_checked": 0,
+    "rejected": 0,
+    "model": "template (mock)",
+    "cached_at": null
+   }
+  },
+  "uncertainty": {
+   "agronomic_gap_count": 1,
+   "detector_disagreement_pct": 7
+  }
+ },
+ {
+  "id": "caf1_smallgrain_corn",
+  "location_id": "caf_tulare_forage",
+  "name": "Winter small-grain silage + silage corn",
+  "short_name": "Small grain + corn",
+  "is_baseline": false,
+  "cycle_years": 1,
+  "calendar": [
+   {
+    "year": 1,
+    "crop_id": "small_grain_silage",
+    "plant": "11-01",
+    "harvest": "04-25",
+    "role": "forage",
+    "timing_source": "assumed (U)"
+   },
+   {
+    "year": 1,
+    "crop_id": "silage_corn",
+    "plant": "05-10",
+    "harvest": "09-01",
+    "role": "forage",
+    "timing_source": "assumed (U)"
+   }
+  ],
+  "calendar_months": [
+   "wheat / triticale",
+   "growth",
+   "growth",
+   "harvest silage",
+   "plant corn",
+   "corn",
+   "corn",
+   "corn harvest",
+   "bare",
+   "drill small grain",
+   "grain",
+   "grain"
+  ],
+  "month_cover": "ccccbpccbbpc",
+  "allocation_rule": null,
+  "exposure": {
+   "bare_days_per_year": {
+    "value": 62,
+    "low": 45,
+    "high": 80,
+    "unit": "days",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_rain_days": {
+    "value": 1,
+    "low": 0,
+    "high": 2,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_frost_days": {
+    "value": 0,
+    "low": 0,
+    "high": 1,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_heat_days": {
+    "value": 2,
+    "low": 0,
+    "high": 4,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_dry_days": {
+    "value": 5,
+    "low": 2,
+    "high": 9,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "replay": {
+    "2022": {
+     "irrigation_need_mm": {
+      "value": 1100,
+      "low": 960,
+      "high": 1260,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 0,
+      "low": 0,
+      "high": 2,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Summer corn carries most of the pumping"
+    },
+    "2023": {
+     "irrigation_need_mm": {
+      "value": 860,
+      "low": 740,
+      "high": 1000,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 3,
+      "low": 1,
+      "high": 7,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Winter grain used the rain; corn planted late"
+    }
+   },
+   "scenario": {
+    "dT_c": 0,
+    "dP_pct": 0
+   },
+   "cover_basis": "modelled cover"
+  },
+  "water": {
+   "etc_mm_season": {
+    "value": 1090,
+    "low": 990,
+    "high": 1200,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "fao56_table12",
+     "title": "FAO-56 Table 12",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "note": "Kc × ETo, FAO-56 single coefficient; ETo values are mock"
+   },
+   "irrigation_need_mm": {
+    "value": 1000,
+    "low": 880,
+    "high": 1150,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "I = Σ max(0, ETc − 0.8 P); rice adds flood-establishment term (U)"
+   },
+   "etc_by_month_mm": [
+    40,
+    60,
+    95,
+    85,
+    70,
+    150,
+    215,
+    170,
+    45,
+    20,
+    25,
+    35
+   ],
+   "openet_et_mm_season": null,
+   "etc_vs_openet_pct": null
+  },
+  "scores": {
+   "water_use": {
+    "value": 46,
+    "low": 34,
+    "high": 56,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "forage_value": {
+    "value": 90,
+    "low": 78,
+    "high": 97,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_fixation": {
+    "value": 0,
+    "low": 0,
+    "high": 0,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "erosion": {
+    "value": 62,
+    "low": 50,
+    "high": 72,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "organic_matter": {
+    "value": 56,
+    "low": 46,
+    "high": 66,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "market": {
+    "value": 84,
+    "low": 70,
+    "high": 94,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "pest_break": {
+    "value": 14,
+    "low": 8,
+    "high": 22,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "infiltration": {
+    "value": 44,
+    "low": 32,
+    "high": 56,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_scavenging": {
+    "value": 70,
+    "low": 56,
+    "high": 82,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   }
+  },
+  "composite": {
+   "value": 58,
+   "low": 48,
+   "high": 66,
+   "unit": "score 0–100",
+   "method": "model",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "",
+   "weights_used": {
+    "water_use": 3,
+    "forage_value": 2,
+    "n_fixation": 1,
+    "erosion": 2,
+    "organic_matter": 2,
+    "market": 3
+   }
+  },
+  "risk_profile": {
+   "rma_share_drought": {
+    "value": 0.38,
+    "low": 0.26,
+    "high": 0.52,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_excess_moisture": {
+    "value": 0.22,
+    "low": 0.12,
+    "high": 0.34,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_heat": {
+    "value": 0.2,
+    "low": 0.1,
+    "high": 0.3,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_years": [
+    2010,
+    2024
+   ],
+   "crop": "Corn silage, Tulare and Kings Counties",
+   "note": "insurance history, not a forecast"
+  },
+  "funding": [],
+  "brief": {
+   "why": [
+    {
+     "text": "Two silage crops a year: the winter one grows mostly on rain, the summer corn on pumped water.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    },
+    {
+     "text": "High feed output with less water than alfalfa, but no nitrogen fixation and a bare gap in September.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    }
+   ],
+   "local_review": [
+    {
+     "item": "Silage corn and small-grain timing unverified (typical SJV double crop)",
+     "severity": "medium"
+    },
+    {
+     "item": "Nitrogen budget without a legume",
+     "severity": "medium"
+    },
+    {
+     "item": "SGMA status: probation, in litigation",
+     "severity": "high"
+    }
+   ],
+   "explainer_cards": [],
+   "llm_report": {
+    "sentences": 2,
+    "numbers_checked": 0,
+    "rejected": 0,
+    "model": "template (mock)",
+    "cached_at": null
+   }
+  },
+  "uncertainty": {
+   "agronomic_gap_count": 3,
+   "detector_disagreement_pct": 7
+  }
+ },
+ {
+  "id": "caf2_smallgrain_sorghum",
+  "location_id": "caf_tulare_forage",
+  "name": "Winter small-grain silage + sorghum-sudan",
+  "short_name": "Small grain + sorghum-sudan",
+  "is_baseline": false,
+  "cycle_years": 1,
+  "calendar": [
+   {
+    "year": 1,
+    "crop_id": "small_grain_silage",
+    "plant": "11-01",
+    "harvest": "04-25",
+    "role": "forage",
+    "timing_source": "assumed (U)"
+   },
+   {
+    "year": 1,
+    "crop_id": "sorghum_sudan",
+    "plant": "05-10",
+    "harvest": "cuts Jun–Aug",
+    "role": "forage",
+    "timing_source": "fao56_table11 Sudan (V stage lengths)"
+   }
+  ],
+  "calendar_months": [
+   "grain",
+   "growth",
+   "growth",
+   "harvest",
+   "plant sorghum-sudan",
+   "cut 1",
+   "cut 2",
+   "cut 3",
+   "terminate",
+   "drill grain",
+   "grain",
+   "grain"
+  ],
+  "month_cover": "ccccbpcccbpc",
+  "allocation_rule": null,
+  "exposure": {
+   "bare_days_per_year": {
+    "value": 48,
+    "low": 32,
+    "high": 66,
+    "unit": "days",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_rain_days": {
+    "value": 1,
+    "low": 0,
+    "high": 2,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_frost_days": {
+    "value": 0,
+    "low": 0,
+    "high": 1,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_heat_days": {
+    "value": 1,
+    "low": 0,
+    "high": 3,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_dry_days": {
+    "value": 4,
+    "low": 1,
+    "high": 8,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "replay": {
+    "2022": {
+     "irrigation_need_mm": {
+      "value": 840,
+      "low": 710,
+      "high": 990,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 0,
+      "low": 0,
+      "high": 2,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Lowest pumping of the forage plans in a dry year"
+    },
+    "2023": {
+     "irrigation_need_mm": {
+      "value": 640,
+      "low": 530,
+      "high": 770,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 3,
+      "low": 1,
+      "high": 7,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Winter grain used the rain"
+    }
+   },
+   "scenario": {
+    "dT_c": 0,
+    "dP_pct": 0
+   },
+   "cover_basis": "modelled cover"
+  },
+  "water": {
+   "etc_mm_season": {
+    "value": 880,
+    "low": 790,
+    "high": 980,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "fao56_table12",
+     "title": "FAO-56 Table 12",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "note": "Kc × ETo, FAO-56 single coefficient; ETo values are mock"
+   },
+   "irrigation_need_mm": {
+    "value": 760,
+    "low": 640,
+    "high": 900,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "I = Σ max(0, ETc − 0.8 P); rice adds flood-establishment term (U)"
+   },
+   "etc_by_month_mm": [
+    40,
+    60,
+    95,
+    85,
+    55,
+    110,
+    150,
+    135,
+    60,
+    20,
+    25,
+    35
+   ],
+   "openet_et_mm_season": null,
+   "etc_vs_openet_pct": null
+  },
+  "scores": {
+   "water_use": {
+    "value": 64,
+    "low": 52,
+    "high": 74,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "forage_value": {
+    "value": 72,
+    "low": 58,
+    "high": 84,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_fixation": {
+    "value": 0,
+    "low": 0,
+    "high": 0,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "erosion": {
+    "value": 66,
+    "low": 54,
+    "high": 76,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "organic_matter": {
+    "value": 60,
+    "low": 50,
+    "high": 70,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "market": {
+    "value": 70,
+    "low": 54,
+    "high": 84,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "pest_break": {
+    "value": 16,
+    "low": 8,
+    "high": 24,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "infiltration": {
+    "value": 52,
+    "low": 40,
+    "high": 64,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_scavenging": {
+    "value": 72,
+    "low": 58,
+    "high": 84,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   }
+  },
+  "composite": {
+   "value": 64,
+   "low": 55,
+   "high": 72,
+   "unit": "score 0–100",
+   "method": "model",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "",
+   "weights_used": {
+    "water_use": 3,
+    "forage_value": 2,
+    "n_fixation": 1,
+    "erosion": 2,
+    "organic_matter": 2,
+    "market": 3
+   }
+  },
+  "risk_profile": {
+   "rma_share_drought": {
+    "value": 0.4,
+    "low": 0.26,
+    "high": 0.54,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_excess_moisture": {
+    "value": 0.2,
+    "low": 0.1,
+    "high": 0.32,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_heat": {
+    "value": 0.16,
+    "low": 0.08,
+    "high": 0.26,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_years": [
+    2010,
+    2024
+   ],
+   "crop": "Forage sorghum, Tulare and Kings Counties",
+   "note": "insurance history, not a forecast"
+  },
+  "funding": [],
+  "brief": {
+   "why": [
+    {
+     "text": "Sorghum-sudan replaces corn as the summer forage and needs less water (a widely stated extension position, to be cited).",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    },
+    {
+     "text": "Feed quality is lower than corn silage, so the ration needs a nutritionist’s review.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    }
+   ],
+   "local_review": [
+    {
+     "item": "Sorghum-sudan water saving vs corn needs a UC ANR or NRCS citation",
+     "severity": "high"
+    },
+    {
+     "item": "Feed quality and ration balance for the dairy",
+     "severity": "high"
+    },
+    {
+     "item": "SGMA status: probation, in litigation",
+     "severity": "high"
+    }
+   ],
+   "explainer_cards": [
+    "drought_tolerant"
+   ],
+   "llm_report": {
+    "sentences": 2,
+    "numbers_checked": 0,
+    "rejected": 0,
+    "model": "template (mock)",
+    "cached_at": null
+   }
+  },
+  "uncertainty": {
+   "agronomic_gap_count": 4,
+   "detector_disagreement_pct": 7
+  }
+ },
+ {
+  "id": "caf3_short_alfalfa_break",
+  "location_id": "caf_tulare_forage",
+  "name": "Shorter alfalfa stand + winter-cereal break + unirrigated summer",
+  "short_name": "Short alfalfa + break",
+  "is_baseline": false,
+  "cycle_years": 4,
+  "calendar": [
+   {
+    "year": 1,
+    "crop_id": "alfalfa_hay",
+    "plant": "09-25",
+    "harvest": "cuts Mar–Oct, 3 yr",
+    "role": "forage",
+    "timing_source": "uc_alfalfa (V window)"
+   },
+   {
+    "year": 4,
+    "crop_id": "winter_cereal_silage",
+    "plant": "11-01",
+    "harvest": "04-25",
+    "role": "forage",
+    "timing_source": "assumed (U)"
+   }
+  ],
+  "calendar_months": [
+   "cereal",
+   "cereal",
+   "cereal",
+   "harvest silage",
+   "fallow (no pumping)",
+   "fallow",
+   "fallow",
+   "prep",
+   "re-seed alfalfa",
+   "establishing",
+   "establishing",
+   "dormant"
+  ],
+  "month_cover": "cccpbbbbbppp",
+  "allocation_rule": null,
+  "exposure": {
+   "bare_days_per_year": {
+    "value": 44,
+    "low": 28,
+    "high": 62,
+    "unit": "days",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_rain_days": {
+    "value": 0,
+    "low": 0,
+    "high": 2,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_frost_days": {
+    "value": 0,
+    "low": 0,
+    "high": 1,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_heat_days": {
+    "value": 6,
+    "low": 3,
+    "high": 10,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "exposed_dry_days": {
+    "value": 9,
+    "low": 4,
+    "high": 15,
+    "unit": "days/yr",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "replay": {
+    "2022": {
+     "irrigation_need_mm": {
+      "value": 1060,
+      "low": 920,
+      "high": 1220,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": -1,
+      "low": 0,
+      "high": 2,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "A break year placed in 2022 would have meant no summer pumping"
+    },
+    "2023": {
+     "irrigation_need_mm": {
+      "value": 820,
+      "low": 700,
+      "high": 950,
+      "unit": "mm",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "exposed_rain_days": {
+      "value": 1,
+      "low": 0,
+      "high": 7,
+      "unit": "days",
+      "method": "assumed",
+      "source": {
+       "id": "mock",
+       "title": "Illustrative mock value (frontend prototype)",
+       "url": null,
+       "accessed": "2026-11-14",
+       "verified": false
+      },
+      "note": ""
+     },
+     "note": "Cereal break used the wet winter"
+    }
+   },
+   "scenario": {
+    "dT_c": 0,
+    "dP_pct": 0
+   },
+   "cover_basis": "modelled cover"
+  },
+  "water": {
+   "etc_mm_season": {
+    "value": 1060,
+    "low": 950,
+    "high": 1170,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "fao56_table12",
+     "title": "FAO-56 Table 12",
+     "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "note": "Kc × ETo, FAO-56 single coefficient; ETo values are mock"
+   },
+   "irrigation_need_mm": {
+    "value": 980,
+    "low": 850,
+    "high": 1120,
+    "unit": "mm",
+    "method": "computed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "I = Σ max(0, ETc − 0.8 P); rice adds flood-establishment term (U)"
+   },
+   "etc_by_month_mm": [
+    35,
+    50,
+    85,
+    75,
+    20,
+    15,
+    14,
+    14,
+    40,
+    60,
+    40,
+    25
+   ],
+   "openet_et_mm_season": null,
+   "etc_vs_openet_pct": null
+  },
+  "scores": {
+   "water_use": {
+    "value": 48,
+    "low": 36,
+    "high": 58,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "forage_value": {
+    "value": 74,
+    "low": 60,
+    "high": 86,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_fixation": {
+    "value": 64,
+    "low": 50,
+    "high": 78,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "erosion": {
+    "value": 66,
+    "low": 52,
+    "high": 78,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "organic_matter": {
+    "value": 64,
+    "low": 54,
+    "high": 74,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "market": {
+    "value": 66,
+    "low": 48,
+    "high": 80,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "pest_break": {
+    "value": 58,
+    "low": 44,
+    "high": 70,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "infiltration": {
+    "value": 62,
+    "low": 50,
+    "high": 74,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   },
+   "n_scavenging": {
+    "value": 54,
+    "low": 40,
+    "high": 68,
+    "unit": "score 0–100",
+    "method": "model",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "rule of thumb, not a model"
+   }
+  },
+  "composite": {
+   "value": 62,
+   "low": 51,
+   "high": 70,
+   "unit": "score 0–100",
+   "method": "model",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "",
+   "weights_used": {
+    "water_use": 3,
+    "forage_value": 2,
+    "n_fixation": 1,
+    "erosion": 2,
+    "organic_matter": 2,
+    "market": 3
+   }
+  },
+  "risk_profile": {
+   "rma_share_drought": {
+    "value": 0.44,
+    "low": 0.3,
+    "high": 0.58,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_excess_moisture": {
+    "value": 0.2,
+    "low": 0.1,
+    "high": 0.32,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_share_heat": {
+    "value": 0.18,
+    "low": 0.1,
+    "high": 0.28,
+    "unit": "share",
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": ""
+   },
+   "rma_years": [
+    2010,
+    2024
+   ],
+   "crop": "Alfalfa / forage, Tulare and Kings Counties",
+   "note": "insurance history, not a forecast"
+  },
+  "funding": [
+   {
+    "program": "USDA EQIP practice 340 Cover Crop",
+    "rate_per_acre_usd": {
+     "value": null,
+     "method": "assumed"
+    },
+    "url": "https://www.nrcs.usda.gov/programs-initiatives/eqip-environmental-quality-incentives-program",
+    "verified": false
+   }
+  ],
+  "brief": {
+   "why": [
+    {
+     "text": "Take alfalfa out after three years, grow a winter cereal on rain, and leave the field unirrigated for one summer before re-seeding.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    },
+    {
+     "text": "One summer in four has no pumping; that summer the field is bare in the heat.",
+     "source_ids": [
+      "mock"
+     ],
+     "numbers_used": [],
+     "author": "template",
+     "checked": true
+    }
+   ],
+   "local_review": [
+    {
+     "item": "Feed gap in the break summer",
+     "severity": "high"
+    },
+    {
+     "item": "Dust and weeds on an unirrigated summer field",
+     "severity": "medium"
+    },
+    {
+     "item": "SGMA status: probation, in litigation",
+     "severity": "high"
+    }
+   ],
+   "explainer_cards": [
+    "nitrogen_fixing",
+    "deep_rooting"
+   ],
+   "llm_report": {
+    "sentences": 2,
+    "numbers_checked": 0,
+    "rejected": 0,
+    "model": "template (mock)",
+    "cached_at": null
+   }
+  },
+  "uncertainty": {
+   "agronomic_gap_count": 3,
+   "detector_disagreement_pct": 7
+  }
+ }
+]

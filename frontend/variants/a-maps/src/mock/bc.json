@@ -1,0 +1,56 @@
+{
+ "id": "bc_why_not_yet",
+ "name": "Why not BC yet",
+ "place_line": "Salmon River valley, Shuswap, British Columbia",
+ "centroid": {
+  "lon": -119.33,
+  "lat": 50.62
+ },
+ "ground_data": "thin",
+ "summary": "BC is where this problem started for us, but no BC field is modelled, scored or validated here.",
+ "reasons": [
+  {
+   "title": "No OpenET",
+   "text": "No field-scale measured water use to check our crop-water model against."
+  },
+  {
+   "title": "No field-soil API",
+   "text": "No SSURGO equivalent; drainage and water-holding capacity would be guesses."
+  },
+  {
+   "title": "One station per valley",
+   "text": "Too few weather stations to check satellite rain and ET."
+  },
+  {
+   "title": "Crop labels since 2011 only",
+   "text": "AAFC Annual Crop Inventory is shorter than the US Cropland Data Layer (2008-)."
+  }
+ ],
+ "limits_line": "BC is out of scope; transferability is a claim to test, not a result.",
+ "next_step": {
+  "label": "Next step: BC data stack for a future version",
+  "items": [
+   "SoilGrids v2",
+   "AAFC Annual Crop Inventory",
+   "ECCC stations",
+   "BC cover-crop factsheets (23 species)",
+   "BC Drought Portal"
+  ]
+ },
+ "news": [
+  {
+   "date": "2023-08-16",
+   "title": "Fish population protection order: Salmon River and Bessette Creek",
+   "source": "BC Gov News",
+   "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+   "rank": 1,
+   "place_match": [
+    "Salmon River",
+    "Bessette Creek"
+   ],
+   "query_id": "bc_salmon_2023",
+   "verified": true,
+   "signal": null
+  }
+ ]
+}

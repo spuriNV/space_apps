@@ -1,0 +1,22 @@
+{
+ "_fixture": true,
+ "location_id": "caf_tulare_forage",
+ "items": [
+  {
+   "date": "2023-03-15",
+   "title": "[fixture placeholder] Tulare Lake re-flooding headline",
+   "source": "fixture",
+   "url": null,
+   "rank": 1,
+   "place_match": [
+    "Tulare Lake"
+   ],
+   "query_id": "caf_2023_flood",
+   "signal": {
+    "dataset": "imerg",
+    "value_pct": null,
+    "lead_days": null
+   }
+  }
+ ]
+}

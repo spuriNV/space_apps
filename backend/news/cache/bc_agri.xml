@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Agriculture and Food | BC Gov News</title>
+    <link>https://news.gov.bc.ca/</link>
+    <description />
+    <a10:id>http://news.gov.bc.ca/ministries/agriculture-and-food/feed</a10:id>
+    <a10:link rel="self" type="application/rss+xml" href="http://news.gov.bc.ca/ministries/agriculture-and-food/feed" />
+    <item>
+      <guid isPermaLink="false">uuid:b971f1c9-93d7-4a7a-b0c6-6cbc5f76c16d</guid>
+      <link>https://news.gov.bc.ca/releases/2026AF0018-000958</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Agriculture and Food</category>
+      <title>Minister’s, MLA’s statements on supporting farmers by buying B.C. products</title>
+      <description>Lana Popham, Minister of Agriculture and Food, has released the following statement about how choosing to buy B.C. products can help farmers in communities suffering from wildfires:</description>
+      <pubDate>Mon, 17 Aug 2026 15:20:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:398cf205-5835-4050-9a70-eb0235badf88</guid>
+      <link>https://news.gov.bc.ca/releases/2026AF0017-000863</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Agriculture and Food</category>
+      <title>Encouraging food processing in the Agricultural Land Reserve</title>
+      <description>Supporting food security, investment in B.C.’s farming, food economy</description>
+      <pubDate>Thu, 23 Jul 2026 15:00:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:e733b5dc-023e-41dc-960a-5d9cef9a38de</guid>
+      <link>https://news.gov.bc.ca/releases/2026AF0016-000791</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Agriculture and Food</category>
+      <title>Extending temporary patios through summer to support B.C. businesses</title>
+      <description>Province extends patio licences granted for FIFA World Cup 2026 to Labour Day</description>
+      <pubDate>Mon, 06 Jul 2026 12:15:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:e1944ee4-9ca6-4e8e-9245-09c4e2138ac6</guid>
+      <link>https://news.gov.bc.ca/releases/2026AF0015-000656</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Agriculture and Food</category>
+      <title>Reducing risk of avian influenza with poultry barn upgrades</title>
+      <description>New technology helps B.C. farmers protect their flocks</description>
+      <pubDate>Thu, 04 Jun 2026 15:00:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:dfebcda6-5c11-4330-9797-5b9eaa1da43a</guid>
+      <link>https://news.gov.bc.ca/releases/2026AF0014-000629</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Agriculture and Food</category>
+      <title>Supporting bars, pubs, restaurants to meet surges in demand</title>
+      <description>Three-year trial will evaluate B.C. liquor licensee-to-licensee sales</description>
+      <pubDate>Fri, 29 May 2026 12:30:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:374a27ad-a429-48c5-b72f-7b869dac8e62</guid>
+      <link>https://news.gov.bc.ca/releases/2026AF0013-000329</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Agriculture and Food</category>
+      <title>Aerial spraying will curb invasive spongy moths in Delta, Squamish</title>
+      <description>Treatments will protect agriculture, forestry sectors, natural environment</description>
+      <pubDate>Mon, 13 Apr 2026 10:00:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:f8a71987-e5ab-4e3b-98bf-9e1507e49475</guid>
+      <link>https://news.gov.bc.ca/releases/2026AF0012-000245</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Agriculture and Food</category>
+      <title>B.C. expanding global sales at Seafood Expo North America</title>
+      <description>B.C. seafood businesses supported in expanding export markets</description>
+      <pubDate>Fri, 13 Mar 2026 08:00:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:5425fa6c-4c2b-476e-ac27-15f21b690dce</guid>
+      <link>https://news.gov.bc.ca/releases/2026AF0011-000175</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Agriculture and Food</category>
+      <title>Supporting B.C. farmers, competitiveness with tech</title>
+      <description>Farmers get help buying labour-saving technologies to enhance their businesses</description>
+      <pubDate>Tue, 24 Feb 2026 09:00:00 -0800</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:a3027877-2772-49d7-abe1-7f2fa1987f76</guid>
+      <link>https://news.gov.bc.ca/releases/2026AF0010-000103</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Agriculture and Food</category>
+      <title>Keeping essential goods moving with emergency barge service for Westham Island</title>
+      <description>Alternative service required to transport food products while Delta bridge repairs are underway</description>
+      <pubDate>Mon, 02 Feb 2026 13:30:00 -0800</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:5a5fed22-ff13-457f-ae4f-c17a59636bde</guid>
+      <link>https://news.gov.bc.ca/releases/2026JEG0003-000030</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Jobs and Economic Growth</category>
+      <title>Supporting B.C.’s food security with new technology, training</title>
+      <description>B.C. companies, research institutions advance food security through smart-farming systems.</description>
+      <pubDate>Thu, 15 Jan 2026 10:15:00 -0800</pubDate>
+      <enclosure url="https://live.staticflickr.com/65535/55043082948_0a33ea4410_b.jpg" type="image/jpeg" length="158467" />
+    </item>
+  </channel>
+</rss>

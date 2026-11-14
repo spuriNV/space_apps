@@ -1,0 +1,3249 @@
+{
+ "_fixture": true,
+ "location_id": "caf_tulare_forage",
+ "request": {
+  "weights": {
+   "water_use": 1,
+   "forage_value": 1,
+   "n_fixation": 1,
+   "erosion": 1,
+   "organic_matter": 1,
+   "market": 1,
+   "pest_break": 0,
+   "infiltration": 0,
+   "n_scavenging": 0,
+   "income": 0
+  },
+  "constraints": {},
+  "market_preference": "feed_own_herd",
+  "allocation": null,
+  "replay_year": null,
+  "scenario": {
+   "dT_c": 0,
+   "dP_pct": 0
+  }
+ },
+ "items": [
+  {
+   "id": "caf0_alfalfa_baseline",
+   "location_id": "caf_tulare_forage",
+   "name": "Alfalfa, 7-8 cuts, 4-5 yr stand (baseline)",
+   "is_baseline": true,
+   "cycle_years": 4,
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "alfalfa",
+     "plant": "09-25",
+     "role": "forage",
+     "timing_source": "UC Alfalfa: plant mid-Sept-Oct (V); 7-8 cuts (U count)",
+     "harvest": "11-15"
+    }
+   ],
+   "allocation_rule": null,
+   "exposure": {
+    "bare_days_per_year": {
+     "value": 57,
+     "unit": "days",
+     "low": 48.45,
+     "high": 65.55,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_rain_days": {
+     "value": 66,
+     "unit": "days",
+     "low": 56.1,
+     "high": 75.9,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_frost_days": {
+     "value": 19,
+     "unit": "days",
+     "low": 16.15,
+     "high": 21.85,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_heat_days": {
+     "value": 117,
+     "unit": "days",
+     "low": 99.45,
+     "high": 134.55,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_dry_days": {
+     "value": 75,
+     "unit": "days",
+     "low": 63.75,
+     "high": 86.25,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "replay": {
+     "2022": {
+      "bare_days_per_year": {
+       "value": 138,
+       "unit": "days",
+       "low": 117.3,
+       "high": 158.7,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_rain_days": {
+       "value": 148,
+       "unit": "days",
+       "low": 125.8,
+       "high": 170.2,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_frost_days": {
+       "value": 143,
+       "unit": "days",
+       "low": 121.55,
+       "high": 164.45,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_heat_days": {
+       "value": 28,
+       "unit": "days",
+       "low": 23.8,
+       "high": 32.2,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_dry_days": {
+       "value": 26,
+       "unit": "days",
+       "low": 22.1,
+       "high": 29.9,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      }
+     },
+     "2023": {
+      "bare_days_per_year": {
+       "value": 98,
+       "unit": "days",
+       "low": 83.3,
+       "high": 112.7,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_rain_days": {
+       "value": 80,
+       "unit": "days",
+       "low": 68.0,
+       "high": 92.0,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_frost_days": {
+       "value": 79,
+       "unit": "days",
+       "low": 67.15,
+       "high": 90.85,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_heat_days": {
+       "value": 94,
+       "unit": "days",
+       "low": 79.9,
+       "high": 108.1,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_dry_days": {
+       "value": 112,
+       "unit": "days",
+       "low": 95.2,
+       "high": 128.8,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      }
+     }
+    },
+    "scenario": {
+     "dT_c": 0,
+     "dP_pct": 0
+    }
+   },
+   "water": {
+    "etc_mm_season": {
+     "value": 673,
+     "unit": "mm",
+     "low": 572.05,
+     "high": 773.95,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "irrigation_need_mm": {
+     "value": 538,
+     "unit": "mm",
+     "low": 457.3,
+     "high": 618.7,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "etc_by_month_mm": [
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 112,
+      "unit": "mm",
+      "low": 95.2,
+      "high": 128.8,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 112,
+      "unit": "mm",
+      "low": 95.2,
+      "high": 128.8,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 112,
+      "unit": "mm",
+      "low": 95.2,
+      "high": 128.8,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 112,
+      "unit": "mm",
+      "low": 95.2,
+      "high": 128.8,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 112,
+      "unit": "mm",
+      "low": 95.2,
+      "high": 128.8,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 112,
+      "unit": "mm",
+      "low": 95.2,
+      "high": 128.8,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     }
+    ],
+    "openet_et_mm_season": {
+     "value": 639,
+     "unit": "mm",
+     "low": 543.15,
+     "high": 734.85,
+     "method": "measured",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder, not OpenET"
+    },
+    "etc_vs_openet_pct": {
+     "value": 5.0,
+     "unit": "%",
+     "low": 4.25,
+     "high": 5.75,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    }
+   },
+   "scores": {
+    "water_use": {
+     "value": 60.3,
+     "unit": "score 0-100",
+     "low": 51.3,
+     "high": 69.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "forage_value": {
+     "value": 26.0,
+     "unit": "score 0-100",
+     "low": 17.0,
+     "high": 35.0,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "n_fixation": {
+     "value": 26.6,
+     "unit": "score 0-100",
+     "low": 17.6,
+     "high": 35.6,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "erosion": {
+     "value": 29.2,
+     "unit": "score 0-100",
+     "low": 20.2,
+     "high": 38.2,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "organic_matter": {
+     "value": 70.3,
+     "unit": "score 0-100",
+     "low": 61.3,
+     "high": 79.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "market": {
+     "value": 39.6,
+     "unit": "score 0-100",
+     "low": 30.6,
+     "high": 48.6,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "pest_break": {
+     "value": 45.3,
+     "unit": "score 0-100",
+     "low": 36.3,
+     "high": 54.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "infiltration": {
+     "value": 25.7,
+     "unit": "score 0-100",
+     "low": 16.7,
+     "high": 34.7,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "n_scavenging": {
+     "value": 80.5,
+     "unit": "score 0-100",
+     "low": 71.5,
+     "high": 89.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "income": {
+     "value": 80.5,
+     "unit": "score 0-100",
+     "low": 71.5,
+     "high": 89.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    }
+   },
+   "composite": {
+    "value": 42.0,
+    "low": 33.0,
+    "high": 51.0,
+    "weights_used": {
+     "water_use": 1,
+     "forage_value": 1,
+     "n_fixation": 1,
+     "erosion": 1,
+     "organic_matter": 1,
+     "market": 1,
+     "pest_break": 0,
+     "infiltration": 0,
+     "n_scavenging": 0,
+     "income": 0
+    }
+   },
+   "risk_profile": {
+    "rma_share_drought": {
+     "value": 0.4,
+     "unit": "share",
+     "low": 0.3,
+     "high": 0.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_excess_moisture": {
+     "value": 0.2,
+     "unit": "share",
+     "low": 0.1,
+     "high": 0.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_heat": {
+     "value": 0.1,
+     "unit": "share",
+     "low": 0.085,
+     "high": 0.115,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_other": {
+     "value": 0.3,
+     "unit": "share",
+     "low": 0.255,
+     "high": 0.345,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_years": [
+     2010,
+     2024
+    ]
+   },
+   "funding": [],
+   "brief": {
+    "why": [
+     {
+      "text": "[fixture placeholder] Explanation text is written by the LLM layer and checked against the numbers.",
+      "source_ids": [
+       "fixture_placeholder"
+      ],
+      "numbers_used": [
+       "composite.value"
+      ],
+      "author": "template",
+      "checked": true
+     }
+    ],
+    "evidence": [
+     {
+      "text": "[fixture placeholder] evidence line",
+      "source_ids": [
+       "fixture_placeholder"
+      ]
+     }
+    ],
+    "benefits": [
+     {
+      "text": "[fixture placeholder] benefit line",
+      "source_ids": [
+       "fixture_placeholder"
+      ]
+     }
+    ],
+    "gaps": [
+     {
+      "text": "[fixture placeholder] gap line",
+      "source_ids": []
+     }
+    ],
+    "local_review": [
+     {
+      "item": "Confirm district / GSA rules and local seeding dates",
+      "severity": "high"
+     }
+    ],
+    "explainer_cards": [],
+    "llm_report": {
+     "sentences": 0,
+     "numbers_checked": 0,
+     "rejected": 0,
+     "model": null,
+     "cached_at": null
+    }
+   },
+   "uncertainty": {
+    "dataset_disagreement": {
+     "value": 12,
+     "unit": "%",
+     "low": 10.2,
+     "high": 13.8,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "scale": {
+     "value": 30,
+     "unit": "m",
+     "low": 25.5,
+     "high": 34.5,
+     "method": "lookup",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "field grid vs 9 km regional"
+    },
+    "agronomic_gap_count": 3,
+    "detector_disagreement_pct": 7
+   }
+  },
+  {
+   "id": "caf1_silage_corn_double",
+   "location_id": "caf_tulare_forage",
+   "name": "Winter small-grain silage + silage corn",
+   "is_baseline": false,
+   "cycle_years": 1,
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "winter_small_grain_silage",
+     "plant": "10-25",
+     "role": "forage",
+     "timing_source": "assumed (U)",
+     "harvest": "04-25",
+     "harvest_year_offset": 1
+    },
+    {
+     "year": 1,
+     "crop_id": "silage_corn",
+     "plant": "05-05",
+     "role": "forage",
+     "timing_source": "assumed (U)",
+     "harvest": "08-25"
+    }
+   ],
+   "allocation_rule": null,
+   "exposure": {
+    "bare_days_per_year": {
+     "value": 75,
+     "unit": "days",
+     "low": 63.75,
+     "high": 86.25,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_rain_days": {
+     "value": 79,
+     "unit": "days",
+     "low": 67.15,
+     "high": 90.85,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_frost_days": {
+     "value": 133,
+     "unit": "days",
+     "low": 113.05,
+     "high": 152.95,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_heat_days": {
+     "value": 62,
+     "unit": "days",
+     "low": 52.7,
+     "high": 71.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_dry_days": {
+     "value": 25,
+     "unit": "days",
+     "low": 21.25,
+     "high": 28.75,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "replay": {
+     "2022": {
+      "bare_days_per_year": {
+       "value": 13,
+       "unit": "days",
+       "low": 11.05,
+       "high": 14.95,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_rain_days": {
+       "value": 83,
+       "unit": "days",
+       "low": 70.55,
+       "high": 95.45,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_frost_days": {
+       "value": 99,
+       "unit": "days",
+       "low": 84.15,
+       "high": 113.85,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_heat_days": {
+       "value": 145,
+       "unit": "days",
+       "low": 123.25,
+       "high": 166.75,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_dry_days": {
+       "value": 137,
+       "unit": "days",
+       "low": 116.45,
+       "high": 157.55,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      }
+     },
+     "2023": {
+      "bare_days_per_year": {
+       "value": 69,
+       "unit": "days",
+       "low": 58.65,
+       "high": 79.35,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_rain_days": {
+       "value": 121,
+       "unit": "days",
+       "low": 102.85,
+       "high": 139.15,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_frost_days": {
+       "value": 60,
+       "unit": "days",
+       "low": 51.0,
+       "high": 69.0,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_heat_days": {
+       "value": 139,
+       "unit": "days",
+       "low": 118.15,
+       "high": 159.85,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_dry_days": {
+       "value": 58,
+       "unit": "days",
+       "low": 49.3,
+       "high": 66.7,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      }
+     }
+    },
+    "scenario": {
+     "dT_c": 0,
+     "dP_pct": 0
+    }
+   },
+   "water": {
+    "etc_mm_season": {
+     "value": 818,
+     "unit": "mm",
+     "low": 695.3,
+     "high": 940.7,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "irrigation_need_mm": {
+     "value": 654,
+     "unit": "mm",
+     "low": 555.9,
+     "high": 752.1,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "etc_by_month_mm": [
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 136,
+      "unit": "mm",
+      "low": 115.6,
+      "high": 156.4,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 136,
+      "unit": "mm",
+      "low": 115.6,
+      "high": 156.4,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 136,
+      "unit": "mm",
+      "low": 115.6,
+      "high": 156.4,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 136,
+      "unit": "mm",
+      "low": 115.6,
+      "high": 156.4,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 136,
+      "unit": "mm",
+      "low": 115.6,
+      "high": 156.4,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 136,
+      "unit": "mm",
+      "low": 115.6,
+      "high": 156.4,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     }
+    ],
+    "openet_et_mm_season": {
+     "value": 777,
+     "unit": "mm",
+     "low": 660.45,
+     "high": 893.55,
+     "method": "measured",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder, not OpenET"
+    },
+    "etc_vs_openet_pct": {
+     "value": 5.0,
+     "unit": "%",
+     "low": 4.25,
+     "high": 5.75,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    }
+   },
+   "scores": {
+    "water_use": {
+     "value": 60.5,
+     "unit": "score 0-100",
+     "low": 51.5,
+     "high": 69.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "forage_value": {
+     "value": 68.5,
+     "unit": "score 0-100",
+     "low": 59.5,
+     "high": 77.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "n_fixation": {
+     "value": 65.1,
+     "unit": "score 0-100",
+     "low": 56.1,
+     "high": 74.1,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "erosion": {
+     "value": 44.1,
+     "unit": "score 0-100",
+     "low": 35.1,
+     "high": 53.1,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "organic_matter": {
+     "value": 25.8,
+     "unit": "score 0-100",
+     "low": 16.8,
+     "high": 34.8,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "market": {
+     "value": 65.0,
+     "unit": "score 0-100",
+     "low": 56.0,
+     "high": 74.0,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "pest_break": {
+     "value": 83.6,
+     "unit": "score 0-100",
+     "low": 74.6,
+     "high": 92.6,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "infiltration": {
+     "value": 53.3,
+     "unit": "score 0-100",
+     "low": 44.3,
+     "high": 62.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "n_scavenging": {
+     "value": 37.9,
+     "unit": "score 0-100",
+     "low": 28.9,
+     "high": 46.9,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "income": {
+     "value": 29.3,
+     "unit": "score 0-100",
+     "low": 20.3,
+     "high": 38.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    }
+   },
+   "composite": {
+    "value": 54.8,
+    "low": 45.8,
+    "high": 63.8,
+    "weights_used": {
+     "water_use": 1,
+     "forage_value": 1,
+     "n_fixation": 1,
+     "erosion": 1,
+     "organic_matter": 1,
+     "market": 1,
+     "pest_break": 0,
+     "infiltration": 0,
+     "n_scavenging": 0,
+     "income": 0
+    }
+   },
+   "risk_profile": {
+    "rma_share_drought": {
+     "value": 0.4,
+     "unit": "share",
+     "low": 0.3,
+     "high": 0.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_excess_moisture": {
+     "value": 0.2,
+     "unit": "share",
+     "low": 0.1,
+     "high": 0.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_heat": {
+     "value": 0.1,
+     "unit": "share",
+     "low": 0.085,
+     "high": 0.115,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_other": {
+     "value": 0.3,
+     "unit": "share",
+     "low": 0.255,
+     "high": 0.345,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_years": [
+     2010,
+     2024
+    ]
+   },
+   "funding": [],
+   "brief": {
+    "why": [
+     {
+      "text": "[fixture placeholder] Explanation text is written by the LLM layer and checked against the numbers.",
+      "source_ids": [
+       "fixture_placeholder"
+      ],
+      "numbers_used": [
+       "composite.value"
+      ],
+      "author": "template",
+      "checked": true
+     }
+    ],
+    "evidence": [
+     {
+      "text": "[fixture placeholder] evidence line",
+      "source_ids": [
+       "fixture_placeholder"
+      ]
+     }
+    ],
+    "benefits": [
+     {
+      "text": "[fixture placeholder] benefit line",
+      "source_ids": [
+       "fixture_placeholder"
+      ]
+     }
+    ],
+    "gaps": [
+     {
+      "text": "[fixture placeholder] gap line",
+      "source_ids": []
+     }
+    ],
+    "local_review": [
+     {
+      "item": "Confirm district / GSA rules and local seeding dates",
+      "severity": "high"
+     }
+    ],
+    "explainer_cards": [],
+    "llm_report": {
+     "sentences": 0,
+     "numbers_checked": 0,
+     "rejected": 0,
+     "model": null,
+     "cached_at": null
+    }
+   },
+   "uncertainty": {
+    "dataset_disagreement": {
+     "value": 12,
+     "unit": "%",
+     "low": 10.2,
+     "high": 13.8,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "scale": {
+     "value": 30,
+     "unit": "m",
+     "low": 25.5,
+     "high": 34.5,
+     "method": "lookup",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "field grid vs 9 km regional"
+    },
+    "agronomic_gap_count": 3,
+    "detector_disagreement_pct": 7
+   }
+  },
+  {
+   "id": "caf2_silage_sorghum_sudan",
+   "location_id": "caf_tulare_forage",
+   "name": "Winter small-grain silage + sorghum-sudan",
+   "is_baseline": false,
+   "cycle_years": 1,
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "winter_small_grain_silage",
+     "plant": "10-25",
+     "role": "forage",
+     "timing_source": "assumed (U)",
+     "harvest": "04-25",
+     "harvest_year_offset": 1
+    },
+    {
+     "year": 1,
+     "crop_id": "sorghum_sudan",
+     "plant": "05-05",
+     "role": "forage",
+     "timing_source": "assumed (U)",
+     "harvest": "08-20"
+    }
+   ],
+   "allocation_rule": null,
+   "exposure": {
+    "bare_days_per_year": {
+     "value": 30,
+     "unit": "days",
+     "low": 25.5,
+     "high": 34.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_rain_days": {
+     "value": 8,
+     "unit": "days",
+     "low": 6.8,
+     "high": 9.2,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_frost_days": {
+     "value": 18,
+     "unit": "days",
+     "low": 15.3,
+     "high": 20.7,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_heat_days": {
+     "value": 25,
+     "unit": "days",
+     "low": 21.25,
+     "high": 28.75,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_dry_days": {
+     "value": 22,
+     "unit": "days",
+     "low": 18.7,
+     "high": 25.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "replay": {
+     "2022": {
+      "bare_days_per_year": {
+       "value": 53,
+       "unit": "days",
+       "low": 45.05,
+       "high": 60.95,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_rain_days": {
+       "value": 103,
+       "unit": "days",
+       "low": 87.55,
+       "high": 118.45,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_frost_days": {
+       "value": 146,
+       "unit": "days",
+       "low": 124.1,
+       "high": 167.9,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_heat_days": {
+       "value": 154,
+       "unit": "days",
+       "low": 130.9,
+       "high": 177.1,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_dry_days": {
+       "value": 119,
+       "unit": "days",
+       "low": 101.15,
+       "high": 136.85,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      }
+     },
+     "2023": {
+      "bare_days_per_year": {
+       "value": 89,
+       "unit": "days",
+       "low": 75.65,
+       "high": 102.35,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_rain_days": {
+       "value": 130,
+       "unit": "days",
+       "low": 110.5,
+       "high": 149.5,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_frost_days": {
+       "value": 92,
+       "unit": "days",
+       "low": 78.2,
+       "high": 105.8,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_heat_days": {
+       "value": 105,
+       "unit": "days",
+       "low": 89.25,
+       "high": 120.75,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_dry_days": {
+       "value": 90,
+       "unit": "days",
+       "low": 76.5,
+       "high": 103.5,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      }
+     }
+    },
+    "scenario": {
+     "dT_c": 0,
+     "dP_pct": 0
+    }
+   },
+   "water": {
+    "etc_mm_season": {
+     "value": 569,
+     "unit": "mm",
+     "low": 483.65,
+     "high": 654.35,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "irrigation_need_mm": {
+     "value": 455,
+     "unit": "mm",
+     "low": 386.75,
+     "high": 523.25,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "etc_by_month_mm": [
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 95,
+      "unit": "mm",
+      "low": 80.75,
+      "high": 109.25,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 95,
+      "unit": "mm",
+      "low": 80.75,
+      "high": 109.25,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 95,
+      "unit": "mm",
+      "low": 80.75,
+      "high": 109.25,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 95,
+      "unit": "mm",
+      "low": 80.75,
+      "high": 109.25,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 95,
+      "unit": "mm",
+      "low": 80.75,
+      "high": 109.25,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 95,
+      "unit": "mm",
+      "low": 80.75,
+      "high": 109.25,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     }
+    ],
+    "openet_et_mm_season": {
+     "value": 541,
+     "unit": "mm",
+     "low": 459.85,
+     "high": 622.15,
+     "method": "measured",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder, not OpenET"
+    },
+    "etc_vs_openet_pct": {
+     "value": 5.0,
+     "unit": "%",
+     "low": 4.25,
+     "high": 5.75,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    }
+   },
+   "scores": {
+    "water_use": {
+     "value": 45.7,
+     "unit": "score 0-100",
+     "low": 36.7,
+     "high": 54.7,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "forage_value": {
+     "value": 74.3,
+     "unit": "score 0-100",
+     "low": 65.3,
+     "high": 83.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "n_fixation": {
+     "value": 68.5,
+     "unit": "score 0-100",
+     "low": 59.5,
+     "high": 77.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "erosion": {
+     "value": 72.0,
+     "unit": "score 0-100",
+     "low": 63.0,
+     "high": 81.0,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "organic_matter": {
+     "value": 58.0,
+     "unit": "score 0-100",
+     "low": 49.0,
+     "high": 67.0,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "market": {
+     "value": 63.5,
+     "unit": "score 0-100",
+     "low": 54.5,
+     "high": 72.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "pest_break": {
+     "value": 74.3,
+     "unit": "score 0-100",
+     "low": 65.3,
+     "high": 83.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "infiltration": {
+     "value": 68.9,
+     "unit": "score 0-100",
+     "low": 59.9,
+     "high": 77.9,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "n_scavenging": {
+     "value": 30.6,
+     "unit": "score 0-100",
+     "low": 21.6,
+     "high": 39.6,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "income": {
+     "value": 46.5,
+     "unit": "score 0-100",
+     "low": 37.5,
+     "high": 55.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    }
+   },
+   "composite": {
+    "value": 63.7,
+    "low": 54.7,
+    "high": 72.7,
+    "weights_used": {
+     "water_use": 1,
+     "forage_value": 1,
+     "n_fixation": 1,
+     "erosion": 1,
+     "organic_matter": 1,
+     "market": 1,
+     "pest_break": 0,
+     "infiltration": 0,
+     "n_scavenging": 0,
+     "income": 0
+    }
+   },
+   "risk_profile": {
+    "rma_share_drought": {
+     "value": 0.4,
+     "unit": "share",
+     "low": 0.3,
+     "high": 0.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_excess_moisture": {
+     "value": 0.2,
+     "unit": "share",
+     "low": 0.1,
+     "high": 0.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_heat": {
+     "value": 0.1,
+     "unit": "share",
+     "low": 0.085,
+     "high": 0.115,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_other": {
+     "value": 0.3,
+     "unit": "share",
+     "low": 0.255,
+     "high": 0.345,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_years": [
+     2010,
+     2024
+    ]
+   },
+   "funding": [],
+   "brief": {
+    "why": [
+     {
+      "text": "[fixture placeholder] Explanation text is written by the LLM layer and checked against the numbers.",
+      "source_ids": [
+       "fixture_placeholder"
+      ],
+      "numbers_used": [
+       "composite.value"
+      ],
+      "author": "template",
+      "checked": true
+     }
+    ],
+    "evidence": [
+     {
+      "text": "[fixture placeholder] evidence line",
+      "source_ids": [
+       "fixture_placeholder"
+      ]
+     }
+    ],
+    "benefits": [
+     {
+      "text": "[fixture placeholder] benefit line",
+      "source_ids": [
+       "fixture_placeholder"
+      ]
+     }
+    ],
+    "gaps": [
+     {
+      "text": "[fixture placeholder] gap line",
+      "source_ids": []
+     }
+    ],
+    "local_review": [
+     {
+      "item": "Confirm district / GSA rules and local seeding dates",
+      "severity": "high"
+     }
+    ],
+    "explainer_cards": [],
+    "llm_report": {
+     "sentences": 0,
+     "numbers_checked": 0,
+     "rejected": 0,
+     "model": null,
+     "cached_at": null
+    }
+   },
+   "uncertainty": {
+    "dataset_disagreement": {
+     "value": 12,
+     "unit": "%",
+     "low": 10.2,
+     "high": 13.8,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "scale": {
+     "value": 30,
+     "unit": "m",
+     "low": 25.5,
+     "high": 34.5,
+     "method": "lookup",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "field grid vs 9 km regional"
+    },
+    "agronomic_gap_count": 3,
+    "detector_disagreement_pct": 7
+   }
+  },
+  {
+   "id": "caf3_alfalfa_break_year",
+   "location_id": "caf_tulare_forage",
+   "name": "Alfalfa 3-yr stand, cereal break year, re-seed",
+   "is_baseline": false,
+   "cycle_years": 4,
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "alfalfa",
+     "plant": "09-25",
+     "role": "forage",
+     "timing_source": "UC Alfalfa window (V)",
+     "harvest": "11-15"
+    },
+    {
+     "year": 2,
+     "crop_id": "alfalfa",
+     "plant": null,
+     "role": "forage",
+     "timing_source": "assumed (U)",
+     "harvest": "11-15"
+    },
+    {
+     "year": 3,
+     "crop_id": "alfalfa",
+     "plant": null,
+     "role": "forage",
+     "timing_source": "assumed (U)",
+     "harvest": "11-15"
+    },
+    {
+     "year": 4,
+     "crop_id": "winter_small_grain_silage",
+     "plant": null,
+     "role": "forage",
+     "timing_source": "assumed (U); sown previous autumn",
+     "harvest": "04-25"
+    },
+    {
+     "year": 4,
+     "crop_id": "fallow",
+     "plant": "05-01",
+     "role": "fallow",
+     "timing_source": "assumed (U): summer fallow, no pumping",
+     "harvest": "08-31"
+    }
+   ],
+   "allocation_rule": "break year leaves a summer with no irrigated crop under a pumping cap",
+   "exposure": {
+    "bare_days_per_year": {
+     "value": 149,
+     "unit": "days",
+     "low": 126.65,
+     "high": 171.35,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_rain_days": {
+     "value": 93,
+     "unit": "days",
+     "low": 79.05,
+     "high": 106.95,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_frost_days": {
+     "value": 140,
+     "unit": "days",
+     "low": 119.0,
+     "high": 161.0,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_heat_days": {
+     "value": 35,
+     "unit": "days",
+     "low": 29.75,
+     "high": 40.25,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "exposed_dry_days": {
+     "value": 10,
+     "unit": "days",
+     "low": 8.5,
+     "high": 11.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "replay": {
+     "2022": {
+      "bare_days_per_year": {
+       "value": 133,
+       "unit": "days",
+       "low": 113.05,
+       "high": 152.95,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_rain_days": {
+       "value": 64,
+       "unit": "days",
+       "low": 54.4,
+       "high": 73.6,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_frost_days": {
+       "value": 31,
+       "unit": "days",
+       "low": 26.35,
+       "high": 35.65,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_heat_days": {
+       "value": 81,
+       "unit": "days",
+       "low": 68.85,
+       "high": 93.15,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_dry_days": {
+       "value": 97,
+       "unit": "days",
+       "low": 82.45,
+       "high": 111.55,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      }
+     },
+     "2023": {
+      "bare_days_per_year": {
+       "value": 46,
+       "unit": "days",
+       "low": 39.1,
+       "high": 52.9,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_rain_days": {
+       "value": 153,
+       "unit": "days",
+       "low": 130.05,
+       "high": 175.95,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_frost_days": {
+       "value": 122,
+       "unit": "days",
+       "low": 103.7,
+       "high": 140.3,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_heat_days": {
+       "value": 38,
+       "unit": "days",
+       "low": 32.3,
+       "high": 43.7,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      },
+      "exposed_dry_days": {
+       "value": 157,
+       "unit": "days",
+       "low": 133.45,
+       "high": 180.55,
+       "method": "assumed",
+       "source": {
+        "id": "fixture_placeholder",
+        "title": "Fixture placeholder (not a measurement)",
+        "url": "urn:fieldshift:fixture-placeholder",
+        "accessed": "2026-11-14",
+        "verified": false
+       }
+      }
+     }
+    },
+    "scenario": {
+     "dT_c": 0,
+     "dP_pct": 0
+    }
+   },
+   "water": {
+    "etc_mm_season": {
+     "value": 1081,
+     "unit": "mm",
+     "low": 918.85,
+     "high": 1243.15,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "irrigation_need_mm": {
+     "value": 865,
+     "unit": "mm",
+     "low": 735.25,
+     "high": 994.75,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "etc_by_month_mm": [
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 180,
+      "unit": "mm",
+      "low": 153.0,
+      "high": 207.0,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 180,
+      "unit": "mm",
+      "low": 153.0,
+      "high": 207.0,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 180,
+      "unit": "mm",
+      "low": 153.0,
+      "high": 207.0,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 180,
+      "unit": "mm",
+      "low": 153.0,
+      "high": 207.0,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 180,
+      "unit": "mm",
+      "low": 153.0,
+      "high": 207.0,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 180,
+      "unit": "mm",
+      "low": 153.0,
+      "high": 207.0,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     },
+     {
+      "value": 10,
+      "unit": "mm",
+      "low": 8.5,
+      "high": 11.5,
+      "method": "assumed",
+      "source": {
+       "id": "fixture_placeholder",
+       "title": "Fixture placeholder (not a measurement)",
+       "url": "urn:fieldshift:fixture-placeholder",
+       "accessed": "2026-11-14",
+       "verified": false
+      }
+     }
+    ],
+    "openet_et_mm_season": {
+     "value": 1027,
+     "unit": "mm",
+     "low": 872.95,
+     "high": 1181.05,
+     "method": "measured",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder, not OpenET"
+    },
+    "etc_vs_openet_pct": {
+     "value": 5.0,
+     "unit": "%",
+     "low": 4.25,
+     "high": 5.75,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    }
+   },
+   "scores": {
+    "water_use": {
+     "value": 77.1,
+     "unit": "score 0-100",
+     "low": 68.1,
+     "high": 86.1,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "forage_value": {
+     "value": 60.6,
+     "unit": "score 0-100",
+     "low": 51.6,
+     "high": 69.6,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "n_fixation": {
+     "value": 37.2,
+     "unit": "score 0-100",
+     "low": 28.2,
+     "high": 46.2,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "erosion": {
+     "value": 68.2,
+     "unit": "score 0-100",
+     "low": 59.2,
+     "high": 77.2,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "organic_matter": {
+     "value": 43.9,
+     "unit": "score 0-100",
+     "low": 34.9,
+     "high": 52.9,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "market": {
+     "value": 56.7,
+     "unit": "score 0-100",
+     "low": 47.7,
+     "high": 65.7,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "pest_break": {
+     "value": 25.0,
+     "unit": "score 0-100",
+     "low": 16.0,
+     "high": 34.0,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "infiltration": {
+     "value": 25.7,
+     "unit": "score 0-100",
+     "low": 16.7,
+     "high": 34.7,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "n_scavenging": {
+     "value": 65.5,
+     "unit": "score 0-100",
+     "low": 56.5,
+     "high": 74.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    },
+    "income": {
+     "value": 48.9,
+     "unit": "score 0-100",
+     "low": 39.9,
+     "high": 57.9,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "placeholder score"
+    }
+   },
+   "composite": {
+    "value": 57.3,
+    "low": 48.3,
+    "high": 66.3,
+    "weights_used": {
+     "water_use": 1,
+     "forage_value": 1,
+     "n_fixation": 1,
+     "erosion": 1,
+     "organic_matter": 1,
+     "market": 1,
+     "pest_break": 0,
+     "infiltration": 0,
+     "n_scavenging": 0,
+     "income": 0
+    }
+   },
+   "risk_profile": {
+    "rma_share_drought": {
+     "value": 0.4,
+     "unit": "share",
+     "low": 0.3,
+     "high": 0.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_excess_moisture": {
+     "value": 0.2,
+     "unit": "share",
+     "low": 0.1,
+     "high": 0.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_heat": {
+     "value": 0.1,
+     "unit": "share",
+     "low": 0.085,
+     "high": 0.115,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_share_other": {
+     "value": 0.3,
+     "unit": "share",
+     "low": 0.255,
+     "high": 0.345,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "rma_years": [
+     2010,
+     2024
+    ]
+   },
+   "funding": [],
+   "brief": {
+    "why": [
+     {
+      "text": "[fixture placeholder] Explanation text is written by the LLM layer and checked against the numbers.",
+      "source_ids": [
+       "fixture_placeholder"
+      ],
+      "numbers_used": [
+       "composite.value"
+      ],
+      "author": "template",
+      "checked": true
+     }
+    ],
+    "evidence": [
+     {
+      "text": "[fixture placeholder] evidence line",
+      "source_ids": [
+       "fixture_placeholder"
+      ]
+     }
+    ],
+    "benefits": [
+     {
+      "text": "[fixture placeholder] benefit line",
+      "source_ids": [
+       "fixture_placeholder"
+      ]
+     }
+    ],
+    "gaps": [
+     {
+      "text": "[fixture placeholder] gap line",
+      "source_ids": []
+     }
+    ],
+    "local_review": [
+     {
+      "item": "Confirm district / GSA rules and local seeding dates",
+      "severity": "high"
+     }
+    ],
+    "explainer_cards": [],
+    "llm_report": {
+     "sentences": 0,
+     "numbers_checked": 0,
+     "rejected": 0,
+     "model": null,
+     "cached_at": null
+    }
+   },
+   "uncertainty": {
+    "dataset_disagreement": {
+     "value": 12,
+     "unit": "%",
+     "low": 10.2,
+     "high": 13.8,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "scale": {
+     "value": 30,
+     "unit": "m",
+     "low": 25.5,
+     "high": 34.5,
+     "method": "lookup",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     },
+     "note": "field grid vs 9 km regional"
+    },
+    "agronomic_gap_count": 3,
+    "detector_disagreement_pct": 7
+   }
+  }
+ ],
+ "ranking": [
+  {
+   "id": "caf2_silage_sorghum_sudan",
+   "composite": 63.7,
+   "low": 54.7,
+   "high": 72.7,
+   "tie_with_previous": false
+  },
+  {
+   "id": "caf3_alfalfa_break_year",
+   "composite": 57.3,
+   "low": 48.3,
+   "high": 66.3,
+   "tie_with_previous": true
+  },
+  {
+   "id": "caf1_silage_corn_double",
+   "composite": 54.8,
+   "low": 45.8,
+   "high": 63.8,
+   "tie_with_previous": true
+  },
+  {
+   "id": "caf0_alfalfa_baseline",
+   "composite": 42.0,
+   "low": 33.0,
+   "high": 51.0,
+   "tie_with_previous": false
+  }
+ ],
+ "note": "fixture: default weights; scenario not applied"
+}

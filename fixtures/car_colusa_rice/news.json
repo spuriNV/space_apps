@@ -1,0 +1,22 @@
+{
+ "_fixture": true,
+ "location_id": "car_colusa_rice",
+ "items": [
+  {
+   "date": "2022-05-20",
+   "title": "Calif. rice acreage to drop to 39-year low",
+   "source": "Farm Progress",
+   "url": "https://www.farmprogress.com/rice/calif-rice-acreage-to-drop-to-39-year-low",
+   "rank": 2,
+   "place_match": [
+    "Sacramento Valley"
+   ],
+   "query_id": "car_2022_drought",
+   "signal": {
+    "dataset": "smap_l3",
+    "value_pct": null,
+    "lead_days": null
+   }
+  }
+ ]
+}

@@ -1,0 +1,54 @@
+
+== car_colusa_rice ==
+PASS  POWER values within physical ranges
+PASS  POWER units mm/day, C, MJ/m^2/day  | {'T2M': 'C', 'T2M_MAX': 'C', 'T2M_MIN': 'C', 'RH2M': '%', 'WS2M': 'm/s', 'ALLSKY_SFC_SW_DWN': 'MJ/m^2/day', 'PRECTOTCORR': 'mm/day'}
+PASS  POWER Tmax >= Tmin every day
+PASS  POWER row count and daily coverage 1981-01-01..2025-12-31  | 16436 rows vs 16436 expected
+PASS  POWER fill value -999 replaced by NaN  | NaN counts: {'ALLSKY_SFC_SW_DWN': 1095}
+PASS  No missing values outside ALLSKY (which has no data before 1984)
+PASS  Hargreaves ETo 0-15 mm/day, no NaN  | max 10.59
+INFO  Jan-Mar precip by year (top 5)  | 1995:814mm, 1998:753mm, 1983:747mm, 2017:694mm, 1986:687mm; 2023 = 578 mm
+FAIL  Jan-Mar 2023 precipitation is top-3 of 1981-2025 (POWER)  | rank 8 of 45
+INFO  NCEI USC00041948 Jan-Mar 2023 rank  | 5 of 35 complete years (346 mm)
+INFO  NCEI USC00049699 Jan-Mar 2023 rank  | 6 of 38 complete years (393 mm)
+INFO  NCEI USC00049781 Jan-Mar 2023 rank  | 7 of 38 complete years (450 mm)
+PASS  WY2021 precipitation below 1982-2025 mean (POWER)  | 237 mm = 32% of mean 735 mm (median 673); rank 1 driest of 44
+PASS  WY2022 precipitation below 1982-2025 mean (POWER)  | 513 mm = 70% of mean 735 mm (median 673); rank 8 driest of 44
+INFO  WY2023  | 866 mm = 118% of mean
+PASS  +2 C raises Hargreaves ETo  | annual 1458 -> 1535 mm (+5.2%)
+PASS  ETo peaks Jun-Aug, lowest Dec-Jan  | peak month 7 (246 mm), low month 12 (34 mm)
+PASS  USDM 06011 Colusa County has D3+ weeks in 2021-22  | 95 of 104 weeks with any D3+ area; 95 weeks with >=50% of county in D3+
+PASS  USDM weekly rows ~575 per county (2015-2025)  | {'06011': 575}
+PASS  CDEC 4018 daily rows per station 2015-2025  | missing values: 8
+PASS  SHA storage lower in 2021-22 than in 2023  | mean 2021-22 1,657,139 AF vs 2023 3,472,948 AF; Sept: 2021 1,141,495, 2022 1,543,938, 2023 3,417,774; 2015-25 mean 2,951,075
+PASS  ORO storage lower in 2021-22 than in 2023  | mean 2021-22 1,310,801 AF vs 2023 2,793,374 AF; Sept: 2021 791,067, 2022 1,268,583, 2023 2,730,805; 2015-25 mean 2,046,177
+PASS  NCEI stations present  | USC00041948:15950 rows, USC00049699:16213 rows, USC00049781:15888 rows
+PASS  SSURGO soil block in range  | Capay clay loam, 0 percent slopes, low precip, MLRA 17 | Moderately well drained | HSG D | AWC 172.4 mm/m | OM 1.31%
+
+== caf_tulare_forage ==
+PASS  POWER values within physical ranges
+PASS  POWER units mm/day, C, MJ/m^2/day  | {'T2M': 'C', 'T2M_MAX': 'C', 'T2M_MIN': 'C', 'RH2M': '%', 'WS2M': 'm/s', 'ALLSKY_SFC_SW_DWN': 'MJ/m^2/day', 'PRECTOTCORR': 'mm/day'}
+PASS  POWER Tmax >= Tmin every day
+PASS  POWER row count and daily coverage 1981-01-01..2025-12-31  | 16436 rows vs 16436 expected
+PASS  POWER fill value -999 replaced by NaN  | NaN counts: {'ALLSKY_SFC_SW_DWN': 1095}
+PASS  No missing values outside ALLSKY (which has no data before 1984)
+PASS  Hargreaves ETo 0-15 mm/day, no NaN  | max 10.16
+INFO  Jan-Mar precip by year (top 5)  | 2023:501mm, 1983:406mm, 2017:400mm, 1995:382mm, 1998:330mm; 2023 = 501 mm
+PASS  Jan-Mar 2023 precipitation is top-3 of 1981-2025 (POWER)  | rank 1 of 45
+INFO  NCEI USC00042012 Jan-Mar 2023 rank  | 1 of 43 complete years (240 mm)
+INFO  NCEI USC00043747 Jan-Mar 2023 rank  | 1 of 43 complete years (275 mm)
+INFO  NCEI USC00049367 Jan-Mar 2023 rank  | 1 of 43 complete years (339 mm)
+PASS  WY2021 precipitation below 1982-2025 mean (POWER)  | 151 mm = 40% of mean 373 mm (median 313); rank 1 driest of 44
+PASS  WY2022 precipitation below 1982-2025 mean (POWER)  | 278 mm = 74% of mean 373 mm (median 313); rank 11 driest of 44
+INFO  WY2023  | 769 mm = 206% of mean
+PASS  +2 C raises Hargreaves ETo  | annual 1582 -> 1661 mm (+5.0%)
+PASS  ETo peaks Jun-Aug, lowest Dec-Jan  | peak month 7 (249 mm), low month 12 (44 mm)
+PASS  USDM 06031 Kings County has D3+ weeks in 2021-22  | 79 of 104 weeks with any D3+ area; 77 weeks with >=50% of county in D3+
+PASS  USDM 06107 Tulare County has D3+ weeks in 2021-22  | 93 of 104 weeks with any D3+ area; 86 weeks with >=50% of county in D3+
+PASS  USDM weekly rows ~575 per county (2015-2025)  | {'06031': 575, '06107': 575}
+PASS  CDEC 4018 daily rows per station 2015-2025  | missing values: 8
+PASS  PNF storage lower in 2021-22 than in 2023  | mean 2021-22 280,784 AF vs 2023 633,066 AF; Sept: 2021 199,103, 2022 139,903, 2023 743,396; 2015-25 mean 454,125
+PASS  NCEI stations present  | USC00042012:16214 rows, USC00043747:16319 rows, USC00049367:15960 rows
+PASS  SSURGO soil block in range  | Kimberlina fine sandy loam, sandy substratum | Well drained | HSG A | AWC 113.7 mm/m | OM 0.74%
+
+37 PASS / 1 FAIL

@@ -1,0 +1,142 @@
+{
+ "mukey": "461544",
+ "muname": "Capay clay loam, 0 percent slopes, low precip, MLRA 17",
+ "drainage_class": "Moderately well drained",
+ "hydrologic_group": "D",
+ "dominant_component": {
+  "compname": "Capay",
+  "comppct_r": "90",
+  "taxorder": "Vertisols"
+ },
+ "awc_mm_per_m": {
+  "value": 172.4,
+  "unit": "mm/m",
+  "low": 160.5,
+  "high": 184.3,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted awc_r (cm/cm x 1000), comppct-weighted, area-weighted over map units; low/high = awc_l/awc_h"
+ },
+ "om_pct": {
+  "value": 1.31,
+  "unit": "%",
+  "low": 0.84,
+  "high": 1.79,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted om_r"
+ },
+ "texture_class": "clay loam",
+ "texture_detail": {
+  "sand_pct": 29.8,
+  "silt_pct": 31.9,
+  "clay_pct": 38.2,
+  "surface_horizon_texture_code": "CL",
+  "method": "USDA triangle on 0-100 cm weighted sand/silt/clay"
+ },
+ "ec_ds_per_m": 0.69,
+ "map_units": [
+  {
+   "mukey": "461544",
+   "muname": "Capay clay loam, 0 percent slopes, low precip, MLRA 17",
+   "area_share": 0.608,
+   "components": [
+    {
+     "compname": "Capay",
+     "comppct_r": "90",
+     "drainage_class": "Moderately well drained",
+     "hydrologic_group": "D",
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Capay",
+     "comppct_r": "5",
+     "drainage_class": "Moderately well drained",
+     "hydrologic_group": "D",
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "2",
+     "drainage_class": "Very poorly drained",
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Capay",
+     "comppct_r": "1",
+     "drainage_class": "Moderately well drained",
+     "hydrologic_group": "D",
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Westfan",
+     "comppct_r": "1",
+     "drainage_class": "Well drained",
+     "hydrologic_group": "B",
+     "taxorder": "Mollisols"
+    },
+    {
+     "compname": "Willows",
+     "comppct_r": "1",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Vertisols"
+    }
+   ]
+  },
+  {
+   "mukey": "461563",
+   "muname": "Mallard clay loam, 0 to 1 percent slopes",
+   "area_share": 0.392,
+   "components": [
+    {
+     "compname": "Mallard",
+     "comppct_r": "85",
+     "drainage_class": "Somewhat poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Mollisols"
+    },
+    {
+     "compname": "Capay",
+     "comppct_r": "7",
+     "drainage_class": "Moderately well drained",
+     "hydrologic_group": "D",
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Westfan",
+     "comppct_r": "7",
+     "drainage_class": "Well drained",
+     "hydrologic_group": "B",
+     "taxorder": "Mollisols"
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "1",
+     "drainage_class": "Very poorly drained",
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  }
+ ],
+ "footprint": "400 m square around preset centre (placeholder until field polygon exists)",
+ "source": {
+  "id": "ssurgo_sda",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+  "verified": true
+ }
+}

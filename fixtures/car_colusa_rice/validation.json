@@ -1,0 +1,57 @@
+{
+ "_fixture": true,
+ "location_id": "car_colusa_rice",
+ "checks": [
+  {
+   "id": "openet_vs_etc",
+   "title": "OpenET vs modelled ETc",
+   "status": "pending",
+   "metrics": {
+    "bias_pct": {
+     "value": null,
+     "unit": "%",
+     "method": "assumed"
+    },
+    "r2": {
+     "value": null,
+     "method": "assumed"
+    }
+   },
+   "note": "[fixture] not computed"
+  },
+  {
+   "id": "cimis_vs_power",
+   "title": "CIMIS vs NASA POWER ETo",
+   "status": "pending",
+   "metrics": {
+    "bias_pct": {
+     "value": null,
+     "unit": "%",
+     "method": "assumed"
+    },
+    "r2": {
+     "value": null,
+     "method": "assumed"
+    }
+   },
+   "note": "[fixture] not computed"
+  },
+  {
+   "id": "station_vs_imerg",
+   "title": "Station rain vs IMERG",
+   "status": "pending",
+   "metrics": {
+    "bias_pct": {
+     "value": null,
+     "unit": "%",
+     "method": "assumed"
+    },
+    "r2": {
+     "value": null,
+     "method": "assumed"
+    }
+   },
+   "note": "[fixture] not computed"
+  }
+ ]
+}

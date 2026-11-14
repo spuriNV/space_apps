@@ -1,0 +1,50 @@
+{
+ "url": "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest",
+ "params": {
+  "format": "JSON+COLUMNNAME",
+  "footprint_wkt": "POLYGON ((-119.59777359267494 36.19820337765002, -119.59777359267494 36.20179662234999, -119.60222640732505 36.20179662234999, -119.60222640732505 36.19820337765002, -119.59777359267494 36.19820337765002))",
+  "depth_cm": [
+   0,
+   100
+  ]
+ },
+ "fetched_at": "2026-11-14T20:00:50Z",
+ "footprint_geojson": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     -119.59777359267494,
+     36.19820337765002
+    ],
+    [
+     -119.59777359267494,
+     36.20179662234999
+    ],
+    [
+     -119.60222640732505,
+     36.20179662234999
+    ],
+    [
+     -119.60222640732505,
+     36.19820337765002
+    ],
+    [
+     -119.59777359267494,
+     36.19820337765002
+    ]
+   ]
+  ]
+ },
+ "footprint_note": "400 m square around preset centre (placeholder until field polygon exists)",
+ "native_res_m": null,
+ "native_res": "SSURGO map-unit polygons (order 2 survey, ~1:24k)",
+ "timestep": "static",
+ "units": {
+  "awc": "mm/m",
+  "om": "percent by weight",
+  "texture": "percent sand/silt/clay"
+ },
+ "fill_value": "null in SDA",
+ "auth": "none"
+}

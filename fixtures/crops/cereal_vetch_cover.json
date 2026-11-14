@@ -1,0 +1,268 @@
+{
+ "_fixture": true,
+ "id": "cereal_vetch_cover",
+ "name": "Cereal + vetch winter cover",
+ "family": "Poaceae/Fabaceae",
+ "role": [
+  "cover"
+ ],
+ "legume": true,
+ "root": "fibrous + taproot",
+ "kc": {
+  "ini": {
+   "value": 0.4,
+   "unit": "Kc",
+   "low": 0.36,
+   "high": 0.44,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   }
+  },
+  "mid": {
+   "value": 0.9,
+   "unit": "Kc",
+   "low": 0.81,
+   "high": 0.99,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   }
+  },
+  "end": {
+   "value": 0.35,
+   "unit": "Kc",
+   "low": 0.315,
+   "high": 0.385,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   }
+  }
+ },
+ "stage_lengths_days": {
+  "ini": 20,
+  "dev": 30,
+  "mid": 60,
+  "late": 30,
+  "source": "assumed placeholder (U)"
+ },
+ "cover_by_stage": {
+  "ini": 0.4,
+  "dev": 0.8,
+  "mid": 1.0,
+  "late": 0.6
+ },
+ "ratings_0_4": {
+  "erosion_reduction": {
+   "value": 3,
+   "unit": "0-4 rating",
+   "low": 3,
+   "high": 3,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "soil_builder": {
+   "value": 3,
+   "unit": "0-4 rating",
+   "low": 3,
+   "high": 3,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "lasting_residue": {
+   "value": 3,
+   "unit": "0-4 rating",
+   "low": 3,
+   "high": 3,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "nitrogen_fixation": {
+   "value": 3,
+   "unit": "0-4 rating",
+   "low": 3,
+   "high": 3,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "nitrogen_scavenging": {
+   "value": 3,
+   "unit": "0-4 rating",
+   "low": 3,
+   "high": 3,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "compaction_reduction": {
+   "value": 2,
+   "unit": "0-4 rating",
+   "low": 2,
+   "high": 2,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "forage_harvest_value": {
+   "value": 1,
+   "unit": "0-4 rating",
+   "low": 1,
+   "high": 1,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "weed_suppression": {
+   "value": 3,
+   "unit": "0-4 rating",
+   "low": 3,
+   "high": 3,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "tolerance_flood": {
+   "value": 1,
+   "unit": "0-4 rating",
+   "low": 1,
+   "high": 1,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "tolerance_drought": {
+   "value": 2,
+   "unit": "0-4 rating",
+   "low": 2,
+   "high": 2,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  }
+ },
+ "yield_range": {
+  "value": 0,
+  "unit": "kg/ha",
+  "low": 0.0,
+  "high": 0.0,
+  "method": "assumed",
+  "source": {
+   "id": "fixture_placeholder",
+   "title": "Fixture placeholder (not a measurement)",
+   "url": "urn:fieldshift:fixture-placeholder",
+   "accessed": "2026-11-14",
+   "verified": false
+  }
+ },
+ "drainage_classes_ok": [
+  "well",
+  "moderately well",
+  "somewhat poor"
+ ],
+ "seeding_window": {
+  "start": "10-15",
+  "end": "11-30",
+  "best": "placeholder",
+  "verified": false
+ },
+ "pest_notes": [],
+ "cautions": [],
+ "seed_cost_per_ha": {
+  "value": 90,
+  "unit": "USD/ha",
+  "low": 76.5,
+  "high": 103.5,
+  "method": "assumed",
+  "source": {
+   "id": "fixture_placeholder",
+   "title": "Fixture placeholder (not a measurement)",
+   "url": "urn:fieldshift:fixture-placeholder",
+   "accessed": "2026-11-14",
+   "verified": false
+  }
+ },
+ "explainer_card": "cover_crop",
+ "sources": [
+  {
+   "id": "fixture_placeholder",
+   "url": "urn:fieldshift:fixture-placeholder"
+  }
+ ]
+}

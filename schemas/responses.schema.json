@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldshift.local/schemas/responses.schema.json",
+  "title": "API response envelopes",
+  "description": "Response bodies for spec B3 routes. The spec only defines the 7 core types; these envelopes are the API owner's resolution. Every response object may carry _fixture:true (fixture files) and _source:'fixture'|'real' (added by the API). Collections are always objects with 'items' (or 'rows'), never bare arrays.",
+  "$defs": {
+    "meta": {"type": "object", "properties": {"_fixture": {"type": "boolean"}, "_source": {"enum": ["fixture", "real"]}}},
+    "Locations": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["items"],
+      "properties": {"items": {"type": "array", "items": {"$ref": "location.schema.json"}}}
+    },
+    "Daily": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["location_id", "rows"],
+      "properties": {
+        "location_id": {"type": "string"},
+        "rows": {"type": "array", "items": {"type": "object", "required": ["date"],
+          "properties": {"date": {"type": "string", "format": "date"},
+            "tmax_c": {"type": ["number", "null"]}, "tmin_c": {"type": ["number", "null"]}, "precip_mm": {"type": ["number", "null"]},
+            "eto_mm": {"type": ["number", "null"]}, "smap_sm_pct": {"type": ["number", "null"]}, "ndvi": {"type": ["number", "null"]},
+            "cover_class": {"enum": ["bare", "partial", "covered", "water", "unknown", null]}}}}
+      }
+    },
+    "FeaturesWeekly": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["location_id", "rows"],
+      "properties": {"location_id": {"type": "string"}, "rows": {"type": "array", "items": {"$ref": "feature_row.schema.json"}}}
+    },
+    "Strategies": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["location_id", "items"],
+      "properties": {"location_id": {"type": "string"}, "items": {"type": "array", "minItems": 1, "items": {"$ref": "rotation_strategy.schema.json"}}}
+    },
+    "Score": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["location_id", "request", "items", "ranking"],
+      "properties": {
+        "location_id": {"type": "string"},
+        "request": {"type": "object"},
+        "items": {"type": "array", "items": {"$ref": "rotation_strategy.schema.json"}},
+        "ranking": {"type": "array", "description": "strategy ids best-first with composite and tie flag (interval overlap > 50%)",
+          "items": {"type": "object", "required": ["id", "composite", "low", "high", "tie_with_previous"],
+            "properties": {"id": {"type": "string"}, "composite": {"type": "number"}, "low": {"type": "number"}, "high": {"type": "number"}, "tie_with_previous": {"type": "boolean"}}}},
+        "note": {"type": "string"}
+      }
+    },
+    "Models": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["location_id", "items"],
+      "properties": {"location_id": {"type": "string"}, "items": {"type": "array", "items": {"$ref": "model_report.schema.json"}}}
+    },
+    "Zones": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["location_id", "type", "features"],
+      "properties": {
+        "location_id": {"type": "string"}, "type": {"const": "FeatureCollection"},
+        "features": {"type": "array", "items": {"type": "object", "required": ["type", "geometry", "properties"],
+          "properties": {"type": {"const": "Feature"}, "geometry": {"type": "object"},
+            "properties": {"type": "object", "required": ["layer", "meaningful"],
+              "properties": {"layer": {"enum": ["slope", "low_spot", "stress_hotspot", "openet_zone"]}, "meaningful": {"type": "boolean"}, "label": {"type": "string"}, "value": {"$ref": "sourced_number.schema.json"}, "note": {"type": "string"}}}}}}
+      }
+    },
+    "Trends": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["location_id", "layer", "unit", "grid", "cells", "field_cell_series", "event_markers"],
+      "properties": {
+        "location_id": {"type": "string"},
+        "layer": {"enum": ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly"]},
+        "year": {"type": ["integer", "null"]},
+        "unit": {"type": "string"},
+        "grid": {"const": "EASE2_G9km"},
+        "source": {"$ref": "sourced_number.schema.json#/$defs/Source"},
+        "cells": {"type": "array", "description": "11 x 11 neighbourhood; plain numbers (grid layer); null = no data",
+          "items": {"type": "object", "required": ["row", "col", "value"], "properties": {"row": {"type": "integer"}, "col": {"type": "integer"}, "value": {"type": ["number", "null"]}}}},
+        "field_cell_series": {"type": "array", "items": {"type": "object", "required": ["year", "value"], "properties": {"year": {"type": "integer"}, "value": {"type": ["number", "null"]}}}},
+        "event_markers": {"type": "array", "items": {"type": "object", "required": ["date", "title"], "properties": {"date": {"type": "string"}, "title": {"type": "string"}, "url": {"type": ["string", "null"]}, "verified": {"type": "boolean"}}}}
+      }
+    },
+    "News": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["items"],
+      "properties": {"location_id": {"type": "string"}, "items": {"type": "array", "items": {"$ref": "news_item.schema.json"}}}
+    },
+    "Validation": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["location_id", "checks"],
+      "properties": {"location_id": {"type": "string"},
+        "checks": {"type": "array", "items": {"type": "object", "required": ["id", "title", "status", "metrics"],
+          "properties": {"id": {"enum": ["openet_vs_etc", "cimis_vs_power", "station_vs_imerg"]}, "title": {"type": "string"},
+            "status": {"enum": ["computed", "pending", "blocked"]},
+            "metrics": {"type": "object", "additionalProperties": {"$ref": "sourced_number.schema.json"}}, "note": {"type": "string"}}}}}
+    },
+    "BcSignal": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["point", "series", "markers"],
+      "properties": {
+        "point": {"type": "object", "required": ["lon", "lat"], "properties": {"lon": {"type": "number"}, "lat": {"type": "number"}}},
+        "series": {"type": "array", "items": {"type": "object", "required": ["date"], "properties": {"date": {"type": "string"}, "smap_pct": {"type": ["number", "null"]}, "grace_gw_pct": {"type": ["number", "null"]}, "power_tmax_c": {"type": ["number", "null"]}}}},
+        "markers": {"type": "array", "items": {"type": "object", "required": ["date", "title", "lead_days"], "properties": {"date": {"type": "string"}, "title": {"type": "string"}, "approximate": {"type": "boolean"}, "lead_days": {"type": ["integer", "null"]}, "url": {"type": ["string", "null"]}}}}
+      }
+    },
+    "Glossary": {
+      "allOf": [{"$ref": "#/$defs/meta"}],
+      "type": "object", "required": ["items"],
+      "properties": {"items": {"type": "array", "items": {"type": "object", "required": ["id", "term", "short"],
+        "properties": {"id": {"type": "string"}, "term": {"type": "string"}, "short": {"type": "string"}, "source_url": {"type": ["string", "null"]}}}}}
+    }
+  }
+}

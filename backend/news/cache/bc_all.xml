@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>BC Gov News</title>
+    <link>https://news.gov.bc.ca/</link>
+    <description />
+    <a10:id>http://news.gov.bc.ca/feed</a10:id>
+    <a10:link rel="self" type="application/rss+xml" href="http://news.gov.bc.ca/feed" />
+    <item>
+      <guid isPermaLink="false">uuid:92173dc5-fc3c-405c-a02f-62015b10e747</guid>
+      <link>https://news.gov.bc.ca/releases/2026WLRS0034-001107</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Water, Land and Resource Stewardship</category>
+      <title>Province urges continued water conservation, fall flood preparedness</title>
+      <description>Updated Sept. 21, 2026   Persistent drought means water-conserving efforts vital as communities prepare for seasonal storms</description>
+      <pubDate>Mon, 21 Sep 2026 12:30:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:d4727aed-a383-4a45-ad88-b8ebb507ac31</guid>
+      <link>https://news.gov.bc.ca/releases/2026HLTH0085-001117</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Health</category>
+      <title>RSV vaccines available to seniors in B.C.</title>
+      <description>Seniors with the highest risk of serious illness from RSV will get free vaccine starting next week</description>
+      <pubDate>Tue, 22 Sep 2026 11:45:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:10c68841-7620-4bd4-a120-3bc263a1d588</guid>
+      <link>https://news.gov.bc.ca/releases/2026TT0107-001139</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Transportation and Transit</category>
+      <title>Traffic-pattern changes on Highway 1 at Mount Lehman Road</title>
+      <description>Drivers are advised of westbound off-ramp closures on Highway 1 at Fraser Highway and Mount Lehman Road starting at 9 p.m. on Friday, Nov. 13, 2026.</description>
+      <pubDate>Fri, 13 Nov 2026 14:10:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:6f6a320d-2a40-4487-b6b3-4ea874c55272</guid>
+      <link>https://news.gov.bc.ca/releases/2026TT0106-001137</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Transportation and Transit</category>
+      <title>People advised to plan for storm, possible flood conditions on South Coast highways</title>
+      <description>Drivers in the South Coast region, including the Lower Mainland, Sunshine Coast, Vancouver Island and Fraser Valley, are advised to prepare for winds, heavy rainfall and possible flooding through the region starting Tuesday, Nov. 10, 2026, and through the rest of the week. </description>
+      <pubDate>Tue, 10 Nov 2026 16:20:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:6e766cf1-4e06-40ca-b314-cde29f7958eb</guid>
+      <link>https://news.gov.bc.ca/releases/2026HMA0091-001136</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Housing and Municipal Affairs</category>
+      <title>Shelter spaces opening for people in need during winter weather</title>
+      <description>As of Nov. 1, 2026, the Province, through BC Housing, has 6,588 shelter spaces available for people in 63 communities throughout the province.</description>
+      <pubDate>Tue, 10 Nov 2026 14:00:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:25534323-ea66-4954-b361-b13adbb7e585</guid>
+      <link>https://news.gov.bc.ca/releases/2026PSSG0075-001134</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Public Safety and Solicitor General</category>
+      <title>BC Coroners Service investigating 133 deaths from drug toxicity in September</title>
+      <description>According to preliminary data, 133 people died in September 2026 due to suspected unregulated drug toxicity, as reported by the BC Coroners Service.</description>
+      <pubDate>Tue, 10 Nov 2026 10:30:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:b9a353b4-8f3e-4492-95e5-d31d7a146a11</guid>
+      <link>https://news.gov.bc.ca/releases/2026PSSG0074-001132</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Public Safety and Solicitor General</category>
+      <title>BC Coroners Service announces inquest dates into death of Chase de Balinhard</title>
+      <description>A coroner’s inquest has been scheduled to examine the circumstances surrounding the death of Chase de Balinhard.</description>
+      <pubDate>Wed, 28 Oct 2026 20:22:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:1a448ca1-393f-4166-82ed-88010c23d446</guid>
+      <link>https://news.gov.bc.ca/releases/2026TT0105-001130</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Transportation and Transit</category>
+      <title>Ramp closures needed on Highway 1 at Mount Lehman Road</title>
+      <description>Beginning at 9 p.m. on Friday, Oct. 23, 2026, the westbound Highway 1 off-ramps to Fraser Highway and Mount Lehman Road will be closed until 7 a.m. on Saturday, Oct. 24.</description>
+      <pubDate>Thu, 22 Oct 2026 15:40:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:47571393-1f56-44ff-99b0-dc1e70929435</guid>
+      <link>https://news.gov.bc.ca/releases/2026PSSG0071-001124</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Public Safety and Solicitor General</category>
+      <title>BC Coroners Service releases July, August drug-toxicity death findings</title>
+      <description>Preliminary reporting by the BC Coroners Service (BCCS) shows that 113 people died in July, and 126 people in August 2026, due to unregulated drug toxicity.</description>
+      <pubDate>Wed, 14 Oct 2026 10:15:00 -0700</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">uuid:c053eb61-f7ee-4570-adad-c93956cbdbad</guid>
+      <link>https://news.gov.bc.ca/releases/2026TT0104-001125</link>
+      <a10:author>
+        <a10:name>Province of BC</a10:name>
+      </a10:author>
+      <category>Transportation and Transit</category>
+      <title>Allenby Road in Duncan closure extended till spring 2027</title>
+      <description>Drivers, residents and local businesses are advised that the closure on Allenby Road, from just past Boys Road to Miller Road in Duncan, has been extended until spring 2027.</description>
+      <pubDate>Tue, 13 Oct 2026 08:40:00 -0700</pubDate>
+    </item>
+  </channel>
+</rss>

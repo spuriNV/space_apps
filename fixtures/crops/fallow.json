@@ -1,0 +1,268 @@
+{
+ "_fixture": true,
+ "id": "fallow",
+ "name": "Fallow / bare",
+ "family": "none",
+ "role": [
+  "fallow"
+ ],
+ "legume": false,
+ "root": "none",
+ "kc": {
+  "ini": {
+   "value": 0.0,
+   "unit": "Kc",
+   "low": 0.0,
+   "high": 0.0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   }
+  },
+  "mid": {
+   "value": 0.0,
+   "unit": "Kc",
+   "low": 0.0,
+   "high": 0.0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   }
+  },
+  "end": {
+   "value": 0.0,
+   "unit": "Kc",
+   "low": 0.0,
+   "high": 0.0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   }
+  }
+ },
+ "stage_lengths_days": {
+  "ini": 0,
+  "dev": 0,
+  "mid": 0,
+  "late": 0,
+  "source": "assumed placeholder (U)"
+ },
+ "cover_by_stage": {
+  "ini": 0.0,
+  "dev": 0.0,
+  "mid": 0.0,
+  "late": 0.0
+ },
+ "ratings_0_4": {
+  "erosion_reduction": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "soil_builder": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "lasting_residue": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "nitrogen_fixation": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "nitrogen_scavenging": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "compaction_reduction": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "forage_harvest_value": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "weed_suppression": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "tolerance_flood": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "tolerance_drought": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  }
+ },
+ "yield_range": {
+  "value": 0,
+  "unit": "kg/ha",
+  "low": 0.0,
+  "high": 0.0,
+  "method": "assumed",
+  "source": {
+   "id": "fixture_placeholder",
+   "title": "Fixture placeholder (not a measurement)",
+   "url": "urn:fieldshift:fixture-placeholder",
+   "accessed": "2026-11-14",
+   "verified": false
+  }
+ },
+ "drainage_classes_ok": [
+  "well",
+  "moderately well",
+  "somewhat poor"
+ ],
+ "seeding_window": {
+  "start": "01-01",
+  "end": "12-31",
+  "best": "placeholder",
+  "verified": false
+ },
+ "pest_notes": [],
+ "cautions": [],
+ "seed_cost_per_ha": {
+  "value": 0,
+  "unit": "USD/ha",
+  "low": 0.0,
+  "high": 0.0,
+  "method": "assumed",
+  "source": {
+   "id": "fixture_placeholder",
+   "title": "Fixture placeholder (not a measurement)",
+   "url": "urn:fieldshift:fixture-placeholder",
+   "accessed": "2026-11-14",
+   "verified": false
+  }
+ },
+ "explainer_card": null,
+ "sources": [
+  {
+   "id": "fixture_placeholder",
+   "url": "urn:fieldshift:fixture-placeholder"
+  }
+ ]
+}

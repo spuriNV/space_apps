@@ -1,0 +1,56 @@
+[
+  {
+    "date": "2022-10-03",
+    "title": "A Rough Year for Rice in California - NASA Science",
+    "source": "science.nasa.gov",
+    "url": "https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/",
+    "rank": 1,
+    "place_match": [
+      "Sacramento Valley"
+    ],
+    "query_id": "car_2022_drought",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "spec_cited_page",
+    "_publisher_url": "https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/"
+  },
+  {
+    "date": "2022-05-15",
+    "title": "Rice is Sacramento Valley’s gift to the world. Can it withstand California’s epic drought?",
+    "source": "Sacramento Bee",
+    "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNVmdydlM5TTJRck05c0VqZWhOTEptX2NHbUFzcHRPVDRGSUpsb1JlVjllTkUxQnZTZGdpYkhMa19rLXVJZ2lRYUQ1aU1SWjU5dVdzZ3V0Nkx2Sm8wUi1XcVZkVHFmYmloMGszVk5rV0szMnJQNnVZdGFlTHRxM2F1N1hfYkvSAYQBQVVfeXFMUEQyOUlOTmFOeFFodFRZR2dJRHFDcDlINGpFNVhQSUthc0pITlZPd0pJUnUwX3BZTVpPZklaQTJrdlNLSVhJa1pxNkF4YVVWZGdSSGN1UkJzblJaWUZyemtsQjN2TVZoVVlpM1g0NjRzV3BFMG1MM2hzUy1PekVHcEp1dEY1?oc=5",
+    "rank": 3,
+    "place_match": [
+      "Sacramento Valley"
+    ],
+    "query_id": "car_2022_drought",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "google_news",
+    "_publisher_url": "https://www.sacbee.com"
+  },
+  {
+    "date": "2022-05-23",
+    "title": "‘Everyone loses’: Sacramento Valley struggles to survive unprecedented water cuts",
+    "source": "CalMatters",
+    "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQSExjbEpKM2FEejlZQXROcVdOSlNvQTRtQXBXRGNsakJoUnZSMHJ3YlBOQ3NNNXhsTmI4Y054RnpPSUpiVkVsT09VTFhnZDIxMk9IQnhzWFJkeWdzYnJPZjJTcjJnb2FfLTFpZEZtbk5SaGFjWmxGLVpyc2xsNjFjSg?oc=5",
+    "rank": 3,
+    "place_match": [
+      "Sacramento Valley"
+    ],
+    "query_id": "car_2022_drought",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "google_news",
+    "_publisher_url": "https://calmatters.org"
+  }
+]

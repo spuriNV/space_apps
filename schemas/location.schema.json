@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldshift.local/schemas/location.schema.json",
+  "title": "Location",
+  "type": "object",
+  "required": ["id", "name", "region_adapter", "regime", "state_fips", "county_fips", "geometry", "centroid", "area_ha", "crs_working", "soil", "terrain", "water", "market_preference", "stations", "regional_cell", "datasets", "crop_history", "observed_cover", "events"],
+  "$defs": {
+    "sn": {"$ref": "sourced_number.schema.json"},
+    "polygon": {
+      "type": "object", "required": ["type", "coordinates"],
+      "properties": {"type": {"enum": ["Polygon", "MultiPolygon"]}, "coordinates": {"type": "array"}}
+    }
+  },
+  "properties": {
+    "id": {"enum": ["car_colusa_rice", "caf_tulare_forage"]},
+    "name": {"type": "string"},
+    "region_adapter": {"enum": ["ca", "bc"]},
+    "regime": {"type": "string"},
+    "state_fips": {"type": "string"},
+    "county_fips": {"type": "string"},
+    "geometry": {"$ref": "#/$defs/polygon"},
+    "centroid": {"type": "object", "required": ["lon", "lat"], "properties": {"lon": {"type": "number"}, "lat": {"type": "number"}}},
+    "area_ha": {"$ref": "#/$defs/sn"},
+    "crs_working": {"const": "EPSG:32610"},
+    "soil": {
+      "type": "object",
+      "required": ["mukey", "muname", "drainage_class", "hydrologic_group", "awc_mm_per_m", "om_pct", "texture_class", "source"],
+      "properties": {
+        "mukey": {"type": "string"}, "muname": {"type": "string"}, "drainage_class": {"type": "string"},
+        "hydrologic_group": {"type": "string"}, "awc_mm_per_m": {"$ref": "#/$defs/sn"}, "om_pct": {"$ref": "#/$defs/sn"},
+        "texture_class": {"type": "string"},
+        "source": {"type": "object", "required": ["id", "url", "verified"], "properties": {"id": {"type": "string"}, "url": {"type": "string"}, "verified": {"type": "boolean"}}}
+      }
+    },
+    "terrain": {
+      "type": "object", "required": ["slope_mean_pct", "slope_p90_pct", "elev_m", "low_spot_fraction"],
+      "additionalProperties": {"$ref": "#/$defs/sn"}
+    },
+    "water": {
+      "type": "object", "required": ["source", "allocation_input", "district", "sgma_subbasin", "sgma_status", "cdec_stations"],
+      "properties": {
+        "source": {"enum": ["surface", "groundwater", "mixed"]},
+        "allocation_input": {"type": "object", "required": ["unit", "value"], "properties": {"unit": {"const": "acre-ft/acre"}, "value": {"type": ["number", "null"]}}},
+        "district": {"type": "string"},
+        "sgma_subbasin": {"type": "string"},
+        "sgma_status": {"type": "object", "required": ["text", "url", "verified"], "properties": {"text": {"type": "string"}, "url": {"type": ["string", "null"]}, "verified": {"type": "boolean"}}},
+        "cdec_stations": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "market_preference": {"enum": ["sell", "feed_own_herd", "no_preference"]},
+    "stations": {
+      "type": "array",
+      "items": {"type": "object", "required": ["network", "id"],
+        "properties": {"network": {"enum": ["CIMIS", "NOAA"]}, "id": {"type": ["integer", "string"]}, "name": {"type": "string"},
+          "distance_km": {"type": ["number", "null"]}, "years": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}}}
+    },
+    "regional_cell": {
+      "type": "object", "required": ["grid", "row", "col", "footprint"],
+      "properties": {"grid": {"const": "EASE2_G9km"}, "row": {"type": "integer"}, "col": {"type": "integer"}, "footprint": {"$ref": "#/$defs/polygon"}}
+    },
+    "datasets": {
+      "type": "object",
+      "description": "Per-dataset metadata ({status, meta_path, ...}); keys per spec B3.",
+      "propertyNames": {"enum": ["power", "imerg", "smap_l3", "smap_l4", "hls", "s2", "modis", "ecostress", "grace", "dem", "cdl", "openet", "cimis", "cdec", "dwr_wells", "rma", "usdm", "news"]},
+      "additionalProperties": {"type": "object"}
+    },
+    "crop_history": {"type": "object", "patternProperties": {"^\\d{4}$": {"type": "string"}}, "additionalProperties": false},
+    "observed_cover": {
+      "type": "object", "required": ["typically_bare_doy_ranges", "years_used", "detector"],
+      "properties": {
+        "typically_bare_doy_ranges": {"type": "array", "items": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}},
+        "bare_doy_file": {"type": ["string", "null"]},
+        "years_used": {"type": "array", "items": {"type": "integer"}},
+        "detector": {"type": "string"}
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {"type": "object", "required": ["date", "type", "title", "url", "verified"],
+        "properties": {"date": {"type": "string"}, "type": {"type": "string"}, "title": {"type": "string"}, "url": {"type": ["string", "null"]}, "verified": {"type": "boolean"}, "note": {"type": "string"}}}
+    }
+  }
+}

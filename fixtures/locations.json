@@ -1,0 +1,662 @@
+{
+ "_fixture": true,
+ "items": [
+  {
+   "id": "car_colusa_rice",
+   "name": "Colusa County rice check (example)",
+   "region_adapter": "ca",
+   "regime": "drought_then_flood",
+   "state_fips": "06",
+   "county_fips": "011",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -122.104483,
+       39.146524
+      ],
+      [
+       -122.095517,
+       39.146524
+      ],
+      [
+       -122.095517,
+       39.153476
+      ],
+      [
+       -122.104483,
+       39.153476
+      ],
+      [
+       -122.104483,
+       39.146524
+      ]
+     ]
+    ]
+   },
+   "centroid": {
+    "lon": -122.1,
+    "lat": 39.15
+   },
+   "area_ha": {
+    "value": 60,
+    "unit": "ha",
+    "low": 51.0,
+    "high": 69.0,
+    "method": "assumed",
+    "source": {
+     "id": "fixture_placeholder",
+     "title": "Fixture placeholder (not a measurement)",
+     "url": "urn:fieldshift:fixture-placeholder",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "spec B1 field size (U); polygon here is a placeholder square"
+   },
+   "crs_working": "EPSG:32610",
+   "soil": {
+    "mukey": "fixture",
+    "muname": "[fixture] placeholder map unit",
+    "drainage_class": "somewhat poorly drained",
+    "hydrologic_group": "D",
+    "awc_mm_per_m": {
+     "value": 140,
+     "unit": "mm/m",
+     "low": 119.0,
+     "high": 161.0,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "om_pct": {
+     "value": 1.8,
+     "unit": "%",
+     "low": 1.53,
+     "high": 2.07,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "texture_class": "clay loam",
+    "source": {
+     "id": "ssurgo_sda",
+     "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+     "verified": true
+    }
+   },
+   "terrain": {
+    "slope_mean_pct": {
+     "value": 0.1,
+     "unit": "%",
+     "low": 0.085,
+     "high": 0.115,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "slope_p90_pct": {
+     "value": 0.3,
+     "unit": "%",
+     "low": 0.255,
+     "high": 0.345,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "elev_m": {
+     "value": 20,
+     "unit": "m",
+     "low": 17.0,
+     "high": 23.0,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "low_spot_fraction": {
+     "value": 0.04,
+     "unit": "fraction",
+     "low": 0.034,
+     "high": 0.046,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    }
+   },
+   "water": {
+    "source": "surface",
+    "allocation_input": {
+     "unit": "acre-ft/acre",
+     "value": null
+    },
+    "district": "Glenn-Colusa ID (U)",
+    "sgma_subbasin": "Colusa",
+    "sgma_status": {
+     "text": "SGMA Colusa Subbasin, medium priority (U)",
+     "url": null,
+     "verified": false
+    },
+    "cdec_stations": [
+     "SHA",
+     "ORO"
+    ]
+   },
+   "market_preference": "sell",
+   "stations": [
+    {
+     "network": "CIMIS",
+     "id": 250,
+     "name": "Williams",
+     "distance_km": 8,
+     "years": [
+      2016,
+      2026
+     ]
+    },
+    {
+     "network": "NOAA",
+     "id": "U-station-id-tbd",
+     "name": "Colusa/Williams (U)",
+     "distance_km": null,
+     "years": [
+      2016,
+      2026
+     ]
+    }
+   ],
+   "regional_cell": {
+    "grid": "EASE2_G9km",
+    "row": 0,
+    "col": 0,
+    "footprint": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -122.152127,
+        39.109576
+       ],
+       [
+        -122.047873,
+        39.109576
+       ],
+       [
+        -122.047873,
+        39.190424
+       ],
+       [
+        -122.152127,
+        39.190424
+       ],
+       [
+        -122.152127,
+        39.109576
+       ]
+      ]
+     ]
+    }
+   },
+   "datasets": {
+    "power": {
+     "status": "fixture"
+    },
+    "imerg": {
+     "status": "fixture"
+    },
+    "smap_l3": {
+     "status": "fixture"
+    },
+    "smap_l4": {
+     "status": "fixture"
+    },
+    "hls": {
+     "status": "fixture"
+    },
+    "s2": {
+     "status": "fixture"
+    },
+    "modis": {
+     "status": "fixture"
+    },
+    "ecostress": {
+     "status": "fixture"
+    },
+    "grace": {
+     "status": "fixture"
+    },
+    "dem": {
+     "status": "fixture"
+    },
+    "cdl": {
+     "status": "fixture"
+    },
+    "openet": {
+     "status": "fixture"
+    },
+    "cimis": {
+     "status": "fixture"
+    },
+    "cdec": {
+     "status": "fixture"
+    },
+    "dwr_wells": {
+     "status": "fixture"
+    },
+    "rma": {
+     "status": "fixture"
+    },
+    "usdm": {
+     "status": "fixture"
+    },
+    "news": {
+     "status": "fixture"
+    }
+   },
+   "crop_history": {
+    "2019": "Rice",
+    "2020": "Rice",
+    "2021": "Rice",
+    "2022": "Fallow/Idle",
+    "2023": "Rice",
+    "2024": "Rice"
+   },
+   "observed_cover": {
+    "typically_bare_doy_ranges": [
+     [
+      290,
+      110
+     ]
+    ],
+    "bare_doy_file": null,
+    "years_used": [
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025
+    ],
+    "detector": "consensus"
+   },
+   "events": [
+    {
+     "date": "2022-05-01",
+     "type": "drought_fallow",
+     "title": "Sacramento Valley rice acreage roughly halved",
+     "url": "https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/",
+     "verified": true
+    },
+    {
+     "date": "2023-01-09",
+     "type": "atmospheric_river",
+     "title": "Jan-Mar 2023 atmospheric rivers (start date placeholder)",
+     "url": null,
+     "verified": false
+    }
+   ]
+  },
+  {
+   "id": "caf_tulare_forage",
+   "name": "Tulare/Kings forage-for-dairy check (example)",
+   "region_adapter": "ca",
+   "regime": "drought_then_flood",
+   "state_fips": "06",
+   "county_fips": "031",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -119.60315,
+       36.197458
+      ],
+      [
+       -119.59685,
+       36.197458
+      ],
+      [
+       -119.59685,
+       36.202542
+      ],
+      [
+       -119.60315,
+       36.202542
+      ],
+      [
+       -119.60315,
+       36.197458
+      ]
+     ]
+    ]
+   },
+   "centroid": {
+    "lon": -119.6,
+    "lat": 36.2
+   },
+   "area_ha": {
+    "value": 32,
+    "unit": "ha",
+    "low": 27.2,
+    "high": 36.8,
+    "method": "assumed",
+    "source": {
+     "id": "fixture_placeholder",
+     "title": "Fixture placeholder (not a measurement)",
+     "url": "urn:fieldshift:fixture-placeholder",
+     "accessed": "2026-11-14",
+     "verified": false
+    },
+    "note": "spec B1 field size (U); polygon here is a placeholder square"
+   },
+   "crs_working": "EPSG:32610",
+   "soil": {
+    "mukey": "fixture",
+    "muname": "[fixture] placeholder map unit",
+    "drainage_class": "well drained",
+    "hydrologic_group": "B",
+    "awc_mm_per_m": {
+     "value": 150,
+     "unit": "mm/m",
+     "low": 127.5,
+     "high": 172.5,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "om_pct": {
+     "value": 1.2,
+     "unit": "%",
+     "low": 1.02,
+     "high": 1.38,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "texture_class": "loam",
+    "source": {
+     "id": "ssurgo_sda",
+     "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+     "verified": true
+    }
+   },
+   "terrain": {
+    "slope_mean_pct": {
+     "value": 0.3,
+     "unit": "%",
+     "low": 0.255,
+     "high": 0.345,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "slope_p90_pct": {
+     "value": 0.3,
+     "unit": "%",
+     "low": 0.255,
+     "high": 0.345,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "elev_m": {
+     "value": 62,
+     "unit": "m",
+     "low": 52.7,
+     "high": 71.3,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "low_spot_fraction": {
+     "value": 0.04,
+     "unit": "fraction",
+     "low": 0.034,
+     "high": 0.046,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    }
+   },
+   "water": {
+    "source": "groundwater",
+    "allocation_input": {
+     "unit": "acre-ft/acre",
+     "value": null
+    },
+    "district": "Tulare Lake Subbasin GSA (U)",
+    "sgma_subbasin": "Tulare Lake",
+    "sgma_status": {
+     "text": "SGMA Tulare Lake Subbasin placed on probation 16 Apr 2024 (spec marks V; URL not in spec)",
+     "url": null,
+     "verified": false
+    },
+    "cdec_stations": [
+     "PNF"
+    ]
+   },
+   "market_preference": "feed_own_herd",
+   "stations": [
+    {
+     "network": "CIMIS",
+     "id": 15,
+     "name": "Stratford (U)",
+     "distance_km": null,
+     "years": [
+      2016,
+      2026
+     ]
+    },
+    {
+     "network": "NOAA",
+     "id": "U-station-id-tbd",
+     "name": "Hanford (U)",
+     "distance_km": null,
+     "years": [
+      2016,
+      2026
+     ]
+    }
+   ],
+   "regional_cell": {
+    "grid": "EASE2_G9km",
+    "row": 0,
+    "col": 0,
+    "footprint": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -119.650094,
+        36.159576
+       ],
+       [
+        -119.549906,
+        36.159576
+       ],
+       [
+        -119.549906,
+        36.240424
+       ],
+       [
+        -119.650094,
+        36.240424
+       ],
+       [
+        -119.650094,
+        36.159576
+       ]
+      ]
+     ]
+    }
+   },
+   "datasets": {
+    "power": {
+     "status": "fixture"
+    },
+    "imerg": {
+     "status": "fixture"
+    },
+    "smap_l3": {
+     "status": "fixture"
+    },
+    "smap_l4": {
+     "status": "fixture"
+    },
+    "hls": {
+     "status": "fixture"
+    },
+    "s2": {
+     "status": "fixture"
+    },
+    "modis": {
+     "status": "fixture"
+    },
+    "ecostress": {
+     "status": "fixture"
+    },
+    "grace": {
+     "status": "fixture"
+    },
+    "dem": {
+     "status": "fixture"
+    },
+    "cdl": {
+     "status": "fixture"
+    },
+    "openet": {
+     "status": "fixture"
+    },
+    "cimis": {
+     "status": "fixture"
+    },
+    "cdec": {
+     "status": "fixture"
+    },
+    "dwr_wells": {
+     "status": "fixture"
+    },
+    "rma": {
+     "status": "fixture"
+    },
+    "usdm": {
+     "status": "fixture"
+    },
+    "news": {
+     "status": "fixture"
+    }
+   },
+   "crop_history": {
+    "2019": "Alfalfa",
+    "2020": "Alfalfa",
+    "2021": "Alfalfa",
+    "2022": "Corn",
+    "2023": "Fallow/Idle",
+    "2024": "Alfalfa"
+   },
+   "observed_cover": {
+    "typically_bare_doy_ranges": [
+     [
+      300,
+      60
+     ]
+    ],
+    "bare_doy_file": null,
+    "years_used": [
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025
+    ],
+    "detector": "consensus"
+   },
+   "events": [
+    {
+     "date": "2023-03-15",
+     "type": "flood",
+     "title": "Spring 2023 Tulare Lake re-flooding (~114,000 acres peak); date is a placeholder",
+     "url": null,
+     "verified": false,
+     "note": "spec marks the event V (news) but gives no URL"
+    },
+    {
+     "date": "2024-04-16",
+     "type": "sgma_probation",
+     "title": "Tulare Lake Subbasin placed on SGMA probation",
+     "url": null,
+     "verified": false,
+     "note": "spec marks V but gives no URL"
+    }
+   ]
+  }
+ ]
+}

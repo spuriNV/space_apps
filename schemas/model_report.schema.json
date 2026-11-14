@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldshift.local/schemas/model_report.schema.json",
+  "title": "ModelReport",
+  "type": "object",
+  "required": ["id", "task", "method", "features", "labels", "split", "metrics", "disagreement_with"],
+  "properties": {
+    "id": {"type": "string"},
+    "task": {"enum": ["bare_cover", "transition", "stress_anomaly"]},
+    "method": {"enum": ["rule_ndvi", "random_forest", "hist_gbt", "zscore", "isolation_forest"]},
+    "features": {"type": "array", "items": {"type": "string"}},
+    "labels": {"type": "string"},
+    "split": {
+      "type": "object",
+      "required": ["train_years", "test_years"],
+      "properties": {
+        "train_years": {"type": "array", "items": {"type": "integer"}},
+        "test_years": {"type": "array", "items": {"type": "integer"}}
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Model outputs; plain numbers (or SourcedNumber). Spec shows plain numbers.",
+      "additionalProperties": {"anyOf": [{"type": ["number", "null"]}, {"$ref": "sourced_number.schema.json"}]}
+    },
+    "confusion": {"type": "array", "items": {"type": "array", "items": {"type": "number"}}},
+    "feature_importance": {
+      "type": "array",
+      "items": {"type": "object", "required": ["feature", "importance"],
+        "properties": {"feature": {"type": "string"}, "importance": {"type": "number"}}}
+    },
+    "disagreement_with": {"type": "object", "additionalProperties": {"type": "number"}},
+    "notes": {"type": "string"}
+  }
+}

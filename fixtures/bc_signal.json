@@ -1,0 +1,229 @@
+{
+ "_fixture": true,
+ "point": {
+  "lon": -119.33,
+  "lat": 50.62
+ },
+ "markers": [
+  {
+   "date": "2023-06-15",
+   "title": "Irrigators' request (mid-June; exact date placeholder)",
+   "approximate": true,
+   "lead_days": null,
+   "url": null
+  },
+  {
+   "date": "2023-08-16",
+   "title": "Fish population protection order",
+   "approximate": false,
+   "lead_days": null,
+   "url": null
+  }
+ ],
+ "series": [
+  {
+   "date": "2023-03-01",
+   "smap_pct": 60.0,
+   "grace_gw_pct": 45.0,
+   "power_tmax_c": 5.0
+  },
+  {
+   "date": "2023-03-08",
+   "smap_pct": 58.6,
+   "grace_gw_pct": 44.6,
+   "power_tmax_c": 7.0
+  },
+  {
+   "date": "2023-03-15",
+   "smap_pct": 57.2,
+   "grace_gw_pct": 44.2,
+   "power_tmax_c": 9.0
+  },
+  {
+   "date": "2023-03-22",
+   "smap_pct": 55.8,
+   "grace_gw_pct": 43.8,
+   "power_tmax_c": 11.0
+  },
+  {
+   "date": "2023-03-29",
+   "smap_pct": 54.4,
+   "grace_gw_pct": 43.4,
+   "power_tmax_c": 12.9
+  },
+  {
+   "date": "2023-04-05",
+   "smap_pct": 53.0,
+   "grace_gw_pct": 43.0,
+   "power_tmax_c": 14.8
+  },
+  {
+   "date": "2023-04-12",
+   "smap_pct": 51.6,
+   "grace_gw_pct": 42.6,
+   "power_tmax_c": 16.6
+  },
+  {
+   "date": "2023-04-19",
+   "smap_pct": 50.2,
+   "grace_gw_pct": 42.2,
+   "power_tmax_c": 18.3
+  },
+  {
+   "date": "2023-04-26",
+   "smap_pct": 48.8,
+   "grace_gw_pct": 41.8,
+   "power_tmax_c": 19.8
+  },
+  {
+   "date": "2023-05-03",
+   "smap_pct": 47.4,
+   "grace_gw_pct": 41.4,
+   "power_tmax_c": 21.3
+  },
+  {
+   "date": "2023-05-10",
+   "smap_pct": 46.0,
+   "grace_gw_pct": 41.0,
+   "power_tmax_c": 22.6
+  },
+  {
+   "date": "2023-05-17",
+   "smap_pct": 44.6,
+   "grace_gw_pct": 40.6,
+   "power_tmax_c": 23.7
+  },
+  {
+   "date": "2023-05-24",
+   "smap_pct": 43.2,
+   "grace_gw_pct": 40.2,
+   "power_tmax_c": 24.7
+  },
+  {
+   "date": "2023-05-31",
+   "smap_pct": 41.8,
+   "grace_gw_pct": 39.8,
+   "power_tmax_c": 25.5
+  },
+  {
+   "date": "2023-06-07",
+   "smap_pct": 40.4,
+   "grace_gw_pct": 39.4,
+   "power_tmax_c": 26.2
+  },
+  {
+   "date": "2023-06-14",
+   "smap_pct": 39.0,
+   "grace_gw_pct": 39.0,
+   "power_tmax_c": 26.6
+  },
+  {
+   "date": "2023-06-21",
+   "smap_pct": 37.6,
+   "grace_gw_pct": 38.6,
+   "power_tmax_c": 26.9
+  },
+  {
+   "date": "2023-06-28",
+   "smap_pct": 36.2,
+   "grace_gw_pct": 38.2,
+   "power_tmax_c": 27.0
+  },
+  {
+   "date": "2023-07-05",
+   "smap_pct": 34.8,
+   "grace_gw_pct": 37.8,
+   "power_tmax_c": 26.9
+  },
+  {
+   "date": "2023-07-12",
+   "smap_pct": 33.4,
+   "grace_gw_pct": 37.4,
+   "power_tmax_c": 26.6
+  },
+  {
+   "date": "2023-07-19",
+   "smap_pct": 32.0,
+   "grace_gw_pct": 37.0,
+   "power_tmax_c": 26.2
+  },
+  {
+   "date": "2023-07-26",
+   "smap_pct": 30.6,
+   "grace_gw_pct": 36.6,
+   "power_tmax_c": 25.5
+  },
+  {
+   "date": "2023-08-02",
+   "smap_pct": 29.2,
+   "grace_gw_pct": 36.2,
+   "power_tmax_c": 24.7
+  },
+  {
+   "date": "2023-08-09",
+   "smap_pct": 27.8,
+   "grace_gw_pct": 35.8,
+   "power_tmax_c": 23.7
+  },
+  {
+   "date": "2023-08-16",
+   "smap_pct": 26.4,
+   "grace_gw_pct": 35.4,
+   "power_tmax_c": 22.6
+  },
+  {
+   "date": "2023-08-23",
+   "smap_pct": 25.0,
+   "grace_gw_pct": 35.0,
+   "power_tmax_c": 21.3
+  },
+  {
+   "date": "2023-08-30",
+   "smap_pct": 23.6,
+   "grace_gw_pct": 34.6,
+   "power_tmax_c": 19.8
+  },
+  {
+   "date": "2023-09-06",
+   "smap_pct": 22.2,
+   "grace_gw_pct": 34.2,
+   "power_tmax_c": 18.3
+  },
+  {
+   "date": "2023-09-13",
+   "smap_pct": 20.8,
+   "grace_gw_pct": 33.8,
+   "power_tmax_c": 16.6
+  },
+  {
+   "date": "2023-09-20",
+   "smap_pct": 19.4,
+   "grace_gw_pct": 33.4,
+   "power_tmax_c": 14.8
+  },
+  {
+   "date": "2023-09-27",
+   "smap_pct": 18.0,
+   "grace_gw_pct": 33.0,
+   "power_tmax_c": 12.9
+  },
+  {
+   "date": "2023-10-04",
+   "smap_pct": 16.6,
+   "grace_gw_pct": 32.6,
+   "power_tmax_c": 11.0
+  },
+  {
+   "date": "2023-10-11",
+   "smap_pct": 15.2,
+   "grace_gw_pct": 32.2,
+   "power_tmax_c": 9.0
+  },
+  {
+   "date": "2023-10-18",
+   "smap_pct": 13.8,
+   "grace_gw_pct": 31.8,
+   "power_tmax_c": 7.0
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+[project]
+name = "field-shift-news"
+version = "0.1.0"
+description = "News timeline cache for Field Shift (spec B9)"
+requires-python = ">=3.12,<3.13"
+dependencies = ["httpx>=0.27"]
+
+[tool.uv]
+package = false

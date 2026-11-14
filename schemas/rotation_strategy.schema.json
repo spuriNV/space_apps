@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldshift.local/schemas/rotation_strategy.schema.json",
+  "title": "RotationStrategy",
+  "type": "object",
+  "required": ["id", "location_id", "name", "is_baseline", "cycle_years", "calendar", "allocation_rule", "exposure", "water", "scores", "composite", "risk_profile", "funding", "brief", "uncertainty"],
+  "$defs": {
+    "sn": {"$ref": "sourced_number.schema.json"},
+    "snmap": {"type": "object", "additionalProperties": {"$ref": "sourced_number.schema.json"}}
+  },
+  "properties": {
+    "id": {"type": "string"},
+    "location_id": {"enum": ["car_colusa_rice", "caf_tulare_forage"]},
+    "name": {"type": "string"},
+    "is_baseline": {"type": "boolean"},
+    "cycle_years": {"type": "integer", "minimum": 1},
+    "calendar": {
+      "type": "array", "minItems": 1,
+      "items": {"type": "object", "required": ["year", "crop_id", "role", "timing_source"],
+        "properties": {
+          "year": {"type": "integer", "minimum": 1}, "crop_id": {"type": "string"},
+          "plant": {"type": ["string", "null"], "pattern": "^\\d\\d-\\d\\d$"},
+          "harvest": {"type": ["string", "null"], "pattern": "^\\d\\d-\\d\\d$"},
+          "terminate": {"type": ["string", "null"], "pattern": "^\\d\\d-\\d\\d$"},
+          "harvest_year_offset": {"type": "integer", "description": "extension: 1 if harvest/terminate falls in the next calendar year"},
+          "role": {"type": "string"}, "timing_source": {"type": "string"}
+        }}
+    },
+    "allocation_rule": {"type": ["string", "null"], "description": "free text rule, e.g. 'applies when allocation < 50%'; null if none"},
+    "exposure": {
+      "type": "object",
+      "required": ["bare_days_per_year", "exposed_rain_days", "exposed_frost_days", "exposed_heat_days", "exposed_dry_days", "replay", "scenario"],
+      "properties": {
+        "bare_days_per_year": {"$ref": "#/$defs/sn"}, "exposed_rain_days": {"$ref": "#/$defs/sn"},
+        "exposed_frost_days": {"$ref": "#/$defs/sn"}, "exposed_heat_days": {"$ref": "#/$defs/sn"}, "exposed_dry_days": {"$ref": "#/$defs/sn"},
+        "replay": {"type": "object", "description": "keyed by year string; each value a map of the exposure SourcedNumbers", "patternProperties": {"^\\d{4}$": {"$ref": "#/$defs/snmap"}}, "additionalProperties": false},
+        "scenario": {"type": "object", "required": ["dT_c", "dP_pct"], "properties": {"dT_c": {"type": "number"}, "dP_pct": {"type": "number"}}}
+      }
+    },
+    "water": {
+      "type": "object", "required": ["etc_mm_season", "irrigation_need_mm", "etc_by_month_mm", "openet_et_mm_season", "etc_vs_openet_pct"],
+      "properties": {
+        "etc_mm_season": {"$ref": "#/$defs/sn"}, "irrigation_need_mm": {"$ref": "#/$defs/sn"},
+        "etc_by_month_mm": {"type": "array", "minItems": 12, "maxItems": 12, "items": {"$ref": "#/$defs/sn"}},
+        "openet_et_mm_season": {"$ref": "#/$defs/sn"}, "etc_vs_openet_pct": {"$ref": "#/$defs/sn"}
+      }
+    },
+    "scores": {
+      "type": "object",
+      "required": ["water_use", "forage_value", "n_fixation", "erosion", "organic_matter", "market", "pest_break", "infiltration", "n_scavenging", "income"],
+      "additionalProperties": {"$ref": "#/$defs/sn"}
+    },
+    "composite": {
+      "type": "object", "required": ["value", "low", "high", "weights_used"],
+      "properties": {"value": {"type": "number"}, "low": {"type": "number"}, "high": {"type": "number"},
+        "weights_used": {"type": "object", "additionalProperties": {"type": "number", "minimum": 0, "maximum": 4}}}
+    },
+    "risk_profile": {
+      "type": "object", "required": ["rma_share_drought", "rma_share_excess_moisture", "rma_years"],
+      "properties": {"rma_share_drought": {"$ref": "#/$defs/sn"}, "rma_share_excess_moisture": {"$ref": "#/$defs/sn"},
+        "rma_share_heat": {"$ref": "#/$defs/sn"}, "rma_share_other": {"$ref": "#/$defs/sn"},
+        "rma_years": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}}
+    },
+    "funding": {
+      "type": "array",
+      "items": {"type": "object", "required": ["program", "rate_per_acre_usd", "url", "verified"],
+        "properties": {"program": {"type": "string"}, "rate_per_acre_usd": {"$ref": "#/$defs/sn"}, "url": {"type": "string"}, "verified": {"type": "boolean"}}}
+    },
+    "brief": {
+      "type": "object", "required": ["why", "evidence", "benefits", "gaps", "local_review", "explainer_cards", "llm_report"],
+      "$defs": {"cited": {"type": "object", "required": ["text", "source_ids"], "properties": {"text": {"type": "string"}, "source_ids": {"type": "array", "items": {"type": "string"}}}}},
+      "properties": {
+        "why": {"type": "array", "items": {"type": "object", "required": ["text", "source_ids", "numbers_used", "author", "checked"],
+          "properties": {"text": {"type": "string"}, "source_ids": {"type": "array", "items": {"type": "string"}},
+            "numbers_used": {"type": "array", "items": {"type": "string"}}, "author": {"enum": ["llm", "template"]}, "checked": {"type": "boolean"}}}},
+        "evidence": {"type": "array", "items": {"$ref": "#/properties/brief/$defs/cited"}},
+        "benefits": {"type": "array", "items": {"$ref": "#/properties/brief/$defs/cited"}},
+        "gaps": {"type": "array", "items": {"$ref": "#/properties/brief/$defs/cited"}},
+        "local_review": {"type": "array", "items": {"type": "object", "required": ["item", "severity"], "properties": {"item": {"type": "string"}, "severity": {"enum": ["low", "medium", "high"]}}}},
+        "explainer_cards": {"type": "array", "items": {"type": "string"}},
+        "llm_report": {"type": ["object", "null"], "properties": {"sentences": {"type": "integer"}, "numbers_checked": {"type": "integer"}, "rejected": {"type": "integer"}, "model": {"type": ["string", "null"]}, "cached_at": {"type": ["string", "null"]}}}
+      }
+    },
+    "uncertainty": {
+      "type": "object", "required": ["dataset_disagreement", "scale", "agronomic_gap_count", "detector_disagreement_pct"],
+      "properties": {"dataset_disagreement": {"$ref": "#/$defs/sn"}, "scale": {"$ref": "#/$defs/sn"},
+        "agronomic_gap_count": {"type": "integer"}, "detector_disagreement_pct": {"type": ["number", "null"]}}
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldshift.local/schemas/news_item.schema.json",
+  "title": "NewsItem",
+  "type": "object",
+  "required": ["date", "title", "source", "url", "rank", "place_match", "query_id", "signal"],
+  "properties": {
+    "date": {"type": "string", "format": "date"},
+    "title": {"type": "string"},
+    "source": {"type": "string"},
+    "url": {"type": ["string", "null"]},
+    "rank": {"type": "integer", "minimum": 1},
+    "place_match": {"type": "array", "items": {"type": "string"}},
+    "query_id": {"type": "string"},
+    "signal": {
+      "type": "object",
+      "required": ["dataset", "value_pct", "lead_days"],
+      "properties": {
+        "dataset": {"type": "string"},
+        "value_pct": {"type": ["number", "null"]},
+        "lead_days": {"type": ["integer", "null"], "description": "null until computed (B9): UI shows 'lead time: computing'"}
+      }
+    }
+  }
+}

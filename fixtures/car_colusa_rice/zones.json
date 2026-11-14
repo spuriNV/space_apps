@@ -1,0 +1,204 @@
+{
+ "_fixture": true,
+ "location_id": "car_colusa_rice",
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -122.101695,
+       39.150461
+      ],
+      [
+       -122.100305,
+       39.150461
+      ],
+      [
+       -122.100305,
+       39.151539
+      ],
+      [
+       -122.101695,
+       39.151539
+      ],
+      [
+       -122.101695,
+       39.150461
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "layer": "slope",
+    "meaningful": false,
+    "label": "slope class",
+    "value": {
+     "value": 1.0,
+     "unit": "placeholder",
+     "low": 0.85,
+     "high": 1.15,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    },
+    "note": "levelled field, slope zones not meaningful"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -122.099695,
+       39.148461
+      ],
+      [
+       -122.098305,
+       39.148461
+      ],
+      [
+       -122.098305,
+       39.149539
+      ],
+      [
+       -122.099695,
+       39.149539
+      ],
+      [
+       -122.099695,
+       39.148461
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "layer": "low_spot",
+    "meaningful": true,
+    "label": "low spot (>= 1 m below 300 m focal mean) (U)",
+    "value": {
+     "value": 1.0,
+     "unit": "placeholder",
+     "low": 0.85,
+     "high": 1.15,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    }
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -122.099195,
+       39.150961
+      ],
+      [
+       -122.097805,
+       39.150961
+      ],
+      [
+       -122.097805,
+       39.152039
+      ],
+      [
+       -122.099195,
+       39.152039
+      ],
+      [
+       -122.099195,
+       39.150961
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "layer": "stress_hotspot",
+    "meaningful": true,
+    "label": "stress hotspot (U)",
+    "value": {
+     "value": 1.0,
+     "unit": "placeholder",
+     "low": 0.85,
+     "high": 1.15,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    }
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -122.102195,
+       39.147961
+      ],
+      [
+       -122.100805,
+       39.147961
+      ],
+      [
+       -122.100805,
+       39.149039
+      ],
+      [
+       -122.102195,
+       39.149039
+      ],
+      [
+       -122.102195,
+       39.147961
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "layer": "openet_zone",
+    "meaningful": true,
+    "label": "OpenET within-field ET zone",
+    "value": {
+     "value": 1.0,
+     "unit": "placeholder",
+     "low": 0.85,
+     "high": 1.15,
+     "method": "assumed",
+     "source": {
+      "id": "fixture_placeholder",
+      "title": "Fixture placeholder (not a measurement)",
+      "url": "urn:fieldshift:fixture-placeholder",
+      "accessed": "2026-11-14",
+      "verified": false
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,137 @@
+{
+ "car_colusa_rice": [
+  {
+   "date": "2022-05-01",
+   "title": "A Rough Year for Rice in California",
+   "source": "NASA Earth Observatory",
+   "url": "https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/",
+   "rank": 1,
+   "place_match": [
+    "Sacramento Valley",
+    "Colusa"
+   ],
+   "query_id": "car_2022_drought",
+   "verified": true,
+   "date_note": "event date from spec; publication date to confirm",
+   "signal": {
+    "dataset": "smap_l4",
+    "label": "SMAP root-zone soil moisture",
+    "value_pct": 8,
+    "lead_days": null
+   }
+  },
+  {
+   "date": "2022-05-20",
+   "title": "Calif. rice acreage to drop to 39-year low",
+   "source": "Farm Progress",
+   "url": "https://www.farmprogress.com/rice/calif-rice-acreage-to-drop-to-39-year-low",
+   "rank": 2,
+   "place_match": [
+    "Sacramento Valley"
+   ],
+   "query_id": "car_2022_drought",
+   "verified": true,
+   "signal": {
+    "dataset": "smap_l3",
+    "label": "SMAP soil moisture",
+    "value_pct": 9,
+    "lead_days": null
+   }
+  },
+  {
+   "date": "2023-01-09",
+   "title": "Atmospheric-river storms, Jan–Mar 2023 (headline to be cached)",
+   "source": "News cache pending",
+   "url": null,
+   "rank": 3,
+   "place_match": [
+    "Sacramento Valley"
+   ],
+   "query_id": "car_2023_flood",
+   "verified": false,
+   "signal": {
+    "dataset": "imerg",
+    "label": "IMERG 3-day rain",
+    "value_pct": 97,
+    "lead_days": null
+   }
+  },
+  {
+   "date": "2024-01-03",
+   "title": "Later rice harvest deals minor yield, quality impacts",
+   "source": "Ag Alert",
+   "url": "https://www.agalert.com/california-ag-news/archives/january-3-2024/later-rice-harvest-deals-minor-yield-quality-impacts/",
+   "rank": 2,
+   "place_match": [
+    "Sacramento Valley"
+   ],
+   "query_id": "car_2023_flood",
+   "verified": true,
+   "signal": {
+    "dataset": "hls",
+    "label": "HLS green-up date",
+    "value_pct": null,
+    "lead_days": null
+   }
+  }
+ ],
+ "caf_tulare_forage": [
+  {
+   "date": "2023-03-15",
+   "title": "Dormant California lake reappeared and isn’t going anywhere fast",
+   "source": "NBC News",
+   "url": "https://www.nbcnews.com/science/science-news/dormant-california-lake-reappeared-isnt-going-anywhere-fast-rcna92452",
+   "rank": 3,
+   "place_match": [
+    "Tulare Lake",
+    "Kings County"
+   ],
+   "query_id": "caf_2023_flood",
+   "verified": true,
+   "date_note": "event date; publication date to confirm",
+   "signal": {
+    "dataset": "imerg",
+    "label": "IMERG 3-day rain",
+    "value_pct": 98,
+    "lead_days": null
+   }
+  },
+  {
+   "date": "2024-04-16",
+   "title": "State Water Board places Tulare Lake Subbasin on probation",
+   "source": "State Water Resources Control Board",
+   "url": "https://water.waterboards.ca.gov/press_room/press_releases/2024/pr20240415-tulare-lake-probationary-hearing.html",
+   "rank": 1,
+   "place_match": [
+    "Tulare Lake Subbasin"
+   ],
+   "query_id": "caf_2024_probation",
+   "verified": true,
+   "signal": {
+    "dataset": "grace",
+    "label": "GRACE groundwater storage",
+    "value_pct": 26,
+    "lead_days": null
+   }
+  },
+  {
+   "date": "2025-10-15",
+   "title": "Kings County judge rules against State Water Board in high-stakes groundwater case",
+   "source": "SJV Water",
+   "url": "https://sjvwater.org/kings-county-judge-rules-against-state-water-board-in-high-stakes-groundwater-case",
+   "rank": 2,
+   "place_match": [
+    "Kings County"
+   ],
+   "query_id": "caf_2024_probation",
+   "verified": true,
+   "date_note": "litigation timeline per spec; exact date to confirm",
+   "signal": {
+    "dataset": "grace",
+    "label": "GRACE groundwater storage",
+    "value_pct": 18,
+    "lead_days": null
+   }
+  }
+ ]
+}

@@ -1,0 +1,110 @@
+{
+ "mock": {
+  "id": "mock",
+  "title": "Illustrative mock value (frontend prototype)",
+  "url": null,
+  "verified": false
+ },
+ "fao56_table12": {
+  "id": "fao56_table12",
+  "title": "FAO-56 Table 12, crop coefficients",
+  "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+  "verified": true
+ },
+ "ssurgo_sda": {
+  "id": "ssurgo_sda",
+  "title": "USDA SSURGO via Soil Data Access",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+  "verified": true
+ },
+ "uc_rice_blog": {
+  "id": "uc_rice_blog",
+  "title": "UC Rice Blog (planting and harvest timing)",
+  "url": "https://www.ucanr.edu/blog/uc-rice-blog",
+  "verified": true
+ },
+ "uc_alfalfa": {
+  "id": "uc_alfalfa",
+  "title": "UC Alfalfa: Irrigated Alfalfa Management",
+  "url": "https://alfalfa.ucdavis.edu/IrrigatedAlfalfa",
+  "verified": true
+ },
+ "cimis": {
+  "id": "cimis",
+  "title": "CIMIS station list",
+  "url": "https://cimis.water.ca.gov/Stations.aspx",
+  "verified": true
+ },
+ "openet": {
+  "id": "openet",
+  "title": "OpenET 30 m monthly ET (ensemble)",
+  "url": "https://openet-api.org/raster/timeseries/point",
+  "verified": false
+ },
+ "nasa_eo_rice": {
+  "id": "nasa_eo_rice",
+  "title": "NASA Earth Observatory: A Rough Year for Rice in California",
+  "url": "https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/",
+  "verified": true
+ },
+ "farmprogress_rice": {
+  "id": "farmprogress_rice",
+  "title": "Farm Progress: Calif. rice acreage to drop to 39-year low",
+  "url": "https://www.farmprogress.com/rice/calif-rice-acreage-to-drop-to-39-year-low",
+  "verified": true
+ },
+ "eqip_340": {
+  "id": "eqip_340",
+  "title": "USDA NRCS EQIP (practice 340 Cover Crop)",
+  "url": "https://www.nrcs.usda.gov/programs-initiatives/eqip-environmental-quality-incentives-program",
+  "verified": false
+ },
+ "power": {
+  "id": "power",
+  "title": "NASA POWER daily meteorology",
+  "url": "https://power.larc.nasa.gov/",
+  "verified": false
+ },
+ "hls": {
+  "id": "hls",
+  "title": "NASA Harmonized Landsat Sentinel-2 (HLS) 30 m",
+  "url": "https://www.earthdata.nasa.gov/data/projects/hls",
+  "verified": false
+ },
+ "smap": {
+  "id": "smap",
+  "title": "NASA SMAP soil moisture, 9 km EASE-2 grid",
+  "url": "https://smap.jpl.nasa.gov/",
+  "verified": false
+ },
+ "imerg": {
+  "id": "imerg",
+  "title": "NASA GPM IMERG daily precipitation",
+  "url": "https://gpm.nasa.gov/data/imerg",
+  "verified": false
+ },
+ "grace": {
+  "id": "grace",
+  "title": "GRACE / GRACE-FO data-assimilation drought indicators",
+  "url": "https://nasagrace.unl.edu/",
+  "verified": false
+ },
+ "cdl": {
+  "id": "cdl",
+  "title": "USDA NASS Cropland Data Layer 2008-2024",
+  "url": "https://nassgeodata.gmu.edu/CropScape/",
+  "verified": false
+ },
+ "rma": {
+  "id": "rma",
+  "title": "USDA RMA cause of loss 2010-2024",
+  "url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss",
+  "verified": false
+ },
+ "bc_order": {
+  "id": "bc_order",
+  "title": "BC Gov News: fish population protection order, Salmon River and Bessette Creek (16 Aug 2023)",
+  "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+  "verified": true
+ }
+}

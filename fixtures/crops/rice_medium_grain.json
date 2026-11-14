@@ -1,0 +1,273 @@
+{
+ "_fixture": true,
+ "id": "rice_medium_grain",
+ "name": "Rice (medium grain, water-seeded)",
+ "family": "Poaceae",
+ "role": [
+  "cash"
+ ],
+ "legume": false,
+ "root": "shallow fibrous",
+ "kc": {
+  "ini": {
+   "value": 1.05,
+   "unit": "Kc",
+   "method": "lookup",
+   "source": {
+    "id": "fao56_table12",
+    "title": "FAO-56 Table 12, Rice, Kc",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+    "accessed": "2026-11-14",
+    "verified": true
+   }
+  },
+  "mid": {
+   "value": 1.2,
+   "unit": "Kc",
+   "method": "lookup",
+   "source": {
+    "id": "fao56_table12",
+    "title": "FAO-56 Table 12, Rice, Kc",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+    "accessed": "2026-11-14",
+    "verified": true
+   }
+  },
+  "end": {
+   "value": 0.75,
+   "unit": "Kc",
+   "low": 0.6,
+   "high": 0.9,
+   "method": "lookup",
+   "source": {
+    "id": "fao56_table12",
+    "title": "FAO-56 Table 12, Rice, Kc",
+    "url": "https://www.fao.org/4/x0490e/x0490e0b.htm",
+    "accessed": "2026-11-14",
+    "verified": true
+   }
+  }
+ },
+ "stage_lengths_days": {
+  "ini": 30,
+  "dev": 30,
+  "mid": 60,
+  "late": 30,
+  "source": "fao56_table11 Rice May Mediterranean (V)"
+ },
+ "cover_by_stage": {
+  "ini": 0.3,
+  "dev": 0.7,
+  "mid": 1.0,
+  "late": 0.8
+ },
+ "ratings_0_4": {
+  "erosion_reduction": {
+   "value": 1,
+   "unit": "0-4 rating",
+   "low": 1,
+   "high": 1,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "soil_builder": {
+   "value": 2,
+   "unit": "0-4 rating",
+   "low": 2,
+   "high": 2,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "lasting_residue": {
+   "value": 3,
+   "unit": "0-4 rating",
+   "low": 3,
+   "high": 3,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "nitrogen_fixation": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "nitrogen_scavenging": {
+   "value": 1,
+   "unit": "0-4 rating",
+   "low": 1,
+   "high": 1,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "compaction_reduction": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "forage_harvest_value": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "weed_suppression": {
+   "value": 1,
+   "unit": "0-4 rating",
+   "low": 1,
+   "high": 1,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "tolerance_flood": {
+   "value": 4,
+   "unit": "0-4 rating",
+   "low": 4,
+   "high": 4,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  },
+  "tolerance_drought": {
+   "value": 0,
+   "unit": "0-4 rating",
+   "low": 0,
+   "high": 0,
+   "method": "assumed",
+   "source": {
+    "id": "fixture_placeholder",
+    "title": "Fixture placeholder (not a measurement)",
+    "url": "urn:fieldshift:fixture-placeholder",
+    "accessed": "2026-11-14",
+    "verified": false
+   },
+   "note": "placeholder rating (U)"
+  }
+ },
+ "yield_range": {
+  "value": 9500,
+  "unit": "kg/ha",
+  "low": 7980.0,
+  "high": 11020.0,
+  "method": "assumed",
+  "source": {
+   "id": "fixture_placeholder",
+   "title": "Fixture placeholder (not a measurement)",
+   "url": "urn:fieldshift:fixture-placeholder",
+   "accessed": "2026-11-14",
+   "verified": false
+  }
+ },
+ "drainage_classes_ok": [
+  "poorly",
+  "very poorly",
+  "somewhat poor"
+ ],
+ "seeding_window": {
+  "start": "04-20",
+  "end": "06-01",
+  "best": "by mid-May",
+  "verified": true
+ },
+ "pest_notes": [
+  "weedy rice",
+  "rice water weevil (U)"
+ ],
+ "cautions": [
+  "herbicide carryover to rotation crops (U)"
+ ],
+ "seed_cost_per_ha": {
+  "value": 180,
+  "unit": "USD/ha",
+  "low": 153.0,
+  "high": 207.0,
+  "method": "assumed",
+  "source": {
+   "id": "fixture_placeholder",
+   "title": "Fixture placeholder (not a measurement)",
+   "url": "urn:fieldshift:fixture-placeholder",
+   "accessed": "2026-11-14",
+   "verified": false
+  }
+ },
+ "explainer_card": null,
+ "sources": [
+  {
+   "id": "fao56_table12",
+   "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+  },
+  {
+   "id": "uc_rice",
+   "url": "https://rice.ucanr.edu/"
+  }
+ ]
+}

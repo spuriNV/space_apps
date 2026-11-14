@@ -1,0 +1,612 @@
+[
+ {
+  "id": "car_colusa_rice",
+  "name": "Colusa County rice check (example)",
+  "short_name": "Colusa rice",
+  "place_line": "West of Williams, Sacramento Valley, CA",
+  "region_adapter": "ca",
+  "regime": "drought_then_flood",
+  "state_fips": "06",
+  "county_fips": "011",
+  "ground_data": "rich",
+  "geometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      -122.105792,
+      39.147305
+     ],
+     [
+      -122.094208,
+      39.147305
+     ],
+     [
+      -122.094208,
+      39.151347
+     ],
+     [
+      -122.095946,
+      39.152695
+     ],
+     [
+      -122.105792,
+      39.152695
+     ],
+     [
+      -122.105792,
+      39.147305
+     ]
+    ]
+   ]
+  },
+  "centroid": {
+   "lon": -122.1,
+   "lat": 39.15
+  },
+  "area_ha": {
+   "value": 58.9,
+   "unit": "ha",
+   "low": null,
+   "high": null,
+   "method": "computed",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "verified": false
+   },
+   "note": "Example field; drag to your own"
+  },
+  "crs_working": "EPSG:32610",
+  "soil": {
+   "mukey": null,
+   "muname": "Willows silty clay (illustrative)",
+   "drainage_class": "Poorly drained",
+   "hydrologic_group": "D",
+   "awc_mm_per_m": {
+    "value": 150,
+    "unit": "mm/m",
+    "low": 130,
+    "high": 170,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "om_pct": {
+    "value": 2.4,
+    "unit": "%",
+    "low": 1.8,
+    "high": 3,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "texture_class": "Silty clay",
+   "source": {
+    "id": "ssurgo_sda",
+    "title": "USDA SSURGO via Soil Data Access",
+    "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+    "verified": true
+   }
+  },
+  "terrain": {
+   "slope_mean_pct": {
+    "value": 0.05,
+    "unit": "%",
+    "low": 0,
+    "high": 0.1,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "slope_p90_pct": {
+    "value": 0.1,
+    "unit": "%",
+    "low": 0,
+    "high": 0.2,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "elev_m": {
+    "value": 22,
+    "unit": "m",
+    "low": 21,
+    "high": 23,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "low_spot_fraction": {
+    "value": 0,
+    "unit": "fraction",
+    "low": 0,
+    "high": 0.02,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "note": "Laser-levelled: slope zones not meaningful."
+  },
+  "water": {
+   "source": "surface",
+   "allocation_input": {
+    "unit": "acre-ft/acre",
+    "value": 3.8
+   },
+   "district": "Glenn-Colusa ID (unverified)",
+   "sgma_subbasin": "Colusa",
+   "sgma_status": {
+    "text": "Colusa Subbasin: medium priority (unverified)",
+    "url": "https://sgma.water.ca.gov/",
+    "verified": false
+   },
+   "cdec_stations": [
+    "SHA",
+    "ORO"
+   ]
+  },
+  "market_preference": "sell",
+  "stations": [
+   {
+    "network": "CIMIS",
+    "id": 250,
+    "name": "Williams",
+    "distance_km": 8,
+    "years": [
+     2016,
+     2026
+    ],
+    "url": "https://cimis.water.ca.gov/Stations.aspx"
+   },
+   {
+    "network": "NOAA",
+    "id": null,
+    "name": "Colusa / Williams daily (station id to confirm)"
+   },
+   {
+    "network": "CDEC",
+    "id": "SHA",
+    "name": "Shasta storage"
+   },
+   {
+    "network": "CDEC",
+    "id": "ORO",
+    "name": "Oroville storage"
+   }
+  ],
+  "regional_cell": {
+   "grid": "EASE2_G9km",
+   "row": 0,
+   "col": 0,
+   "footprint": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -122.109499,
+       39.143173
+      ],
+      [
+       -122.005245,
+       39.143173
+      ],
+      [
+       -122.005245,
+       39.224021
+      ],
+      [
+       -122.109499,
+       39.224021
+      ],
+      [
+       -122.109499,
+       39.143173
+      ]
+     ]
+    ]
+   }
+  },
+  "datasets": [
+   "power",
+   "imerg",
+   "smap_l3",
+   "smap_l4",
+   "hls",
+   "s2",
+   "modis",
+   "ecostress",
+   "grace",
+   "dem",
+   "cdl",
+   "openet",
+   "cimis",
+   "cdec",
+   "dwr_wells",
+   "rma",
+   "usdm",
+   "news"
+  ],
+  "crop_history": {
+   "2008": "Rice",
+   "2009": "Rice",
+   "2010": "Rice",
+   "2011": "Rice",
+   "2012": "Rice",
+   "2013": "Rice",
+   "2014": "Rice",
+   "2015": "Rice",
+   "2016": "Rice",
+   "2017": "Rice",
+   "2018": "Rice",
+   "2019": "Rice",
+   "2020": "Rice",
+   "2021": "Rice",
+   "2022": "Fallow/Idle",
+   "2023": "Rice",
+   "2024": "Rice"
+  },
+  "observed_cover": {
+   "typically_bare_doy_ranges": [
+    [
+     290,
+     110
+    ]
+   ],
+   "years_used": [
+    2016,
+    2025
+   ],
+   "detector": "consensus",
+   "summary": "Bare mid-Oct to late Apr, except winter-flood years"
+  },
+  "baseline_summary": "Continuous rice with winter flooding",
+  "events": [
+   {
+    "date": "2022-05-01",
+    "type": "drought_fallow",
+    "title": "Sacramento Valley rice acreage roughly halved",
+    "url": "https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/",
+    "verified": true
+   },
+   {
+    "date": "2023-01-09",
+    "type": "atmospheric_river",
+    "title": "Jan-Mar 2023 atmospheric rivers; late planting and harvest",
+    "url": null,
+    "verified": false
+   }
+  ]
+ },
+ {
+  "id": "caf_tulare_forage",
+  "name": "Tulare/Kings forage block (example)",
+  "short_name": "Tulare/Kings forage",
+  "place_line": "Between Corcoran and Hanford, San Joaquin Valley, CA",
+  "region_adapter": "ca",
+  "regime": "groundwater_cap",
+  "state_fips": "06",
+  "county_fips": "031",
+  "ground_data": "rich",
+  "geometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      -119.602226,
+      36.196407
+     ],
+     [
+      -119.597774,
+      36.196407
+     ],
+     [
+      -119.597774,
+      36.203593
+     ],
+     [
+      -119.602226,
+      36.203593
+     ],
+     [
+      -119.602226,
+      36.196407
+     ]
+    ]
+   ]
+  },
+  "centroid": {
+   "lon": -119.6,
+   "lat": 36.2
+  },
+  "area_ha": {
+   "value": 32,
+   "unit": "ha",
+   "low": null,
+   "high": null,
+   "method": "computed",
+   "source": {
+    "id": "mock",
+    "title": "Illustrative mock value (frontend prototype)",
+    "url": null,
+    "verified": false
+   },
+   "note": "Example field; drag to your own"
+  },
+  "crs_working": "EPSG:32610",
+  "soil": {
+   "mukey": null,
+   "muname": "Kimberlina fine sandy loam (illustrative)",
+   "drainage_class": "Well drained",
+   "hydrologic_group": "B",
+   "awc_mm_per_m": {
+    "value": 130,
+    "unit": "mm/m",
+    "low": 110,
+    "high": 150,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "om_pct": {
+    "value": 1.1,
+    "unit": "%",
+    "low": 0.7,
+    "high": 1.5,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "texture_class": "Fine sandy loam",
+   "source": {
+    "id": "ssurgo_sda",
+    "title": "USDA SSURGO via Soil Data Access",
+    "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+    "verified": true
+   }
+  },
+  "terrain": {
+   "slope_mean_pct": {
+    "value": 0.2,
+    "unit": "%",
+    "low": 0.1,
+    "high": 0.4,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "slope_p90_pct": {
+    "value": 0.4,
+    "unit": "%",
+    "low": 0.2,
+    "high": 0.6,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "elev_m": {
+    "value": 64,
+    "unit": "m",
+    "low": 63,
+    "high": 66,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "low_spot_fraction": {
+    "value": 0.03,
+    "unit": "fraction",
+    "low": 0,
+    "high": 0.06,
+    "method": "assumed",
+    "source": {
+     "id": "mock",
+     "title": "Illustrative mock value (frontend prototype)",
+     "url": null,
+     "verified": false
+    },
+    "note": ""
+   },
+   "note": "Near-flat: slope zones not meaningful."
+  },
+  "water": {
+   "source": "groundwater",
+   "allocation_input": {
+    "unit": "acre-ft/acre",
+    "value": 2.5
+   },
+   "district": "GSA allocation (your number)",
+   "sgma_subbasin": "Tulare Lake",
+   "sgma_status": {
+    "text": "Tulare Lake Subbasin placed on probation 16 Apr 2024; status is in litigation and changes",
+    "url": "https://www.waterboards.ca.gov/sgma/",
+    "verified": true
+   },
+   "cdec_stations": [
+    "PNF"
+   ]
+  },
+  "market_preference": "feed_own_herd",
+  "stations": [
+   {
+    "network": "CIMIS",
+    "id": 15,
+    "name": "Stratford (to confirm)",
+    "distance_km": 21,
+    "years": [
+     2016,
+     2026
+    ],
+    "url": "https://cimis.water.ca.gov/Stations.aspx"
+   },
+   {
+    "network": "NOAA",
+    "id": null,
+    "name": "Hanford daily (station id to confirm)"
+   },
+   {
+    "network": "CDEC",
+    "id": "PNF",
+    "name": "Pine Flat storage"
+   },
+   {
+    "network": "DWR",
+    "id": null,
+    "name": "Groundwater wells, depth to water"
+   }
+  ],
+  "regional_cell": {
+   "grid": "EASE2_G9km",
+   "row": 0,
+   "col": 0,
+   "footprint": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -119.606234,
+       36.191915
+      ],
+      [
+       -119.506046,
+       36.191915
+      ],
+      [
+       -119.506046,
+       36.272763
+      ],
+      [
+       -119.606234,
+       36.272763
+      ],
+      [
+       -119.606234,
+       36.191915
+      ]
+     ]
+    ]
+   }
+  },
+  "datasets": [
+   "power",
+   "imerg",
+   "smap_l3",
+   "smap_l4",
+   "hls",
+   "s2",
+   "modis",
+   "ecostress",
+   "grace",
+   "dem",
+   "cdl",
+   "openet",
+   "cimis",
+   "cdec",
+   "dwr_wells",
+   "rma",
+   "usdm",
+   "news"
+  ],
+  "crop_history": {
+   "2008": "Cotton",
+   "2009": "Cotton",
+   "2010": "Winter wheat / Corn",
+   "2011": "Winter wheat / Corn",
+   "2012": "Alfalfa",
+   "2013": "Alfalfa",
+   "2014": "Alfalfa",
+   "2015": "Alfalfa",
+   "2016": "Alfalfa",
+   "2017": "Alfalfa",
+   "2018": "Alfalfa",
+   "2019": "Alfalfa",
+   "2020": "Winter wheat / Corn",
+   "2021": "Alfalfa",
+   "2022": "Alfalfa",
+   "2023": "Alfalfa",
+   "2024": "Alfalfa"
+  },
+  "observed_cover": {
+   "typically_bare_doy_ranges": [],
+   "years_used": [
+    2016,
+    2025
+   ],
+   "detector": "consensus",
+   "summary": "Covered most of the year; short partial-cover dips after each cutting"
+  },
+  "baseline_summary": "Alfalfa, 7-8 cuts, 4-5 year stand",
+  "events": [
+   {
+    "date": "2023-03-20",
+    "type": "flood",
+    "title": "Tulare Lake re-floods (about 114,000 acres at peak)",
+    "url": null,
+    "verified": true
+   },
+   {
+    "date": "2024-04-16",
+    "type": "sgma",
+    "title": "Tulare Lake Subbasin placed on SGMA probation",
+    "url": "https://www.waterboards.ca.gov/sgma/",
+    "verified": true
+   }
+  ]
+ }
+]
