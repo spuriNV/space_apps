@@ -54,13 +54,18 @@ async function apiReal(route: string, init?: RequestInit) {
 }
 
 // ---------- static / editorial ----------
+/** GET /api/glossary (plain-language terms), only when the API serves real content. */
+export async function getGlossary(): Promise<Record<string, { term: string; short: string }>> {
+  const b = await apiReal('/api/glossary');
+  return Object.fromEntries(((b?.items ?? []) as { id: string; term: string; short: string }[]).map((x) => [x.id, x]));
+}
 export const getDatasets = () => Promise.resolve(datasets as Dataset[]);
 export const getBC = () => Promise.resolve(bc as BCInfo);
 
 // ---------- locations: bundled card text + the API's outline, area, soil, crop history ----------
 const KINGS = { short_name: 'Kings County forage', name: 'Kings County forage field for dairy (example)' };
 const COUNTY: Record<string, string> = { '011': 'Colusa', '031': 'Kings' };
-const EXTRA = (fieldExtra as unknown as { fields: ById<{ dwr_id: string; ec_ds_per_m: number; texture_detail: { sand_pct: number; silt_pct: number; clay_pct: number }; nasadem?: Location['nasadem']; rma?: Location['rma'] }> }).fields;
+const EXTRA = (fieldExtra as unknown as { fields: ById<{ rma?: Location['rma'] }> }).fields;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: ProvMap } {
   const prov: ProvMap = {
@@ -72,14 +77,14 @@ function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: Prov
   if (EXTRA[base.id]?.rma) prov.rma = P('rma', 'Crop-insurance payouts (USDA RMA)', 'file', 'backend/ground, 2010–2024');
   let loc: Location = { ...base, rma: EXTRA[base.id]?.rma, water: { ...base.water, allocation_input: { unit: 'acre-ft/acre', value: EXAMPLE_LIMIT[base.id] ?? base.water.allocation_input.value } } };
   if (!apiLoc?.geometry) return { loc, prov };
-  const a = apiLoc, x = EXTRA[base.id];
+  const a = apiLoc;
   loc = { ...loc, ...(base.id === 'caf_tulare_forage' ? KINGS : {}),
     geometry: a.geometry, centroid: a.centroid, area_ha: a.area_ha, county: COUNTY[a.county_fips] ?? loc.county,
-    dwr_id: a.dwr_unique_id ?? a.dwr_id ?? x?.dwr_id,
-    soil: { ...loc.soil, ...a.soil, ec_ds_per_m: a.soil?.ec_ds_per_m ?? x?.ec_ds_per_m, texture_detail: a.soil?.texture_detail ?? x?.texture_detail },
+    dwr_id: a.dwr_unique_id ?? a.dwr_id,
+    soil: { ...loc.soil, ...a.soil },
     crop_history: a.crop_history ?? loc.crop_history, nasa_datasets: a.nasa_datasets, datasets: a.datasets, terrain: a.terrain ?? loc.terrain,
-    nasadem: a.terrain?.slope_mean_pct?.value != null ? { slope_mean_pct: a.terrain.slope_mean_pct.value, slope_p90_pct: a.terrain.slope_p90_pct?.value, low_spot_fraction: a.terrain.low_spot_fraction?.value } : x?.nasadem };
-  if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', a.terrain?.slope_mean_pct?.value != null ? 'api' : 'file', 'NASA JPL elevation, 30 m');
+    nasadem: a.terrain?.slope_mean_pct?.value != null ? { slope_mean_pct: a.terrain.slope_mean_pct.value, slope_p90_pct: a.terrain.slope_p90_pct?.value, low_spot_fraction: a.terrain.low_spot_fraction?.value } : undefined };
+  if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', 'api', 'NASA JPL elevation, 30 m');
   prov.outline = P('outline', 'Field outline', 'api', `DWR / Land IQ 2023${loc.dwr_id ? ` field ${loc.dwr_id}` : ''}`);
   if (a.soil?.muname) prov.soil = P('soil', 'Soil (USDA soil survey)', 'api', a.soil.muname);
   if (a.crop_history) prov.crop_history = P('crop_history', 'Crop on record (USDA Cropland Data Layer)', 'api', 'USDA CDL 2008–2025');
@@ -243,8 +248,50 @@ function seriesOf(b: any, key: string): (number | null)[] | null {
   return n ? out : null;
 }
 
+// ---------- crop stress (backend/ai), water seen (NASA OPERA), measured water use (OpenET), crop insurance (USDA RMA) ----------
+export interface StressWeek { start: string; status: 'one' | 'both'; drivers: string[]; tmaxC: number | null; crop: string }
+export interface WaterScene { date: string; frac: number }
+export interface Extras {
+  openet: { month: string; in: number }[] | null;
+  stress: { weeks: StressWeek[]; evaluated: Record<number, number> } | null;
+  insurance: Location['rma'] | null;
+  water: { scenes: WaterScene[]; summary: string | null; seasons: { season: string; seen: boolean; clear: number }[] } | null;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extrasOf(oet: any, st: any, ins: any, w: any, ns: any, prov: ProvMap, used: Partial<Record<string, NasaStatus>>): Extras {
+  const openet = oet?.rows?.length ? (oet.rows as { month?: string; date: string; et_in?: number; et_mm?: number }[]).map((r) => ({ month: r.month ?? r.date.slice(0, 7), in: r.et_in ?? (r.et_mm ?? 0) / 25.4 })) : null;
+  if (openet) prov.openet = P('openet', 'Measured crop water use (OpenET)', 'api', `${openet.length} months`);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const wk: any[] = st?.weeks ?? st?.items ?? [];
+  const evaluated: Record<number, number> = {};
+  for (const x of wk) if (x.evaluated) evaluated[x.iso_year] = (evaluated[x.iso_year] ?? 0) + 1;
+  const stress = wk.length ? { weeks: wk.filter((x) => x.status === 'one' || x.status === 'both').map((x) => ({ start: x.week_start, status: x.status, drivers: x.drivers ?? [], tmaxC: x.tmax_c ?? null, crop: x.crop ?? '' })), evaluated } : null;
+  if (stress) prov.stress = P('stress', 'Crop-stress weeks (two statistical methods)', 'api', `${stress.weeks.length} weeks flagged`);
+  // insurance: route shape may be the rma_profile file (profiles) or a flat summary
+  const pr = ins?.profiles ? (Object.values(ins.profiles)[0] as any) : ins; // eslint-disable-line @typescript-eslint/no-explicit-any
+  let insurance: Location['rma'] | null = null;
+  if (pr?.total_indemnity_usd != null) {
+    const by = (pr.indemnity_by_year_usd ?? {}) as Record<string, number>, ys = Object.keys(by).map(Number);
+    const top = ys.sort((x, y) => by[y] - by[x])[0];
+    insurance = { scope: pr.scope ?? '', crop: pr.crop ?? '', total_usd: pr.total_indemnity_usd, from: Math.min(...ys), to: Math.max(...ys), top_year: top, top_usd: by[top] ?? 0,
+      share_drought: pr.shares?.share_drought?.value ?? pr.share_drought ?? 0, share_excess_moisture: pr.shares?.share_excess_moisture?.value ?? null, source: 'USDA RMA Cause of Loss', url: ins.page_url ?? '' };
+    prov.rma = P('rma', 'Crop-insurance payouts (USDA RMA)', 'api', `${insurance.from}–${insurance.to}`);
+  }
+  // water seen: GET .../water_seen (OPERA scenes), else the OPERA column of nasa_series
+  let water: Extras['water'] = null;
+  if (w?.scenes?.length) {
+    water = { scenes: (w.scenes as { date: string; water_frac: number; clear: boolean }[]).filter((x) => x.clear).map((x) => ({ date: x.date, frac: x.water_frac })), summary: w.summary ?? null,
+      seasons: (w.seasons ?? []).map((x: { season: string; water_seen: boolean; clear_scenes: number }) => ({ season: x.season, seen: x.water_seen, clear: x.clear_scenes })) };
+  } else if (ns?.rows) {
+    const sc = (ns.rows as Record<string, unknown>[]).filter((r) => typeof r.dswx_water_frac === 'number').map((r) => ({ date: String(r.date), frac: r.dswx_water_frac as number }));
+    if (sc.length) water = { scenes: sc, summary: null, seasons: [] };
+  }
+  if (water) { prov.water_seen = P('water_seen', 'Standing water seen (NASA OPERA)', 'api', `${water.scenes.length} clear views`); used.opera = 'live'; }
+  return { openet, stress, insurance, water };
+}
+
 // ---------- everything the field view needs ----------
-export interface FieldBundle { id: string; cells: CellGrid; cal: Calendar; regional: Regional; strategies: RotationStrategy[]; news: NewsItem[]; ml: MLInfo | null; nasa: NasaDataset[]; regionalLive: RegionalLive; nasaNow: NasaNow | null; prov: ProvMap }
+export interface FieldBundle { id: string; cells: CellGrid; cal: Calendar; regional: Regional; strategies: RotationStrategy[]; news: NewsItem[]; ml: MLInfo | null; nasa: NasaDataset[]; regionalLive: RegionalLive; nasaNow: NasaNow | null; extras: Extras; prov: ProvMap }
 /** GET .../nasa_now: today's NASA readings. Rain since 1 Oct from GPM IMERG and its 2001-2025 normal (mm). */
 export interface NasaNow { rainWyMm: number | null; rainWyNormalMm: number | null; rainDate: string | null; dswxWater: number | null; dswxDate: string | null }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -268,8 +315,8 @@ export async function getField(loc: Location, live: boolean): Promise<FieldBundl
   const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, { ...used, ...(soilExample() ? { smap: 'example' as const } : {}) }).list;
   let soilShown: 'smap' | 'grace_da' | null = null;
   const soilExample = () => soilShown == null; // the soil answer shows SMAP example numbers when no real soil series came back
-  if (!live) return { id, regional: reg0, cells: (mockCells as unknown as ById<CellGrid>)[id], cal: mCal, strategies: mockStrats(id), news: (mockNews as unknown as ById<NewsItem[]>)[id], ml: null, nasa: nasa().map((d) => (d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)), regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, prov };
-  const [cal, hls, grid, strat, news, mlCal, models, ns, now] = await Promise.all([
+  if (!live) return { id, regional: reg0, cells: (mockCells as unknown as ById<CellGrid>)[id], cal: mCal, strategies: mockStrats(id), news: (mockNews as unknown as ById<NewsItem[]>)[id], ml: null, nasa: nasa().map((d) => (d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)), regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, extras: { openet: null, stress: null, insurance: null, water: null }, prov };
+  const [cal, hls, grid, strat, news, mlCal, models, ns, now, oet, stressB, insB, waterB] = await Promise.all([
     apiReal(`/api/locations/${id}/calendar`),
     apiReal(`/api/locations/${id}/calendar?source=hls`),
     apiReal(`/api/locations/${id}/grid`),
@@ -279,6 +326,10 @@ export async function getField(loc: Location, live: boolean): Promise<FieldBundl
     apiReal(`/api/locations/${id}/models`),
     apiReal(`/api/locations/${id}/nasa_series`),
     apiReal(`/api/locations/${id}/nasa_now`),
+    apiReal(`/api/locations/${id}/openet`),
+    apiReal(`/api/locations/${id}/stress`),
+    apiReal(`/api/locations/${id}/insurance`),
+    apiReal(`/api/locations/${id}/water_seen`),
   ]);
   let c = mCal, cells = (mockCells as unknown as ById<CellGrid>)[id], strategies = mockStrats(id), nws = (mockNews as unknown as ById<NewsItem[]>)[id];
   // NASA first: the HLS calendar wins when the API serves it (it says so in its sources)
@@ -308,7 +359,8 @@ export async function getField(loc: Location, live: boolean): Promise<FieldBundl
     if (/imerg/.test(JSON.stringify(ns?.sources ?? ''))) used.imerg = 'live'; // rain so far this season reads IMERG from the daily record
     prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', sm && gr ? 'api' : 'mock', `${soilSource === 'smap' ? 'SMAP' : soilSource === 'grace_da' ? 'GRACE-FO data assimilation (SMAP not cached yet)' : 'soil: example numbers'}; ${gr ? 'GRACE-FO groundwater' : 'groundwater: example numbers'}`);
   }
-  return { id, regional: reg, cells, cal: c, strategies, news: nws, ml, nasa: nasa(), regionalLive: { smap: !!sm, grace: !!gr, soilSource }, nasaNow: nowOf(now), prov };
+  const extras = extrasOf(oet, stressB, insB, waterB, ns, prov, used);
+  return { id, regional: reg, cells, cal: c, strategies, news: nws, ml, nasa: nasa(), regionalLive: { smap: !!sm, grace: !!gr, soilSource }, nasaNow: nowOf(now), extras, prov };
 }
 
 // ---------- ISS astronaut photos (copied into public/iss/<id>/ from data/cache/<id>/iss) ----------

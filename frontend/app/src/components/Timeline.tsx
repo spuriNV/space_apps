@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import type { Calendar, CoverClass, FieldEvent, Location } from '../types';
 import type { Daily } from '../season';
-import type { MLInfo, Prov } from '../api';
+import type { Extras, MLInfo, Prov } from '../api';
 import { calSource } from './ui/shared';
 import { CLASS_COLOR, RECENT_FROM, TODAY_T, T_MAX, YEARS, clamp, dateToT, dekadOf, fmtDate, tLabel, tOf, yearOf } from '../lib';
 import Icon from './Icons';
@@ -9,7 +9,7 @@ import YearSheet from './year/YearSheet';
 
 interface Props {
   t: number; setT: (t: number) => void; playing: boolean; setPlaying: (b: boolean) => void;
-  loc: Location | null; cal: Calendar | null; daily: Daily | null; ml: MLInfo | null; prov?: Prov; events: FieldEvent[];
+  loc: Location | null; cal: Calendar | null; daily: Daily | null; ml: MLInfo | null; prov?: Prov; extras?: Extras | null; events: FieldEvent[];
   showEarlier: boolean; setShowEarlier: (b: boolean) => void;
   expanded: boolean; setExpanded: (b: boolean) => void;
 }
@@ -38,7 +38,7 @@ export default function Timeline(p: Props) {
 
   return (
     <div className={`timeline glass ${p.expanded ? 'expanded' : ''}`}>
-      {p.expanded && p.loc && p.cal && <YearSheet calSource={calSource(p.prov)} t={p.t} setT={p.setT} loc={p.loc} cal={p.cal} daily={p.daily} ml={p.ml} showEarlier={p.showEarlier} setShowEarlier={p.setShowEarlier} setExpanded={p.setExpanded} />}
+      {p.expanded && p.loc && p.cal && <YearSheet extras={p.extras ?? null} calSource={calSource(p.prov)} t={p.t} setT={p.setT} loc={p.loc} cal={p.cal} daily={p.daily} ml={p.ml} showEarlier={p.showEarlier} setShowEarlier={p.setShowEarlier} setExpanded={p.setExpanded} />}
       <div className="tl-bar">
         <button className="tl-play" onClick={() => p.setPlaying(!p.playing)} title={p.playing ? 'Pause' : `Play through ${yearOf(T0)}–2026`} data-testid="play">
           <Icon name={p.playing ? 'pause' : 'play'} size={22} />

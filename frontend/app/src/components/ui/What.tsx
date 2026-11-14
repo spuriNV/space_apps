@@ -9,12 +9,23 @@ export const GLOSSARY = {
   waterBalance: { term: 'Water balance (irrigation need)', text: 'Crop water use minus the rain that soaks in and stays in the root zone. What is left is the irrigation the crop needs, before losses in the ditch or the system.' },
   bare: { term: 'Bare days', text: 'Days the satellites see bare ground: greenness below 0.2 and no standing water. Bare soil in heavy rain loses topsoil; bare soil in heat dries out and crusts.' },
 } as const;
-export type GlossKey = keyof typeof GLOSSARY;
+export type GlossKey = keyof typeof GLOSSARY | 'opera' | 'stress' | 'ruleMl' | 'heat';
+const EXTRA: Record<string, { term: string; text: string }> = {
+  opera: { term: 'Standing water seen (NASA OPERA)', text: 'NASA’s OPERA product marks every 100 ft square that holds open or shallow water in each clear Landsat or Sentinel-2 image. It sees winter flooding that a greenness reading can miss.' },
+  stress: { term: 'Crop-stress weeks', text: 'Growing-season weeks when the crop was greener than nothing but under strain: unusual heat, very thirsty air, or weaker growth than in its other years. Two statistical methods look for them; a week counts when either flags it.' },
+  ruleMl: { term: 'Rule and machine learning', text: 'The rule calls a field bare below greenness 0.2 and flooded when the water index is high. The machine-learning version learns the same classes from neighbouring fields. We show both and say how often each was right in 2022, a year neither trained on.' },
+  heat: { term: 'Hot days', text: 'Days when the weather stations near the field reach 104 °F or more. Above that, most crops close their leaves and stop growing, and bare soil bakes.' },
+};
+/** Texts from GET /api/glossary replace the built-in ones when the API serves real content. */
+const API_KEY: Record<string, string> = { et: 'et', greenness: 'ndvi', soilAnomaly: 'soil_moisture_pct', frost: 'frost', waterBalance: 'water_balance', bare: 'cover_classes', opera: 'dswx', ruleMl: 'rule_vs_ml', heat: 'heat_days' };
+let fromApi: Record<string, { term: string; short: string }> = {};
+export const setGlossary = (g: Record<string, { term: string; short: string }>) => { fromApi = g; };
 
 /** Small "What's this?" link that opens a plain explanation underneath. */
 export function What({ k }: { k: GlossKey }) {
   const [open, setOpen] = useState(false);
-  const g = GLOSSARY[k];
+  const a = fromApi[API_KEY[k] ?? k];
+  const g = a ? { term: a.term, text: a.short } : (GLOSSARY as Record<string, { term: string; text: string }>)[k] ?? EXTRA[k];
   return (
     <span className="what">
       <button className="what-btn" onClick={() => setOpen(!open)} aria-expanded={open} title={g.term}>{open ? 'Close' : 'What’s this?'}</button>

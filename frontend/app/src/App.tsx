@@ -11,6 +11,7 @@ import ComparePanel from './components/compare/ComparePanel';
 import RotationBrief from './components/brief/RotationBrief';
 import { BCCard, LayersDrawer } from './components/Panels';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
+import { setGlossary } from './components/ui/What';
 import { ProvList, acres, county, fieldName, type Step } from './components/ui/shared';
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
@@ -66,6 +67,7 @@ export default function App() {
   useEffect(() => {
     api.getLocations().then(({ locations: ls, prov, live: lv }) => { api.getStrips(ls.map((l) => l.id)).then(setStrips); setLocations(ls); setLocProv(prov); setLive(lv); setAllocation(Object.fromEntries(ls.map((l) => [l.id, l.water.allocation_input.value]))); });
     api.getDatasets().then(setDatasets);
+    api.getGlossary().then(setGlossary);
     api.getBC().then(setBC);
   }, []);
   const selected = useMemo(() => locations.find((l) => l.id === selectedId) ?? null, [locations, selectedId]);
@@ -221,7 +223,7 @@ export default function App() {
       </header>
 
       {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
-        nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} iss={issNow} loading={!d || !dl}
+        nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} loading={!d || !dl}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
       {leftPanel === 'fields' && <FieldPicker locations={locations} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen pill glass" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
@@ -259,7 +261,7 @@ export default function App() {
         </div>
       </div>
 
-      <Timeline t={t} setT={setT} playing={playing} setPlaying={setPlaying} loc={selected} cal={d?.cal ?? null} daily={dl?.daily ?? null} ml={d?.ml ?? null} prov={d?.prov.calendar} events={events}
+      <Timeline t={t} setT={setT} playing={playing} setPlaying={setPlaying} loc={selected} cal={d?.cal ?? null} daily={dl?.daily ?? null} ml={d?.ml ?? null} extras={d?.extras ?? null} prov={d?.prov.calendar} events={events}
         showEarlier={showEarlier} setShowEarlier={setShowEarlier} expanded={yearExpanded} setExpanded={(b) => { setYearOpen(b); if (b && (panel === 'compare' || panel === 'season')) setPanel('none'); }} />
 
       {briefOpen && selected && d && <RotationBrief loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} outlook={ol} nasaNow={d.nasaNow} cal={d.cal} daily={dl?.daily ?? null} onClose={() => setBriefOpen(false)} />}

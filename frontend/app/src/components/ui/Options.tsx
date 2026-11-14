@@ -1,7 +1,7 @@
 // One farmer-first field panel. Order: what this field is -> "Your field now" answers -> about the ground -> last 3 seasons -> sources.
 // The next steps sit in a fixed footer so they are always visible without scrolling.
 import type { Calendar, FieldEvent, Location, Regional, RotationStrategy } from '../../types';
-import type { ISSPhoto, NasaNow, ProvMap, RegionalLive } from '../../api';
+import type { Extras, ISSPhoto, NasaNow, ProvMap, RegionalLive } from '../../api';
 import type { NasaDataset } from '../../nasa';
 import { ISSFigure, NasaList } from './NasaSection';
 import type { Daily } from '../../season';
@@ -13,7 +13,7 @@ import { TODAY_T } from '../../lib';
 
 export interface FieldPanelProps {
   loc: Location; prov: ProvMap; cal: Calendar | null; regional: Regional | null; regionalLive: RegionalLive; strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; daily: Daily | null;
-  nasa: NasaDataset[] | null; nasaNow: NasaNow | null; iss: { photo: ISSPhoto; credit: string } | null; loading: boolean;
+  nasa: NasaDataset[] | null; nasaNow: NasaNow | null; extras: Extras; iss: { photo: ISSPhoto; credit: string } | null; loading: boolean;
   t: number; setT: (t: number) => void; events: FieldEvent[];
   onStep: (s: Step) => void; onClose: () => void;
 }
@@ -35,12 +35,12 @@ export function FieldPanel(p: FieldPanelProps) {
       <div className="panel-scroll">
         <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}<small>{isToday ? `Today, ${whenT(p.t)}. Drag the timeline to look back.` : <button className="link" onClick={() => p.setT(TODAY_T)}>Back to today</button>}</small></h2>
         {p.loading && <p className="loading-note" data-testid="field-loading">Loading this field’s satellite, weather and water data…</p>}
-        <FieldNow nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
+        <FieldNow extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
         <h2 className="fp-h" data-testid="nasa-section">NASA data behind this field<small>What each one tells you, how coarse it is, and whether it is live.</small></h2>
         <ISSFigure iss={p.iss} />
         {p.nasa ? <NasaList list={p.nasa} /> : <p className="muted">Loading…</p>}
         <h2 className="fp-h">About the ground<small><button className="link" onClick={() => p.onStep('drill')} data-testid="step-drill">Look under the field in 3D: crop, soil moisture, groundwater</button></small></h2>
-        <AboutField loc={loc} prov={p.prov} cal={p.cal} />
+        <AboutField loc={loc} prov={p.prov} cal={p.cal} insurance={p.extras.insurance ?? loc.rma ?? null} />
         <h2 className="fp-h">The last 3 seasons</h2>
         <LastSeasons loc={loc} cal={p.cal} t={p.t} />
         {p.events.length > 0 && <><h2 className="fp-h">What happened around here<small>Click one to move the timeline.</small></h2><EventLog events={p.events} setT={p.setT} /></>}

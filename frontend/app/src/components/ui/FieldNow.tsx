@@ -1,7 +1,7 @@
 // "Your field now": plain answers in grower units for the timeline date (today by default).
 // Each answer: a plain sentence first, then the number with its unit, then one small source line.
 import type { Calendar, Location, Regional, RotationStrategy } from '../../types';
-import type { NasaNow, ProvMap, RegionalLive } from '../../api';
+import type { Extras, NasaNow, ProvMap, RegionalLive } from '../../api';
 import { TODAY_T } from '../../lib';
 import type { Daily } from '../../season';
 import { HOT_F, cropWaterSoFar, fmtIn, fmtShort, heatFrost, rainSoFar, type RainSoFar } from '../../season';
@@ -25,13 +25,51 @@ function stage(cal: Calendar, t: number) {
   return { sw: 'none', text: 'No clear satellite view', sub: 'Clouds, or no image within 30 days.' };
 }
 
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+/** OpenET measured crop water use from 1 Jan to the timeline month; the latest year with those months if this year is not out yet. */
+export function measuredSoFar(oet: Extras['openet'], modelMonths: number[] | null, t: number) {
+  if (!oet?.length) return null;
+  const y = yearOf(t), m = Math.floor(dekadOf(t) / 3) + 1;
+  const sum = (yy: number) => { const rows = oet.filter((r) => +r.month.slice(0, 4) === yy && +r.month.slice(5, 7) <= m); return rows.length === m ? rows.reduce((a, r) => a + r.in, 0) : null; };
+  let yy = y, v = sum(y);
+  while (v == null && yy > y - 3) { yy--; v = sum(yy); }
+  if (v == null) return null;
+  const model = (modelMonths ?? []).slice(0, m).reduce((a, x) => a + x, 0) / 25.4;
+  return { inches: v, model, current: yy === y, label: `Jan–${MON[m - 1]} ${yy}` };
+}
+/** One sentence on crop-stress weeks for the season of the timeline date (or the latest season with checks). */
+export function stressLine(ex: Extras, t: number) {
+  const s = ex.stress;
+  if (!s) return 'Crop-stress check not loaded';
+  const years = Object.keys(s.evaluated).map(Number).filter((y) => y <= yearOf(t)).sort();
+  const y = years[years.length - 1];
+  if (y == null) return 'No growing season checked yet';
+  const wk = s.weeks.filter((w) => w.start.startsWith(String(y)));
+  if (!wk.length) return `No crop-stress weeks in the ${y} season`;
+  const why: Record<string, number> = {};
+  wk.forEach((w) => w.drivers.forEach((d) => (why[d] = (why[d] ?? 0) + 1)));
+  const top = Object.entries(why).sort((a, b) => b[1] - a[1])[0]?.[0];
+  return `${wk.length} crop-stress week${wk.length === 1 ? '' : 's'} in the ${y} season${top ? `, mostly ${DRIVER[top] ?? 'unusual weather'}` : ''}`;
+}
+export const DRIVER: Record<string, string> = { z_tmax: 'unusual heat', z_eto: 'very thirsty air', z_ndvi: 'weaker growth than in its other years', iforest: 'an unusual mix of heat, dryness and growth' };
+/** One sentence on standing water: the latest clear OPERA view up to the timeline date, plus the winter record. */
+export function waterLine(ex: Extras, t: number) {
+  const w = ex.water;
+  if (!w) return 'Standing-water record not loaded.';
+  const cut = `${yearOf(t)}-${String(Math.floor(dekadOf(t) / 3) + 1).padStart(2, '0')}-31`;
+  const last = [...w.scenes].filter((s) => s.date <= cut).pop();
+  const wet = w.seasons.filter((s) => s.seen).length, n = w.seasons.filter((s) => s.clear >= 5).length;
+  const rec = n ? ` More than half the field was under water in ${wet} of ${n} winters with clear views.` : '';
+  return last ? `NASA OPERA last saw the field clearly on ${fmtShort(last.date)}: ${last.frac >= 0.5 ? `${Math.round(last.frac * 100)}% under water` : last.frac >= 0.1 ? `water on ${Math.round(last.frac * 100)}% of it` : 'no standing water'}.${rec}` : `No clear OPERA view yet.${rec}`;
+}
+
 /** Rain so far this season: today from GET .../nasa_now (NASA GPM IMERG, normal 2001-2025), other dates from the daily record. */
 export function rainNow(nasaNow: NasaNow | null, daily: Daily | null, t: number): RainSoFar | null {
   const nn = t === TODAY_T && nasaNow?.rainWyMm != null && nasaNow.rainWyNormalMm ? nasaNow : null;
   if (nn) return { period: { label: `1 Oct to ${fmtShort(nn.rainDate!).replace(/ \d{4}$/, '')}`, from: '', to: '', current: true }, inches: nn.rainWyMm! / 25.4, normal: nn.rainWyNormalMm! / 25.4, nSeasons: 25, pct: (nn.rainWyMm! / nn.rainWyNormalMm!) * 100, source: 'imerg' };
   return daily ? rainSoFar(daily, t) : null;
 }
-export interface FieldNowProps { nasaNow: NasaNow | null; loc: Location; cal: Calendar | null; regional: Regional | null; regionalLive: RegionalLive; strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; t: number; daily: Daily | null; prov: ProvMap }
+export interface FieldNowProps { extras: Extras; nasaNow: NasaNow | null; loc: Location; cal: Calendar | null; regional: Regional | null; regionalLive: RegionalLive; strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; t: number; daily: Daily | null; prov: ProvMap }
 export function FieldNow(p: FieldNowProps) {
   const { loc, cal, t } = p;
   const dt = cal ? dataT(cal, t) : t, behind = cal ? t > lastDataT(cal) : false;
@@ -42,6 +80,7 @@ export function FieldNow(p: FieldNowProps) {
   const base = p.strategies?.find((s) => s.is_baseline);
   const need = base ? base.water.irrigation_need_mm : null;
   const rain = rainNow(p.nasaNow, p.daily, t);
+  const ms = measuredSoFar(p.extras.openet, base?.water.etc_by_month_mm ?? null, t);
   const hf = p.daily ? heatFrost(p.daily, t) : null;
   const cw = p.daily && base ? cropWaterSoFar(p.daily, base, t) : null;
   const sm = p.regional ? latestAt(p.regional.smap_rootzone_pct.values, t) : null, smap = sm?.v ?? null;
@@ -80,10 +119,14 @@ export function FieldNow(p: FieldNowProps) {
       <div className="ans">
         <dt>How much water has the crop used? <What k="et" /></dt>
         <dd>
-          {cw ? <>
+          {ms && ms.current ? <>
+            <b>Measured so far this year: {fmtIn(ms.inches)} in</b>
+            <span>{ms.label}, measured on this field. Our model for the same months: {fmtIn(ms.model)} in. That is {mmToAfac(ms.inches * 25.4).toFixed(1)} acre-feet per acre.</span>
+            <cite>OpenET satellite measurement (ensemble of 6 models built on Landsat), monthly, this field’s outline. <Src p={p.prov.openet} /></cite>
+          </> : cw ? <>
             <b>{cw.period.current ? 'So far this year' : 'Last year'}: {vsNormal(cw.pct, 'more than normal', 'less than normal')}</b>
-            <span>About {fmtIn(cw.inches)} in of water {cw.period.label}; normal is {fmtIn(cw.normal)} in. That is {mmToAfac(cw.inches * 25.4).toFixed(1)} acre-feet per acre.{base?.water.openet_et_mm_season ? ` Measured on this field (OpenET), a full year averages about ${fmtIn(base.water.openet_et_mm_season.value / 25.4)} in.` : ''}</span>
-            <cite>NASA POWER weather (sun, wind, humidity) drives the rotation model for today’s rotation. {openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
+            <span>About {fmtIn(cw.inches)} in of water {cw.period.label}, estimated; normal is {fmtIn(cw.normal)} in. That is {mmToAfac(cw.inches * 25.4).toFixed(1)} acre-feet per acre.{ms ? ` Measured on this field by OpenET for ${ms.label}: ${fmtIn(ms.inches)} in (our model for those months: ${fmtIn(ms.model)} in).` : ''}</span>
+            <cite>Estimate: rotation model driven by NASA POWER sun, wind and humidity{ms ? '; measured: OpenET satellite data, which ends a few months behind' : ''}. {openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
           </> : <b>{base ? 'Loading…' : 'No rotation model for this field'}</b>}
         </dd>
       </div>
@@ -103,6 +146,14 @@ export function FieldNow(p: FieldNowProps) {
           <b>{smap == null ? 'No soil reading' : band(smap, 'Soil wetter than usual', 'Soil about normal', 'Soil drier than usual')}; {grace == null ? 'no groundwater reading' : band(grace, 'more groundwater than usual', 'groundwater about normal', 'less groundwater than usual').toLowerCase()}</b>
           <span>{smap != null && `Soil moisture ${ordinal(Math.round(smap))} percentile for the date${sm && sm.t < t - 1 ? ` (latest, ${whenT(sm.t)})` : ''}; 50 is normal. `}{grace != null && `Groundwater ${ordinal(Math.round(grace))} percentile${gr && gr.t < t - 1 ? ` (latest, ${whenT(gr.t)})` : ''}, whole basin, not your own well.`}</span>
           <cite>{p.regionalLive.soilSource === 'grace_da' ? 'Soil: NASA GRACE-FO with a land model, root zone, one reading for a 17-mile square (NASA SMAP readings still downloading).' : `Soil: NASA SMAP satellite, one reading for a 6-mile square${p.regionalLive.smap ? '' : ' (example numbers)'}.`} Groundwater: NASA GRACE-FO satellites{p.regionalLive.grace ? '' : ' (example numbers)'}, weekly. <Src p={p.prov.regional} /></cite>
+        </dd>
+      </div>
+      <div className="ans">
+        <dt>Has the crop been stressed, or the field under water? <What k="stress" /></dt>
+        <dd>
+          <b>{stressLine(p.extras, t)}</b>
+          <span>{waterLine(p.extras, t)}</span>
+          <cite>Crop stress: two statistical methods on satellite greenness and NASA POWER heat and dryness, growing season only. Standing water: NASA OPERA, 100 ft squares, clear images only. <Src p={p.prov.stress ?? p.prov.water_seen} /></cite>
         </dd>
       </div>
       <div className="ans">

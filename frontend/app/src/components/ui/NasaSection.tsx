@@ -26,8 +26,8 @@ export function ISSFigure({ iss }: { iss: { photo: ISSPhoto; credit: string } | 
 export function NasaList({ list }: { list: NasaDataset[] }) {
   const live = list.filter((d) => d.status === 'live').length;
   return (
-    <>
-      <p className="nasa-lede">{live} of {list.length} NASA datasets feed this screen live; the rest are downloaded or on the way.</p>
+    <details className="nasa-more">
+      <summary data-testid="nasa-toggle">All {list.length} NASA datasets: {live} live on this screen <small>(what each tells you, how coarse, status)</small></summary>
       <ul className="nasa" data-testid="nasa-list">
         {list.map((d) => (
           <li key={d.id} className={`ns-${d.status}`}>
@@ -37,6 +37,6 @@ export function NasaList({ list }: { list: NasaDataset[] }) {
           </li>
         ))}
       </ul>
-    </>
+    </details>
   );
 }

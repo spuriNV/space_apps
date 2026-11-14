@@ -1,7 +1,9 @@
 import type { CoverClass, Location, Calendar, CalendarYear } from '../../types';
 import { useState } from 'react';
 import { rainOf, type Daily } from '../../season';
-import type { MLInfo } from '../../api';
+import type { Extras, MLInfo } from '../../api';
+import { DRIVER } from '../ui/FieldNow';
+import { fmtDate } from '../../lib';
 import { CLASS_COLOR, MONTHS, RECENT_FROM, dateToT, dekadOf, lastDataT, tLabel, tOf, yearOf } from '../../lib';
 import Icon from '../Icons';
 import { cropName } from '../ui/shared';
@@ -24,7 +26,7 @@ function typical(years: CalendarYear[]) {
   return s;
 }
 
-export interface YearSheetProps { calSource: string; t: number; setT: (t: number) => void; loc: Location; cal: Calendar; daily: Daily | null; ml: MLInfo | null; showEarlier: boolean; setShowEarlier: (b: boolean) => void; setExpanded: (b: boolean) => void }
+export interface YearSheetProps { extras: Extras | null; calSource: string; t: number; setT: (t: number) => void; loc: Location; cal: Calendar; daily: Daily | null; ml: MLInfo | null; showEarlier: boolean; setShowEarlier: (b: boolean) => void; setExpanded: (b: boolean) => void }
 
 const pct = (x: number | null) => (x == null ? '?' : `${Math.round(x * 100)}%`);
 /** What the machine-learning calendar is worth on this field, in plain words. */
@@ -55,6 +57,14 @@ export default function YearSheet(p: YearSheetProps) {
         <button key={d} className={`${c === 'u' ? 'unk' : ''} ${cur && d === cd ? 'now' : ''}`} style={{ background: c === 'u' ? undefined : CLASS_COLOR[c as CoverClass] }}
           title={`${tLabel(tOf(y.year, d))}: ${LABEL[c as CoverClass]}${ml ? ' (machine learning)' : ''}`} onClick={() => y.year && p.setT(tOf(y.year, d))} />
       ))}
+      {!ml && y.year > 0 && (p.extras?.water?.scenes ?? []).filter((s) => s.date.startsWith(String(y.year)) && s.frac >= 0.5).map((s, si) => {
+        const d = dekadOf(dateToT(s.date));
+        return <i key={'w' + s.date + si} className="opera" style={{ left: `${(d / 36) * 100}%`, width: `${100 / 36}%` }} title={`${fmtDate(s.date)}: NASA OPERA saw ${Math.round(s.frac * 100)}% of the field under water`} />;
+      })}
+      {!ml && y.year > 0 && (p.extras?.stress?.weeks ?? []).filter((w) => w.start.startsWith(String(y.year))).map((w, wi) => {
+        const d = dekadOf(dateToT(w.start));
+        return <i key={'s' + w.start + wi} className={`stress ${w.status}`} style={{ left: `${((d + 0.5) / 36) * 100}%` }} title={`Week of ${fmtDate(w.start)}: crop stress, ${w.drivers.map((x) => DRIVER[x] ?? x).join(' and ') || 'an unusual week'}${w.tmaxC != null ? ` (high ${Math.round(w.tmaxC * 9 / 5 + 32)} °F)` : ''}. ${w.status === 'both' ? 'Both methods agree.' : 'One of two methods.'}`} />;
+      })}
       {!ml && y.year > 0 && rainDays(y.year).map((r) => {
         const d = dekadOf(dateToT(r.date)), c = y.rule[d];
         return <i key={r.date} className={`rain ${c === 'b' ? 'hit' : ''}`} style={{ left: `${((d + 0.5) / 36) * 100}%` }} title={`${r.date}: ${((rainOf(r) ?? 0) / 25.4).toFixed(1)} in of rain, field ${LABEL[c as CoverClass].toLowerCase()}`} />;
@@ -77,6 +87,8 @@ export default function YearSheet(p: YearSheetProps) {
           <span><i className="hatch-u" />No clear view or not processed</span>
           <span><i className="rain-key hit" />1 inch of rain on bare ground</span>
           <span><i className="rain-key" />on a crop or water</span>
+          {p.extras?.stress && <span><i className="stress-key" />Crop-stress week (hover for why)</span>}
+          {p.extras?.water && <span><i className="opera-key" />Standing water seen by NASA OPERA</span>}
         </div>
         <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close"><Icon name="down" /></button>
       </div>

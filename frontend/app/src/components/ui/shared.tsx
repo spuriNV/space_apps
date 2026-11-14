@@ -76,7 +76,8 @@ export function Actions({ onStep }: { onStep: (s: Step) => void }) {
 }
 
 const when = (t: number) => { const d = dekadOf(t); return `${['early', 'mid', 'late'][d % 3]} ${MONTHS_FULL[Math.floor(d / 3)]}`; };
-export function AboutField({ loc, prov, cal }: { loc: Location; prov: ProvMap; cal: Calendar | null }) {
+export function AboutField({ loc, prov, cal, insurance }: { loc: Location; prov: ProvMap; cal: Calendar | null; insurance: Location['rma'] | null }) {
+  const rma = insurance;
   const ob = observedBare(cal), when = usuallyBareMonths(cal), dem = loc.nasadem;
   const s = loc.soil, saline = (s.ec_ds_per_m ?? 0) >= 4;
   const inFt = (s.awc_mm_per_m.value / 1000) * 12;
@@ -88,7 +89,7 @@ export function AboutField({ loc, prov, cal }: { loc: Location; prov: ProvMap; c
       <div><dt>Salt</dt><dd className={saline ? 'warn' : ''}>{s.ec_ds_per_m == null ? 'Not in the soil survey' : saline ? 'Salty soil; limits salt-sensitive crops' : 'Low salt'}{s.ec_ds_per_m != null && <small> (EC {s.ec_ds_per_m.toFixed(1)} dS/m)</small>}</dd></div>
       <div><dt>Water</dt><dd>{loc.water.source === 'surface' ? 'Surface water' : 'Groundwater (wells)'}, {loc.water.district.replace(' (U)', '')} <cite><Src p={prov.water} /></cite></dd></div>
       {dem?.slope_mean_pct != null && <div><dt>Slope</dt><dd>{dem.slope_mean_pct < 2 ? 'Nearly flat' : dem.slope_mean_pct < 5 ? 'Gentle slope' : 'Sloping'}, about {dem.slope_mean_pct.toFixed(1)}% on average{dem.low_spot_fraction ? `; low spots on about ${Math.round(dem.low_spot_fraction * 100)}% of the field, where water ponds and frost settles` : ''}. <cite>NASA NASADEM elevation, 100 ft squares; radar elevation reads 1 to 2% on a levelled field. <Src p={prov.terrain} /></cite></dd></div>}
-      {loc.rma && <div><dt>Crop insurance</dt><dd>{usd(loc.rma.total_usd)} paid out on {loc.rma.scope} {loc.rma.crop.replace('_forage', '').replace(/_/g, ' ')}, {loc.rma.from}–{loc.rma.to}; {usd(loc.rma.top_usd)} in {loc.rma.top_year} alone.{loc.rma.share_drought >= 0.3 ? ` ${Math.round(loc.rma.share_drought * 100)}% of it for drought or failed irrigation water.` : ''} <cite>USDA Risk Management Agency, county totals, not this farm. <Src p={prov.rma} /></cite></dd></div>}
+      {rma && <div><dt>Crop insurance</dt><dd>{usd(rma.total_usd)} paid out on {rma.scope} {rma.crop.replace('_forage', '').replace(/_/g, ' ')}, {rma.from}–{rma.to}; {usd(rma.top_usd)} in {rma.top_year} alone.{rma.share_drought >= 0.3 ? ` ${Math.round(rma.share_drought * 100)}% of it for drought or failed irrigation water.` : ''} <cite>USDA Risk Management Agency, county totals, not this farm. <Src p={prov.rma} /></cite></dd></div>}
       <div><dt>Usually bare</dt><dd>{ob ? <>About {ob.value} days a year, mostly {when} <cite>Seen by satellite, {ob.years[0]}–{ob.years[ob.years.length - 1]}. {BARE_DEF} <Src p={prov.calendar} /></cite></> : loc.observed_cover.summary}</dd></div>
     </dl>
   );
