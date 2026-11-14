@@ -1,0 +1,78 @@
+[
+ {
+  "id": "hls",
+  "name": "HLS",
+  "long_name": "Harmonized Landsat Sentinel-2",
+  "sees": "Cover, greenness, open water",
+  "native_scale": "30 m",
+  "footprint_m": 30,
+  "cadence": "2–3 days",
+  "since": 2013,
+  "group": "field",
+  "color": "#7ee081",
+  "in_stack": "surface"
+ },
+ {
+  "id": "ecostress",
+  "name": "ECOSTRESS",
+  "long_name": "ECOSTRESS on the Space Station",
+  "sees": "Land-surface temperature, crop water use",
+  "native_scale": "70 m",
+  "footprint_m": 70,
+  "cadence": "irregular",
+  "since": 2018,
+  "group": "field",
+  "color": "#ffb454"
+ },
+ {
+  "id": "modis",
+  "name": "MODIS",
+  "long_name": "MODIS vegetation indices (MOD13Q1)",
+  "sees": "Greenness history since 2000",
+  "native_scale": "250 m",
+  "footprint_m": 250,
+  "cadence": "16 days",
+  "since": 2000,
+  "group": "field",
+  "color": "#c3e88d"
+ },
+ {
+  "id": "smap",
+  "name": "SMAP",
+  "long_name": "Soil Moisture Active Passive (L3 / L4)",
+  "sees": "Surface and root-zone soil moisture",
+  "native_scale": "9 km",
+  "footprint_m": 9000,
+  "cadence": "daily",
+  "since": 2015,
+  "group": "regional",
+  "color": "#5ab0ff",
+  "in_stack": "soil"
+ },
+ {
+  "id": "imerg",
+  "name": "IMERG",
+  "long_name": "GPM IMERG precipitation",
+  "sees": "Rain and storms",
+  "native_scale": "~10 km",
+  "footprint_m": 10000,
+  "cadence": "daily",
+  "since": 2000,
+  "group": "regional",
+  "color": "#9d8cff"
+ },
+ {
+  "id": "grace",
+  "name": "GRACE",
+  "long_name": "GRACE / GRACE-FO drought indicators",
+  "sees": "Groundwater storage percentile",
+  "native_scale": "0.25°",
+  "footprint_m": 27800,
+  "cadence": "weekly",
+  "since": 2003,
+  "group": "regional",
+  "color": "#ff7eb6",
+  "in_stack": "groundwater",
+  "caveat": "Underlying signal is about 300 km wide"
+ }
+]
