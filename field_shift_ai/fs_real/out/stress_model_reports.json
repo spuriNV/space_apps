@@ -1,0 +1,100 @@
+[
+  {
+    "id": "stress_zscore_v1",
+    "task": "stress_anomaly",
+    "method": "zscore",
+    "features": [
+      "z_ndvi",
+      "z_lst",
+      "z_esi",
+      "z_sm"
+    ],
+    "labels": "none (unsupervised; checked against known episodes)",
+    "split": {
+      "fit_years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "scheme": "all_years"
+    },
+    "metrics": {
+      "flag_rate": 0.112,
+      "event_recall": {
+        "CA 2021-22 drought": 0.4318
+      },
+      "false_positive_proxy": 0.0946,
+      "weeks_scored": 241
+    },
+    "confusion": null,
+    "feature_importance": [],
+    "disagreement_with": {
+      "isolation_forest": 0.0954
+    },
+    "notes": "composite z > 1.0 or two of (z_NDVI<-1, z_LST>+1, z_SM<-1); no labelled stress events",
+    "location_id": "ca_colusa_rice",
+    "checks": {
+      "2022_flag_rate_zscore": 0.8182,
+      "2022_flag_rate_iforest": 0.5,
+      "note": "2022 was a fallow year: anomalous, but fallow is not crop stress"
+    }
+  },
+  {
+    "id": "stress_iforest_v1",
+    "task": "stress_anomaly",
+    "method": "isolation_forest",
+    "features": [
+      "z_ndvi",
+      "z_lst",
+      "z_esi",
+      "z_sm",
+      "z_eto",
+      "z_imerg30"
+    ],
+    "labels": "none (unsupervised; checked against known episodes)",
+    "split": {
+      "fit_years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "scheme": "all_years"
+    },
+    "metrics": {
+      "flag_rate": 0.0996,
+      "event_recall": {
+        "CA 2021-22 drought": 0.2727
+      },
+      "false_positive_proxy": 0.1486,
+      "weeks_scored": 241
+    },
+    "confusion": null,
+    "feature_importance": [],
+    "disagreement_with": {
+      "zscore": 0.0954
+    },
+    "notes": "IsolationForest(n_estimators=200, contamination=0.1) per field; flags anomalies in any direction; missing z filled with 0",
+    "location_id": "ca_colusa_rice",
+    "checks": {
+      "2022_flag_rate_zscore": 0.8182,
+      "2022_flag_rate_iforest": 0.5,
+      "note": "2022 was a fallow year: anomalous, but fallow is not crop stress"
+    }
+  }
+]

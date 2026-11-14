@@ -1,0 +1,485 @@
+[
+  {
+    "id": "bare_rule_v1_year",
+    "task": "bare_cover",
+    "method": "rule_ndvi",
+    "features": [
+      "ndvi"
+    ],
+    "labels": "cdl_fallow+cdl_window+s2_scl_pseudo",
+    "split": {
+      "train_years": [
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "test_years": [
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "metrics": {
+      "accuracy": 0.9179,
+      "f1_bare": 0.9076,
+      "n_labelled": 134,
+      "train_accuracy": 0.878,
+      "train_f1_bare": 0.9029,
+      "train_n_labelled": 164,
+      "transition_mae_days": 11.6667,
+      "transitions_matched": 6,
+      "transitions_reference": 6
+    },
+    "confusion": [
+      [
+        54,
+        11,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        69
+      ]
+    ],
+    "feature_importance": [],
+    "disagreement_with": {
+      "random_forest": 0.1481,
+      "hist_gbt": 0.1235
+    },
+    "notes": "pseudo-labels from Sentinel-2 SCL / crop-inventory rules; not ground truth",
+    "location_id": "ca_colusa_rice",
+    "features_dropped_no_data": [],
+    "class_order": [
+      "bare",
+      "partial",
+      "covered"
+    ],
+    "badge": null,
+    "checks": {
+      "accuracy_ge_0.80": true,
+      "f1_bare_ge_0.75": true,
+      "rule_vs_ml_disagreement_lt_0.20": null
+    }
+  },
+  {
+    "id": "bare_rf_v1_year",
+    "task": "bare_cover",
+    "method": "random_forest",
+    "features": [
+      "ndvi",
+      "evi",
+      "ndwi",
+      "bsi",
+      "nbr2",
+      "red",
+      "nir",
+      "swir1",
+      "ndvi_30d_mean",
+      "ndvi_30d_min",
+      "ndvi_30d_max",
+      "ndvi_60d_mean",
+      "ndvi_60d_min",
+      "ndvi_60d_max",
+      "ndvi_30d_slope",
+      "days_since_last_obs",
+      "ndvi_anom_modis",
+      "doy_sin",
+      "doy_cos",
+      "smap_pct",
+      "imerg_7d_mm",
+      "power_tmax_7d_c",
+      "snow_flag"
+    ],
+    "labels": "cdl_fallow+cdl_window+s2_scl_pseudo",
+    "split": {
+      "train_years": [
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "test_years": [
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "metrics": {
+      "accuracy": 0.9776,
+      "f1_bare": 0.9774,
+      "n_labelled": 134,
+      "train_accuracy": 1.0,
+      "train_f1_bare": 1.0,
+      "train_n_labelled": 164,
+      "transition_mae_days": 5.0,
+      "transitions_matched": 6,
+      "transitions_reference": 6
+    },
+    "confusion": [
+      [
+        65,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        66
+      ]
+    ],
+    "feature_importance": [
+      {
+        "feature": "ndvi",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "evi",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "bsi",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "red",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "nbr2",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "nir",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "swir1",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "days_since_last_obs",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_30d_mean",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_30d_min",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_30d_max",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_60d_mean",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_60d_min",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_60d_max",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_30d_slope",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "power_tmax_7d_c",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "doy_sin",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "doy_cos",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "smap_pct",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "snow_flag",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "imerg_7d_mm",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_anom_modis",
+        "importance": -0.003,
+        "share": 0.0
+      },
+      {
+        "feature": "ndwi",
+        "importance": -0.0075,
+        "share": 0.0
+      }
+    ],
+    "disagreement_with": {
+      "rule_ndvi": 0.1481,
+      "hist_gbt": 0.0432
+    },
+    "notes": "pseudo-labels from Sentinel-2 SCL / crop-inventory rules; not ground truth",
+    "location_id": "ca_colusa_rice",
+    "features_dropped_no_data": [],
+    "class_order": [
+      "bare",
+      "partial",
+      "covered"
+    ],
+    "badge": null,
+    "checks": {
+      "accuracy_ge_0.80": true,
+      "f1_bare_ge_0.75": true,
+      "rule_vs_ml_disagreement_lt_0.20": true
+    }
+  },
+  {
+    "id": "bare_hgb_v1_year",
+    "task": "bare_cover",
+    "method": "hist_gbt",
+    "features": [
+      "ndvi",
+      "evi",
+      "ndwi",
+      "bsi",
+      "nbr2",
+      "red",
+      "nir",
+      "swir1",
+      "ndvi_30d_mean",
+      "ndvi_30d_min",
+      "ndvi_30d_max",
+      "ndvi_60d_mean",
+      "ndvi_60d_min",
+      "ndvi_60d_max",
+      "ndvi_30d_slope",
+      "days_since_last_obs",
+      "ndvi_anom_modis",
+      "doy_sin",
+      "doy_cos",
+      "smap_pct",
+      "imerg_7d_mm",
+      "power_tmax_7d_c",
+      "snow_flag"
+    ],
+    "labels": "cdl_fallow+cdl_window+s2_scl_pseudo",
+    "split": {
+      "train_years": [
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "test_years": [
+        2023,
+        2024,
+        2025
+      ]
+    },
+    "metrics": {
+      "accuracy": 0.9627,
+      "f1_bare": 0.9612,
+      "n_labelled": 134,
+      "train_accuracy": 1.0,
+      "train_f1_bare": 1.0,
+      "train_n_labelled": 164,
+      "transition_mae_days": 5.0,
+      "transitions_matched": 6,
+      "transitions_reference": 6
+    },
+    "confusion": [
+      [
+        62,
+        0,
+        3
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        67
+      ]
+    ],
+    "feature_importance": [
+      {
+        "feature": "ndvi",
+        "importance": 0.294,
+        "share": 0.6864
+      },
+      {
+        "feature": "ndvi_anom_modis",
+        "importance": 0.1343,
+        "share": 0.3136
+      },
+      {
+        "feature": "evi",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "bsi",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "nbr2",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "red",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndwi",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "nir",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "swir1",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_30d_min",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_30d_mean",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_60d_mean",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_60d_min",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_60d_max",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_30d_max",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "ndvi_30d_slope",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "days_since_last_obs",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "doy_sin",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "doy_cos",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "smap_pct",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "imerg_7d_mm",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "power_tmax_7d_c",
+        "importance": 0.0,
+        "share": 0.0
+      },
+      {
+        "feature": "snow_flag",
+        "importance": 0.0,
+        "share": 0.0
+      }
+    ],
+    "disagreement_with": {
+      "rule_ndvi": 0.1235,
+      "random_forest": 0.0432
+    },
+    "notes": "pseudo-labels from Sentinel-2 SCL / crop-inventory rules; not ground truth",
+    "location_id": "ca_colusa_rice",
+    "features_dropped_no_data": [],
+    "class_order": [
+      "bare",
+      "partial",
+      "covered"
+    ],
+    "badge": null,
+    "checks": {
+      "accuracy_ge_0.80": true,
+      "f1_bare_ge_0.75": true,
+      "rule_vs_ml_disagreement_lt_0.20": true
+    }
+  }
+]
