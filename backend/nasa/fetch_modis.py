@@ -7,11 +7,14 @@ C.require_creds()
 P = "MOD13Q1.061"
 L = "_250m_16_days_"
 LAY = [L + n for n in ["NDVI", "EVI", "pixel_reliability", "VI_Quality", "composite_day_of_the_year"]]
-start, end = a.start or "2000-02-18", a.end or "2025-12-31"
+start, end = a.start or "2000-02-18", a.end or C.today()
 ae = C.AppEEARS()
-for p in a.preset or C.PRESETS:
-    lon, lat = C.field_point(p)
-    raw, extra = ae.point_series(f"fs_{p}_modis", lon, lat, start, end, [(P, l) for l in LAY], chunk_years=9)
+presets = a.preset or C.PRESETS
+pts = {p: C.field_point(p) for p in presets}
+raws, extra = ae.multi_point("modis", pts, start, end, [(P, l) for l in LAY])
+for p in presets:
+    lon, lat = pts[p]
+    raw = raws[p]
     df = C.clean_appeears_df(raw, LAY, {L + "NDVI": -3000, L + "EVI": -3000, L + "pixel_reliability": -1})
     df = df.rename(columns={l: l.replace(L, "") for l in LAY})
     # pixel_reliability: 0 good, 1 marginal, 2 snow/ice, 3 cloudy; -1 fill

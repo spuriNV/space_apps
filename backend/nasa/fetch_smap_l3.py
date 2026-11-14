@@ -8,11 +8,14 @@ P = "SPL3SMP_E.006"
 AM = "Soil_Moisture_Retrieval_Data_AM_"
 LAY = [AM + "soil_moisture", AM + "retrieval_qual_flag", AM + "surface_flag", AM + "static_water_body_fraction",
        AM + "vegetation_opacity", AM + "soil_moisture_error"]
-start, end = a.start or "2015-03-31", a.end or "2025-12-31"
+start, end = a.start or "2015-03-31", a.end or C.today()
 ae = C.AppEEARS()
-for p in a.preset or C.PRESETS:
-    lon, lat = C.field_point(p)
-    raw, extra = ae.point_series(f"fs_{p}_smapl3", lon, lat, start, end, [(P, l) for l in LAY], chunk_years=4)
+presets = a.preset or C.PRESETS
+pts = {p: C.field_point(p) for p in presets}
+raws, extra = ae.multi_point("smap_l3", pts, start, end, [(P, l) for l in LAY])
+for p in presets:
+    lon, lat = pts[p]
+    raw = raws[p]
     df = C.clean_appeears_df(raw, LAY, {l: -9999 for l in LAY})
     df = df.rename(columns={l: l.replace(AM, "") for l in LAY})
     q = df["retrieval_qual_flag"]

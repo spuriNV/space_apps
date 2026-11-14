@@ -95,9 +95,14 @@ class AppEEARS:
     def wait(self, task_id: str, poll: int = 30, timeout: int = 6 * 3600) -> None:
         t0 = time.time()
         while time.time() - t0 < timeout:
-            r = requests.get(f"{APPEEARS}/task/{task_id}", headers=self.h, timeout=60)
-            r.raise_for_status()
-            st = r.json().get("status")
+            try:
+                r = requests.get(f"{APPEEARS}/task/{task_id}", headers=self.h, timeout=60)
+                r.raise_for_status()
+                st = r.json().get("status")
+            except Exception as e:  # noqa: BLE001  transient: keep polling
+                print(f"  poll error {type(e).__name__}; retrying", flush=True)
+                time.sleep(poll)
+                continue
             if st == "done":
                 return
             if st in ("error", "failed"):
@@ -117,37 +122,63 @@ class AppEEARS:
                 out[f["file_name"]] = pd.read_csv(io.BytesIO(r.content))
         return out
 
-    def point_series(self, name, lon, lat, start, end, layers, chunk_years=None) -> tuple[pd.DataFrame, dict]:
-        """Run (possibly year-chunked) point tasks, return (results_df, extra) where results_df
-        has 'Date' + one column per layer (renamed to the bare layer name) and extra['qa_lookup'] frames."""
-        y0, y1 = int(start[:4]), int(end[:4])
-        step = chunk_years or (y1 - y0 + 1)
-        frames, task_ids = [], []
-        for ys in range(y0, y1 + 1, step):
-            s = max(start, f"{ys}-01-01")
-            e = min(end, f"{min(ys + step - 1, y1)}-12-31")
-            tid = self.submit_point(f"{name}_{s}_{e}", lon, lat, s, e, layers)
-            print(f"  submitted {name} {s}..{e}: task {tid}")
-            task_ids.append(tid)
-        for tid in task_ids:
-            self.wait(tid)
-            res = self.results(tid)
-            main = [v for k, v in res.items() if k.endswith("-results.csv")]
-            if not main:
-                raise RuntimeError(f"no *-results.csv in AppEEARS bundle {tid}: {list(res)}")
-            frames.append(main[0])
-        df = pd.concat(frames, ignore_index=True)
+    def submit_points(self, name: str, points: dict[str, tuple[float, float]], start: str, end: str,
+                      layers: list[tuple[str, str]]) -> str:
+        fmt = lambda s: datetime.strptime(s, "%Y-%m-%d").strftime("%m-%d-%Y")
+        body = {"task_type": "point", "task_name": name,
+                "params": {"dates": [{"startDate": fmt(start), "endDate": fmt(end)}],
+                           "layers": [{"product": p, "layer": l} for p, l in layers],
+                           "coordinates": [{"id": k, "longitude": lo, "latitude": la, "category": "field"}
+                                           for k, (lo, la) in points.items()]}}
+        r = requests.post(f"{APPEEARS}/task", json=body, headers=self.h, timeout=120)
+        if r.status_code >= 300:
+            raise RuntimeError(f"AppEEARS task submit HTTP {r.status_code}: {r.text[:400]}")
+        return r.json()["task_id"]
+
+    def multi_point(self, dataset: str, points: dict[str, tuple[float, float]], start: str, end: str,
+                    layers: list[tuple[str, str]], resume: bool = True) -> tuple[dict[str, pd.DataFrame], dict]:
+        """One AppEEARS point task for all points and the whole date range. The task id is saved in
+        data/cache/_appeears/<dataset>.task.json and every bundle CSV in data/cache/_appeears/<dataset>/ so a rerun
+        resumes the same task (no resubmission) and parsing can be redone offline.
+        Returns ({point_id: frame with 'Date' + one column per layer (bare layer name)}, extra)."""
+        raw = CACHE / "_appeears"
+        raw.mkdir(parents=True, exist_ok=True)
+        state_f = raw / f"{dataset}.task.json"
+        params = {"points": points, "start": start, "end": end, "layers": layers}
+        tid = None
+        if resume and state_f.exists():
+            st = json.loads(state_f.read_text())
+            if st.get("params") == json.loads(json.dumps(params)):
+                tid = st["task_id"]
+                print(f"  resuming AppEEARS task {tid} for {dataset}", flush=True)
+        if tid is None:
+            tid = self.submit_points(f"fs_{dataset}_{start}_{end}", points, start, end, layers)
+            state_f.write_text(json.dumps({"task_id": tid, "params": params, "submitted": now_iso()}, indent=1))
+            print(f"  submitted {dataset} {start}..{end}: task {tid}", flush=True)
+        self.wait(tid)
+        res = self.results(tid)
+        d = raw / dataset
+        d.mkdir(exist_ok=True)
+        for k, v in res.items():
+            v.to_csv(d / k, index=False)
+        mains = [v for k, v in res.items() if k.endswith("-results.csv")]
+        if not mains:
+            raise RuntimeError(f"no *-results.csv in AppEEARS bundle {tid}: {list(res)}")
+        df = pd.concat(mains, ignore_index=True)
         ren = {}
         for _, layer in layers:
             for c in df.columns:
-                if c.endswith(layer) and c not in ren:
+                if c.endswith(layer) and c not in ren and not c.endswith("_" + layer + "_Description"):
                     ren[c] = layer
-        return df.rename(columns=ren), {"task_ids": task_ids}
+        df = df.rename(columns=ren)
+        idcol = "ID" if "ID" in df.columns else None
+        out = {k: (df[df[idcol] == k].copy() if idcol else df.copy()) for k in points}
+        return out, {"task_ids": [tid], "raw_dir": str(d.relative_to(REPO))}
 
 
 def clean_appeears_df(df: pd.DataFrame, layers: list[str], fill: dict[str, float]) -> pd.DataFrame:
     keep = ["Date"] + [l for l in layers if l in df.columns]
-    out = df[keep].copy()
+    out = df.loc[:, ~df.columns.duplicated()][keep].copy()
     out["date"] = pd.to_datetime(out.pop("Date"))
     for l, fv in fill.items():
         if l in out.columns:

@@ -5,17 +5,23 @@ from fieldshift_nasa import common as C
 ap = C.common_args("GRACE-DA weekly percentile series")
 a = ap.parse_args()
 C.require_creds()
-from fieldshift_nasa.granules import point_series
+from fieldshift_nasa.granules import opendap_points
 
 V = ["gws_inst", "rtzsm_inst", "sfsm_inst"]
 start = a.start or "2003-02-01"
-end = a.end or "2025-12-31"
-for p in a.preset or C.PRESETS:
-    lon, lat = C.field_point(p)
-    df, info = point_series("GRACEDADM_CLSM025GL_7D", "3.0", V, lon, lat, start, end, {v: -999.0 for v in V}, a.limit)
+end = a.end or C.today()
+presets = a.preset or C.PRESETS
+pts = {p: C.field_point(p) for p in presets}
+# GRACE-DA 0.25 deg grid: 600 lat rows from -59.875, 1440 lon columns from -179.875 (checked against the DDS and the
+# streamed read of 2021-01: cell -122.125 / 39.125 for the Colusa field)
+frames, info = opendap_points("GRACEDADM_CLSM025GL_7D", "3.0", pts, start, end, V, -179.875, -59.875, 0.25, "latlon",
+                              -999.0, a.limit)
+for p in presets:
+    lon, lat = pts[p]
+    df = frames[p]
     C.write_cache(p, "grace", df, {
         "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=GRACEDADM_CLSM025GL_7D&version=3.0 "
-               "(data.gesdisc.earthdata.nasa.gov, streamed via earthaccess)",
+               "(Cloud OPeNDAP hyperslab per granule)",
         "collection": "GRACEDADM_CLSM025GL_7D.3.0 (C2283200566-GES_DISC)",
         "params": {"point_lon_lat": [lon, lat], "start": start, "end": end, "variables": V,
                    "selection": "nearest 0.25 deg cell centre"},

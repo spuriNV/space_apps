@@ -8,11 +8,14 @@ P = "SPL4SMGP.008"
 G = "Geophysical_Data_"
 LAY = [G + "sm_surface", G + "sm_rootzone", G + "sm_profile", G + "sm_rootzone_pctl", G + "sm_rootzone_wetness",
        G + "precipitation_total_surface_flux"]
-start, end = a.start or "2015-03-31", a.end or "2025-12-31"
+start, end = a.start or "2015-03-31", a.end or C.today()
 ae = C.AppEEARS()
-for p in a.preset or C.PRESETS:
-    lon, lat = C.field_point(p)
-    raw, extra = ae.point_series(f"fs_{p}_smapl4", lon, lat, start, end, [(P, l) for l in LAY], chunk_years=2)
+presets = a.preset or C.PRESETS
+pts = {p: C.field_point(p) for p in presets}
+raws, extra = ae.multi_point("smap_l4", pts, start, end, [(P, l) for l in LAY])
+for p in presets:
+    lon, lat = pts[p]
+    raw = raws[p]
     df = C.clean_appeears_df(raw, LAY, {l: -9999 for l in LAY})
     df = df.rename(columns={l: l.replace(G, "") for l in LAY})
     C.write_cache(p, "smap_l4", df, {
