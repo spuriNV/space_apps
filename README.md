@@ -1,55 +1,87 @@
 # Field Shift
 
-NASA Space Apps Challenge 2026, Vancouver: **Field Shift: Adapting Farms with NASA Data**. A crop-rotation planner for two California example farms (Colusa rice, Kings County forage), built on NASA Earth data. Start with [docs/field-shift-plan.md](docs/field-shift-plan.md); build rules are in [CONTRACT.md](CONTRACT.md).
+NASA Space Apps Challenge 2026, Vancouver: **Field Shift: Adapting Farms with NASA Data**.
 
-## Try it after pulling
+A crop-rotation planner for a grower and their farm adviser, built on NASA Earth data. It works on two real California fields: a rice field west of Williams (Colusa County) and an alfalfa field south of Hanford (Kings County). For each field it shows:
+- what's happening on the field now;
+- what's likely in the coming season;
+- what each rotation would gain or give up in water, soil cover and risk.
 
-You need **Node 20+** and **[uv](https://docs.astral.sh/uv/)** (it installs Python 3.12 for you). No API keys are needed for anything below.
+It ends with a one-page brief for the adviser.
 
-### The three design options (frontend)
+**Start here:**
+- [PLAN.md](PLAN.md): the working plan and the decisions made so far.
+- [docs/judging-rubric.md](docs/judging-rubric.md): where the project stands on each judging criterion.
+- [CONTRACT.md](CONTRACT.md): build rules for anyone adding code.
 
-Each runs on its own port; open the URL after `npm run dev`. They all use mock data and say so on screen.
+## Run it
 
-```sh
-cd frontend/variants/a-maps   && npm install && npm run dev   # A, Maps classic    → http://127.0.0.1:5171
-cd frontend/variants/b-earth  && npm install && npm run dev   # B, Earth explorer  → http://localhost:5172
-cd frontend/variants/c-split  && npm install && npm run dev   # C, Split workspace → http://localhost:5173
-```
-
-Things to try: pick a field, then **scroll into it on the map** to get the 3D view; open "Your field's year" and "Compare". Screenshots of all six screens per option are in `design/screenshots/`.
-
-### The backend (each chunk runs and checks on its own)
-
-All cached data is committed, so the checks run offline.
+You need **Node 20+** and **[uv](https://docs.astral.sh/uv/)** (it installs Python 3.12 for you). Cached data is committed, so the app runs without any API keys.
 
 ```sh
-cd backend/api      && uv run uvicorn app.main:app --port 8000   # API → http://localhost:8000/api/locations
-cd backend/api      && uv run python checks/check_api.py
-cd backend/regional && uv run python checks/run_checks.py        # NASA POWER, reservoirs, drought, soils
-cd backend/field    && uv run python checks/run_checks.py        # field outlines, crop history, satellite calendar
-cd backend/engine   && uv run python checks/run_checks.py        # rotation scoring
-cd backend/news     && uv run python checks/run_checks.py        # news timeline
+# 1. API (real data from the cache)
+cd backend/api && uv run uvicorn app.main:app --port 8000
+
+# 2. App, in a second terminal
+cd frontend/app && npm install && npm run dev      # open http://localhost:5170
 ```
 
-Each check prints PASS/FAIL lines. A few FAILs are expected and are real findings, not bugs; each chunk's `README.md` explains them:
-- regional: Colusa's Jan–Mar 2023 rain is not top-3 in the record.
-- field: winter flooding at Colusa is visible in only 3 of 6 winters.
-- engine: the spec's "baseline erosion = 0" check conflicts with its own formula.
-- news: two publisher sites block scripted link checks (403/429).
+Pick a field, then try:
+- "Your field now";
+- "Coming season";
+- "Your field's year";
+- "Compare";
+- "Print a summary for your adviser".
 
-Re-fetching data (rather than using the cache) is described in each chunk's README. Several sources need accounts; see [SIGNUPS.md](SIGNUPS.md). Keys go in a local `.env`, which is git-ignored. Never commit it.
+Scroll into the field on the map for the 3D view (crop, then soil moisture, then groundwater). Without the API running, the app falls back to example data and says so.
+
+Current screenshots are in `design/screenshots/app/`.
+
+## Check the data
+
+Each backend chunk runs and checks on its own and prints PASS/FAIL lines:
+
+```sh
+cd backend/api      && uv run python checks/check_api.py     # every route, validated against schemas/
+cd backend/regional && uv run python checks/run_checks.py    # NASA POWER, reservoirs, drought, soils, NOAA stations
+cd backend/field    && uv run python checks/run_checks.py    # field outlines, crop history, satellite calendar, 30 m grid
+cd backend/engine   && uv run python checks/run_checks.py    # rotation scoring, incl. the OpenET water check
+cd backend/ground   && uv run python checks/run_checks.py    # OpenET, NASS, AMS, crop insurance, EQIP
+cd backend/ai       && uv run python checks/run_checks.py    # bare-field detectors (rule vs machine learning), stress
+cd backend/outlook  && uv run python checks/run_checks.py    # coming-season outlooks
+cd backend/nasa     && uv run python checks/run_checks.py    # SMAP, IMERG, GRACE, MODIS, ECOSTRESS, OPERA
+cd backend/nasa_open && uv run python checks/run_checks.py   # NASADEM, HLS, ISS photos
+cd backend/news     && uv run python checks/run_checks.py    # news timeline
+```
+
+Some FAIL lines are real findings rather than bugs, for example Colusa's winter flooding showing in only some winters. Each chunk's `README.md` explains its results.
+
+**Headline validation:** our modelled crop water use is within +16% (rice) and +21% (alfalfa) of OpenET's satellite-based measurements for the same fields and years. See `backend/engine/README.md`.
+
+## Re-fetching data (needs keys)
+
+Some sources need free accounts; see [SIGNUPS.md](SIGNUPS.md).
+- Copy `.env.example` to `.env` and fill it in. `.env` is git-ignored; never commit it.
+- Check the NASA login with `cd backend/nasa && uv run python check_auth.py`.
 
 ## Layout
 
 | Path | What |
 |---|---|
-| `docs/` | Plan, build spec, brief coverage, research, judges |
-| `frontend/variants/` | Design options A, B, C |
-| `design/` | Screenshots and the capture scripts |
-| `backend/api/` | FastAPI server for the spec's routes (real data where available, fixtures otherwise) |
-| `backend/regional/` | NASA POWER, reference ET, risk days, CDEC, Drought Monitor, SSURGO, NOAA stations |
-| `backend/field/` | Field outlines, Cropland Data Layer history, Sentinel-2/Landsat calendar, 30 m grid |
-| `backend/engine/` | Crops, the 8 rotations, scoring with ranges and ties |
+| `frontend/app/` | The app (Vite, React, TypeScript, MapLibre) |
+| `backend/api/` | FastAPI server; serves real data where it exists, fixtures otherwise |
+| `backend/nasa/` | NASA data behind the Earthdata login: SMAP, GPM IMERG, GRACE, MODIS, ECOSTRESS, OPERA |
+| `backend/nasa_open/` | NASA data without a login: NASADEM elevation, HLS imagery, ISS astronaut photos |
+| `backend/regional/` | NASA POWER weather, reference ET, risk days, reservoirs, Drought Monitor, SSURGO soils, NOAA stations |
+| `backend/field/` | Field outlines, Cropland Data Layer history, satellite cover calendar, 30 m grid |
+| `backend/ai/` | Bare-field detection (rule vs random forest / gradient boosting) and crop-stress anomalies |
+| `backend/engine/` | Crops, the 8 rotations, scoring with ranges and ties, water check against OpenET |
+| `backend/ground/` | California ground data: OpenET, CIMIS, NASS, AMS hay prices, crop-insurance losses, EQIP |
+| `backend/outlook/` | Coming-season outlooks: NOAA seasonal and drought outlooks, reservoirs, allocations |
 | `backend/news/` | Cached headlines for the timeline |
-| `schemas/`, `fixtures/` | JSON Schemas and example payloads shared by the API and frontends |
-| `data/cache/` | Cached source data per example farm |
+| `schemas/`, `fixtures/` | JSON Schemas and example payloads |
+| `data/cache/` | Cached source data per field |
+| `design/` | Screenshots, capture scripts, and earlier design explorations |
+| `frontend/variants/`, `design/explorations/` | Earlier design rounds, kept for reference only |
+| `docs/` | Team plan, build spec, brief coverage, research, judging rubric |
+| `.claude/skills/fieldshift-visual-design/` | Design rules for the app, charts, brief and slides |
