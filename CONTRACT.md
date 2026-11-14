@@ -32,3 +32,6 @@ Each `backend/<chunk>/` is its own `uv` project (own `pyproject.toml`, Python 3.
 - No API keys. Map: MapLibre GL JS. Streets style: OpenFreeMap (`https://tiles.openfreemap.org/styles/liberty`). Satellite: Esri World Imagery raster (`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}`). Terrain DEM: AWS Terrarium (`https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`, encoding `terrarium`).
 - All data access goes through `src/api.ts`, which today reads `src/mock/*.json` and later calls `http://localhost:8000/api/...` (routes in spec B3).
 - Plain language, dual units, "supports, doesn't replace" tone (spec B8).
+
+## Judging
+Everything we build is scored on Impact, Creativity, Validity, Relevance and Presentation (1–5 each). `docs/judging-rubric.md` quotes each criterion, says where we stand and lists the gaps; check your work against the criterion it serves and update the file when a gap closes.

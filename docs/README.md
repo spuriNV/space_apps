@@ -9,6 +9,7 @@ NASA Space Apps Challenge 2026, Vancouver: **Field Shift: Adapting Farms with NA
 | [brief-coverage.md](brief-coverage.md) | Line-by-line check of the plan against the official brief |
 | [rotation-factors.md](rotation-factors.md) | What the planner considers when comparing rotations |
 | [research-findings.md](research-findings.md) | Data sources and APIs, region choice, news feed, problem research |
+| [judging-rubric.md](judging-rubric.md) | The five judging criteria, where we stand on each, and the gaps |
 | [judges.md](judges.md) | Local judge profiles (best-guess identities) |
 | [challenge-video-transcript.txt](challenge-video-transcript.txt) | Transcript of the challenge video |
 
