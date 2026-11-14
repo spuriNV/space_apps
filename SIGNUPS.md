@@ -92,4 +92,4 @@ The sign-up pages above were checked on 14 Nov 2026 and load (except AMS, noted)
 - **What it's for:** runs the Field Shift backend and app as one live web service, so the team and judges can use it from a link.
 - **Plan:** the free plan works but sleeps when idle (slow first load). Before judging, switch the service to the paid **Starter** plan so it stays awake; check Render's current price.
 - **Setup** (after the deploy files are in the repo): New → Blueprint → public Git repository `https://github.com/spuriNV/space_apps` → it reads `render.yaml`. In the service's **Environment** tab, add the keys from `.env` (`EARTHDATA_USERNAME`, `EARTHDATA_PASSWORD`, `OPENET_API_KEY`, `CIMIS_APP_KEY`, `NASS_API_KEY`, `AMS_API_KEY`). Never paste them anywhere else.
-- **Hand back:** the service URL (e.g. `https://field-shift.onrender.com`) and which plan it's on.
+- **Hand back:** the service URL (ours: `https://croplytics-app.onrender.com`) and which plan it's on.

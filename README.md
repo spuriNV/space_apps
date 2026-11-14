@@ -14,7 +14,11 @@ It ends with a one-page brief for the adviser.
 - [docs/judging-rubric.md](docs/judging-rubric.md): where the project stands on each judging criterion.
 - [CONTRACT.md](CONTRACT.md): build rules for anyone adding code.
 
-## Run it
+## Live site
+
+**https://croplytics-app.onrender.com**: the full app and API, redeployed automatically on every push to `main` (Render, free plan; the first visit after it has been idle takes a moment to wake up).
+
+## Run it locally
 
 You need **Node 20+** and **[uv](https://docs.astral.sh/uv/)** (it installs Python 3.12 for you). Cached data is committed, so the app runs without any API keys.
 
