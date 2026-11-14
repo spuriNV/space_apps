@@ -513,7 +513,7 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
                                                       method="assumed"),
                          "url": src("eqip_340")["url"], "verified": False,
                          "applies": any("cover" in sp.crop["role"] for sp in tl.spans)}],
-            "constraints_check": cchk, "filtered_out": filtered,
+            "constraints_check": cchk, "filtered_out": filtered and not s["is_baseline"],
             "brief": {"why": [], "evidence": [], "benefits": [],
                       "gaps": ["Yield or profit modelling", "Pest or disease data", "Tile drainage",
                                "A real soil test"],

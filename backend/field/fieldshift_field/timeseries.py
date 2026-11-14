@@ -200,7 +200,7 @@ def process_landsat(item, preset):
 def run(source: str, preset: str, start=None, end=None):
     cfg = SOURCES[source]
     start = start or cfg["start"]
-    end = end or pd.Timestamp.utcnow().strftime("%Y-%m-%d")
+    end = end or pd.Timestamp.now("UTC").strftime("%Y-%m-%d")
     g4326, _ = load_polygon(preset)
     t0 = time.time()
     items = search(source, g4326, start, end)

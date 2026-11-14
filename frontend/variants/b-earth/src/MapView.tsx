@@ -29,7 +29,7 @@ const EXPLODE_Z0 = 12.5, EXPLODE_Z1 = 14.2;
 const explodeExpr = (key: string) => ['interpolate', ['linear'], ['zoom'], EXPLODE_Z0, 0, EXPLODE_Z1, ['get', key]] as unknown as number;
 
 export interface MapHandle {
-  flyToField: (loc: Location, mode: 'card' | 'drill' | 'story') => void;
+  flyToField: (loc: Location, mode: 'card' | 'drill' | 'story' | 'year') => void;
   flyHome: () => void;
   flyTo: (lat: number, lon: number, zoom: number) => void;
   zoomBy: (d: number) => void;
@@ -81,11 +81,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: 'metric' }), 'bottom-right');
     map.on('load', () => {
+      el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
       for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells']) map.addSource(id, { type: 'geojson', data: fc() });
       map.addLayer({ id: 'fp-fill', type: 'fill', source: 'fp', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.1, 13, 0.03] } });
       map.addLayer({ id: 'fp-line', type: 'line', source: 'fp', paint: { 'line-color': ['get', 'color'], 'line-width': 2, 'line-dasharray': [2, 1.5] } });
       map.addLayer({ id: 'fpgrid-line', type: 'line', source: 'fpgrid', minzoom: 11.5, paint: { 'line-color': ['get', 'color'], 'line-width': 1, 'line-opacity': 0.75 } });
-      map.addLayer({ id: 'fp-label', type: 'symbol', source: 'fplabel', layout: { 'text-field': ['get', 'label'], 'text-font': ['Noto Sans Bold'], 'text-size': 12, 'text-anchor': 'top-left', 'text-offset': [0.5, 0.4], 'text-allow-overlap': true }, paint: { 'text-color': ['get', 'color'], 'text-halo-color': 'rgba(5,10,16,0.9)', 'text-halo-width': 1.6 } });
+      map.addLayer({ id: 'fp-label', type: 'symbol', source: 'fplabel', maxzoom: 13.2, layout: { 'text-field': ['get', 'label'], 'text-font': ['Noto Sans Bold'], 'text-size': 12, 'text-anchor': 'top-right', 'text-offset': [-0.6, 0.5], 'text-max-width': 40, 'text-allow-overlap': true }, paint: { 'text-color': ['get', 'color'], 'text-halo-color': 'rgba(5,10,16,0.9)', 'text-halo-width': 1.6 } });
       map.addLayer({ id: 'shadow', type: 'fill', source: 'shadow', minzoom: EXPLODE_Z0, paint: { 'fill-color': '#000', 'fill-opacity': ['interpolate', ['linear'], ['zoom'], EXPLODE_Z0, 0, EXPLODE_Z1, 0.42] } });
       map.addLayer({ id: 'field-casing', type: 'line', source: 'field', paint: { 'line-color': 'rgba(0,0,0,0.65)', 'line-width': 5 } });
       map.addLayer({ id: 'field-line', type: 'line', source: 'field', paint: { 'line-color': ['case', ['get', 'selected'], '#ffffff', 'rgba(255,255,255,0.75)'], 'line-width': 2 } });
@@ -163,14 +164,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
           const w = loc.centroid.lon - (ds.footprint_m * ox) / m.lon, s = loc.centroid.lat - (ds.footprint_m * oy) / m.lat;
           const e = w + ds.footprint_m / m.lon, n = s + ds.footprint_m / m.lat;
           fps.push(rect(w, s, e, n, { color: ds.color }));
-          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${ds.name} · one ${ds.native_scale} pixel` }, geometry: { type: 'Point', coordinates: [w, n] } });
+          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${ds.name} · one ${ds.native_scale} pixel` }, geometry: { type: 'Point', coordinates: [e, n] } });
         } else if (ds.id !== 'hls') {
           const pad = ds.footprint_m * 2, lines: number[][][] = [];
           const w = b.w - pad / m.lon, e = b.e + pad / m.lon, s = b.s - pad / m.lat, n = b.n + pad / m.lat;
           for (let x = w; x <= e + 1e-9; x += ds.footprint_m / m.lon) lines.push([[x, s], [x, n]]);
           for (let y = s; y <= n + 1e-9; y += ds.footprint_m / m.lat) lines.push([[w, y], [e, y]]);
           grids.push({ type: 'Feature', properties: { color: ds.color }, geometry: { type: 'MultiLineString', coordinates: lines } });
-          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${ds.name} · ${ds.native_scale} grid` }, geometry: { type: 'Point', coordinates: [w, s] } });
+          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${ds.name} · ${ds.native_scale} grid` }, geometry: { type: 'Point', coordinates: [e, s] } });
         }
       }
     }
@@ -212,7 +213,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const b = 235 * S, col = smap == null ? '#737a86' : ramp(SMAP_RAMP, smap);
       set('slab-smap', [padded(loc, 110 * S, { b, h: b + (14 + (smap ?? 10) * 0.42) * S, col })]);
       info.push({ key: 'smap', alt: b + 20 * S, pad: 110 * S, color: '#5ab0ff', tag: 'SMAP · 9 km pixel', title: 'Soil: root-zone moisture', value: smap == null ? 'No data' : `${ordinal(smap)} percentile for this time of year`,
-        note: `One pixel covers about ${Math.round(81 / (loc.area_ha.value / 100))} fields this size${fs.cls === 'w' ? ' · unreliable over standing water' : ''}` });
+        note: fs.cls === 'w' ? 'Reading is unreliable over standing water' : `One pixel covers about ${Math.round(81 / (loc.area_ha.value / 100))} fields this size` });
     } else set('slab-smap', []);
     if (p.layersOn.grace) {
       const b = 45 * S, col = grace == null ? '#5d636e' : ramp(GRACE_RAMP, grace);
@@ -261,7 +262,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       programmatic.current = true;
       const small = loc.area_ha.value < 45;
       if (mode === 'card') map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat], zoom: 10.6, pitch: 0, bearing: 0, padding: pad(), speed: 1.4 });
-      else map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat - (small ? 0.0006 : 0.001)], zoom: (small ? 15.15 : 14.5) - (mode === 'story' ? 0.15 : 0), pitch: 60, bearing: -24, padding: { ...pad(), right: live.current.rightInset + 250 }, speed: 1.2 });
+      else map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat - (small ? 0.0006 : 0.001)], zoom: (small ? 15.15 : 14.5) - (mode === 'story' ? 0.15 : mode === 'year' ? 0.75 : 0), pitch: mode === 'year' ? 52 : 60, bearing: -24, padding: { ...pad(), right: live.current.rightInset + 330 }, speed: 1.2 });
     },
     flyHome() { programmatic.current = true; mapRef.current!.flyTo({ ...HOME, padding: { left: 0, right: 0, top: 0, bottom: 0 } }); },
     flyTo(lat, lon, zoom) { programmatic.current = true; mapRef.current!.flyTo({ center: [lon, lat], zoom, pitch: 0, bearing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 } }); },
@@ -272,9 +273,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
 
   // de-overlap labels vertically, anchored right of the stack
   const sorted = [...labels].sort((a, b) => a.ay - b.ay);
-  const lx = Math.max(0, ...labels.map((l) => l.ax)) + 34;
+  const lx = Math.min(Math.max(0, ...labels.map((l) => l.ax)) + 34, (el.current?.clientWidth ?? 1440) - p.rightInset - 290);
   let lastY = -1e9;
-  const placed = sorted.map((l) => { const y = Math.max(l.ay - 30, lastY + 86); lastY = y; return { ...l, lx, ly: y }; });
+  const placed = sorted.map((l) => { const y = Math.max(l.ay - 30, lastY + 90); lastY = y; return { ...l, lx, ly: y }; });
 
   return (
     <div className={`map-wrap zoom-${zoomClass}`}>

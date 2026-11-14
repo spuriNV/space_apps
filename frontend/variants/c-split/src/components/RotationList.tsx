@@ -12,8 +12,9 @@ export default function RotationList({ items, allocation, compareIds, onToggleCo
     <>
       <div className="listbar">
         <span><b>{items.length} rotations</b> · {sortLabel}</span>
-        <CoverLegend />
+        <button className="btn primary sm" onClick={onCompare} disabled={compareIds.length < 2} data-action="compare">Compare {compareIds.length} side by side<Icon name="arrow" size={14} /></button>
       </div>
+      <div className="listlegend"><span>Month strips show what is on the field:</span><CoverLegend /></div>
       <div className="cards">
         {sorted.map((s) => {
           const need = rng(s.water.irrigation_need_mm);
@@ -41,8 +42,8 @@ export default function RotationList({ items, allocation, compareIds, onToggleCo
                     <WaterBar need={need} allocMm={allocMm} compact />
                   </div>
                   <div className="rnum narrow">
-                    <label title={s.exposure.exposed_rain_days.note}>Exposed heavy-rain days</label>
-                    <div className="rnum-v"><b>{fmtRange(rain.low, rain.high)}</b><small>per year · bare {fmtRange(bare.low, bare.high)} days</small></div>
+                    <label title={s.exposure.exposed_rain_days.note}>Heavy-rain exposure</label>
+                    <div className="rnum-v"><b>{fmtRange(rain.low, rain.high)} days/yr</b><small>bare soil {fmtRange(bare.low, bare.high)} days/yr</small></div>
                   </div>
                 </div>
               </div>
@@ -55,12 +56,6 @@ export default function RotationList({ items, allocation, compareIds, onToggleCo
           );
         })}
       </div>
-      {compareIds.length >= 2 && (
-        <div className="cmptray">
-          <span><b>{compareIds.length} selected</b> to compare</span>
-          <button className="btn primary" onClick={onCompare} data-action="compare">Compare side by side<Icon name="arrow" size={15} /></button>
-        </div>
-      )}
       <p className="pane-foot">Allocation {fmt(allocation, 1)} acre-ft/acre = {fmt(allocMm)} mm. Alternatives use modelled cover from the crop calendar; today's rotation uses observed satellite cover.</p>
     </>
   );

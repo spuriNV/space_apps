@@ -5,17 +5,17 @@ export interface Measure { key: MeasureKey; label: string; long: string; prop: k
 
 export const MEASURES: Record<MeasureKey, Measure> = {
   ndvi: {
-    key: 'ndvi', label: 'Cover', long: 'Plant cover (NDVI greenness)', prop: 'ndvi', unit: 'NDVI', domain: [0.15, 0.9],
+    key: 'ndvi', label: 'Cover', long: 'Plant cover (NDVI)', prop: 'ndvi', unit: 'NDVI', domain: [0.15, 0.9],
     stops: [[0.15, '#9c6b3f'], [0.35, '#dcc27a'], [0.5, '#cfe07a'], [0.7, '#5fb55a'], [0.9, '#1b7a3a']],
     lowLabel: 'bare', highLabel: 'dense cover', source: 'HLS 30 m', fmt: (v) => v.toFixed(2),
   },
   et: {
-    key: 'et', label: 'Water use', long: 'Water use (evapotranspiration)', prop: 'et_mm_day', unit: 'mm/day', domain: [2, 7.6],
+    key: 'et', label: 'Water use', long: 'Water use (ET)', prop: 'et_mm_day', unit: 'mm/day', domain: [2, 7.6],
     stops: [[2, '#eef3fb'], [3.5, '#b7d3ee'], [5, '#6aa6dd'], [6.3, '#2a72c4'], [7.6, '#0b3f8f']],
     lowLabel: 'low', highLabel: 'high', source: 'OpenET 30 m', fmt: (v) => v.toFixed(1),
   },
   stress: {
-    key: 'stress', label: 'Heat stress', long: 'Surface temperature vs field median', prop: 'lst_anom_k', unit: 'K', domain: [-2.5, 6],
+    key: 'stress', label: 'Heat stress', long: 'Heat vs field median', prop: 'lst_anom_k', unit: 'K', domain: [-2.5, 6],
     stops: [[-2.5, '#fff7c9'], [0, '#fedc86'], [2, '#fb9a3c'], [4, '#e4501f'], [6, '#a80f1e']],
     lowLabel: 'cooler', highLabel: 'hotter', source: 'ECOSTRESS 70 m, resampled', fmt: (v) => (v > 0 ? '+' : '') + v.toFixed(1),
   },

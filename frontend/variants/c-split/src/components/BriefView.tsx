@@ -31,7 +31,7 @@ export default function BriefView({ loc, items, id, allocation, onPick, onClose 
       {b.text}{' '}
       {b.source_ids.filter((i) => srcIds.includes(i)).map((i) => {
         const src = getSource(i);
-        return <a key={i} className={`cite${src.verified ? '' : ' unv'}`} href={src.url ?? undefined} target="_blank" rel="noreferrer" title={src.title}><b>{srcIds.indexOf(i) + 1}</b>{src.title.split(':')[0].split(',')[0].replace('NASA Earth Observatory', 'NASA EO')}</a>;
+        return <a key={i} className={`cite${src.verified ? '' : ' unv'}`} href={src.url ?? undefined} target="_blank" rel="noreferrer" title={src.title}><b>{srcIds.indexOf(i) + 1}</b>{src.short ?? src.title}</a>;
       })}
       {b.author === 'template' && <span className="tmpl" title="Written from a fixed template, not by the language model">template</span>}
     </>
@@ -76,19 +76,6 @@ export default function BriefView({ loc, items, id, allocation, onPick, onClose 
             <div>
               {on.why && (<section><h2>Why this rotation</h2><ul className="p-sents">{s.brief.why.map((b, i) => <li key={i}><Sent b={b} /></li>)}</ul></section>)}
               {on.evidence && (<section><h2>Evidence from the data</h2><ul className="p-sents dots">{s.brief.evidence.map((b, i) => <li key={i}><Sent b={b} /></li>)}</ul></section>)}
-              {on.review && (
-                <section>
-                  <h2>Needs local review before anything is seeded</h2>
-                  <ul className="p-review">
-                    {s.brief.local_review.map((r) => (
-                      <li key={r.item}>
-                        <label><input type="checkbox" checked={!!ticks[r.item]} onChange={(e) => setTicks({ ...ticks, [r.item]: e.target.checked })} /><span>{r.item}</span></label>
-                        <em className={`sev sev-${r.severity}`}>{r.severity}</em>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
             </div>
             <div>
               {on.benefits && (
@@ -111,14 +98,28 @@ export default function BriefView({ loc, items, id, allocation, onPick, onClose 
               )}
               {on.insurance && (
                 <section>
-                  <h2>Insurance history <small>{rma.rma_label}, {rma.rma_years[0]}–{rma.rma_years[1]}</small></h2>
+                  <h2>Insurance history <small>{rma.rma_years[0]}–{rma.rma_years[1]}</small></h2>
                   <div className="rmabar tall"><i className="rma-drought" style={{ width: `${rma.rma_share_drought.value}%` }}>Drought {rma.rma_share_drought.value}%</i><i className="rma-wet" style={{ width: `${rma.rma_share_excess_moisture.value}%` }}>Too wet {rma.rma_share_excess_moisture.value}%</i><i className="rma-heat" style={{ width: `${rma.rma_share_heat.value}%` }} /><i className="rma-other" style={{ width: `${rma.rma_share_other.value}%` }}>Other</i></div>
-                  <p className="p-note">Share of crop-insurance payouts by cause. Insurance history, not a forecast. <a className="cite unv" href={getSource('rma_col').url!} target="_blank" rel="noreferrer"><b>{srcIds.indexOf('rma_col') + 1}</b>USDA RMA</a></p>
+                  <p className="p-note">{rma.rma_label}: share of crop-insurance payouts by cause. Insurance history, not a forecast. <a className="cite unv" href={getSource('rma_col').url!} target="_blank" rel="noreferrer"><b>{srcIds.indexOf('rma_col') + 1}</b>USDA RMA</a></p>
                 </section>
               )}
               {on.gaps && (<section><h2>Gaps in the data</h2><ul className="p-gaps">{s.brief.gaps.map((g) => <li key={g}>{g}</li>)}</ul></section>)}
             </div>
           </div>
+
+          {on.review && (
+            <section className="p-reviewsec">
+                  <h2>Needs local review before anything is seeded</h2>
+                  <ul className="p-review">
+                    {s.brief.local_review.map((r) => (
+                      <li key={r.item}>
+                        <label><input type="checkbox" checked={!!ticks[r.item]} onChange={(e) => setTicks({ ...ticks, [r.item]: e.target.checked })} /><span>{r.item}</span></label>
+                        <em className={`sev sev-${r.severity}`}>{r.severity}</em>
+                      </li>
+                    ))}
+                  </ul>
+            </section>
+          )}
 
           <footer className="p-foot">
             <div className="p-sources">
@@ -149,7 +150,12 @@ export default function BriefView({ loc, items, id, allocation, onPick, onClose 
             <div><b>{s.brief.llm_report.numbers_checked}</b><span>numbers matched to data</span></div>
             <div><b>{s.brief.llm_report.rejected}</b><span>rejected, replaced</span></div>
           </div>
-          <p>{srcIds.length} sources · {srcIds.filter((i) => getSource(i).verified).length} verified links. Unverified sources are marked on the page.</p>
+          <p>A sentence with a number that is not in the data is thrown out and replaced by a fixed template.</p>
+        </div>
+        <div className="rail-field"><span>Sources on this page · {srcIds.filter((i) => getSource(i).verified).length} of {srcIds.length} verified</span>
+          <ol className="rail-src">
+            {srcIds.map((i) => { const src = getSource(i); return <li key={i} className={src.verified ? 'v' : 'u'}>{src.url ? <a href={src.url} target="_blank" rel="noreferrer">{src.short ?? src.title}</a> : src.short}<em>{src.verified ? 'verified' : 'to verify'}</em></li>; })}
+          </ol>
         </div>
         <div className="rail-actions">
           <button className="btn primary wide" onClick={() => window.print()}><Icon name="print" size={16} />Print or save as PDF</button>

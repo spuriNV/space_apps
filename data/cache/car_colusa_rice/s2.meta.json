@@ -3,7 +3,7 @@
   "url": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-2-l2a",
   "params": {
     "collection": "sentinel-2-l2a",
-    "datetime": "2022-06-01/2022-07-15",
+    "datetime": "2015-06-23/2026-11-14",
     "intersects": "polygons/car_colusa_rice.geojson",
     "bands": {
       "blue": "B02",
@@ -16,7 +16,7 @@
     "clear_rule": "SCL in {2,4,5,6}",
     "dedupe": "one row per date (S2) / per date+platform (Landsat), keeping most valid pixels"
   },
-  "fetched_at": "2026-11-14T20:07:02+00:00",
+  "fetched_at": "2026-11-14T20:12:38+00:00",
   "footprint_geojson": {
     "type": "Polygon",
     "coordinates": [
@@ -150,10 +150,10 @@
   },
   "fill_value": "NaN",
   "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
-  "n_items_found": 9,
-  "n_rows_raw": 9,
-  "n_rows": 9,
-  "duplicates_dropped": 0,
+  "n_items_found": 788,
+  "n_rows_raw": 788,
+  "n_rows": 710,
+  "duplicates_dropped": 78,
   "errors": [],
-  "seconds": 6
+  "seconds": 250
 }

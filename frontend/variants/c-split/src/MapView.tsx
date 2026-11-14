@@ -88,7 +88,7 @@ export default function MapView(p: MapProps) {
         node.addEventListener('mouseenter', () => props.current.onHover(l.id));
         node.addEventListener('mouseleave', () => props.current.onHover(null));
         node.addEventListener('click', (ev) => { ev.stopPropagation(); props.current.onOpen(l.id); });
-        const m = new maplibregl.Marker({ element: node, anchor: 'bottom', offset: [0, -6] }).setLngLat([l.centroid.lon, l.centroid.lat]).addTo(map);
+        const m = new maplibregl.Marker({ element: node, anchor: 'bottom', offset: [0, -6] }).setLngLat([l.centroid.lon, Math.max(...l.geometry.coordinates[0].map((c) => c[1]))]).addTo(map);
         markers.current[l.id] = { m, el: node };
       });
 
@@ -107,6 +107,8 @@ export default function MapView(p: MapProps) {
         if (loc && !is3d && z >= ZOOM_3D_IN) onSet3d(true);
         else if (is3d && z < ZOOM_3D_OUT) onSet3d(false);
       });
+      el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
+      el.current?.querySelector('.maplibregl-ctrl-attrib')?.removeAttribute('open');
       setReady(true);
     });
     const ro = new ResizeObserver(() => map.resize());
@@ -134,6 +136,8 @@ export default function MapView(p: MapProps) {
     if (!ready || !map) return;
     map.setLayoutProperty('cells-3d', 'visibility', p.is3d ? 'visible' : 'none');
     map.setPaintProperty('field-fill', 'fill-opacity', p.is3d ? 0 : 0.22);
+    map.setPaintProperty('field-casing', 'line-width', p.is3d ? 2 : 5);
+    map.setLayoutProperty('field-line', 'visibility', p.is3d ? 'none' : 'visible');
     el.current!.classList.toggle('is3d', p.is3d);
     if (p.is3d && p.loc) {
       map.easeTo({ center: [p.loc.centroid.lon, p.loc.centroid.lat], zoom: Math.max(map.getZoom(), 15.25), pitch: 58, bearing: -22, padding: { top: 0, left: 0, right: 0, bottom: 190 }, duration: 1100 });

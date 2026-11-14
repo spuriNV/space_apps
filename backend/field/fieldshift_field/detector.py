@@ -113,7 +113,7 @@ def segments(s: pd.Series, obs_dates):
         c = grp.iloc[0]
         a, b = grp.index[0], grp.index[-1]
         segs.append({"start": a.strftime("%Y-%m-%d"), "end": b.strftime("%Y-%m-%d"),
-                     "start_doy": int(a.dayofyear), "end_doy": int(b.dayofyear), "days": len(grp), "class": c,
+                     "start_doy": int(a.day_of_year), "end_doy": int(b.day_of_year), "days": len(grp), "class": c,
                      "n_obs": int(sum(a <= x <= b for x in obs_dates))})
     return segs
 

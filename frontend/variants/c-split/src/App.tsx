@@ -36,7 +36,7 @@ export default function App() {
   const loc = locId ? getLocation(locId) : null;
   const allocation = loc ? allocByLoc[loc.id] ?? loc.water.allocation_input.value : 0;
   const scored = useMemo(() => (locId ? scoreStrategies(locId, weights) : []), [locId, weights]);
-  const basemap = basemapPick ?? (is3d ? 'satellite' : 'map'); // 3D block reads best on imagery unless the user chose otherwise
+  const basemap = basemapPick ?? (loc ? 'satellite' : 'map'); // streets for finding a field, imagery once you are on it (unless the user chose)
   const hot = PRIORITIES.filter((p) => weights[p.key] > 1);
   const sortLabel = hot.length ? `sorted for ${hot.map((p) => p.label.toLowerCase()).join(', ')}` : 'sorted by overall fit, all priorities equal';
 

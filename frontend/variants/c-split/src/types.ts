@@ -1,5 +1,5 @@
 // Shapes follow planner-spec.md B3. Every numeric leaf is a SourcedNumber.
-export interface Source { id: string; title: string; url: string | null; accessed?: string; verified: boolean }
+export interface Source { id: string; short?: string; title: string; url: string | null; accessed?: string; verified: boolean }
 export interface SourcedNumber { value: number; unit: string; low: number | null; high: number | null; method: string; source: Source; note?: string }
 export type Range = { value: number; low: number; high: number };
 

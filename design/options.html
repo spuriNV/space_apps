@@ -1,0 +1,112 @@
+<title>Field Shift Design Options</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a contact sheet. One section per screen, the three directions side by side, click to enlarge. */
+  :root {
+    --bg: #f2f5f0; --surface: #ffffff; --fg: #16211a; --muted: #5b6a60; --line: #d5ddd4;
+    --a: #1a73e8; --b: #7b5cd6; --c: #1f7a4d; --warn: #9a5b00; --warn-bg: #fff1d6;
+    --display: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #101612; --surface: #18201b; --fg: #e8efe9; --muted: #9aaba0; --line: #2b372f;
+    --a: #7fb2ff; --b: #b29cf5; --c: #6fd29c; --warn: #ffcf7a; --warn-bg: #3a2c10; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #101612; --surface: #18201b; --fg: #e8efe9; --muted: #9aaba0; --line: #2b372f;
+    --a: #7fb2ff; --b: #b29cf5; --c: #6fd29c; --warn: #ffcf7a; --warn-bg: #3a2c10; color-scheme: dark }
+
+  body { background: var(--bg); color: var(--fg); font-family: var(--display); font-size: 16px; line-height: 1.5;
+    padding-block: 40px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .wrap { max-width: 1500px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+  h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.1; margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+  h2 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+  p { margin: 0; max-width: 68ch; }
+  .lede { color: var(--muted); font-size: 17px; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  header { display: flex; flex-direction: column; gap: 12px; }
+  .note { background: var(--warn-bg); color: var(--warn); padding: 10px 14px; border-radius: 8px; font-size: 14px; max-width: 80ch; }
+
+  .dirs { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .dir { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .dir h3 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+  .dir p { font-size: 14.5px; color: var(--muted); }
+  .dir code { font-family: var(--mono); font-size: 13px; color: var(--fg); overflow-wrap: anywhere; }
+  .tag { font-family: var(--mono); font-weight: 500; font-size: 13px; width: 26px; height: 26px; border-radius: 50%; display: inline-grid; place-items: center; color: var(--surface); flex: none; }
+  .tag.a { background: var(--a); } .tag.b { background: var(--b); } .tag.c { background: var(--c); }
+
+  section { display: flex; flex-direction: column; gap: 14px; }
+  .shead { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--line); padding-top: 20px; }
+  .shead p { color: var(--muted); font-size: 15px; }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 16px; }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  figure button { all: unset; cursor: zoom-in; display: block; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+  figure button:focus-visible { outline: 3px solid var(--a); outline-offset: 2px; }
+  figure img { display: block; width: 100%; aspect-ratio: 1440 / 900; object-fit: cover; }
+  figcaption { font-size: 14px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; }
+  figcaption b { color: var(--fg); font-weight: 600; }
+  .pending { aspect-ratio: 1440 / 900; max-width: 100%; border: 1px dashed var(--line); border-radius: 8px; display: grid; place-items: center; color: var(--muted); font-size: 14px; text-align: center; padding: 12px; }
+
+  dialog { border: 0; padding: 0; background: transparent; max-width: min(96vw, 1440px); width: 100%; }
+  dialog::backdrop { background: rgba(8, 12, 9, 0.82); }
+  dialog img { width: 100%; height: auto; display: block; border-radius: 8px; }
+  dialog form { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0 2px 8px; color: #e8efe9; font-size: 14px; }
+  dialog form button { font: inherit; background: #e8efe9; color: #16211a; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Field Shift · first design pass · 14 Nov 2026</span>
+    <h1>Three ways the map could work</h1>
+    <p class="lede">Each direction is a running app built on a familiar product pattern. The same six screens were captured from each, so every row below is three options for one screen. Click any image to enlarge it.</p>
+    <p class="note">Every number in these screenshots is mock data. The apps show a "Mock data" badge until the backend is wired in. Direction A is still being captured; its missing screens will fill in here.</p>
+  </header>
+
+  <div class="dirs">
+    <div class="dir"><h3><span class="tag a">A</span>Maps classic</h3><p>Desktop Google Maps: search pill, category chips, a place card for each field, layers toggle. Scrolling in raises the field's 30 m cells.</p><code>http://localhost:5171</code></div>
+    <div class="dir"><h3><span class="tag b">B</span>Earth explorer</h3><p>Google Earth: full-screen satellite, dark floating panels, a 2016–2025 timeline along the bottom. Scrolling in splits the field into surface, soil moisture and groundwater layers.</p><code>http://localhost:5172</code></div>
+    <div class="dir"><h3><span class="tag c">C</span>Split workspace</h3><p>Airbnb / Zillow list plus map: rotations are listing cards with scores, ranges and a compare checkbox. Scrolling in shows a 3D block with a cell inspector.</p><code>http://localhost:5173</code></div>
+  </div>
+
+  <div id="sections"></div>
+</div>
+
+<dialog id="zoom" aria-label="Enlarged screenshot">
+  <form method="dialog"><span id="zoomcap"></span><button id="zoomclose">Close</button></form>
+  <img id="zoomimg" alt="">
+</dialog>
+
+<script>
+  const have = new Set(["a-01", "b-01", "b-02", "b-03", "b-04", "b-05", "b-06", "c-01", "c-02", "c-03", "c-04", "c-05", "c-06"]);
+  const names = { a: "Maps classic", b: "Earth explorer", c: "Split workspace" };
+  const screens = [
+    ["01", "overview", "Overview", "The first thing you see: California with the two example fields."],
+    ["02", "field", "Field selected", "What opens when you pick the Colusa rice field."],
+    ["03", "drilldown-3d", "3D drill-down", "What happens when you scroll into the field. The valley is flat, so the height comes from data, not terrain."],
+    ["04", "year", "Your field's year", "The 2016–2025 calendar of bare, partly covered, covered and flooded periods, with the 2022 fallow and 2023 storms marked."],
+    ["05", "compare", "Compare rotations", "Today's rotation against three alternatives, with scores as ranges and ties called out."],
+    ["06", "idea", "One further idea each", "Each direction added one idea of its own."]
+  ];
+  const root = document.getElementById("sections");
+  root.style.cssText = "display:flex;flex-direction:column;gap:44px";
+  const dlg = document.getElementById("zoom"), zimg = document.getElementById("zoomimg"), zcap = document.getElementById("zoomcap");
+  for (const [n, slug, title, blurb] of screens) {
+    const sec = document.createElement("section");
+    sec.innerHTML = `<div class="shead"><h2>${title}</h2><p>${blurb}</p></div>`;
+    const row = document.createElement("div"); row.className = "row";
+    for (const v of ["a", "b", "c"]) {
+      const fig = document.createElement("figure");
+      const cap = `<figcaption><span class="tag ${v}">${v.toUpperCase()}</span><span><b>${names[v]}</b></span></figcaption>`;
+      if (have.has(`${v}-${n}`)) {
+        const src = `shots/${v}-${n}-${slug}.png`, alt = `${names[v]}: ${title}`;
+        fig.innerHTML = `<button type="button" aria-label="Enlarge ${alt}"><img src="${src}" alt="${alt}" loading="lazy"></button>${cap}`;
+        fig.querySelector("button").addEventListener("click", () => { zimg.src = src; zimg.alt = alt; zcap.textContent = alt; dlg.showModal(); });
+      } else {
+        fig.innerHTML = `<div class="pending">Still being captured</div>${cap}`;
+      }
+      row.appendChild(fig);
+    }
+    sec.appendChild(row); root.appendChild(sec);
+  }
+  dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+</script>

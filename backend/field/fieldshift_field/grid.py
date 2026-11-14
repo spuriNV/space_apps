@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import math
 import sys
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -100,7 +101,8 @@ def build(preset):
                 continue
             arr = np.vstack([per_scene[s][0] for s in sel])
             key = f"ndvi_{y}_q{q}"
-            with np.errstate(all="ignore"):
+            with np.errstate(all="ignore"), warnings.catch_warnings():
+                warnings.simplefilter("ignore", RuntimeWarning)
                 layers[key] = np.nanmedian(arr, axis=0)
             counts[key] = np.sum(np.isfinite(arr), axis=0)
             layer_meta.append({"key": key, "kind": "quarter_median", "year": y, "quarter": q, "n_scenes": len(sel)})
@@ -137,7 +139,7 @@ def build(preset):
           "source": {"id": "s2_l2a_mpc", "title": "Sentinel-2 L2A NDVI (B08, B04), SCL-masked, 10 m -> 30 m cell mean",
                      "url": "https://planetarycomputer.microsoft.com/dataset/sentinel-2-l2a", "accessed": today(), "verified": True},
           "layers": layer_meta, "n_cells": len(feats), "features": feats}
-    write_json(out(preset) / "grid.geojson", fc)
+    (out(preset) / "grid.geojson").write_text(json.dumps(fc, separators=(",", ":")))
     print(f"{preset}: {len(feats)} cells, {len(layers)} layers "
           f"({sum(m['kind']=='scene' and m.get('key') is not None for m in layer_meta)} dates)")
     return fc

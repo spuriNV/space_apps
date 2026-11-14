@@ -67,12 +67,12 @@ export function CoverLegend({ unknown = false }: { unknown?: boolean }) {
 /** Score 0–100 drawn as a range with whiskers and a centre mark */
 export function ScoreRange({ r, tone = 'blue', baseline }: { r: Range; tone?: string; baseline?: number }) {
   return (
-    <div className="srange" title={`${r.value} (range ${r.low}–${r.high})`}>
+    <div className="srange" title={`${r.value} (range ${r.low}–${r.high})`}><div className="srange-in">
       <div className="srange-track" />
+      <div className={`srange-fill tone-${tone}`} style={{ width: `${r.value}%` }} />
       {baseline != null && <div className="srange-base" style={{ left: `${baseline}%` }} title={`Today's rotation: ${baseline}`} />}
-      <div className={`srange-bar tone-${tone}`} style={{ left: `${r.low}%`, width: `${Math.max(1.5, r.high - r.low)}%` }} />
-      <div className={`srange-dot tone-${tone}`} style={{ left: `${r.value}%` }} />
-    </div>
+      <div className="srange-whisk" style={{ left: `${r.low}%`, width: `${r.high - r.low}%` }} />
+    </div></div>
   );
 }
 
@@ -90,6 +90,7 @@ export function allocStatus(need: Range, allocMm: number): AllocStatus {
   return need.high <= allocMm ? 'ok' : need.low > allocMm ? 'over' : 'maybe';
 }
 export const ALLOC_TEXT: Record<AllocStatus, string> = { ok: 'Within allocation', maybe: 'May exceed allocation', over: 'Over allocation' };
+export const ALLOC_SHORT: Record<AllocStatus, string> = { ok: 'Within', maybe: 'May exceed', over: 'Over' };
 
 /** Irrigation need (range) against the allocation line */
 export function WaterBar({ need, allocMm, max = 1600, compact = false }: { need: Range; allocMm: number; max?: number; compact?: boolean }) {
@@ -113,7 +114,7 @@ export function needText(need: Range) {
 export function SourceChip({ id, n }: { id: string; n?: number }) {
   const s = getSource(id);
   if (!s) return null;
-  const short = s.title.split(':')[0].split(',')[0];
+  const short = s.short ?? s.title;
   const body = (<>{n != null && <b>{n}</b>}{short}{!s.verified && <em>unverified</em>}</>);
   return s.url ? <a className={`srcchip${s.verified ? '' : ' unv'}`} href={s.url} target="_blank" rel="noreferrer" title={s.title}>{body}</a> : <span className="srcchip unv" title={s.title}>{body}</span>;
 }

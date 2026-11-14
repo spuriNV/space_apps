@@ -1,6 +1,7 @@
 import { MM_PER_AF_AC, PRIORITIES, mmToAfAc } from '../api';
 import type { Range, ScoreKey, ScoredStrategy } from '../types';
-import { ALLOC_TEXT, Icon, MonthStrip, ScoreChip, ScoreRange, TieBadge, WaterBar, allocStatus, fmt, fmtRange, rng, CoverLegend } from './Bits';
+import { useState } from 'react';
+import { ALLOC_SHORT, Icon, MonthStrip, ScoreChip, ScoreRange, TieBadge, WaterBar, allocStatus, fmt, fmtRange, rng, CoverLegend } from './Bits';
 
 export type Replay = 'typical' | '2022' | '2023';
 const MORE: { key: ScoreKey; label: string }[] = [{ key: 'pest_break', label: 'Pest-cycle break' }, { key: 'infiltration', label: 'Infiltration' }, { key: 'n_scavenging', label: 'Nitrogen scavenging' }];
@@ -12,6 +13,7 @@ const RMA = [
 export default function CompareView({ items, allocation, replay, onReplay, onBrief, onRemove, weights }: {
   items: ScoredStrategy[]; allocation: number; replay: Replay; onReplay: (r: Replay) => void; onBrief: (id: string) => void; onRemove: (id: string) => void; weights: Record<string, number>;
 }) {
+  const [more, setMore] = useState(false);
   const allocMm = allocation * MM_PER_AF_AC;
   const base = items.find((s) => s.is_baseline);
   const need = (s: ScoredStrategy): Range => rng(replay === 'typical' ? s.water.irrigation_need_mm : s.exposure.replay[replay].irrigation_need_mm);
@@ -29,7 +31,7 @@ export default function CompareView({ items, allocation, replay, onReplay, onBri
       <div className="compare-top">
         <div>
           <h2>Compare rotations side by side</h2>
-          <p>Bars are ranges, not single numbers. Where ranges overlap, the data cannot pick a winner.</p>
+          <p>Every bar is a range. Where ranges overlap, the data cannot pick a winner.</p>
         </div>
         <div className="seg" role="group" aria-label="Replay year">
           <button aria-pressed={replay === 'typical'} onClick={() => onReplay('typical')}>Typical year</button>
@@ -45,11 +47,12 @@ export default function CompareView({ items, allocation, replay, onReplay, onBri
               <div className="chead-top">
                 <ScoreChip r={s.composite} />
                 <div className="chead-name">
-                  <h3>{s.name}</h3>
-                  <div className="rbadges"><TieBadge s={s} />{s.year_shown && <span className="badge muted">{s.year_shown}</span>}</div>
+                  <h3 title={s.name}>{s.short}</h3>
+                  {s.year_shown && <small>{s.year_shown}</small>}
                 </div>
                 {items.length > 2 && <button className="iconbtn sm" onClick={() => onRemove(s.id)} aria-label={`Remove ${s.name}`}><Icon name="close" size={13} /></button>}
               </div>
+              <div className="rbadges"><TieBadge s={s} />{!s.tie && !s.best && !s.is_baseline && <span className="badge muted">Below top range</span>}</div>
               <MonthStrip s={s} />
             </div>
           ))}
@@ -61,12 +64,12 @@ export default function CompareView({ items, allocation, replay, onReplay, onBri
               <div className="cwater">
                 <div className="cbig"><b>{fmtRange(mmToAfAc(n.low), mmToAfAc(n.high), 1)}</b> acre-ft/acre</div>
                 <WaterBar need={n} allocMm={allocMm} />
-                <div className="csub">{fmtRange(n.low, n.high)} mm · <span className={`st st-${st}`}>{ALLOC_TEXT[st]}</span></div>
+                <div className="csub">{fmtRange(n.low, n.high)} mm <span className={`st st-${st}`}>{ALLOC_SHORT[st]}</span></div>
               </div>
             );
           }}
         </Row>
-        <Row label="Exposed heavy-rain days" sub="bare soil + heavy rain">
+        <Row label="Heavy-rain exposure" sub="days bare in heavy rain">
           {(s) => {
             const r = rain(s);
             return (
@@ -77,20 +80,15 @@ export default function CompareView({ items, allocation, replay, onReplay, onBri
             );
           }}
         </Row>
-        <Row label="OpenET check" sub="measured vs our model">
+        <Row label="OpenET check" sub="measured vs model">
           {(s) => (s.water.etc_vs_openet_pct
-            ? <span className="oet ok"><Icon name="check" size={13} />Model within {Math.abs(s.water.etc_vs_openet_pct.value)}% of OpenET</span>
-            : <span className="oet none">No OpenET match for this crop here</span>)}
+            ? <span className="oet ok"><Icon name="check" size={13} />Within {Math.abs(s.water.etc_vs_openet_pct.value)}% of OpenET</span>
+            : <span className="oet none">No OpenET match here</span>)}
         </Row>
         <div className="csection">Scores, 0–100 · higher is better<span><i className="basekey" />today's rotation</span></div>
         {PRIORITIES.map((p) => (
           <Row key={p.key} label={p.label} sub={weights[p.key] > 1 ? 'matters most' : undefined} cls={`score${weights[p.key] > 1 ? ' hot' : ''}`}>
             {(s) => <div className="cscore"><ScoreRange r={rng(s.scores[p.key])} baseline={base && !s.is_baseline ? base.scores[p.key].value : undefined} /><b>{s.scores[p.key].value}</b></div>}
-          </Row>
-        ))}
-        {MORE.map((p) => (
-          <Row key={p.key} label={p.label} cls="score minor">
-            {(s) => <div className="cscore"><ScoreRange r={rng(s.scores[p.key])} tone="grey" baseline={base && !s.is_baseline ? base.scores[p.key].value : undefined} /><b>{s.scores[p.key].value}</b></div>}
           </Row>
         ))}
         <Row label="Insurance losses" sub="2010–2024, not a forecast" cls="rma">
@@ -102,6 +100,12 @@ export default function CompareView({ items, allocation, replay, onReplay, onBri
             </div>
           )}
         </Row>
+        <button className="cmore" onClick={() => setMore(!more)} aria-expanded={more}>{more ? 'Hide' : 'Show'} 3 more scores: pest-cycle break, infiltration, nitrogen scavenging</button>
+        {more && MORE.map((p) => (
+          <Row key={p.key} label={p.label} cls="score minor">
+            {(s) => <div className="cscore"><ScoreRange r={rng(s.scores[p.key])} tone="grey" baseline={base && !s.is_baseline ? base.scores[p.key].value : undefined} /><b>{s.scores[p.key].value}</b></div>}
+          </Row>
+        ))}
         <Row label="" cls="cactions">
           {(s) => <button className="btn outline" onClick={() => onBrief(s.id)} data-brief={s.id}><Icon name="doc" size={15} />Open brief</button>}
         </Row>

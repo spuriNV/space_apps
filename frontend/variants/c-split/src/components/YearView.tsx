@@ -23,7 +23,7 @@ export default function YearView({ loc, detector, onDetector }: { loc: Location;
       <div className="year-top">
         <div>
           <h2>Your field's year, 2016–2025</h2>
-          <p>What the satellites saw on this block each week. {loc.observed_cover.summary}.</p>
+          <p>What the satellites saw each week. {loc.observed_cover.summary}.</p>
         </div>
         <div className="seg" role="group" aria-label="Detector">
           <button aria-pressed={detector === 'rule'} onClick={() => onDetector('rule')} data-detector="rule">Rule <small>NDVI thresholds</small></button>
@@ -32,7 +32,7 @@ export default function YearView({ loc, detector, onDetector }: { loc: Location;
       </div>
       <div className="year-meta">
         <CoverLegend unknown />
-        <label className="chk"><input type="checkbox" checked={hatch} onChange={(e) => setHatch(e.target.checked)} />Outline weeks where the detectors disagree</label>
+        <label className="chk"><input type="checkbox" checked={hatch} onChange={(e) => setHatch(e.target.checked)} />Outline disagreement</label>
       </div>
 
       <div className="cal">
@@ -74,7 +74,7 @@ export default function YearView({ loc, detector, onDetector }: { loc: Location;
         <span><i className="tick tick-heat" />Heat day</span>
         <span><i className="ph up" />Green-up</span>
         <span><i className="ph down" />Harvest</span>
-        <span className="cal-key-note">Risk ticks come from the regional grid (POWER, IMERG), not this field alone.</span>
+        <span className="cal-key-note" title="Risk ticks come from the regional grid (POWER, IMERG), not this field alone.">ticks: regional grid</span>
       </div>
 
       <div className="year-cols">
@@ -86,7 +86,7 @@ export default function YearView({ loc, detector, onDetector }: { loc: Location;
               <div>
                 <div className="news-t">{n.url ? <a href={n.url} target="_blank" rel="noreferrer">{n.title}</a> : n.title}</div>
                 <div className="news-s">{fmtDate(n.date)} · {n.source}{!n.verified && <em> · unverified</em>}</div>
-                {n.signal && <div className="news-sig">{n.signal.text} <span>lead time: computing</span></div>}
+                {n.signal && <div className="news-sig"><b>NASA signal</b>{n.signal.text}<span>· lead time: computing</span></div>}
               </div>
             </div>
           ))}
@@ -95,8 +95,9 @@ export default function YearView({ loc, detector, onDetector }: { loc: Location;
           <h3>Detector check</h3>
           <div className="agree"><b>{fy.detector_agreement_pct}%</b><span>of weeks, rule and ML agree</span></div>
           <dl>
-            <div><dt>Showing</dt><dd>{detector === 'rule' ? 'Rule (NDVI thresholds)' : 'ML (random forest)'}</dd></div>
-            <div><dt>Accuracy</dt><dd>{Math.round(model.metrics.accuracy * 100)}% · bare F1 {model.metrics.f1_bare.toFixed(2)}</dd></div>
+            <div><dt>Showing</dt><dd>{detector === 'rule' ? 'Rule' : 'ML'}</dd></div>
+            <div><dt>Accuracy</dt><dd>{Math.round(model.metrics.accuracy * 100)}%</dd></div>
+            <div><dt>Bare F1</dt><dd>{model.metrics.f1_bare.toFixed(2)}</dd></div>
             <div><dt>Timing error</dt><dd>±{model.metrics.transition_mae_days} days</dd></div>
           </dl>
           <p>{model.notes}</p>
