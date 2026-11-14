@@ -100,3 +100,4 @@ Deliverables: 7 slides or a 30-second video, a recorded backup of the demo, and 
 | Brief wording | Fixed templates only for now; no LLM. |
 | ISS photos | Used, captioned "Seen from the ISS near your field, March 2020", with NASA's credit line. |
 | Options | No more option rounds. Build one version; change it after review. |
+| Timeline | No bottom timeline bar. A "Viewing: Today ▾" date control in the top bar (quick picks: today, last summer, last spring, 2023 floods, 2022 drought; month picker 2023–2026). Scrubbing and replay live on "This field's year". |
