@@ -22,14 +22,14 @@ We are building a NASA Space Apps hackathon tool that pulls NASA Earth-observati
 
 ## 2. OpenET API key (highest priority)
 
-- **Sign up:** https://account.etdata.org (linked from https://openetdata.org as "API")
+- **Sign up:** https://auth.etdata.org (linked from https://openetdata.org as "API"; the older account.etdata.org redirects here)
 - **What you get:** an API key shown in the account dashboard.
 - **Unblocks:** measured field-level water use, which is our headline validation chart.
 - **Note:** the free tier has monthly query quotas. We only query two fields, so the free tier is enough. Record the quota shown on the dashboard.
 
 ## 3. CIMIS AppKey
 
-- **Sign up:** https://cimis.water.ca.gov (Register, confirm email, log in)
+- **Sign up:** https://cimis.water.ca.gov (Register, confirm email, log in). If registration isn't there, try https://et.water.ca.gov, which hosts the web API.
 - **What you get:** an "AppKey" on the account page, used with the web API at `https://et.water.ca.gov/api/data`.
 - **Unblocks:** California weather-station reference ET, used to check NASA POWER.
 
@@ -41,13 +41,13 @@ We are building a NASA Space Apps hackathon tool that pulls NASA Earth-observati
 
 ## 5. USDA AMS My Market News key
 
-- **Sign up:** https://mymarketnews.ams.usda.gov (create an account, then find the API key in the profile)
+- **Sign up:** https://mymarketnews.ams.usda.gov (create an account, then find the API key in the profile). This site timed out from a script on 14 Nov; it may only load in a normal browser.
 - **What you get:** an API key for `https://marsapi.ams.usda.gov/services/v1.2/reports`.
 - **Unblocks:** California hay prices for the income ranges.
 
 ## 6. Anthropic API key (lowest priority, paid)
 
-- **Sign up:** https://console.anthropic.com
+- **Sign up:** https://platform.claude.com (console.anthropic.com redirects here)
 - **What you get:** an API key. Requires billing to be set up.
 - **Unblocks:** the AI-written rotation brief. The app falls back to templates without it, so this can wait.
 
@@ -78,4 +78,4 @@ NASA POWER, Microsoft Planetary Computer and Earth Search (Sentinel-2, Landsat, 
 
 ## Caveat
 
-The URLs and the Earthdata application names above were written from the project spec and not re-checked against the live sites. If a page has moved, find the current equivalent and note the change.
+The sign-up pages above were checked on 14 Nov 2026 and load (except AMS, noted). The Earthdata application names were not checked; if one has been renamed, approve the closest match and note the change.
