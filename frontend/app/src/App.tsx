@@ -2,29 +2,27 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MapView, { type MapHandle } from './MapView';
 import * as api from './api';
 import type { BCInfo, CoverClass, Dataset, FieldEvent, Location } from './types';
-import { CLASS_COLOR, CLASS_LABEL, ET_RAMP, T_MAX, dateToT, tOf } from './lib';
+import { CLASS_COLOR, CLASS_LABEL, ET_RAMP, T_MAX, TODAY_T, dateToT } from './lib';
+import type { Daily } from './season';
 import Icon from './components/Icons';
-import Timeline from './components/Timeline';
+import Timeline, { tStart } from './components/Timeline';
+import ComingSeason from './components/season/ComingSeason';
 import ComparePanel from './components/compare/ComparePanel';
-import StoryPanel from './components/Story';
 import RotationBrief from './components/brief/RotationBrief';
-import { BCCard, LayersDrawer, TrendsPanel } from './components/Panels';
+import { BCCard, LayersDrawer } from './components/Panels';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
 import { ProvList, acres, county, fieldName, type Step } from './components/ui/shared';
 
-/** ?theme=1 survey sheet (default) · 2 extension bulletin · 3 field desk. One field panel for all three; see .claude/skills/fieldshift-visual-design. */
-export const THEME = (() => { const v = Number(new URLSearchParams(window.location.search).get('theme')); return v === 2 || v === 3 ? v : 1; })();
-document.documentElement.dataset.theme = String(THEME);
-
-type Panel = 'none' | 'fields' | 'trends' | 'compare' | 'story';
+// One look (Extension bulletin, tokens in themes.css). Four screens: pick a field, your field now, coming season, compare and print.
+type Panel = 'none' | 'fields' | 'season' | 'compare';
 const RAIL: { id: Panel | 'search' | 'layers' | 'brief'; icon: string; label: string }[] = [
   { id: 'search', icon: 'search', label: 'Find' },
   { id: 'fields', icon: 'fields', label: 'Fields' },
-  { id: 'layers', icon: 'layers', label: 'Map layers' },
-  { id: 'trends', icon: 'trends', label: 'Water trends' },
-  { id: 'compare', icon: 'compare', label: 'Rotations' },
+  { id: 'none', icon: 'info', label: 'Field now' },
+  { id: 'season', icon: 'drop', label: 'Coming season' },
+  { id: 'compare', icon: 'compare', label: 'Compare' },
   { id: 'brief', icon: 'brief', label: 'Print' },
-  { id: 'story', icon: 'story', label: 'Story' },
+  { id: 'layers', icon: 'layers', label: 'Map layers' },
 ];
 
 export default function App() {
@@ -37,19 +35,21 @@ export default function App() {
   const [bc, setBC] = useState<BCInfo | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [data, setData] = useState<api.FieldBundle | null>(null);
-  const [t, setT] = useState(tOf(2023, 10));
+  const [t, setT] = useState(TODAY_T);
+  const [showEarlier, setShowEarlier] = useState(false);
+  const [daily, setDaily] = useState<{ id: string; daily: Daily | null; prov: api.Prov } | null>(null);
+  const [outlook, setOutlook] = useState<{ id: string; o: api.Outlook } | null>(null);
   const [playing, setPlaying] = useState(false);
   const [panel, setPanel] = useState<Panel>('none');
   const [cardOpen, setCardOpen] = useState(true);
   const [layersOpen, setLayersOpen] = useState(false);
   const [yearOpen, setYearOpen] = useState(false);
-  const [detector, setDetector] = useState<'rule' | 'ml'>('rule');
+  const detector = 'rule' as const;
   const [metric, setMetric] = useState<'cover' | 'et'>('cover');
   const [layersOn, setLayersOn] = useState<Record<string, boolean>>({ hls: true, smap: true, grace: true, imerg: false, modis: false, ecostress: false });
   const [allocation, setAllocation] = useState<Record<string, number>>({});
   const [briefOpen, setBriefOpen] = useState(false);
   const [briefPick, setBriefPick] = useState<string | null>(null);
-  const [storyIdx, setStoryIdx] = useState(0);
   const [bcOpen, setBcOpen] = useState(false);
   const [provOpen, setProvOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -66,45 +66,48 @@ export default function App() {
     if (!selected || live == null) { setData(null); return; }
     let ok = true;
     api.getField(selected, live).then((b) => ok && setData(b));
+    api.getDaily(selected.id).then((r) => ok && setDaily({ id: selected.id, ...r }));
+    api.getOutlook(selected.id, live).then((o) => ok && setOutlook({ id: selected.id, o }));
     return () => { ok = false; };
   }, [selected, live]);
   // re-score through POST /score when the water allocation changes (engine applies the allocation check)
   const alloc = selected ? allocation[selected.id] : undefined;
   useEffect(() => {
     if (!selected || !live || alloc == null || !data || data.prov.strategies.origin !== 'api') return;
-    const h = setTimeout(() => api.scoreStrategies(selected.id, alloc).then((st) => st && setData((d) => (d && d.id === selected.id ? { ...d, strategies: st } : d))), 450);
+    const h = setTimeout(() => api.scoreStrategies(selected.id, alloc).then((st) => st && setData((d) => {
+      if (!d || d.id !== selected.id) return d;
+      // POST /score does not carry the OpenET check; keep it from GET /strategies
+      const keep = (s: (typeof st)[number]) => { const prev = d.strategies.find((x) => x.id === s.id); return s.water.etc_vs_openet_pct || !prev ? s : { ...s, water: { ...s.water, etc_vs_openet_pct: prev.water.etc_vs_openet_pct, openet_et_mm_season: prev.water.openet_et_mm_season } }; };
+      return { ...d, strategies: st.map(keep) };
+    })), 450);
     return () => clearTimeout(h);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alloc, selected, live, data?.id]);
   useEffect(() => {
     if (!playing) return;
-    const h = setInterval(() => setT((v) => (v >= T_MAX ? 0 : v + 1)), 220);
+    const h = setInterval(() => setT((v) => (v >= T_MAX ? tStart(showEarlier) : Math.max(v + 1, tStart(showEarlier)))), 220);
     return () => clearInterval(h);
-  }, [playing]);
+  }, [playing, showEarlier]);
 
   const d = data && data.id === selectedId ? data : null;
   useEffect(() => { (window as unknown as Record<string, unknown>).__app = { setT, select: (id: string) => select(id), ready: !!d }; });
-  const prov: api.ProvMap = { ...(selected ? locProv[selected.id] : {}), ...(d?.prov ?? {}) };
+  const dl = daily && daily.id === selectedId ? daily : null;
+  const ol = outlook && outlook.id === selectedId ? outlook.o : null;
+  const prov: api.ProvMap = { ...(selected ? locProv[selected.id] : {}), ...(d?.prov ?? {}), ...(dl ? { daily: dl.prov } : {}), ...(ol ? { outlook_cpc: ol.prov.cpc, outlook_water: ol.prov.water, outlook_alloc: ol.prov.alloc } : {}) };
 
   const select = useCallback((id: string) => {
     const loc = locations.find((l) => l.id === id);
     if (!loc) return;
-    setSelectedId(id); setCardOpen(true); setBcOpen(false); setStoryIdx(0);
+    setSelectedId(id); setCardOpen(true); setBcOpen(false);
     setPanel((p) => (p === 'fields' ? 'none' : p));
     map.current?.flyToField(loc, 'card');
   }, [locations]);
 
   const openPanel = (id: Panel) => {
-    if (id !== 'fields' && id !== 'none' && !selected) { setPanel('fields'); return; }
+    if (id !== 'fields' && !selected) { setPanel('fields'); return; }
+    if (id === 'none') { setPanel('none'); setCardOpen(true); setYearOpen(false); return; }
     setPanel((p) => (p === id ? 'none' : id));
     setYearOpen(false);
-    if (id === 'story' && selected && d) goChapter(storyIdx);
-  };
-  const goChapter = (i: number) => {
-    if (!selected || !d) return;
-    const ch = d.story.chapters[i];
-    setStoryIdx(i); setPlaying(false); setT(dateToT(ch.date));
-    map.current?.flyToField(selected, ch.camera === 'drill' ? 'story' : 'card');
   };
   const goHome = () => { setSelectedId(null); setPanel('none'); setYearOpen(false); setBcOpen(false); setBriefOpen(false); map.current?.flyHome(); };
   const goBC = () => { setBcOpen(true); setPanel('none'); setYearOpen(false); map.current?.flyTo(49.9, -121.0, 6.4); };
@@ -113,18 +116,19 @@ export default function App() {
     if (s === 'drill') { setPanel('none'); map.current?.flyToField(selected, 'drill'); }
     else if (s === 'year') { setPanel('none'); setYearOpen(true); }
     else if (s === 'compare') openPanel('compare');
+    else if (s === 'season') openPanel('season');
     else { setBriefPick(null); setBriefOpen(true); }
   };
 
-  const yearExpanded = yearOpen && !!selected && panel !== 'compare';
+  const yearExpanded = yearOpen && !!selected && panel !== 'compare' && panel !== 'season';
   // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
-  const toolPanel = panel === 'trends' || panel === 'story' || panel === 'fields' ? panel : null;
+  const toolPanel = panel === 'fields' ? panel : null;
   const leftPanel = yearExpanded ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
   const leftInset = 64 + (leftPanel ? 396 : 0);
   const rightInset = layersOpen ? 344 : 0;
-  const bottomInset = yearExpanded ? 500 : 110;
+  const bottomInset = yearExpanded ? (showEarlier ? 520 : 330) : 110;
   const drilled = !!selected && view.zoom > 13.4;
-  useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded]);
+  useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;
 
   const events: FieldEvent[] = useMemo(() => {
@@ -155,7 +159,7 @@ export default function App() {
       <nav className="rail glass">
         <button className="rail-logo" onClick={goHome} title="Field Shift: back to all of California"><span>Field<br />Shift</span></button>
         {RAIL.map((r) => {
-          const on = r.id === 'layers' ? layersOpen : r.id === 'search' ? searchFocus : r.id === 'brief' ? briefOpen : panel === r.id;
+          const on = r.id === 'layers' ? layersOpen : r.id === 'search' ? searchFocus : r.id === 'brief' ? briefOpen : r.id === 'none' ? !!selected && panel === 'none' && leftPanel === 'card' : panel === r.id;
           return (
             <button key={r.id} className={`rail-btn ${on ? 'on' : ''}`} data-testid={`rail-${r.id}`} title={r.label}
               onClick={() => (r.id === 'search' ? searchRef.current?.focus() : r.id === 'layers' ? setLayersOpen(!layersOpen) : r.id === 'brief' ? (selected ? setBriefOpen(true) : openPanel('fields')) : openPanel(r.id as Panel))}>
@@ -196,19 +200,18 @@ export default function App() {
         )}
       </div>
 
-      {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={d?.regional ?? null} strategies={d?.strategies ?? null} allocation={allocation[selected.id]}
-        t={t} setT={setT} detector={detector} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
+      {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={d?.regional ?? null} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} daily={dl?.daily ?? null}
+        t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
       {leftPanel === 'fields' && <FieldPicker locations={locations} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
-      {leftPanel === 'trends' && selected && d && <TrendsPanel loc={selected} regional={d.regional} onClose={() => setPanel('none')} />}
-      {leftPanel === 'story' && selected && d && <StoryPanel loc={selected} story={d.story} idx={storyIdx} setIdx={goChapter} cal={d.cal} regional={d.regional} news={d.news} t={t} detector={detector} onClose={() => setPanel('none')} />}
       {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen pill glass" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
+      {panel === 'season' && selected && d && <ComingSeason loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}
       {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} allocation={allocation[selected.id]} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
         onBrief={(id) => { setBriefPick(id); setBriefOpen(true); }} onClose={() => setPanel('none')} />}
 
       {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} metric={metric} setMetric={setMetric} onClose={() => setLayersOpen(false)} />}
 
-      {drilled && panel !== 'compare' && (
+      {drilled && panel !== 'compare' && panel !== 'season' && (
         <div className="hud glass" data-testid="hud">
           <span className="hud-title"><Icon name="cube" size={16} />Under the field</span>
           <div className="seg small">
@@ -217,7 +220,7 @@ export default function App() {
           </div>
           <div className="hud-legend">
             {metric === 'cover'
-              ? (['b', 'p', 'c', 'w', 'u'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{c === 'u' ? 'No clear pixel' : CLASS_LABEL[c]}</span>)
+              ? (['b', 'p', 'c', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{({ b: 'Bare', p: 'Thin', c: 'Crop', w: 'Flooded' } as Record<string, string>)[c]}</span>)
               : <span className="grad"><em>0</em><i style={{ background: `linear-gradient(90deg, ${ET_RAMP.map((s) => s[1]).join(',')})` }} /><em>9 mm/day</em></span>}
             <span className="hud-note">taller = {metric === 'cover' ? 'greener (NDVI)' : 'more water used'}</span>
           </div>
@@ -235,10 +238,10 @@ export default function App() {
         </div>
       </div>
 
-      <Timeline t={t} setT={setT} playing={playing} setPlaying={setPlaying} loc={selected} cal={d?.cal ?? null} news={d?.news ?? []} events={events}
-        detector={detector} setDetector={setDetector} expanded={yearExpanded} setExpanded={(b) => { setYearOpen(b); if (b && panel === 'compare') setPanel('none'); }} />
+      <Timeline t={t} setT={setT} playing={playing} setPlaying={setPlaying} loc={selected} cal={d?.cal ?? null} daily={dl?.daily ?? null} events={events}
+        showEarlier={showEarlier} setShowEarlier={setShowEarlier} expanded={yearExpanded} setExpanded={(b) => { setYearOpen(b); if (b && (panel === 'compare' || panel === 'season')) setPanel('none'); }} />
 
-      {briefOpen && selected && d && <RotationBrief loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} prov={prov} onClose={() => setBriefOpen(false)} />}
+      {briefOpen && selected && d && <RotationBrief loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} prov={prov} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} onClose={() => setBriefOpen(false)} />}
     </div>
   );
 }

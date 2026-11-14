@@ -33,6 +33,8 @@ LOOKUP = {
     "calendar": ["backend/field/out/{p}/calendar.json"],
     "crop_history": ["backend/field/out/{p}/crop_history.json"],
     "grid": ["backend/field/out/{p}/grid.geojson"],
+    "calendar_ml": ["backend/ai/out/{p}/calendar_ml.json"],
+    "outlook": ["backend/outlook/out/{p}/outlook.json"],
 }
 FIXTURE = {
     "location": "{p}/location.json", "daily": "{p}/daily.json", "features_weekly": "{p}/features_weekly.json",
@@ -332,6 +334,24 @@ def calendar(pid: str, resp: Response, year: int | None = None):
         d = {**d, "crop_history": {k: h[k] for k in ("by_year", "source", "years", "caveats") if k in h}}
     except HTTPException:
         pass
+    d["location_id"] = pid
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/calendar_ml")
+def calendar_ml(pid: str, resp: Response):
+    """ML detector calendar (backend/ai), same shape as /calendar. Real only."""
+    check_preset(pid)
+    d = _real_only("calendar_ml", pid)
+    d["location_id"] = pid
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/outlook")
+def outlook(pid: str, resp: Response):
+    """Coming-season outlooks (backend/outlook). Outlooks, not forecasts. Real only."""
+    check_preset(pid)
+    d = _real_only("outlook", pid)
     d["location_id"] = pid
     return send(resp, d, "real")
 

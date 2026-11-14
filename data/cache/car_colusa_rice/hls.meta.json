@@ -1,0 +1,180 @@
+{
+ "dataset": "hls",
+ "url": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/hls2-l30 + hls2-s30",
+ "params": {
+  "collections": [
+   "hls2-l30 (HLSL30 v2.0)",
+   "hls2-s30 (HLSS30 v2.0)"
+  ],
+  "datetime": "2016-01-01/2025-12-31",
+  "intersects": "backend/field/polygons/car_colusa_rice.geojson",
+  "bands": {
+   "hls2-l30": {
+    "green": "B03",
+    "red": "B04",
+    "nir": "B05"
+   },
+   "hls2-s30": {
+    "green": "B03",
+    "red": "B04",
+    "nir": "B8A"
+   }
+  },
+  "mask": "Fmask: clear = not bit1 cloud, bit2 adjacent cloud/shadow, bit3 shadow, bit4 snow/ice (water bit5 kept)",
+  "scale": "reflectance = DN * 1e-4, fill -9999",
+  "indices": "NDVI=(NIR-Red)/(NIR+Red) with narrow NIR (B05 / B8A); NDWI=(Green-NIR)/(Green+NIR)"
+ },
+ "fetched_at": "2026-11-14T22:30:26+00:00",
+ "footprint_geojson": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     -122.08658323759782,
+     39.13788090697064
+    ],
+    [
+     -122.08022376635918,
+     39.13786903557913
+    ],
+    [
+     -122.07912651017226,
+     39.1378773214455
+    ],
+    [
+     -122.07899023484535,
+     39.13788895802768
+    ],
+    [
+     -122.0789356244626,
+     39.13790124120063
+    ],
+    [
+     -122.07890268234279,
+     39.137922170457166
+    ],
+    [
+     -122.07889152167371,
+     39.13794327459395
+    ],
+    [
+     -122.07886805228858,
+     39.1397442251895
+    ],
+    [
+     -122.07883853185174,
+     39.14388873014864
+    ],
+    [
+     -122.07883654388,
+     39.14404128014894
+    ],
+    [
+     -122.07893165750228,
+     39.14468196619664
+    ],
+    [
+     -122.0789688324837,
+     39.144754305116216
+    ],
+    [
+     -122.07924508150157,
+     39.144866673718234
+    ],
+    [
+     -122.07935370668403,
+     39.14488872396877
+    ],
+    [
+     -122.07952788642436,
+     39.144894337898734
+    ],
+    [
+     -122.0855339128195,
+     39.14491619167406
+    ],
+    [
+     -122.08755418167266,
+     39.14491507627332
+    ],
+    [
+     -122.08761424213425,
+     39.14490283124867
+    ],
+    [
+     -122.08770212611513,
+     39.14484418733241
+    ],
+    [
+     -122.08775211466576,
+     39.144768295378846
+    ],
+    [
+     -122.0877694323878,
+     39.14469214835415
+    ],
+    [
+     -122.08780520420073,
+     39.14192079428785
+    ],
+    [
+     -122.08783313641617,
+     39.13912395000923
+    ],
+    [
+     -122.08783340231749,
+     39.13825940459494
+    ],
+    [
+     -122.08778817483788,
+     39.137966630648826
+    ],
+    [
+     -122.08773983200086,
+     39.13791539447342
+    ],
+    [
+     -122.08768021710367,
+     39.137893739888256
+    ],
+    [
+     -122.08760416034181,
+     39.13788042969032
+    ],
+    [
+     -122.08658323759782,
+     39.13788090697064
+    ]
+   ]
+  ]
+ },
+ "native_res_m": 30,
+ "timestep": "per scene (irregular; ~2-3 day combined revisit)",
+ "units": {
+  "ndvi": "unitless",
+  "ndwi": "unitless",
+  "clear_frac": "fraction of polygon pixels"
+ },
+ "fill_value": "NaN",
+ "auth": "none (Planetary Computer anonymous SAS token; NASA LP DAAC copy needs Earthdata login)",
+ "credit": "HLS v2.0, NASA/USGS (Masek et al. 2021, doi:10.5067/HLS/HLSL30.002 and HLSS30.002); hosted by Microsoft Planetary Computer",
+ "availability_note": "PC collections start 2020-01-01 (hls2-s30) and 2017-08 (first L30 item over these fields); nothing earlier exists there",
+ "n_items_found": 857,
+ "n_rows": 857,
+ "by_platform": [
+  {
+   "platform": "HLSL30",
+   "n": 440,
+   "first": "2017-08-17",
+   "last": "2025-12-29"
+  },
+  {
+   "platform": "HLSS30",
+   "n": 417,
+   "first": "2020-01-05",
+   "last": "2025-12-29"
+  }
+ ],
+ "errors": [],
+ "seconds": 186
+}

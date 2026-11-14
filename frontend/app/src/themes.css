@@ -1,57 +1,18 @@
-/* Field Shift themes. Switch with ?theme=1|2|3 (App.tsx sets <html data-theme>).
-   Rules and reasons: .claude/skills/fieldshift-visual-design/SKILL.md. Components only read these tokens. */
-
-/* Middle dot from a system face: Overpass's own '·' sits off-centre and reads as a typo. */
-@font-face { font-family: 'FS Dot'; src: local('Helvetica Neue'), local('Arial'); unicode-range: U+00B7; }
-
-/* 1. Survey sheet (default): USGS quad / soil-survey print. Paper panels, black ink, map inks as the only colours. */
-:root, [data-theme='1'] {
-  --font-ui: 'FS Dot', 'Overpass', 'Helvetica Neue', Arial, sans-serif;
-  --font-head: 'Source Serif 4', 'Iowan Old Style', Georgia, serif;
-  --head-weight: 600; --head-size: 15.5px; --title-size: 22px;
-  --app-bg: #e9e8e2;
-  --panel: #fbfaf6; --panel-2: #f0eee6; --head-band: #fbfaf6; --head-ink: #1d1f1c; --head-ink-2: #4a4e47;
-  --line: rgba(29, 31, 28, 0.24); --line-soft: rgba(29, 31, 28, 0.12);
-  --text: #1d1f1c; --text-2: #3c403a; --muted: #5f635b;          /* muted on panel: 5.9:1 */
-  --tint: rgba(29, 31, 28, 0.045); --tint-2: rgba(29, 31, 28, 0.09);
-  --accent: #1b5e9e; --accent-ink: #ffffff; --accent-soft: rgba(27, 94, 158, 0.1); --link: #1b5e9e;   /* hydrography blue */
-  --good: #3c7428; --warn: #8a5a2b; --bad: #b3261e; --amber: #8a5a2b; --warn-ink: #ffffff;           /* vegetation green, contour brown, road red */
-  --mark: #1d1f1c;
-  --radius: 3px; --shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 3px 12px rgba(0, 0, 0, 0.18);
-  --rule-h: 1px solid var(--line);
-}
-
-/* 2. Extension bulletin: two-colour farm-advisory print. Black + one spot green; slab headings like the old bulletins and seed lists. */
-[data-theme='2'] {
+/* Field Shift look: "Extension bulletin", the only theme. Two-colour farm-advisory print: black ink + one spot green,
+   slab headings like the old bulletins and seed lists. Rules and reasons: .claude/skills/fieldshift-visual-design/SKILL.md.
+   Components only read these tokens. */
+:root {
   --font-ui: 'Libre Franklin', 'Franklin Gothic Book', Arial, sans-serif;
   --font-head: 'Zilla Slab', 'Rockwell', Georgia, serif;
   --head-weight: 600; --head-size: 17px; --title-size: 23px;
   --app-bg: #e4e4dc;
   --panel: #f7f6f0; --panel-2: #ebeae0; --head-band: #2f5d34; --head-ink: #ffffff; --head-ink-2: #dfe9dc;
   --line: rgba(25, 28, 22, 0.26); --line-soft: rgba(25, 28, 22, 0.12);
-  --text: #191c16; --text-2: #363a31; --muted: #5a5e54;
+  --text: #191c16; --text-2: #363a31; --muted: #5a5e54;          /* muted on panel: 6.1:1 */
   --tint: rgba(25, 28, 22, 0.045); --tint-2: rgba(25, 28, 22, 0.09);
   --accent: #2f5d34; --accent-ink: #ffffff; --accent-soft: rgba(47, 93, 52, 0.12); --link: #2f5d34;
   --good: #2f5d34; --warn: #8a5a00; --bad: #a12a1c; --amber: #8a5a00; --warn-ink: #ffffff;
   --mark: #191c16;
   --radius: 2px; --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.16);
   --rule-h: 2px solid var(--text);
-}
-
-/* 3. Field desk: quiet GIS workstation (Worldview, Calcite, Copernicus Browser). Solid warm graphite, survey-yellow selection.
-   Barlow is drawn from California highway signs and plates. (Atkinson Hyperlegible Next was tried: its slashed zero reads as code.) */
-[data-theme='3'] {
-  --font-ui: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
-  --font-head: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif;
-  --head-weight: 600; --head-size: 16px; --title-size: 23px;
-  --app-bg: #141513;
-  --panel: #1f201d; --panel-2: #292a26; --head-band: #1f201d; --head-ink: #f1f0ea; --head-ink-2: #c3c1b8;
-  --line: rgba(239, 238, 232, 0.17); --line-soft: rgba(239, 238, 232, 0.09);
-  --text: #f1f0ea; --text-2: #d0cec5; --muted: #a3a197;          /* muted on panel: 6.3:1 */
-  --tint: rgba(239, 238, 232, 0.05); --tint-2: rgba(239, 238, 232, 0.1);
-  --accent: #f0c24b; --accent-ink: #1f1a05; --accent-soft: rgba(240, 194, 75, 0.14); --link: #9cc3ea;
-  --good: #8bc47a; --warn: #e7b85a; --bad: #ef8a76; --amber: #e7b85a; --warn-ink: #1f1a05;
-  --mark: #f1f0ea;
-  --radius: 4px; --shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  --rule-h: 1px solid var(--line);
 }

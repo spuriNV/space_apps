@@ -1,94 +1,89 @@
-import type { CoverClass, Location, Calendar, NewsItem } from '../../types';
-import { CLASS_COLOR, CLASS_LABEL, MONTHS, RISK_COLOR, RISK_LABEL, dateToT, dekadOf, fmtDate, tLabel, tOf, yearOf } from '../../lib';
+import type { CoverClass, Location, Calendar, CalendarYear } from '../../types';
+import type { Daily } from '../../season';
+import { CLASS_COLOR, MONTHS, RECENT_FROM, dateToT, dekadOf, lastDataT, tLabel, tOf, yearOf } from '../../lib';
 import Icon from '../Icons';
+import { cropName } from '../ui/shared';
 
-// "Your field's year": isolated so the redesign in design/explorations/ can replace this folder.
-export interface YearSheetProps { t: number; setT: (t: number) => void; loc: Location; cal: Calendar; news: NewsItem[]; detector: 'rule' | 'ml'; setDetector: (d: 'rule' | 'ml') => void; setExpanded: (b: boolean) => void }
+// "Your field's year", simplified: a typical-year strip, then one strip per season (this season plus the last 3),
+// one sentence on what's different, and heavy-rain days marked on each strip. Older years behind "Show earlier years".
+const LABEL: Record<CoverClass, string> = { b: 'Bare', p: 'Thin cover', c: 'Crop growing', w: 'Flooded', u: 'No clear view' };
+const PART = ['early', 'mid', 'late'];
+const dk = (d: number) => `${PART[d % 3]} ${MONTHS[Math.floor(d / 3)]}`;
+const count = (y: CalendarYear, ...cs: string[]) => y.rule.split('').filter((c) => cs.includes(c)).length * 10;
+
+function typical(years: CalendarYear[]) {
+  let s = '';
+  for (let d = 0; d < 36; d++) {
+    const n: Record<string, number> = {};
+    years.forEach((y) => { const c = y.rule[d]; if (c !== 'u') n[c] = (n[c] ?? 0) + 1; });
+    s += Object.entries(n).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'u';
+  }
+  return s;
+}
+
+export interface YearSheetProps { t: number; setT: (t: number) => void; loc: Location; cal: Calendar; daily: Daily | null; showEarlier: boolean; setShowEarlier: (b: boolean) => void; setExpanded: (b: boolean) => void }
 export default function YearSheet(p: YearSheetProps) {
   const cy = yearOf(p.t), cd = dekadOf(p.t);
-  const near = [...p.news].sort((a, b) => Math.abs(dateToT(a.date) - p.t) - Math.abs(dateToT(b.date) - p.t)).slice(0, 2);
+  const last = yearOf(lastDataT(p.cal));
+  const past = p.cal.years.filter((y) => y.year <= last && y.rule.replace(/u/g, '').length > 6);
+  const typ = typical(past);
+  const typY: CalendarYear = { ...past[0], rule: typ };
+  const shown = p.cal.years.filter((y) => (p.showEarlier ? true : y.year >= RECENT_FROM)).reverse();
+  const ly = p.cal.years.find((y) => y.year === last)!;
+  const dBare = count(ly, 'b', 'p') - count(typY, 'b', 'p'), dWater = count(ly, 'w') - count(typY, 'w');
+  const diff = Math.abs(dBare) >= 20 ? `${last} had about ${Math.abs(dBare)} ${dBare > 0 ? 'more' : 'fewer'} bare or thin days than a typical year` : Math.abs(dWater) >= 20 ? `${last} was flooded about ${Math.abs(dWater)} days ${dWater > 0 ? 'longer' : 'less'} than a typical year` : `${last} looked much like a typical year`;
+  const up = ly.greenup_dekad;
+  const rainDays = (year: number) => (p.daily?.rows ?? []).filter((r) => r.date.startsWith(String(year)) && (r.ncei_precip_mm ?? 0) >= 25.4);
+  const Strip = ({ y, cur }: { y: CalendarYear; cur: boolean }) => (
+    <div className="yr-strip">
+      {y.rule.split('').map((c, d) => (
+        <button key={d} className={`${c === 'u' ? 'unk' : ''} ${cur && d === cd ? 'now' : ''}`} style={{ background: c === 'u' ? undefined : CLASS_COLOR[c as CoverClass] }}
+          title={`${tLabel(tOf(y.year, d))}: ${LABEL[c as CoverClass]}`} onClick={() => y.year && p.setT(tOf(y.year, d))} />
+      ))}
+      {y.year > 0 && rainDays(y.year).map((r) => {
+        const d = dekadOf(dateToT(r.date)), c = y.rule[d];
+        return <i key={r.date} className={`rain ${c === 'b' || c === 'p' ? 'hit' : ''}`} style={{ left: `${((d + 0.5) / 36) * 100}%` }} title={`${r.date}: ${(r.ncei_precip_mm! / 25.4).toFixed(1)} in of rain, field ${LABEL[c as CoverClass].toLowerCase()}`} />;
+      })}
+    </div>
+  );
   return (
     <div className="ys" data-testid="year-sheet">
       <div className="ys-head">
         <div className="ys-title">
-          <h2>Your field’s year</h2>
-          <span>{p.loc.short_name} · what the 30 m satellites saw, every 10 days</span>
-        </div>
-        <div className="seg" role="tablist" aria-label="Detector">
-          <button className={p.detector === 'rule' ? 'on' : ''} onClick={() => p.setDetector('rule')} data-testid="det-rule">Rule <i>greenness thresholds</i></button>
-          <button className={p.detector === 'ml' ? 'on' : ''} onClick={() => p.setDetector('ml')} data-testid="det-ml">ML <i>random forest</i></button>
+          <h2>This field’s year</h2>
+          <p>{diff}{up != null ? `; the crop greened up in ${dk(up)}` : ''}. {last < 2026 ? `${last + 1} imagery is not processed yet.` : ''}</p>
         </div>
         <div className="ys-legend">
-          {(['b', 'p', 'c', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{CLASS_LABEL[c]}</span>)}
-          <span><i className="hatch-u" />Unknown (cloud)</span>
-          <span><i className="hatch-d" />Detectors disagree</span>
+          {(['c', 'p', 'b', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{LABEL[c]}</span>)}
+          <span><i className="hatch-u" />No clear view or not processed</span>
+          <span><i className="rain-key hit" />1 inch of rain on bare ground</span>
+          <span><i className="rain-key" />on a crop or water</span>
         </div>
-        <button className="icon-btn" onClick={() => p.setExpanded(false)} title="Collapse"><Icon name="down" /></button>
+        <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close"><Icon name="down" /></button>
       </div>
-      <div className="ys-body">
-        <div className="ys-grid">
-          <div className="ys-row ys-months">
-            <span className="ys-year" />
-            <span className="ys-cdl">Crop on record (CDL)</span>
-            <div className="ys-cells">{MONTHS.map((m) => <span key={m}>{m}</span>)}</div>
-          </div>
-          {p.cal.years.map((y) => {
-            const s = p.detector === 'rule' ? y.rule : y.ml;
-            const yearNews = p.news.filter((n) => n.date.startsWith(String(y.year)));
-            return (
-              <div key={y.year} className={`ys-row ${y.year === cy ? 'cur' : ''}`}>
-                <span className="ys-year">{y.year}</span>
-                <span className="ys-cdl" title="USDA Cropland Data Layer class for the year">{y.cdl}</span>
-                <div className="ys-cells">
-                  <div className="ys-ticks">
-                    {y.risks.map((r, i) => <i key={i} title={`${RISK_LABEL[r.type]}: ${r.label}`} style={{ left: `${((r.dekad + 0.5) / 36) * 100}%`, background: RISK_COLOR[r.type] }} />)}
-                    {yearNews.map((n) => (
-                      <button key={n.date + n.title} className="ys-news" title={`${fmtDate(n.date)} · ${n.source}: ${n.title}`} style={{ left: `${((dekadOf(dateToT(n.date)) + 0.5) / 36) * 100}%` }} onClick={() => p.setT(dateToT(n.date))} />
-                    ))}
-                  </div>
-                  <div className="ys-strip">
-                    {s.split('').map((c, d) => {
-                      const dis = y.rule[d] !== y.ml[d];
-                      return (
-                        <button key={d} className={`${c === 'u' ? 'unk' : ''} ${dis ? 'dis' : ''} ${y.year === cy && d === cd ? 'now' : ''}`} style={{ background: c === 'u' ? undefined : CLASS_COLOR[c as CoverClass] }}
-                          title={`${tLabel(tOf(y.year, d))}: ${CLASS_LABEL[c as CoverClass]}${dis ? ` (rule: ${CLASS_LABEL[y.rule[d] as CoverClass]}, ML: ${CLASS_LABEL[y.ml[d] as CoverClass]})` : ''}`}
-                          onClick={() => p.setT(tOf(y.year, d))} />
-                      );
-                    })}
-                    {y.greenup_dekad != null && <em className="mk up" style={{ left: `${(y.greenup_dekad / 36) * 100}%` }} title="Green-up" />}
-                    {y.senescence_dekad != null && <em className="mk dn" style={{ left: `${(y.senescence_dekad / 36) * 100}%` }} title="Harvest / senescence" />}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+      <div className="yr-grid">
+        <div className="yr-row yr-months"><span /><span /><div className="yr-m">{MONTHS.map((m) => <span key={m}>{m}</span>)}</div><span className="yr-n">Days bare or thin</span><span className="yr-n">1-inch rain days on bare ground</span></div>
+        <div className="yr-row typical">
+          <b>Typical year</b><span className="yr-crop">most common since {past[0]?.year}</span>
+          <Strip y={{ ...typY, year: 0 }} cur={false} />
+          <span className="yr-n">{count(typY, 'b', 'p')}</span><span className="yr-n" />
         </div>
-        <aside className="ys-rail">
-          <div className="ys-agree">
-            <b>{p.cal.detector_agreement_pct.value}%</b>
-            <span>of clear 10-day periods, the rule and the ML detector agree. 2022 (fallow) is the held-out test year.</span>
-          </div>
-          <div className="ys-key">
-            <h4>Risk ticks <small>above each row</small></h4>
-            <div className="ys-risks">
-              {(Object.keys(RISK_COLOR) as (keyof typeof RISK_COLOR)[]).map((k) => <span key={k}><i style={{ background: RISK_COLOR[k] }} />{RISK_LABEL[k]}</span>)}
-              <span><i className="news-dot" />News</span>
-              <span><em className="mk up inline" />Green-up</span>
-              <span><em className="mk dn inline" />Harvest</span>
+        {shown.map((y) => {
+          const rd = rainDays(y.year), hit = rd.filter((r) => 'bp'.includes(y.rule[dekadOf(dateToT(r.date))])).length;
+          const empty = y.rule.replace(/u/g, '').length === 0;
+          return (
+            <div key={y.year} className={`yr-row ${y.year === cy ? 'cur' : ''}`}>
+              <b>{y.year}</b><span className="yr-crop">{empty ? 'Crop map not out yet' : cropName(p.loc.crop_history[y.year])}</span>
+              <Strip y={y} cur={y.year === cy} />
+              <span className="yr-n">{empty ? '–' : count(y, 'b', 'p')}</span>
+              <span className="yr-n">{empty || !p.daily || y.year > +p.daily.last.slice(0, 4) ? '–' : `${hit} of ${rd.length}`}</span>
             </div>
-            <p className="scale-line"><span className="badge-scale">30 m</span> Calendar: HLS, sees your field</p>
-            <p className="scale-line"><span className="badge-scale coarse">9–50 km</span> Risk ticks: IMERG, SMAP, POWER, see your district</p>
-          </div>
-          <div className="ys-newslist">
-            <h4>News near {tLabel(p.t)}</h4>
-            {near.map((n) => (
-              <a key={n.title} className="news-item" href={n.url ?? undefined} target="_blank" rel="noreferrer" onClick={(e) => { if (!n.url) e.preventDefault(); p.setT(dateToT(n.date)); }}>
-                <span>{fmtDate(n.date)} · {n.source}</span>
-                <b>{n.title}</b>
-              </a>
-            ))}
-          </div>
-        </aside>
+          );
+        })}
+      </div>
+      <div className="ys-foot">
+        <button className="link" onClick={() => p.setShowEarlier(!p.showEarlier)} data-testid="earlier">{p.showEarlier ? 'Show only the last 4 seasons' : 'Show earlier years (2016–2022)'}</button>
+        <span className="muted">Sentinel-2 and Landsat satellites, every 10 days, whole field. Rain from NOAA stations. Click a square to move the map to that date.</span>
       </div>
     </div>
   );

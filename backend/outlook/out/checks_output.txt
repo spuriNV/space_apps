@@ -1,0 +1,41 @@
+PASS car label outlook-not-forecast 
+PASS car USDM map within 21 days 2026-11-10 (4 d)
+PASS car CDEC SHA latest daily within 21 days 2026-11-13
+PASS car SHA storage within 0..capacity 2,243,711 / 4,552,000
+PASS car SHA % of average consistent (+/-1.5) 
+PASS car CDEC ORO latest daily within 21 days 2026-11-13
+PASS car ORO storage within 0..capacity 1,433,854 / 3,424,753
+PASS car ORO % of average consistent (+/-1.5) 
+PASS car snow report within 21 days November 13, 2026
+PASS car CPC 90-day outlook issued within 35 days (monthly product) 2026-10-15
+PASS car CPC drought outlook within 35 days 10/31/2026
+PASS car CPC covers Dec-Feb and Jan-Mar 
+PASS car CPC probabilities 33-100 where not equal chances []
+PASS car every SourcedNumber has url, fetched_at, verified []
+PASS car all low <= value <= high []
+PASS car irrigation car0_rice_winterflood low<=value<=high 5.19 5.22 5.28
+PASS car irrigation car1_rice_wintercover low<=value<=high 5.12 5.14 5.21
+PASS car irrigation car2_dryyear_safflower low<=value<=high 1.92 1.93 1.96
+PASS car irrigation car3_rice_wheat low<=value<=high 3.02 3.03 3.07
+PASS car plain summary 3-5 sentences 5
+PASS car blocked/not-yet-published listed with URLs 
+PASS caf label outlook-not-forecast 
+PASS caf USDM map within 21 days 2026-11-10 (4 d)
+PASS caf CDEC PNF latest daily within 21 days 2026-11-13
+PASS caf PNF storage within 0..capacity 190,190 / 1,000,000
+PASS caf PNF % of average consistent (+/-1.5) 
+PASS caf snow report within 21 days November 13, 2026
+PASS caf CPC 90-day outlook issued within 35 days (monthly product) 2026-10-15
+PASS caf CPC drought outlook within 35 days 10/31/2026
+PASS caf CPC covers Dec-Feb and Jan-Mar 
+PASS caf CPC probabilities 33-100 where not equal chances []
+PASS caf every SourcedNumber has url, fetched_at, verified []
+PASS caf all low <= value <= high []
+PASS caf irrigation caf0_alfalfa low<=value<=high 3.83 3.83 3.9
+PASS caf irrigation caf1_smallgrain_corn low<=value<=high 2.67 2.67 2.71
+PASS caf irrigation caf2_smallgrain_sorghumsudan low<=value<=high 2.71 2.71 2.75
+PASS caf irrigation caf3_alfalfa_break low<=value<=high 3.0 3.0 3.05
+PASS caf plain summary 3-5 sentences 5
+PASS caf blocked/not-yet-published listed with URLs 
+
+RESULT: ALL PASS

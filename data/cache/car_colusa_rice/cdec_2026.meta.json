@@ -1,0 +1,13 @@
+{
+ "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-14",
+ "fetched_at": "2026-11-14T21:35:43Z",
+ "units": {
+  "storage_af": "acre-feet"
+ },
+ "auth": "none",
+ "timestep": "daily",
+ "date_min": "2026-01-01",
+ "date_max": "2026-11-14",
+ "note": "extends cdec.parquet (2015-2025) with 2026; also reads the CDEC Daily Reservoir Storage Summary for historical average",
+ "summary_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+}

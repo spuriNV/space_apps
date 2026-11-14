@@ -1,0 +1,989 @@
+{
+ "label": "Outlook, not a forecast",
+ "fetched_at": "2026-11-14T22:12:04Z",
+ "source_note": "CPC GIS shapefiles on ftp.cpc.ncep.noaa.gov (the machine-readable form of the 90-day outlooks and drought outlooks).",
+ "presets": {
+  "car_colusa_rice": {
+   "point": {
+    "lon": -122.083339,
+    "lat": 39.141386
+   },
+   "seasons": [
+    {
+     "lead": 1,
+     "season": "NDJ",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "NDJ 2026-2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 40.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "NDJ 2026-2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 33.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 2,
+     "season": "DJF",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "DJF 2026-2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 33.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "DJF 2026-2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 40.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 3,
+     "season": "JFM",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "JFM 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 33.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "JFM 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 50.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 4,
+     "season": "FMA",
+     "temperature": {
+      "category": "equal chances",
+      "valid_season": "FMA 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "FMA 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 40.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 5,
+     "season": "MAM",
+     "temperature": {
+      "category": "equal chances",
+      "valid_season": "MAM 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "MAM 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 33.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 6,
+     "season": "AMJ",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "AMJ 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 33.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "AMJ 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 7,
+     "season": "MJJ",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "MJJ 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 40.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "MJJ 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 8,
+     "season": "JJA",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "JJA 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 40.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "JJA 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 9,
+     "season": "JAS",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "JAS 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 50.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "JAS 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 10,
+     "season": "ASO",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "ASO 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 50.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "ASO 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    }
+   ],
+   "drought_outlook": {
+    "seasonal": {
+     "category": "No_Drought",
+     "target": "January 31",
+     "issued": "10/31/2026",
+     "url": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/sdo_update_polygons_20261031.zip",
+     "fetched_at": "2026-11-14T22:12:04Z",
+     "verified": true,
+     "label": "Outlook, not a forecast"
+    },
+    "monthly": {
+     "category": "No_Drought",
+     "target": "Nov 2026",
+     "issued": "10/31/2026",
+     "url": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/mdo_polygons_20261031.zip",
+     "fetched_at": "2026-11-14T22:12:04Z",
+     "verified": true,
+     "label": "Outlook, not a forecast"
+    }
+   }
+  },
+  "caf_tulare_forage": {
+   "point": {
+    "lon": -119.634704,
+    "lat": 36.236747
+   },
+   "seasons": [
+    {
+     "lead": 1,
+     "season": "NDJ",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "NDJ 2026-2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 33.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "NDJ 2026-2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 40.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 2,
+     "season": "DJF",
+     "temperature": {
+      "category": "equal chances",
+      "valid_season": "DJF 2026-2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "DJF 2026-2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 50.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 3,
+     "season": "JFM",
+     "temperature": {
+      "category": "equal chances",
+      "valid_season": "JFM 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "JFM 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 50.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 4,
+     "season": "FMA",
+     "temperature": {
+      "category": "equal chances",
+      "valid_season": "FMA 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "FMA 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 50.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 5,
+     "season": "MAM",
+     "temperature": {
+      "category": "equal chances",
+      "valid_season": "MAM 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "above normal",
+      "valid_season": "MAM 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 40.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 6,
+     "season": "AMJ",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "AMJ 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 33.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "AMJ 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 7,
+     "season": "MJJ",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "MJJ 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 33.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "MJJ 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 8,
+     "season": "JJA",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "JJA 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 40.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "JJA 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 9,
+     "season": "JAS",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "JAS 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 50.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "JAS 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    },
+    {
+     "lead": 10,
+     "season": "ASO",
+     "temperature": {
+      "category": "above normal",
+      "valid_season": "ASO 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": 50.0,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_temperature_outlook",
+        "title": "NOAA CPC 90-day temperature outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+      },
+      "label": "Outlook, not a forecast"
+     },
+     "precipitation": {
+      "category": "equal chances",
+      "valid_season": "ASO 2027",
+      "issued": "2026-10-15",
+      "probability": {
+       "value": null,
+       "unit": "percent",
+       "method": "lookup",
+       "fetched_at": "2026-11-14T22:12:04Z",
+       "verified": true,
+       "source": {
+        "id": "noaa_cpc_90-day_precipitation_outlook",
+        "title": "NOAA CPC 90-day precipitation outlook",
+        "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+        "accessed": "2026-11-14T22:12:04Z",
+        "verified": true
+       },
+       "note": "Equal chances: CPC gives no tilt; no probability stated"
+      },
+      "label": "Outlook, not a forecast"
+     }
+    }
+   ],
+   "drought_outlook": {
+    "seasonal": {
+     "category": "No_Drought",
+     "target": "January 31",
+     "issued": "10/31/2026",
+     "url": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/sdo_update_polygons_20261031.zip",
+     "fetched_at": "2026-11-14T22:12:04Z",
+     "verified": true,
+     "label": "Outlook, not a forecast"
+    },
+    "monthly": {
+     "category": "No_Drought",
+     "target": "Nov 2026",
+     "issued": "10/31/2026",
+     "url": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/mdo_polygons_20261031.zip",
+     "fetched_at": "2026-11-14T22:12:04Z",
+     "verified": true,
+     "label": "Outlook, not a forecast"
+    }
+   }
+  }
+ },
+ "files": {
+  "temp": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+  "prcp": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+  "sdo": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/sdo_update_polygons_20261031.zip",
+  "mdo": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/mdo_polygons_20261031.zip"
+ }
+}

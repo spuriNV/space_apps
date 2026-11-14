@@ -118,6 +118,13 @@
   const r2 = document.getElementById("round2");
   r2.style.cssText = "display:flex;flex-direction:column;gap:44px";
   const round2 = [
+    ["Current app (built from PLAN.md)", "One look, one version of each screen. Colusa rice field. Real data from the API except soil moisture and groundwater, which switch from example to NASA SMAP and GRACE once the Earthdata downloads finish.", [
+      ["../app/overview", "Pick your field", "Fields named the way a grower would name them."],
+      ["../app/field-now", "Your field now", "Plain answers in inches, acre-feet and °F, each with a small source line; next steps always visible."],
+      ["../app/coming-season", "Coming season", "NOAA winter outlook, drought, reservoirs and allocations, bare-window rain chance, next season's water need. Outlooks, not forecasts."],
+      ["../app/year", "Your field's year", "A typical-year strip, then 2023–2026; earlier years behind a link."],
+      ["../app/compare", "Compare", "What you gain and give up against today, in acre-feet and days."],
+      ["../app/brief", "Brief for your adviser", "One page in plain words: the field, this season, the option, gains and give-ups, what to check locally."]]],
     ["Main app: one farmer-first field panel, three looks", "Rebuilt after \"I don't even understand what is going on here\". The panel says what the field is, then answers four plain questions about it, then offers next steps in a farmer's words. Satellite names and percentiles sit in a small source line. Switch looks with ?theme=1, 2 or 3.", [
       ["../app/theme1-field", "1 · Survey sheet (default)", "USGS topo-map inks on paper: black names, blue water and actions, green vegetation, brown for example data. Serif headings, highway-sign UI type."],
       ["../app/theme2-field", "2 · Extension bulletin", "Two-colour USDA farmers' bulletin: slab headings, heavy rules, one spot green."],

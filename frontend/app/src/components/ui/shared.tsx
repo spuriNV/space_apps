@@ -1,9 +1,9 @@
 // Building blocks for the farmer-first field panel and the printable brief.
 // Rule of thumb (see .claude/skills/fieldshift-visual-design): lead with the grower's words and units,
 // answer a question in a sentence, and put the satellite / pixel size / percentile in the "where this comes from" line.
-import type { Calendar, FieldEvent, Location, Regional, RotationStrategy } from '../../types';
+import type { FieldEvent, Location, RotationStrategy } from '../../types';
 import type { ProvMap, Prov } from '../../api';
-import { dateToT, fieldState, fmtDate, haToAc, mmToAfac, ordinal, yearOf, dekadOf } from '../../lib';
+import { dateToT, fmtDate, haToAc, yearOf, dekadOf } from '../../lib';
 const MONTHS_FULL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 import Icon from '../Icons';
 
@@ -51,19 +51,19 @@ export function Src({ p }: { p?: Prov }) {
   return <span className={`src-tag ${t}`} title={`${p.label}: ${p.detail}${p.origin === 'file' ? ' (real output file; API route pending)' : ''}`}>{p.origin === 'mock' ? 'Example numbers, not live yet.' : p.origin === 'api' ? 'Live.' : 'Live, from a saved run.'}</span>;
 }
 
-export type Step = 'drill' | 'year' | 'compare' | 'brief';
+export type Step = 'drill' | 'year' | 'compare' | 'brief' | 'season';
 export const ACTIONS: { id: Step; label: string; sub: string }[] = [
-  { id: 'year', label: 'See this field’s past 10 years', sub: 'When it was bare, green or flooded, 2016–2025' },
-  { id: 'compare', label: 'Compare other rotations', sub: 'Water, soil and cover for today’s rotation and three others' },
-  { id: 'drill', label: 'Look under the field', sub: 'Crop, soil moisture and groundwater as stacked layers' },
-  { id: 'brief', label: 'Print a summary for your adviser', sub: 'One page, Letter size' },
+  { id: 'season', label: 'What’s likely this winter', sub: 'Rain, drought, reservoirs, bare weeks' },
+  { id: 'year', label: 'This field’s year', sub: 'Bare, green or flooded, 2023–2026' },
+  { id: 'compare', label: 'Compare rotations', sub: 'What you gain and give up' },
+  { id: 'brief', label: 'Print for your adviser', sub: 'One page, Letter size' },
 ];
 export function Actions({ onStep }: { onStep: (s: Step) => void }) {
   return (
     <div className="actions">
       {ACTIONS.map((a) => (
         <button key={a.id} className={`action ${a.id === 'brief' ? 'primary' : ''}`} onClick={() => onStep(a.id)} data-testid={`step-${a.id}`}>
-          <span><b>{a.label}</b><small>{a.sub}</small></span><Icon name="right" size={16} />
+          <span><b>{a.label}</b><small>{a.sub}</small></span>
         </button>
       ))}
     </div>
@@ -71,69 +71,16 @@ export function Actions({ onStep }: { onStep: (s: Step) => void }) {
 }
 
 const when = (t: number) => { const d = dekadOf(t); return `${['early', 'mid', 'late'][d % 3]} ${MONTHS_FULL[Math.floor(d / 3)]}`; };
-const GROUND: Record<string, [string, string]> = {
-  c: ['A crop is growing, full green cover', 'good'], p: ['Thin or patchy cover', 'part'], b: ['Bare ground', 'bare'], w: ['Under water', 'water'], u: ['No clear satellite view (clouds)', 'none'],
-};
-const band = (pct: number, hi: string, mid: string, lo: string) => (pct >= 67 ? hi : pct > 33 ? mid : lo);
-
-/** Three or four questions a grower would ask, answered for the timeline date. */
-export function Answers(p: { loc: Location; cal: Calendar | null; regional: Regional | null; strategies: RotationStrategy[] | null; allocation?: number; t: number; detector: 'rule' | 'ml'; prov: ProvMap }) {
-  const fs = p.cal ? fieldState(p.cal, p.t, p.detector) : null;
-  const smap = p.regional?.smap_rootzone_pct.values[p.t] ?? null, grace = p.regional?.grace_gw_pct.values[p.t] ?? null;
-  const base = p.strategies?.find((s) => s.is_baseline);
-  const need = base ? mmToAfac(base.water.irrigation_need_mm.value) : null;
-  const w = when(p.t);
-  const g = fs ? GROUND[fs.cls] : null;
-  return (
-    <dl className="answers">
-      <div className="ans">
-        <dt>What is on the ground?</dt>
-        <dd>
-          <b><i className={`sw-${g?.[1] ?? 'none'}`} />{g ? g[0] : 'Loading…'}</b>
-          {fs && fs.cls !== 'u' && fs.cls !== 'w' && <span>Greenness {fs.ndvi.toFixed(2)} (0 to 1; above 0.6 is a full canopy).</span>}
-          <cite>Sentinel-2 and Landsat satellites, 10–30 m. <Src p={p.prov.calendar} /></cite>
-        </dd>
-      </div>
-      <div className="ans">
-        <dt>Is the soil wetter or drier than usual?</dt>
-        <dd>
-          <b>{smap == null ? 'No reading for this date' : band(smap, `Wetter than usual for ${w}`, `About normal for ${w}`, `Drier than usual for ${w}`)}</b>
-          {smap != null && <span>{ordinal(Math.round(smap))} percentile (100 = wettest {w} since 2015).</span>}
-          <cite>SMAP satellite, one 6-mile square around the field. <Src p={p.prov.regional} /></cite>
-        </dd>
-      </div>
-      <div className="ans">
-        <dt>Is there more or less groundwater than usual?</dt>
-        <dd>
-          <b>{grace == null ? 'No reading: gap between satellite missions' : band(grace, 'More than usual in this basin', 'About normal in this basin', 'Less than usual in this basin')}</b>
-          {grace != null && <span>{ordinal(Math.round(grace))} percentile. Whole basin, not your own well.</span>}
-          <cite>GRACE-FO satellites, one 17-mile square. <Src p={p.prov.regional} /></cite>
-        </dd>
-      </div>
-      {need != null && (
-        <div className="ans">
-          <dt>How much water does the current rotation need?</dt>
-          <dd>
-            <b>About {need.toFixed(1)} acre-feet per acre a year</b>
-            <span>{p.allocation != null ? (need > p.allocation ? `Your limit is ${p.allocation.toFixed(1)}, so ${(need - p.allocation).toFixed(1)} short.` : `Fits your limit of ${p.allocation.toFixed(1)}.`) : ''} Today: {base!.name.replace(/ \(current\)/, '').split(',').slice(0, 2).join(',')}.</span>
-            <cite>Rotation model: crop water use minus rain, {Math.round(base!.water.irrigation_need_mm.value / 25.4)} in a year. <Src p={p.prov.strategies} /></cite>
-          </dd>
-        </div>
-      )}
-    </dl>
-  );
-}
-
 export function AboutField({ loc, prov }: { loc: Location; prov: ProvMap }) {
   const s = loc.soil, saline = (s.ec_ds_per_m ?? 0) >= 4;
   const inFt = (s.awc_mm_per_m.value / 1000) * 12;
   return (
     <dl className="facts">
-      <div><dt>Soil</dt><dd>{s.muname.split(',')[0]} <cite><Src p={prov.soil} /></cite></dd></div>
-      <div><dt>Holds</dt><dd>{inFt.toFixed(1)} in of water per foot of soil{inFt < 1.4 ? ' (low)' : inFt > 2 ? ' (high)' : ''}</dd></div>
-      {s.ec_ds_per_m != null && <div><dt>Salt</dt><dd className={saline ? 'warn' : ''}>{saline ? 'Salty soil; limits salt-sensitive crops' : 'Low salt'} <small>(EC {s.ec_ds_per_m.toFixed(1)} dS/m)</small></dd></div>}
-      <div><dt>Drainage</dt><dd>{s.drainage_class}</dd></div>
-      <div><dt>Water</dt><dd>{loc.water.source === 'surface' ? 'Surface water' : 'Groundwater (wells)'} · {loc.water.district.replace(' (U)', '')} <cite><Src p={prov.water} /></cite></dd></div>
+      <div><dt>Soil</dt><dd>{s.muname.split(',')[0]}{s.texture_class ? `, ${s.texture_class.toLowerCase()}` : ''} <cite><Src p={prov.soil} /></cite></dd></div>
+      <div><dt>Holds</dt><dd>{inFt.toFixed(1)} in of water per foot of soil{inFt < 1.4 ? ' (low: needs frequent, short irrigations)' : inFt > 2 ? ' (high)' : ''}</dd></div>
+      <div><dt>Drainage</dt><dd>{s.drainage_class}{s.hydrologic_group ? `; runoff group ${s.hydrologic_group}` : ''}</dd></div>
+      <div><dt>Salt</dt><dd className={saline ? 'warn' : ''}>{s.ec_ds_per_m == null ? 'Not in the soil survey' : saline ? 'Salty soil; limits salt-sensitive crops' : 'Low salt'}{s.ec_ds_per_m != null && <small> (EC {s.ec_ds_per_m.toFixed(1)} dS/m)</small>}</dd></div>
+      <div><dt>Water</dt><dd>{loc.water.source === 'surface' ? 'Surface water' : 'Groundwater (wells)'}, {loc.water.district.replace(' (U)', '')} <cite><Src p={prov.water} /></cite></dd></div>
       <div><dt>Usually bare</dt><dd>{loc.observed_cover.summary}</dd></div>
     </dl>
   );
@@ -177,3 +124,11 @@ export function ProvList({ prov }: { prov: ProvMap }) {
 }
 
 export const yearLabel = (t: number) => `${when(t)} ${yearOf(t)}`;
+
+/** Honest line on how the water model compares with OpenET measured water use on this field (baseline crop years only). */
+export function openetText(strategies: RotationStrategy[] | null | undefined) {
+  const b = strategies?.find((s) => s.is_baseline), v = b?.water.etc_vs_openet_pct?.value;
+  if (v == null) return 'Not yet checked against measured water use (OpenET).';
+  const r = Math.round(Math.abs(v));
+  return `Checked against OpenET satellite measurements of this field: our estimate runs about ${r}% ${v >= 0 ? 'high' : 'low'}${v >= 0 ? ', as expected for a fully watered crop' : ''}.`;
+}

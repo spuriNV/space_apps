@@ -1,0 +1,261 @@
+{
+ "fetched_at": "2026-11-14T22:20:03Z",
+ "snow_now": {
+  "report_date": "November 13, 2026",
+  "stations": 114,
+  "swe_inches": {
+   "value": 0.2,
+   "unit": "inches",
+   "method": "lookup",
+   "fetched_at": "2026-11-14T22:20:03Z",
+   "verified": true,
+   "source": {
+    "id": "cdec_statewide_average_snow_water_equiva",
+    "title": "CDEC statewide average snow water equivalent",
+    "url": "https://cdec.water.ca.gov/reportapp/javareports?name=DLYSWEQ",
+    "accessed": "2026-11-14T22:20:03Z",
+    "verified": true
+   },
+   "note": "report dated November 13, 2026"
+  },
+  "pct_of_normal_for_date": {
+   "value": 0.0,
+   "unit": "percent",
+   "method": "lookup",
+   "fetched_at": "2026-11-14T22:20:03Z",
+   "verified": true,
+   "source": {
+    "id": "cdec_statewide_snow_water_equivalent,_pe",
+    "title": "CDEC statewide snow water equivalent, percent of normal for this date",
+    "url": "https://cdec.water.ca.gov/reportapp/javareports?name=DLYSWEQ",
+    "accessed": "2026-11-14T22:20:03Z",
+    "verified": true
+   },
+   "note": "Reported as 0% in mid-November: the normal for this date is near zero (snow season has not started); not informative until Dec-Jan."
+  },
+  "url": "https://cdec.water.ca.gov/reportapp/javareports?name=DLYSWEQ"
+ },
+ "bulletin_120": {
+  "status": "not yet published for WY2027",
+  "latest_on_cdec_page": "UNIMPAIRED FLOW FOR - May 2026; Report generated: May 28, 2026 10:48",
+  "wy2026_final_update": true,
+  "url_tried": "https://cdec.water.ca.gov/reportapp/javareports?name=B120UP",
+  "also_tried": "https://cdec.water.ca.gov/snow/bulletin120/",
+  "fetched_at": "2026-11-14T22:20:03Z",
+  "verified": true,
+  "note": "The CDEC Bulletin 120 update summary page still shows the May 2026 (WY2026) update. First WY2027 forecast expected in winter (plan: from February). Outlook, not a forecast."
+ },
+ "allocations": {
+  "cvp": {
+   "source_url": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+   "fetched_at": "2026-11-14T22:20:03Z",
+   "verified": true,
+   "latest_update": "2026-10-27 (Reclamation table header)",
+   "wy2026": {
+    "sacramento_river_settlement_contractors": {
+     "value": 100,
+     "unit": "percent of contract supply",
+     "method": "lookup",
+     "fetched_at": "2026-11-14T22:20:03Z",
+     "verified": true,
+     "source": {
+      "id": "cvp_2026_allocation,_settlement_contract",
+      "title": "CVP 2026 allocation, Settlement Contractors/Water Rights (Shasta non-critical)",
+      "url": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+      "accessed": "2026-11-14T22:20:03Z",
+      "verified": true
+     }
+    },
+    "north_of_delta_ag": {
+     "value": 100,
+     "unit": "percent of contract total",
+     "method": "lookup",
+     "fetched_at": "2026-11-14T22:20:03Z",
+     "verified": true,
+     "source": {
+      "id": "cvp_2026_allocation,_north-of-delta_agri",
+      "title": "CVP 2026 allocation, north-of-Delta agricultural contractors",
+      "url": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+      "accessed": "2026-11-14T22:20:03Z",
+      "verified": true
+     }
+    },
+    "south_of_delta_ag": {
+     "value": 31,
+     "unit": "percent of contract total",
+     "method": "lookup",
+     "fetched_at": "2026-11-14T22:20:03Z",
+     "verified": true,
+     "source": {
+      "id": "cvp_2026_allocation,_south-of-delta_agri",
+      "title": "CVP 2026 allocation, south-of-Delta agricultural contractors, as of 27 Oct 2026",
+      "url": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+      "accessed": "2026-11-14T22:20:03Z",
+      "verified": true
+     },
+     "note": "Steps: 15% (26 Feb), 20% (24 Mar), 25% (19 May), 28% (11 Aug), 31% (27 Oct 2026). Reclamation news releases: https://www.usbr.gov/newsroom/news-release/5289, https://www.usbr.gov/newsroom/news-release/5305, https://www.usbr.gov/newsroom/news-release/5338, https://www.usbr.gov/newsroom/news-release/5386"
+    }
+   },
+   "news_releases": {
+    "initial_2026-02-26": "https://www.usbr.gov/newsroom/news-release/5289",
+    "2026-03-24": "https://www.usbr.gov/newsroom/news-release/5305",
+    "2026-05-19": "https://www.usbr.gov/newsroom/news-release/5338",
+    "2026-08-11": "https://www.usbr.gov/newsroom/news-release/5386"
+   },
+   "wy2027_initial": {
+    "status": "not yet announced",
+    "note": "Reclamation's initial CVP allocation has come in late February in 2025 and 2026 (table header dates); none exists for 2027 yet.",
+    "url_tried": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf"
+   }
+  },
+  "swp": {
+   "verified": false,
+   "note": "DWR pages (water.ca.gov) return HTTP 403 to automated fetches, so the figures below are read from ACWA's copy of the DWR release and from search summaries; open the DWR URLs to confirm.",
+   "steps": [
+    {
+     "date": "2025-12-01",
+     "percent": 10,
+     "label": "initial",
+     "url": "https://water.ca.gov/News/News-Releases/2025/Dec-25/SWP-Allocation"
+    },
+    {
+     "date": "2026-01-29",
+     "percent": 30,
+     "url": "https://www.water.ca.gov/News/News-Releases/2026/Jan-2026/December-Storms-Improved-Flexibility-Allow-DWR-to-Increase-State-Water-Project-Allocation"
+    },
+    {
+     "date": "2026-05-15",
+     "percent": 45,
+     "url": "https://water.ca.gov/News/News-Releases/2026/May-2026/State-Water-Project-Allocation-Increases-Heading-into-Summer-Months",
+     "read_from": "https://www.acwa.com/news/dwr-boosts-swp-allocation-heading-into-summer/"
+    }
+   ],
+   "latest": {
+    "value": 45,
+    "unit": "percent of requested Table A",
+    "method": "lookup",
+    "fetched_at": "2026-11-14T22:20:03Z",
+    "verified": false,
+    "source": {
+     "id": "dwr_state_water_project_2026_allocation_",
+     "title": "DWR State Water Project 2026 allocation (15 May 2026), via ACWA",
+     "url": "https://www.acwa.com/news/dwr-boosts-swp-allocation-heading-into-summer/",
+     "accessed": "2026-11-14T22:20:03Z",
+     "verified": false
+    },
+    "note": "DWR 'final allocation typically near end of season'; no later change found. DWR release URL: https://water.ca.gov/News/News-Releases/2026/May-2026/State-Water-Project-Allocation-Increases-Heading-into-Summer-Months"
+   },
+   "wy2027_initial": {
+    "status": "not yet announced",
+    "note": "DWR must issue an initial forecast by 1 December (as in 2025); not yet out on 14 Nov 2026.",
+    "url_tried": "https://water.ca.gov/News/News-Releases/2025/Dec-25/SWP-Allocation"
+   },
+   "history_blocked": {
+    "url_tried": "https://water.ca.gov/-/media/DWR-Website/Web-Pages/Programs/State-Water-Project/Management/SWP-Water-Contractors/Files/Historical-SWP-allocations-1996-2024-112923.pdf",
+    "why": "HTTP 403 to automated fetch; past SWP final allocations not sourced, so not used in the storage relation"
+   }
+  },
+  "storage_vs_final_allocation": {
+   "method": "Shasta storage on 13 Nov before each allocation year (CDEC cache, 2015-2026) beside Reclamation's last published CVP allocation for that year. 11 years, descriptive only; the 2026 allocation may still change. SWP history not sourced (DWR 403).",
+   "rows": [
+    {
+     "allocation_year": 2016,
+     "shasta_storage_13nov_prior_af": 1370914.0,
+     "pct_of_capacity": 30.1,
+     "cvp_south_of_delta_ag_pct": 5,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2017,
+     "shasta_storage_13nov_prior_af": 2823550.0,
+     "pct_of_capacity": 62.0,
+     "cvp_south_of_delta_ag_pct": 100,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2018,
+     "shasta_storage_13nov_prior_af": 3157500.0,
+     "pct_of_capacity": 69.4,
+     "cvp_south_of_delta_ag_pct": 50,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2019,
+     "shasta_storage_13nov_prior_af": 2150251.0,
+     "pct_of_capacity": 47.2,
+     "cvp_south_of_delta_ag_pct": 75,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2020,
+     "shasta_storage_13nov_prior_af": 3223912.0,
+     "pct_of_capacity": 70.8,
+     "cvp_south_of_delta_ag_pct": 20,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2021,
+     "shasta_storage_13nov_prior_af": 2043514.0,
+     "pct_of_capacity": 44.9,
+     "cvp_south_of_delta_ag_pct": 0,
+     "cvp_settlement_contractors_pct": 75,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2022,
+     "shasta_storage_13nov_prior_af": 1083160.0,
+     "pct_of_capacity": 23.8,
+     "cvp_south_of_delta_ag_pct": 0,
+     "cvp_settlement_contractors_pct": 18,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2023,
+     "shasta_storage_13nov_prior_af": 1396515.0,
+     "pct_of_capacity": 30.7,
+     "cvp_south_of_delta_ag_pct": 100,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2024,
+     "shasta_storage_13nov_prior_af": 3111745.0,
+     "pct_of_capacity": 68.4,
+     "cvp_south_of_delta_ag_pct": 50,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2025,
+     "shasta_storage_13nov_prior_af": 2533834.0,
+     "pct_of_capacity": 55.7,
+     "cvp_south_of_delta_ag_pct": 55,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2026,
+     "shasta_storage_13nov_prior_af": 2585097.0,
+     "pct_of_capacity": 56.8,
+     "cvp_south_of_delta_ag_pct": 31,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": true
+    }
+   ],
+   "shasta_13nov_2026_af": 2243712.0,
+   "unit": "acre-feet",
+   "sources": [
+    "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+    "data/cache/car_colusa_rice/cdec.parquet",
+    "data/cache/car_colusa_rice/cdec_2026.parquet"
+   ],
+   "fetched_at": "2026-11-14T22:20:03Z",
+   "verified": true
+  }
+ }
+}

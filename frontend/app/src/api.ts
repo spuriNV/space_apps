@@ -13,6 +13,8 @@ import datasets from './mock/datasets.json';
 import bc from './mock/bc.json';
 import story from './mock/story.json';
 import { YEARS } from './lib';
+import type { Daily } from './season';
+import outlookExample from './mock/outlook.example.json';
 
 export const API = 'http://localhost:8000';
 type ById<T> = Record<string, T>;
@@ -110,11 +112,15 @@ const CLS: Record<string, CoverClass> = { bare: 'b', partial: 'p', covered: 'c',
 const doy = (y: number, m: number, d: number) => Math.round((Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 0)) / 864e5);
 const dekadDate = (y: number, k: number) => [y, Math.floor(k / 3) + 1, [5, 15, 25][k % 3]] as const;
 interface RealCalYear { year: number; segments: { start_doy: number; end_doy: number; class: string }[]; markers: { date: string; type: string }[]; observations: { date: string; ndvi: number | null; class: string }[] }
+/** A year with no processed imagery yet (2026): every 10-day step is "no reading". Drawn hatched, never guessed. */
+const blankYear = (year: number, cdl = 'Not published yet'): CalendarYear => ({ year, cdl, rule: 'u'.repeat(36), ml: 'u'.repeat(36), ndvi: Array(36).fill(0), et_mm_day: Array(36).fill(0), greenup_dekad: null, senescence_dekad: null, risks: [] });
+/** Pad a calendar to YEARS (the bundled mock stops at 2025). */
+const padCalendar = (c: Calendar): Calendar => ({ ...c, years: YEARS.map((y, i) => c.years.find((x) => x.year === y) ?? c.years[i] ?? blankYear(y)) });
 function convertCalendar(real: { years: RealCalYear[] }, mock: Calendar, hist: Record<string, string>): Calendar {
   const years: CalendarYear[] = YEARS.map((year, yi) => {
     const ry = real.years.find((y) => y.year === year);
-    const my = mock.years[yi];
-    if (!ry) return my;
+    const my = mock.years[yi] ?? blankYear(year, hist[year] ?? 'Not published yet');
+    if (!ry) return year > 2025 ? blankYear(year, hist[year] ?? 'Not published yet') : my;
     const obs = ry.observations.filter((o) => o.ndvi != null).map((o) => ({ t: Date.parse(o.date), v: o.ndvi as number }));
     let rule = '';
     const ndvi: number[] = [];
@@ -205,7 +211,7 @@ const normNews = (n: any): NewsItem => ({ ...n, verified: !!n.url && !n.url.incl
 export interface FieldBundle { id: string; cells: CellGrid; cal: Calendar; regional: Regional; strategies: RotationStrategy[]; news: NewsItem[]; story: Story; prov: ProvMap }
 export async function getField(loc: Location, live: boolean): Promise<FieldBundle> {
   const id = loc.id;
-  const mCal = (mockCalendar as unknown as ById<Calendar>)[id];
+  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[id]);
   const prov: ProvMap = {
     calendar: P('calendar', 'Bare / covered / water calendar', 'mock', 'illustrative'),
     grid: P('grid', '30 m surface cells (3D top layer)', 'mock', 'illustrative'),
@@ -229,4 +235,110 @@ export async function getField(loc: Location, live: boolean): Promise<FieldBundl
   if (strat?.items?.length) { strategies = strat.items.map(normStrategy); prov.strategies = P('strategies', 'Rotations and scores', 'api', 'rotation engine'); }
   if (news?.items?.length) { nws = news.items.map(normNews); prov.news = P('news', 'News headlines', 'api', `${news.items.length} cached headlines`); }
   return { ...base, cells, cal: c, strategies, news: nws, prov };
+}
+
+// ---------- daily weather (GET .../daily): NOAA station means + NASA POWER reference ET ----------
+export async function getDaily(id: string): Promise<{ daily: Daily | null; prov: Prov }> {
+  const b = await apiReal(`/api/locations/${id}/daily`);
+  if (!b?.rows?.length) return { daily: null, prov: P('daily', 'Rain, heat and frost (weather stations)', 'mock', 'daily route not reachable') };
+  const rows = b.rows as Daily['rows'];
+  return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', 'Rain, heat and frost (weather stations)', 'api', `NOAA station mean, ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 4)}`) };
+}
+
+// ---------- coming-season outlooks ----------
+// Order: GET .../outlook (not built yet) -> backend/outlook/out/<id>/outlook.json -> backend/outlook/out/{cpc,water_now}.json
+// (real, saved runs) -> src/mock/outlook.example.json for parts nothing live covers (allocation history).
+export interface OutlookCat { category: string; prob: number | null }
+export interface OutlookSeason { season: string; temp: OutlookCat | null; rain: OutlookCat | null }
+export interface Reservoir { id: string; name: string; storageAf: number; capacityAf: number | null; pctAvg: number | null; pctCap: number | null; yearAgoAf: number | null; date: string }
+export interface Outlook {
+  issued: string | null; seasons: OutlookSeason[];
+  droughtNow: { category: string; date: string; county: string } | null;
+  droughtOutlook: { category: string; target: string; issued: string } | null;
+  reservoirs: Reservoir[];
+  allocations: { project: string; items: { year: number; pct: number }[]; next: string; url: string } | null;
+  /** From backend/outlook outlook.json when present */
+  cvpNow?: { settlement: number | null; northAg: number | null; southAg: number | null; updated: string } | null;
+  swpNow?: { pct: number; verified: boolean } | null;
+  storageVsAlloc?: { year: number; shastaPctCap: number; southAg: number | null; settlement: number | null; partial: boolean }[];
+  shastaNowAf?: number | null;
+  nextAnnouncements?: string[];
+  snow?: { swe: number | null; date: string; b120: string } | null;
+  bare?: { start: string; end: string; days: number | null; low: number | null; high: number | null; chance: number | null; chanceLo: number | null; chanceHi: number | null; chanceOutlook: number | null; note: string } | null;
+  irrigation?: Record<string, { value: number; low: number; high: number }>;
+  prov: { cpc: Prov; water: Prov; alloc: Prov };
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const num = (x: any): number | null => (x == null ? null : typeof x === 'number' ? x : typeof x.value === 'number' ? x.value : null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const cat = (x: any): OutlookCat | null => (x?.category ? { category: String(x.category), prob: num(x.probability) } : null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function adaptOutlook(o: any, w: any, al: any, origin: { cpc: Origin; water: Origin; alloc: Origin }, detail: string): Outlook {
+  const seasons: OutlookSeason[] = (o?.seasons ?? []).map((s: any) => ({ season: s.season, temp: cat(s.temperature), rain: cat(s.precipitation) })); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const issued = o?.seasons?.[0]?.temperature?.issued ?? o?.seasons?.[0]?.issued ?? null;
+  const so = o?.drought_outlook?.seasonal;
+  const dm = w?.drought_monitor;
+  const res = Object.entries(w?.reservoirs ?? {}).map(([id, r]: [string, any]) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+    id, name: String(r.name ?? id), storageAf: num(r.storage_af) ?? 0, capacityAf: num(r.capacity_af), pctAvg: num(r.pct_of_cdec_average) ?? num(r.pct_of_own_average), pctCap: num(r.pct_of_capacity), yearAgoAf: num(r.storage_year_ago_af), date: String(r.latest_daily_date ?? r.cdec_report_date ?? ''),
+  }));
+  return {
+    issued, seasons,
+    droughtNow: dm ? { category: String(dm.worst_category), date: String(dm.map_date), county: String(dm.county ?? '') } : null,
+    droughtOutlook: so ? { category: String(so.category), target: String(so.target ?? ''), issued: String(so.issued ?? '') } : null,
+    reservoirs: res,
+    allocations: al ?? null,
+    prov: {
+      cpc: P('outlook_cpc', 'Winter rain, temperature and drought outlooks (NOAA)', origin.cpc, detail),
+      water: P('outlook_water', 'Drought Monitor and reservoir storage now (CDEC)', origin.water, detail),
+      alloc: P('outlook_alloc', 'Water allocation history', origin.alloc, origin.alloc === 'mock' ? 'example file; no backend source yet' : detail),
+    },
+  };
+}
+export async function getOutlook(id: string, live: boolean): Promise<Outlook> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ex = outlookExample as any;
+  const exAlloc = ex.presets[id]?.allocations ?? null;
+  if (live) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pick = (j: any) => j?.presets?.[id] ?? j;
+    const full = (await apiReal(`/api/locations/${id}/outlook`)) ?? (await file(`backend/outlook/out/${id}/outlook.json`).catch(() => null));
+    if (full) return fromOutlookFile(pick(full), exAlloc, full._source === 'real' ? 'api' : 'file');
+    const [c, w] = await Promise.all([file('backend/outlook/out/cpc.json').catch(() => null), file('backend/outlook/out/water_now.json').catch(() => null)]);
+    if (c || w) {
+      const fetched = (c?.fetched_at ?? w?.fetched_at ?? '').slice(0, 10);
+      return adaptOutlook(pick(c), pick(w), exAlloc, { cpc: c ? 'file' : 'mock', water: w ? 'file' : 'mock', alloc: 'mock' }, `backend/outlook, fetched ${fetched}`);
+    }
+  }
+  return adaptOutlook(ex.example_full, ex.example_full, exAlloc, { cpc: 'mock', water: 'mock', alloc: 'mock' }, 'example file');
+}
+
+const MD = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const mdText = (mmdd?: string) => { if (!mmdd) return ''; const [m, d] = mmdd.split('-').map(Number); return `${d <= 10 ? 'early' : d <= 20 ? 'mid' : 'late'} ${MD[m - 1]}`; };
+/** backend/outlook/out/<id>/outlook.json (the coming-season file built by backend/outlook) */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function fromOutlookFile(j: any, exAlloc: any, origin: Origin): Outlook {
+  const base = adaptOutlook({ ...j.cpc_seasonal_outlook, drought_outlook: j.drought?.cpc_drought_outlook }, { drought_monitor: j.drought?.us_drought_monitor, reservoirs: j.reservoirs_now }, null,
+    { cpc: origin, water: origin, alloc: origin }, `backend/outlook, ${String(j.generated_at ?? '').slice(0, 10)}`);
+  base.issued = j.cpc_seasonal_outlook?.issued ?? base.issued;
+  const a = j.allocations_context ?? {}, cvp = a.cvp?.wy2026, sva = a.storage_vs_final_allocation;
+  base.cvpNow = cvp ? { settlement: num(cvp.sacramento_river_settlement_contractors), northAg: num(cvp.north_of_delta_ag), southAg: num(cvp.south_of_delta_ag), updated: String(a.cvp?.latest_update ?? '') } : null;
+  base.swpNow = a.swp?.latest ? { pct: num(a.swp.latest) ?? 0, verified: !!a.swp.latest.verified } : null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  base.storageVsAlloc = (sva?.rows ?? []).map((r: any) => ({ year: r.allocation_year, shastaPctCap: r.pct_of_capacity, southAg: r.cvp_south_of_delta_ag_pct ?? null, settlement: r.cvp_settlement_contractors_pct ?? null, partial: !!r.partial_year }));
+  base.shastaNowAf = sva?.shasta_13nov_2026_af ?? null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  base.nextAnnouncements = (j.blocked_or_not_yet_published ?? []).map((b: any) => `${b.item}: ${b.status}`);
+  const sn = j.snowpack_runoff;
+  base.snow = sn ? { swe: num(sn.snow_now_statewide?.swe_inches), date: String(sn.snow_now_statewide?.report_date ?? ''), b120: String(sn.bulletin_120?.status ?? '') } : null;
+  const f = j.field_expectations_from_history ?? {}, bw = f.bare_window, hr = f.heavy_rain_in_window ?? {};
+  base.bare = bw?.median_start ? {
+    start: mdText(bw.median_start), end: mdText(bw.median_end), days: num(bw.median_days), low: bw.median_days?.low ?? null, high: bw.median_days?.high ?? null,
+    chance: num(hr.chance_any_day_ge_25mm_climatology), chanceLo: hr.chance_any_day_ge_25mm_climatology?.low ?? null, chanceHi: hr.chance_any_day_ge_25mm_climatology?.high ?? null,
+    chanceOutlook: num(hr.chance_given_cpc_outlook), note: '',
+  } : { start: '', end: '', days: null, low: null, high: null, chance: null, chanceLo: null, chanceHi: null, chanceOutlook: null, note: String(bw?.note ?? f.note ?? 'No typical bare window') };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  base.irrigation = Object.fromEntries((j.irrigation_2027?.strategies ?? []).map((s: any) => [s.id, { value: num(s.irrigation_need_af_ac) ?? 0, low: s.irrigation_need_af_ac?.low ?? 0, high: s.irrigation_need_af_ac?.high ?? 0 }]));
+  base.allocations = exAlloc ? { ...exAlloc, items: [] } : null; // only the grower-facing note (GSA for groundwater fields); history comes from storageVsAlloc
+  base.prov.alloc = P('outlook_alloc', 'Water allocations (Reclamation CVP table; SWP via ACWA)', origin, 'backend/outlook');
+  return base;
 }

@@ -163,3 +163,7 @@ def common_args(desc: str):
     ap.add_argument("--end", help="YYYY-MM-DD override")
     ap.add_argument("--limit", type=int, help="smoke test: only first N granules/scenes")
     return ap
+
+
+def today() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")

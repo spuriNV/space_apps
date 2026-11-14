@@ -1,151 +1,120 @@
-// Printable rotation brief (brought in from variant C, restyled for the Earth explorer, fed from the strategy data).
+// Printable one-page brief, written for the grower and adviser: what the field is, what's likely this season,
+// the option chosen, what it gains and gives up, what to check locally, and sources. No scores as headlines.
 import { useState } from 'react';
-import type { CoverClass, Location, RotationStrategy, ScoreKey, SourcedNumber, Source } from '../../types';
-import type { ProvMap } from '../../api';
-import { CLASS_COLOR, MONTHS, afacToMm, haToAc, mmToAfac } from '../../lib';
+import type { Calendar, CoverClass, Location, RotationStrategy, Source } from '../../types';
+import type { Outlook, ProvMap } from '../../api';
+import type { Daily } from '../../season';
+import { bareWindow, rainSoFar, fmtIn } from '../../season';
+import { CLASS_COLOR, MONTHS, TODAY_T, lastDataT, mmToAfac, yearOf } from '../../lib';
 import Icon from '../Icons';
-import { Src, fieldCode, fieldName, acres, county } from '../ui/shared';
+import { Src, fieldCode, fieldName, acres, county, cropName, openetText } from '../ui/shared';
+import { tradeoffs } from '../compare/ComparePanel';
 
-const ROWS: [ScoreKey, string][] = [['water_use', 'Water use'], ['forage_value', 'Forage value'], ['n_fixation', 'Nitrogen fixing'], ['erosion', 'Erosion reduction'], ['organic_matter', 'Organic matter'], ['market', 'Market fit'], ['pest_break', 'Pest-cycle break'], ['infiltration', 'Infiltration'], ['n_scavenging', 'N scavenging']];
-const SECTIONS = [['calendar', 'Cycle calendar'], ['why', 'Why / what the numbers say'], ['benefits', 'Benefits by priority'], ['funding', 'Funding and insurance'], ['checks', 'Fit checks'], ['review', 'Needs local review'], ['gaps', 'Gaps in the data']] as const;
-type Sec = (typeof SECTIONS)[number][0];
-const f0 = (v: number | null | undefined) => (v == null ? '—' : Math.round(v).toLocaleString());
-const f1 = (v: number | null | undefined) => (v == null ? '—' : v.toFixed(1));
-const rngTxt = (n: SourcedNumber, f = f0) => (n.low != null && n.high != null && n.low !== n.high ? `${f(n.low)}–${f(n.high)}` : f(n.value));
+const lean = (c?: { category: string; prob: number | null } | null) => (!c || c.category.startsWith('equal') || (c.prob ?? 40) <= 35 ? 'no clear lean' : c.category.startsWith('above') ? 'leans wetter than normal' : 'leans drier than normal');
+/** Engine review notes are written for the team; strip spec references and convert mm to acre-feet per acre. */
+const plain = (t: string) => t.replace(/\s*\((spec [^)]*|U)\)/g, '').replace(/(\d[\d,]*)\s?mm/g, (_, n) => `${(Number(n.replace(/,/g, '')) / 304.8).toFixed(1)} acre-ft/acre`);
+const SEASON: Record<string, string> = { NDJ: 'Nov–Jan', DJF: 'Dec–Feb', JFM: 'Jan–Mar', FMA: 'Feb–Apr' };
 
-export default function RotationBrief({ loc, strategies, pick, setPick, allocation, prov, onClose }: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; prov: ProvMap; onClose: () => void }) {
-  const s = strategies.find((x) => x.id === pick) ?? strategies.find((x) => !x.is_baseline) ?? strategies[0];
+export default function RotationBrief(p: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; prov: ProvMap; outlook: Outlook | null; cal: Calendar | null; daily: Daily | null; onClose: () => void }) {
+  const { loc, strategies } = p;
+  const s = strategies.find((x) => x.id === p.pick) ?? strategies.find((x) => !x.is_baseline) ?? strategies[0];
   const base = strategies.find((x) => x.is_baseline) ?? strategies[0];
-  const [on, setOn] = useState<Record<Sec, boolean>>({ calendar: true, why: true, benefits: true, funding: true, checks: true, review: true, gaps: true });
   const [ticks, setTicks] = useState<Record<string, boolean>>({});
-
   if (!s) return null;
-  // number sources by first use, in render order (C is called inline, not as a component, so the footer sees the full list)
   const sources: Source[] = [];
-  const C = ({ n }: { n?: SourcedNumber | { source?: Source } }) => {
-    const src = n?.source;
+  const cite = (src?: Source | null) => {
     if (!src?.id || src.id === 'mock') return null;
     let i = sources.findIndex((x) => x.id === src.id);
     if (i < 0) { sources.push(src); i = sources.length - 1; }
     return <sup className="cite" title={src.title}>{i + 1}</sup>;
   };
-
-  const need = s.water.irrigation_need_mm, needB = base.water.irrigation_need_mm, allocMm = afacToMm(allocation);
-  const over = (need.low ?? need.value) > allocMm, within = (need.high ?? need.value) <= allocMm;
-  const comp = s.composite as SourcedNumber & { rank?: number; ties_with?: string[]; tie_note?: string };
-  const ties = (comp.ties_with ?? []).map((id) => strategies.find((x) => x.id === id)?.short_name).filter(Boolean);
-  const rain = s.exposure.exposed_rain_days, heat = s.exposure.exposed_heat_days;
-  const why = s.brief.why.length ? s.brief.why.map((w) => ({ text: w.text, author: w.author, n: undefined as SourcedNumber | undefined }))
-    : [
-        { text: `Modelled irrigation need is ${rngTxt(need)} mm a year (${f1(mmToAfac(need.low ?? need.value))}–${f1(mmToAfac(need.high ?? need.value))} acre-ft/acre)${s.is_baseline ? '' : `, against ${rngTxt(needB)} mm for what the field grows now`}.`, n: need },
-        { text: `The ground is bare about ${rngTxt(s.exposure.bare_days_per_year)} days a year${s.is_baseline ? '' : ` (now ${rngTxt(base.exposure.bare_days_per_year)})`}.`, n: s.exposure.bare_days_per_year },
-        { text: `Bare or thin cover meets heavy rain on ${rngTxt(rain, f1)} days and heat on ${rngTxt(heat, f1)} days in a typical year of the 2015–2025 weather record.`, n: rain },
-        { text: `With equal weight on the six priorities it scores ${f1(comp.value)} (range ${f1(comp.low)}–${f1(comp.high)})${comp.rank ? `, rank ${comp.rank} of ${strategies.length}` : ''}${ties.length ? `; a tie within uncertainty with ${ties.join(', ')}` : ''}.`, n: comp },
-      ].map((w) => ({ ...w, author: 'template' }));
-  const gaps = (s.brief.gaps ?? []).map((g) => (typeof g === 'string' ? g : g.text));
-  const blockedFund = s.funding.length && s.funding[0].rate_per_acre_usd?.blocked;
-  const rp = s.risk_profile;
+  const need = s.water.irrigation_need_mm, needB = base.water.irrigation_need_mm;
+  const afv = (v: number | null | undefined) => (v == null ? '–' : mmToAfac(v).toFixed(1));
+  const over = mmToAfac(need.low ?? need.value) > p.allocation, within = mmToAfac(need.high ?? need.value) <= p.allocation;
+  const tr = s.is_baseline ? null : tradeoffs(base, s);
+  const last = p.cal ? yearOf(lastDataT(p.cal)) : 2025;
+  const recent = [last - 2, last - 1, last].map((y) => `${y} ${cropName(loc.crop_history[y]).toLowerCase()}`).join(', ');
+  const soil = loc.soil, inFt = (soil.awc_mm_per_m.value / 1000) * 12, saline = (soil.ec_ds_per_m ?? 0) >= 4;
+  const o = p.outlook, rain = p.daily ? rainSoFar(p.daily, TODAY_T) : null;
+  const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
+  const wet = o?.seasons.filter((x) => x.rain?.category.startsWith('above')).length ?? 0;
+  const res = o?.reservoirs[0];
+  const review = s.brief.local_review ?? [];
+  const checks = (s.constraints_check ?? []).filter((c) => c.status !== 'ok');
 
   return (
-    <div className="briefwrap" role="dialog" aria-label="Rotation brief" data-testid="brief">
+    <div className="briefwrap" role="dialog" aria-label="Summary for your adviser" data-testid="brief">
       <div className="brief-stage">
         <article className="paper">
           <header className="p-head">
             <div>
-              <div className="p-kicker">Rotation summary for {fieldName(loc)}, {county(loc)} County, California · {acres(loc)} acres · {fieldCode(loc).replace('DWR ', 'state field no. ')}</div>
-              <h1>{s.name}</h1>
-              <div className="p-sub">{loc.area_ha.value.toFixed(1)} ha ({haToAc(loc.area_ha.value).toFixed(0)} ac) · {loc.soil.muname}, hydrologic group {loc.soil.hydrologic_group} · prepared 14 Nov 2026</div>
+              <div className="p-kicker">Field Shift summary for the grower and adviser · prepared 14 Nov 2026</div>
+              <h1>{fieldName(loc)}</h1>
+              <div className="p-sub">{acres(loc)} acres, {county(loc)} County, California · {fieldCode(loc).replace('DWR ', 'state field no. ')}</div>
             </div>
-            <div className="p-score"><b>{f1(comp.value)}</b><span>fit {f1(comp.low)}–{f1(comp.high)} / 100</span>{comp.rank && <span>rank {comp.rank} of {strategies.length}</span>}{ties.length > 0 && <em>tie within uncertainty</em>}</div>
+            <div className="p-option"><span>Option looked at</span><b>{s.short_name}</b>{s.is_baseline && <em>what the field does now</em>}</div>
           </header>
 
-          {on.calendar && (
+          <div className="p-cols">
             <section>
-              <h2>Cycle calendar <small>{s.cycle_years > 1 ? `year ${s.strip_year ?? 1} of ${s.cycle_years}` : 'every year'}</small></h2>
-              <div className="p-months">{s.month_cover.split('').map((c, i) => <div key={i}><span>{MONTHS[i]}</span><i style={{ background: CLASS_COLOR[c as CoverClass] }} /><em>{s.calendar_months[i]}</em></div>)}</div>
+              <h2>1. This field</h2>
+              <p>{soil.muname.split(',')[0]}: {soil.drainage_class.toLowerCase()}, holds about {inFt.toFixed(1)} in of water per foot of soil{saline ? ', salty enough to limit salt-sensitive crops' : ''}.{cite(loc.area_ha.source)} Water from {loc.water.source === 'surface' ? 'a surface-water district' : 'wells, under a groundwater allocation'}. Last three seasons: {recent}. {loc.observed_cover.summary}.</p>
             </section>
+            <section>
+              <h2>2. What’s likely this season <small>outlooks, not forecasts</small></h2>
+              <ul className="p-list">
+                {o && o.seasons.length > 0 && <li>NOAA’s rain outlook: {o.seasons.slice(0, 3).map((x) => `${SEASON[x.season] ?? x.season} ${lean(x.rain)}`).join('; ')}.</li>}
+                {o?.droughtOutlook && <li>Drought: {o.droughtNow ? (o.droughtNow.category.startsWith('None') ? 'no drought now' : `${o.droughtNow.category.replace(/^D\d /, '').toLowerCase()} now`) : ''}; {o.droughtOutlook.category === 'No_Drought' ? 'none expected' : o.droughtOutlook.category.toLowerCase()} through {o.droughtOutlook.target}.</li>}
+                {res && <li>{res.name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())} reservoir is at {res.pctAvg != null ? `${Math.round(res.pctAvg)}% of average` : 'unknown'} for the date.</li>}
+                {rain && <li>Rain {rain.period.label}: {fmtIn(rain.inches)} in, {rain.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} (weather stations).</li>}
+                {o?.bare ? (o.bare.start ? <li>Usually bare {o.bare.start} to {o.bare.end}; a 1-inch rain day landed in that window in {Math.round(o.bare.chance ?? 0)}% of past winters{o.bare.chanceOutlook != null ? `, about ${Math.round(o.bare.chanceOutlook)}% with this winter’s outlook` : ''}.</li>
+                  : <li>Usually covered or flooded all winter: no regular bare stretch.</li>) : bw && bw.days > 0 ? <li>Usually bare {bw.from} to {bw.to}; a 1-inch rain day fell in that window in {bw.hits} of the last {bw.winters} winters{wet ? ', and the outlook leans wet' : ''}.</li> : <li>Usually covered or flooded all winter: no regular bare stretch.</li>}
+              </ul>
+            </section>
+          </div>
+
+          <section>
+            <h2>3. The option: {s.name.replace(/ \(current\)/, '')}</h2>
+            <div className="p-months">{s.month_cover.split('').map((c, i) => <div key={i}><span>{MONTHS[i]}</span><i style={{ background: CLASS_COLOR[c as CoverClass] }} /><em>{s.calendar_months[i]}</em></div>)}</div>
+            <p className="p-water">Irrigation need about <b>{afv(need.value)} acre-feet per acre</b> a year (likely {afv(need.low)}–{afv(need.high)}){s.is_baseline ? '' : `, against ${afv(needB.value)} for what the field grows now`}. Your limit is {p.allocation.toFixed(1)}: <b className={over ? 'st bad' : within ? 'st good' : 'st warn'}>{over ? 'over the limit' : within ? 'fits' : 'may go over'}</b>.{cite(need.source)} In a dry year like 2022: {afv(s.exposure.replay['2022']?.irrigation_need_mm.value)}; a wet year like 2023: {afv(s.exposure.replay['2023']?.irrigation_need_mm.value)}.</p>
+            <p className="p-note">{openetText(strategies)}{cite(base.water.etc_vs_openet_pct?.source)}</p>
+          </section>
+
+          {tr && (
+            <div className="p-cols">
+              <section><h2>4. What it gains over today</h2><ul className="p-list gain">{tr.gains.map((g) => <li key={g}>{g}</li>)}{!tr.gains.length && <li>Nothing clearly better.</li>}</ul></section>
+              <section><h2>What it gives up</h2><ul className="p-list loss">{tr.losses.map((g) => <li key={g}>{g}</li>)}{!tr.losses.length && <li>Nothing clearly worse.</li>}</ul>
+                {tr.unclear.length > 0 && <p className="p-note">Too close to call: {tr.unclear.join(', ')}.</p>}</section>
+            </div>
           )}
 
-          <div className="p-headline">
-            <div><label>Irrigation need</label><b>{f1(mmToAfac(need.low ?? need.value))}–{f1(mmToAfac(need.high ?? need.value))} acre-ft/acre</b><span>{rngTxt(need)} mm · <i className={over ? 'st bad' : within ? 'st good' : 'st warn'}>{over ? 'over' : within ? 'within' : 'may exceed'}</i> your {allocation.toFixed(1)} acre-ft/acre{C({ n: need })}</span></div>
-            <div><label>Bare days</label><b>{rngTxt(s.exposure.bare_days_per_year)} per year</b><span>today: {rngTxt(base.exposure.bare_days_per_year)}{C({ n: s.exposure.bare_days_per_year })}</span></div>
-            <div><label>Exposed heavy-rain days</label><b>{rngTxt(rain, f1)} per year</b><span>today: {rngTxt(base.exposure.exposed_rain_days, f1)}{C({ n: rain })}</span></div>
-            <div><label>OpenET check</label><b>{s.water.etc_vs_openet_pct ? `within ${Math.abs(s.water.etc_vs_openet_pct.value)}%` : 'not available'}</b><span>{s.water.etc_vs_openet_pct ? 'measured ET vs our model' : 'needs an OpenET key'}</span></div>
-          </div>
-
-          <div className="p-cols">
-            <div>
-              {on.why && (
-                <section>
-                  <h2>Why this rotation</h2>
-                  <ul className="p-sents">{why.map((w, i) => <li key={i}>{w.text}{C({ n: w.n })}{w.author === 'template' && <span className="tmpl" title="Written from a fixed template using the engine's numbers, not by a language model">template</span>}</li>)}</ul>
-                </section>
-              )}
-              {on.funding && (
-                <section className="p-box">
-                  <h2>Funding and insurance</h2>
-                  {s.funding.length ? <p>Cover crops may qualify for <b>USDA EQIP practice 340</b>. {blockedFund ? <>The California payment rate is <b>not yet transcribed</b>; ask the local NRCS office.</> : null}{C({ n: s.funding[0].rate_per_acre_usd })}</p>
-                    : <p>No cover-crop practice in this rotation, so EQIP 340 does not apply.</p>}
-                  <p>{rp.blocked ? <>Crop-insurance loss history (USDA RMA cause of loss) is <b>not processed yet</b>.</> : <>Insurance payouts by cause: drought {Math.round(rp.rma_share_drought.value * 100)}%, excess moisture {Math.round(rp.rma_share_excess_moisture.value * 100)}%, heat {Math.round(rp.rma_share_heat.value * 100)}%.</>}{C({ n: rp.rma_share_drought })} History, not a forecast.</p>
-                </section>
-              )}
-            </div>
-            <div>
-              {on.benefits && (
-                <section>
-                  <h2>Benefits by priority <small>range · <i className="basekey" /> today</small></h2>
-                  <div className="p-ben">
-                    {ROWS.map(([k, label]) => { const n = s.scores[k], b = base.scores[k]; if (!n) return null; return (
-                      <div key={k}><span>{label}</span>
-                        <div className="p-rb"><i style={{ left: `${n.low ?? n.value}%`, width: `${Math.max(1.5, (n.high ?? n.value) - (n.low ?? n.value))}%` }} className={n.value >= (b?.value ?? 0) ? 'g' : 'a'} />{!s.is_baseline && b && <em style={{ left: `${b.value}%` }} />}</div>
-                        <b>{f0(n.value)}</b></div>); })}
-                  </div>
-                  <p className="p-note">Scores are rules of thumb from the engine (0–100), each a range.{C({ n: comp })}</p>
-                </section>
-              )}
-              {on.checks && (s.constraints_check?.length ?? 0) > 0 && (
-                <section>
-                  <h2>Fit checks</h2>
-                  <ul className="p-checks">{s.constraints_check!.map((c, i) => <li key={i}><em className={c.status === 'ok' ? 'ok' : 'no'}>{c.status}</em>{c.detail}{C({ n: c })}</li>)}</ul>
-                </section>
-              )}
-            </div>
-          </div>
-
-          <div className="p-bottom">
-            {on.review && (
-              <section>
-                <h2>Needs local review before anything is seeded</h2>
-                <ul className="p-review">{s.brief.local_review.map((r) => (
-                  <li key={r.item}><label><input type="checkbox" checked={!!ticks[r.item]} onChange={(e) => setTicks({ ...ticks, [r.item]: e.target.checked })} /><span>{r.item}</span></label><em className={`sev ${r.severity}`}>{r.severity}</em></li>
-                ))}</ul>
-              </section>
-            )}
-            {on.gaps && gaps.length > 0 && <section><h2>Gaps in the data</h2><ul className="p-gaps">{gaps.map((g) => <li key={g}>{g}</li>)}</ul></section>}
-          </div>
+          <section>
+            <h2>{tr ? '5' : '4'}. Check locally before anything is seeded</h2>
+            <ul className="p-review">
+              {checks.map((c) => <li key={c.constraint}><label><input type="checkbox" /><span>{plain(c.detail)}</span></label></li>)}
+              {review.map((r) => <li key={r.item}><label><input type="checkbox" checked={!!ticks[r.item]} onChange={(e) => setTicks({ ...ticks, [r.item]: e.target.checked })} /><span>{plain(r.item)}</span></label>{r.severity === 'high' && <em className="sev high">important</em>}</li>)}
+              <li><label><input type="checkbox" /><span>This year’s water allocation or pumping limit, and any district rules on winter flooding or fallowing.</span></label></li>
+              <li><label><input type="checkbox" /><span>Seed, buyer and price for the new crop: dollars are not counted in this summary.</span></label></li>
+            </ul>
+          </section>
 
           <footer className="p-foot">
-            <div className="p-sources"><b>Sources</b>{sources.map((src, i) => <span key={src.id}>{i + 1}. {src.title ?? src.id}{src.verified ? '' : ' (unverified)'}</span>)}</div>
-            <div className="p-disclaimer">This brief supports a conversation between grower and adviser; it does not replace one. Every alternative rotation needs review by both before anything is seeded.</div>
+            <div className="p-sources"><b>Sources</b>
+              {sources.map((src, i) => <span key={src.id}>{i + 1}. {src.title ?? src.id}{src.verified ? '' : ' (unverified)'}</span>)}
+              <span>Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Field calendar: Sentinel-2 and Landsat satellites. Soil: USDA soil survey (SSURGO).</span>
+            </div>
+            <div className="p-disclaimer">This summary supports a conversation between grower and adviser; it does not replace one.</div>
           </footer>
         </article>
       </div>
 
       <aside className="brief-rail glass">
-        <div className="br-head"><h2>Rotation brief</h2><button className="sq-btn" onClick={onClose} title="Close"><Icon name="close" size={16} /></button></div>
-        <p className="muted">One sheet, Letter or A4 portrait. <Src p={prov.strategies} /></p>
-        <label className="br-field"><span>Rotation</span>
-          <select value={s.id} onChange={(e) => setPick(e.target.value)} data-testid="brief-pick">{strategies.map((x) => <option key={x.id} value={x.id}>{x.short_name}{x.is_baseline ? ' (today)' : ''}</option>)}</select>
+        <div className="br-head"><h2>Summary for your adviser</h2><button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button></div>
+        <p className="muted">One page, Letter size. <Src p={p.prov.strategies} /></p>
+        <label className="br-field"><span>Option to print</span>
+          <select value={s.id} onChange={(e) => p.setPick(e.target.value)} data-testid="brief-pick">{strategies.map((x) => <option key={x.id} value={x.id}>{x.short_name}{x.is_baseline ? ' (today)' : ''}</option>)}</select>
         </label>
-        <div className="br-field"><span>Sections</span>
-          {SECTIONS.map(([id, label]) => <label key={id} className="chk"><input type="checkbox" checked={on[id]} onChange={(e) => setOn({ ...on, [id]: e.target.checked })} />{label}</label>)}
-        </div>
-        <div className="br-field"><span>Text check</span>
-          <p className="muted">{s.brief.llm_report ? `${s.brief.llm_report.sentences} sentences, ${s.brief.llm_report.numbers_checked} numbers checked, ${s.brief.llm_report.rejected} rejected.` : 'No AI text yet: sentences are fixed templates filled with the engine’s numbers, each cited.'}</p>
-        </div>
-        <div className="br-field"><span>Sources · {sources.filter((x) => x.verified).length} of {sources.length} verified</span>
-          <ol className="br-src">{sources.map((src) => <li key={src.id} className={src.verified ? 'v' : 'u'}>{src.url && /^https?:/.test(src.url) ? <a href={src.url} target="_blank" rel="noreferrer">{src.title ?? src.id}</a> : (src.title ?? src.id)}</li>)}</ol>
-        </div>
+        <p className="muted">Sentences are fixed templates filled with the model’s numbers, each with a source.</p>
         <button className="btn primary wide" onClick={() => window.print()}><Icon name="brief" size={16} />Print or save as PDF</button>
       </aside>
     </div>

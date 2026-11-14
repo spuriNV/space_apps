@@ -6,7 +6,7 @@ import { join, normalize, resolve } from 'node:path';
 // Dev-only bridge: serves real backend outputs that the API has no route for yet (see README "API routes still needed").
 // Read-only, allow-listed paths under the repo root. Remove once backend/api serves these.
 const ROOT = resolve(__dirname, '..', '..');
-const ALLOW = [/^backend\/field\/polygons\/[a-z_]+\.geojson$/, /^backend\/field\/out\/[a-z_]+\/(calendar|crop_history)\.json$/, /^backend\/field\/out\/[a-z_]+\/grid\.geojson$/, /^data\/cache\/[a-z_]+\/soil\.json$/, /^backend\/news\/out\/[a-z_]+\.json$/];
+const ALLOW = [/^backend\/field\/polygons\/[a-z_]+\.geojson$/, /^backend\/field\/out\/[a-z_]+\/(calendar|crop_history)\.json$/, /^backend\/field\/out\/[a-z_]+\/grid\.geojson$/, /^data\/cache\/[a-z_]+\/soil\.json$/, /^backend\/news\/out\/[a-z_]+\.json$/, /^backend\/outlook\/out\/(cpc|water_now)\.json$/, /^backend\/outlook\/out\/[a-z_]+\/outlook\.json$/];
 function repoBridge(): Plugin {
   return {
     name: 'repo-bridge',

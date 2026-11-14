@@ -1,0 +1,352 @@
+{
+ "fetched_at": "2026-11-14T22:18:57Z",
+ "label": "Conditional climatology, not a forecast",
+ "presets": {
+  "car_colusa_rice": {
+   "current_crop": "Rice",
+   "crop_note": "2025 CDL crop assumed again in 2026 (2026 CDL not published)",
+   "winters_with_current_crop": [
+    "2017-2018",
+    "2018-2019",
+    "2019-2020",
+    "2021-2022",
+    "2023-2024",
+    "2024-2025"
+   ],
+   "winters_with_bare_window": 6,
+   "per_winter": [
+    {
+     "winter": "2017-2018",
+     "Y": 2017,
+     "start": "2018-01-25",
+     "end": "2018-04-13",
+     "days": 79
+    },
+    {
+     "winter": "2018-2019",
+     "Y": 2018,
+     "start": "2018-10-31",
+     "end": "2019-01-13",
+     "days": 75
+    },
+    {
+     "winter": "2019-2020",
+     "Y": 2019,
+     "start": "2020-02-17",
+     "end": "2020-04-02",
+     "days": 46
+    },
+    {
+     "winter": "2021-2022",
+     "Y": 2021,
+     "start": "2022-02-13",
+     "end": "2022-04-04",
+     "days": 51
+    },
+    {
+     "winter": "2023-2024",
+     "Y": 2023,
+     "start": "2024-02-13",
+     "end": "2024-03-01",
+     "days": 18
+    },
+    {
+     "winter": "2024-2025",
+     "Y": 2024,
+     "start": "2025-03-03",
+     "end": "2025-03-30",
+     "days": 28
+    }
+   ],
+   "bare_window": {
+    "median_start": "02-13",
+    "median_end": "04-01",
+    "median_days": {
+     "value": 48.5,
+     "unit": "days",
+     "method": "computed",
+     "fetched_at": "2026-11-14T22:18:57Z",
+     "verified": true,
+     "source": {
+      "id": "median_length_of_the_longest_bare_run,_w",
+      "title": "Median length of the longest bare run, winters with the current crop",
+      "url": "backend/field/out/car_colusa_rice/calendar.json",
+      "accessed": "2026-11-14T22:18:57Z",
+      "verified": true
+     },
+     "low": 18.0,
+     "high": 79.0,
+     "note": "6 winters of 6 with Rice had a run of >= 14 consecutive satellite-class 'bare' days between 1 Oct and 30 Apr (calendar.json classes, rule detector); median of start/end offsets from 1 Oct"
+    },
+    "method": "Longest consecutive run of class 'bare' in backend/field calendar.json, 1 Oct to 30 Apr, for winters following a year whose CDL crop equals the current crop (2016-2024 starts; CDL 2025 crop assumed again for 2026)."
+   },
+   "heavy_rain_in_window": {
+    "threshold_mm": 25,
+    "window": "02-13 to 04-01",
+    "outlook_season_used": "FMA",
+    "cpc_precip_category": "above normal",
+    "cpc_probability_percent": 40.0,
+    "chance_any_day_ge_25mm_climatology": {
+     "value": 53.7,
+     "unit": "percent of winters",
+     "method": "computed",
+     "fetched_at": "2026-11-14T22:18:57Z",
+     "verified": true,
+     "source": {
+      "id": "share_of_1981-2024_winters_with_at_least",
+      "title": "Share of 1981-2024 winters with at least one >= 25 mm day in the window (mean of 3 NOAA stations)",
+      "url": "data/cache/car_colusa_rice/ncei.parquet (NOAA GHCN-Daily via NCEI, https://www.ncei.noaa.gov/access/services/data/v1)",
+      "accessed": "2026-11-14T22:18:57Z",
+      "verified": true
+     },
+     "low": 39.4,
+     "high": 61.1,
+     "note": "low/high = station range"
+    },
+    "chance_given_cpc_outlook": {
+     "value": 61.1,
+     "unit": "percent of winters",
+     "method": "computed",
+     "fetched_at": "2026-11-14T22:18:57Z",
+     "verified": true,
+     "source": {
+      "id": "conditional_climatology_weighted_by_cpc_",
+      "title": "Conditional climatology weighted by CPC category probabilities",
+      "url": "data/cache/car_colusa_rice/ncei.parquet (NOAA GHCN-Daily via NCEI, https://www.ncei.noaa.gov/access/services/data/v1)",
+      "accessed": "2026-11-14T22:18:57Z",
+      "verified": true
+     },
+     "low": 53.7,
+     "high": 87.9,
+     "note": "Outlook, not a forecast. value = sum over terciles of CPC probability x historical event rate in that tercile; low/high = range of climatology, blended, and favoured-category-only."
+    },
+    "method": "Terciles of FMA station precipitation totals (1991-2020 base) classify each winter 1981-2024 as below/near/above. Event = any day >= 25 mm inside the window dates. CPC weights: favoured category gets CPC's probability; near-normal 33.3%; the opposite category the remainder (the CPC convention for small tilts; our assumption). About 13 winters per tercile: noisy. Station gauges, not POWER (POWER rain runs ~50-70% wet).",
+    "per_station": [
+     {
+      "station": "USC00041948",
+      "n_winters": 33,
+      "climatology": 0.3939393939393939,
+      "by_category": {
+       "below": 0.13333333333333333,
+       "near": 0.2857142857142857,
+       "above": 0.8181818181818182
+      },
+      "n_by_category": {
+       "below": 15,
+       "near": 7,
+       "above": 11
+      },
+      "blended": 0.4580663780663781,
+      "favoured_category_only": 0.8181818181818182
+     },
+     {
+      "station": "USC00049699",
+      "n_winters": 38,
+      "climatology": 0.6052631578947368,
+      "by_category": {
+       "below": 0.23529411764705882,
+       "near": 0.7777777777777778,
+       "above": 1.0
+      },
+      "n_by_category": {
+       "below": 17,
+       "near": 9,
+       "above": 12
+      },
+      "blended": 0.7220043572984749,
+      "favoured_category_only": 1.0
+     },
+     {
+      "station": "USC00049781",
+      "n_winters": 36,
+      "climatology": 0.6111111111111112,
+      "by_category": {
+       "below": 0.42857142857142855,
+       "near": 0.6363636363636364,
+       "above": 0.8181818181818182
+      },
+      "n_by_category": {
+       "below": 14,
+       "near": 11,
+       "above": 11
+      },
+      "blended": 0.6536796536796536,
+      "favoured_category_only": 0.8181818181818182
+     }
+    ]
+   },
+   "scenario": {
+    "method": "CPC-weighted conditional climatology: for each non-overlapping outlook season (temperature NDJ, FMA, MJJ, ASO; precipitation NDJ, FMA) the shift = sum of CPC probability x (tercile mean - all-year mean) at the 3 NOAA stations, averaged. Temperature shift = mean of the 4 seasons (applied all year). Precip shift = NDJ+FMA mm change / mean water-year total (other months unchanged). Range: climatology (0, 0) to the favoured category fully realised. Outlook scenario, not a forecast.",
+    "seasons_used": {
+     "temperature": [
+      {
+       "season": "NDJ",
+       "category": "above normal",
+       "prob": 40.0,
+       "shift_c": 0.36
+      },
+      {
+       "season": "FMA",
+       "category": "equal chances",
+       "prob": null,
+       "shift_c": 0.0
+      },
+      {
+       "season": "MJJ",
+       "category": "above normal",
+       "prob": 40.0,
+       "shift_c": 0.21
+      },
+      {
+       "season": "ASO",
+       "category": "above normal",
+       "prob": 50.0,
+       "shift_c": 0.4
+      }
+     ],
+     "precipitation": [
+      {
+       "season": "NDJ",
+       "category": "above normal",
+       "prob": 33.0,
+       "shift_mm": 5.2
+      },
+      {
+       "season": "FMA",
+       "category": "above normal",
+       "prob": 40.0,
+       "shift_mm": 33.9
+      }
+     ]
+    },
+    "mean_water_year_precip_mm": 446.0,
+    "dT_c": {
+     "low": 0.0,
+     "mid": 0.24,
+     "high": 0.87
+    },
+    "dP_pct": {
+     "low": 0.0,
+     "mid": 8.8,
+     "high": 30
+    }
+   }
+  },
+  "caf_tulare_forage": {
+   "current_crop": "Alfalfa",
+   "crop_note": "2025 CDL crop assumed again in 2026 (2026 CDL not published)",
+   "winters_with_current_crop": [
+    "2017-2018",
+    "2018-2019",
+    "2019-2020",
+    "2020-2021",
+    "2022-2023",
+    "2024-2025"
+   ],
+   "winters_with_bare_window": 2,
+   "per_winter": [
+    {
+     "winter": "2017-2018",
+     "Y": 2017,
+     "start": null,
+     "end": null,
+     "days": 0
+    },
+    {
+     "winter": "2018-2019",
+     "Y": 2018,
+     "start": null,
+     "end": null,
+     "days": 0
+    },
+    {
+     "winter": "2019-2020",
+     "Y": 2019,
+     "start": null,
+     "end": null,
+     "days": 0
+    },
+    {
+     "winter": "2020-2021",
+     "Y": 2020,
+     "start": "2020-12-02",
+     "end": "2021-01-17",
+     "days": 47
+    },
+    {
+     "winter": "2022-2023",
+     "Y": 2022,
+     "start": "2022-10-01",
+     "end": "2022-11-19",
+     "days": 50
+    },
+    {
+     "winter": "2024-2025",
+     "Y": 2024,
+     "start": null,
+     "end": null,
+     "days": 0
+    }
+   ],
+   "bare_window": {
+    "note": "Only 2 of 6 winters with this crop had a bare run of 14+ days: no typical window can be stated"
+   },
+   "scenario": {
+    "method": "CPC-weighted conditional climatology: for each non-overlapping outlook season (temperature NDJ, FMA, MJJ, ASO; precipitation NDJ, FMA) the shift = sum of CPC probability x (tercile mean - all-year mean) at the 3 NOAA stations, averaged. Temperature shift = mean of the 4 seasons (applied all year). Precip shift = NDJ+FMA mm change / mean water-year total (other months unchanged). Range: climatology (0, 0) to the favoured category fully realised. Outlook scenario, not a forecast.",
+    "seasons_used": {
+     "temperature": [
+      {
+       "season": "NDJ",
+       "category": "above normal",
+       "prob": 33.0,
+       "shift_c": 0.17
+      },
+      {
+       "season": "FMA",
+       "category": "equal chances",
+       "prob": null,
+       "shift_c": 0.0
+      },
+      {
+       "season": "MJJ",
+       "category": "above normal",
+       "prob": 33.0,
+       "shift_c": 0.08
+      },
+      {
+       "season": "ASO",
+       "category": "above normal",
+       "prob": 50.0,
+       "shift_c": 0.41
+      }
+     ],
+     "precipitation": [
+      {
+       "season": "NDJ",
+       "category": "above normal",
+       "prob": 40.0,
+       "shift_mm": 14.6
+      },
+      {
+       "season": "FMA",
+       "category": "above normal",
+       "prob": 50.0,
+       "shift_mm": 20.0
+      }
+     ]
+    },
+    "mean_water_year_precip_mm": 222.0,
+    "dT_c": {
+     "low": 0.0,
+     "mid": 0.16,
+     "high": 0.88
+    },
+    "dP_pct": {
+     "low": 0.0,
+     "mid": 15.6,
+     "high": 30
+    }
+   }
+  }
+ }
+}

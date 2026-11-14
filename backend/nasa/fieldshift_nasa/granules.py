@@ -51,3 +51,13 @@ def point_series(short_name: str, version: str, variables: list[str], lon: float
         print(f"  WARNING {errs} granules failed to read (kept as rows with 'error')")
     df["date"] = pd.to_datetime(df["date"])
     return df.sort_values("date").reset_index(drop=True), info
+
+
+def latest_granule_date(short_name: str, version: str) -> str:
+    """Start date (YYYY-MM-DD) of the newest granule in CMR (no auth)."""
+    import requests
+    r = requests.get("https://cmr.earthdata.nasa.gov/search/granules.json",
+                     params={"short_name": short_name, "version": version, "sort_key": "-start_date", "page_size": 1},
+                     timeout=60)
+    r.raise_for_status()
+    return r.json()["feed"]["entry"][0]["time_start"][:10]

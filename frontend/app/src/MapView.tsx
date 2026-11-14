@@ -3,7 +3,7 @@ import maplibregl, { type GeoJSONSource, type StyleSpecification } from 'maplibr
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { acres, fieldName, latestCrop } from './components/ui/shared';
 import type { BCInfo, Calendar, CellGrid, Dataset, Location, Regional } from './types';
-import { CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
+import { atT, dataT, CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
 
 // Tile sources fixed by CONTRACT.md (no API keys).
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
@@ -87,7 +87,6 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       map.addLayer({ id: 'fp-fill', type: 'fill', source: 'fp', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.1, 13, 0.03] } });
       map.addLayer({ id: 'fp-line', type: 'line', source: 'fp', paint: { 'line-color': ['get', 'color'], 'line-width': 2, 'line-dasharray': [2, 1.5] } });
       map.addLayer({ id: 'fpgrid-line', type: 'line', source: 'fpgrid', minzoom: 11.5, paint: { 'line-color': ['get', 'color'], 'line-width': 1, 'line-opacity': 0.75 } });
-      map.addLayer({ id: 'fp-label', type: 'symbol', source: 'fplabel', maxzoom: 13.2, layout: { 'text-field': ['get', 'label'], 'text-font': ['Noto Sans Bold'], 'text-size': 12, 'text-anchor': 'top-right', 'text-offset': [-0.6, 0.5], 'text-max-width': 40, 'text-allow-overlap': true }, paint: { 'text-color': ['get', 'color'], 'text-halo-color': 'rgba(5,10,16,0.9)', 'text-halo-width': 1.6 } });
       map.addLayer({ id: 'shadow', type: 'fill', source: 'shadow', minzoom: EXPLODE_Z0, paint: { 'fill-color': '#000', 'fill-opacity': ['interpolate', ['linear'], ['zoom'], EXPLODE_Z0, 0, EXPLODE_Z1, 0.42] } });
       map.addLayer({ id: 'field-casing', type: 'line', source: 'field', paint: { 'line-color': 'rgba(0,0,0,0.65)', 'line-width': 5 } });
       map.addLayer({ id: 'field-line', type: 'line', source: 'field', paint: { 'line-color': ['case', ['get', 'selected'], '#ffffff', 'rgba(255,255,255,0.75)'], 'line-width': 2 } });
@@ -165,7 +164,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
           const w = loc.centroid.lon - (ds.footprint_m * ox) / m.lon, s = loc.centroid.lat - (ds.footprint_m * oy) / m.lat;
           const e = w + ds.footprint_m / m.lon, n = s + ds.footprint_m / m.lat;
           fps.push(rect(w, s, e, n, { color: ds.color }));
-          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${({ smap: 'Soil moisture', grace: 'Groundwater', imerg: 'Rainfall', modis: 'Greenness' } as Record<string, string>)[ds.id] ?? ds.name}: one reading covers this square` }, geometry: { type: 'Point', coordinates: [e, n] } });
+          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${({ smap: 'Soil moisture', grace: 'Groundwater', imerg: 'Rainfall', modis: 'Greenness' } as Record<string, string>)[ds.id] ?? ds.name}: one reading covers this square (${(ds.footprint_m / 1609).toFixed(0)} miles across)` }, geometry: { type: 'Point', coordinates: [e, n] } });
         } else if (ds.id !== 'hls') {
           const pad = ds.footprint_m * 2, lines: number[][][] = [];
           const w = b.w - pad / m.lon, e = b.e + pad / m.lon, s = b.s - pad / m.lat, n = b.n + pad / m.lat;
@@ -178,7 +177,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     }
     (map.getSource('fp') as GeoJSONSource).setData(fc(fps));
     (map.getSource('fpgrid') as GeoJSONSource).setData(fc(grids));
-    (map.getSource('fplabel') as GeoJSONSource).setData(fc(lbls));
+    // footprint labels: solid label boxes with an ink border (HTML markers), never bare text over imagery
+    const mk = (lbls as { properties: { color: string; label: string }; geometry: { coordinates: [number, number] } }[]).map((l) => {
+      const d = document.createElement('div');
+      d.className = 'fp-tag';
+      d.style.borderLeftColor = l.properties.color;
+      d.textContent = l.properties.label;
+      return new maplibregl.Marker({ element: d, anchor: 'top-right', offset: [-6, 6] }).setLngLat(l.geometry.coordinates).addTo(map);
+    });
+    return () => mk.forEach((m) => m.remove());
   }, [ready, p.locations, p.selected, p.layersOn, p.datasets]);
 
   // ---------- exploded layer stack for the scrubber date ----------
@@ -194,13 +201,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       return;
     }
     const S = (cells.cols * cells.cell_m) / 990; // keep proportions across field sizes
-    const fs = fieldState(cal, p.t, p.detector);
-    const smap = regional.smap_rootzone_pct.values[p.t], grace = regional.grace_gw_pct.values[p.t];
+    const tt = dataT(cal, p.t); // past the last processed image, show the latest clear view
+    const fs = fieldState(cal, tt, p.detector);
+    const smap = atT(regional.smap_rootzone_pct.values, p.t) ?? null, grace = atT(regional.grace_gw_pct.values, p.t) ?? null;
     const info: typeof stackInfo.current = [];
     const cellBase = 430 * S;
     if (p.layersOn.hls) {
       let sum = 0, n = 0;
-      const layer = gridLayerFor(cells, p.t);
+      const layer = gridLayerFor(cells, tt);
       set('cells', cells.features.map((f) => {
         const st = cells.layers ? realCellState(f.properties, layer, fs) : cellState(loc, fs, f.properties);
         if (st.cls !== 'u') { sum += p.metric === 'et' ? st.et : st.ndvi; n++; }
@@ -278,7 +286,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   const sorted = [...labels].sort((a, b) => a.ay - b.ay);
   const lx = Math.min(Math.max(0, ...labels.map((l) => l.ax)) + 34, (el.current?.clientWidth ?? 1440) - p.rightInset - 290);
   let lastY = -1e9;
-  const placed = sorted.map((l) => { const y = Math.max(l.ay - 30, lastY + 90); lastY = y; return { ...l, lx, ly: y }; });
+  const placed = sorted.map((l) => { const y = Math.max(l.ay - 30, lastY + 104); lastY = y; return { ...l, lx, ly: y }; });
 
   return (
     <div className={`map-wrap zoom-${zoomClass}`}>

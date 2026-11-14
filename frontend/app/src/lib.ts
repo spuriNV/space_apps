@@ -1,7 +1,12 @@
 import type { Calendar, CellGrid, CellProps, CoverClass, GridLayer, Location } from './types';
 
-export const YEARS = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+export const YEARS = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
 export const T_MAX = YEARS.length * 36 - 1;
+/** Today is 14 Nov 2026 (mid November). The app opens on this date. */
+export const TODAY_ISO = '2026-11-14';
+export const THIS_YEAR = 2026;
+/** By default the timeline and calendars show this season plus the last 3; older years sit behind "Show earlier years". */
+export const RECENT_FROM = 2023;
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const PART = ['Early', 'Mid', 'Late'];
 
@@ -9,6 +14,7 @@ export const tOf = (year: number, dekad: number) => (year - 2016) * 36 + dekad;
 export const yearOf = (t: number) => 2016 + Math.floor(t / 36);
 export const dekadOf = (t: number) => t % 36;
 export const tLabel = (t: number) => { const d = dekadOf(t); return `${PART[d % 3]} ${MONTHS[Math.floor(d / 3)]} ${yearOf(t)}`; };
+export const TODAY_T = (2026 - 2016) * 36 + 31;
 export const dateToT = (iso: string) => { const [y, m, d] = iso.split('-').map(Number); return tOf(y, (m - 1) * 3 + (d <= 10 ? 0 : d <= 20 ? 1 : 2)); };
 export const fmtDate = (iso: string) => { const [y, m, d] = iso.split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
 
@@ -43,9 +49,20 @@ export const ET_RAMP: [number, string][] = [[0, '#f4e3a0'], [3, '#8fd3a8'], [6, 
 export const SMAP_RAMP: [number, string][] = [[0, '#b0592a'], [35, '#d8b77a'], [60, '#a5d6cf'], [100, '#17a89c']];
 export const GRACE_RAMP: [number, string][] = [[0, '#8e2148'], [30, '#c9688a'], [60, '#9a9fd8'], [100, '#39c4d8']];
 
+/** Last 10-day step with a clear satellite reading (the calendar ends where the processed imagery ends). */
+export function lastDataT(cal: Calendar) {
+  for (let t = cal.years.length * 36 - 1; t >= 0; t--) { const y = cal.years[Math.floor(t / 36)]; if (y && y.rule[t % 36] && y.rule[t % 36] !== 'u') return t; }
+  return 0;
+}
+/** The date the satellite answers come from: the timeline date, or the latest reading if the timeline is past it. */
+export const dataT = (cal: Calendar, t: number) => Math.min(t, lastDataT(cal));
+/** Value of a 10-day series at t, holding the last value past the end of the series. */
+export const atT = <T,>(vals: T[], t: number): T | undefined => vals[Math.min(t, vals.length - 1)];
+
 export interface FieldState { cls: CoverClass; ndvi: number; et: number; disagree: boolean; ruleCls: CoverClass; mlCls: CoverClass }
 export function fieldState(cal: Calendar, t: number, detector: 'rule' | 'ml'): FieldState {
   const y = cal.years[Math.floor(t / 36)], d = t % 36;
+  if (!y) return { cls: 'u', ndvi: 0, et: 0, disagree: false, ruleCls: 'u', mlCls: 'u' };
   const ruleCls = y.rule[d] as CoverClass, mlCls = y.ml[d] as CoverClass;
   return { cls: detector === 'rule' ? ruleCls : mlCls, ndvi: y.ndvi[d], et: y.et_mm_day[d], disagree: ruleCls !== mlCls, ruleCls, mlCls };
 }
