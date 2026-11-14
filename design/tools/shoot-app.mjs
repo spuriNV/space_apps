@@ -62,9 +62,11 @@ if (want('compare') || want('brief')) {
 }
 if (want('drilldown')) {
   await page.evaluate((t) => window.__app.setT(t), T_JUL_2025);
+  await page.click('[data-testid="field-panel"] [data-testid="more-detail"]'); // the 3D view sits under More detail
   await page.click('[data-testid="step-drill"]');
   await idle(1500);
   await shot('drilldown-3d.png');
+  await page.click('[data-testid="field-panel"] [data-testid="more-detail"]');
 }
 if (want('field-now-kings') || want('kings')) {
   await page.evaluate(() => window.__app.setT((2026 - 2016) * 36 + 31));
@@ -73,6 +75,23 @@ if (want('field-now-kings') || want('kings')) {
   await page.waitForFunction(() => window.__app?.ready, null, { timeout: 30000 });
   await page.waitForTimeout(1500);
   await shot('field-now-kings.png');
+}
+if (want('phone')) {
+  const ph = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+  ph.on('pageerror', (e) => console.log('PAGE ERROR (phone)', e.message));
+  await ph.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await ph.waitForSelector(`[data-testid="row-${FIELD}"]`, { timeout: 90000 });
+  await ph.evaluate(() => document.fonts.ready);
+  await ph.waitForTimeout(1500);
+  await ph.screenshot({ path: join(OUT, 'phone-overview.png') }); console.log('wrote phone-overview.png');
+  await ph.click(`[data-testid="row-${FIELD}"]`);
+  await ph.waitForFunction(() => window.__app?.ready, null, { timeout: 30000 });
+  await ph.waitForTimeout(4000);
+  console.log('phone overflow-x', await ph.evaluate(() => document.documentElement.scrollWidth > window.innerWidth));
+  await ph.screenshot({ path: join(OUT, 'phone-field-now.png') }); console.log('wrote phone-field-now.png');
+  await ph.click('[data-testid="mtab-compare"]'); await ph.waitForSelector('[data-testid="compare"]'); await ph.waitForTimeout(800);
+  await ph.screenshot({ path: join(OUT, 'phone-compare.png') }); console.log('wrote phone-compare.png');
+  await ph.close();
 }
 await browser.close();
 if (server) server.kill();

@@ -4,6 +4,7 @@ import { rainOf, type Daily } from '../../season';
 import type { Extras, MLInfo } from '../../api';
 import { DRIVER } from '../ui/FieldNow';
 import { fmtDate } from '../../lib';
+import { MoreDetail, useDetail } from '../ui/Detail';
 import { CLASS_COLOR, MONTHS, RECENT_FROM, dateToT, dekadOf, lastDataT, tLabel, tOf, yearOf } from '../../lib';
 import Icon from '../Icons';
 import { cropName } from '../ui/shared';
@@ -39,7 +40,9 @@ export function mlVerdict(ml: MLInfo | null) {
 }
 export default function YearSheet(p: YearSheetProps) {
   const cy = yearOf(p.t), cd = dekadOf(p.t);
-  const [both, setBoth] = useState(false);
+  const detail = useDetail().on;
+  const [bothRaw, setBoth] = useState(false);
+  const both = bothRaw && detail;
   const verdict = mlVerdict(p.ml);
   const last = yearOf(lastDataT(p.cal));
   const past = p.cal.years.filter((y) => y.year <= last && y.rule.replace(/u/g, '').length > 6);
@@ -57,11 +60,11 @@ export default function YearSheet(p: YearSheetProps) {
         <button key={d} className={`${c === 'u' ? 'unk' : ''} ${cur && d === cd ? 'now' : ''}`} style={{ background: c === 'u' ? undefined : CLASS_COLOR[c as CoverClass] }}
           title={`${tLabel(tOf(y.year, d))}: ${LABEL[c as CoverClass]}${ml ? ' (machine learning)' : ''}`} onClick={() => y.year && p.setT(tOf(y.year, d))} />
       ))}
-      {!ml && y.year > 0 && (p.extras?.water?.scenes ?? []).filter((s) => s.date.startsWith(String(y.year)) && s.frac >= 0.5).map((s, si) => {
+      {!ml && detail && y.year > 0 && (p.extras?.water?.scenes ?? []).filter((s) => s.date.startsWith(String(y.year)) && s.frac >= 0.5).map((s, si) => {
         const d = dekadOf(dateToT(s.date));
         return <i key={'w' + s.date + si} className="opera" style={{ left: `${(d / 36) * 100}%`, width: `${100 / 36}%` }} title={`${fmtDate(s.date)}: NASA OPERA saw ${Math.round(s.frac * 100)}% of the field under water`} />;
       })}
-      {!ml && y.year > 0 && (p.extras?.stress?.weeks ?? []).filter((w) => w.start.startsWith(String(y.year))).map((w, wi) => {
+      {!ml && detail && y.year > 0 && (p.extras?.stress?.weeks ?? []).filter((w) => w.start.startsWith(String(y.year))).map((w, wi) => {
         const d = dekadOf(dateToT(w.start));
         return <i key={'s' + w.start + wi} className={`stress ${w.status}`} style={{ left: `${((d + 0.5) / 36) * 100}%` }} title={`Week of ${fmtDate(w.start)}: crop stress, ${w.drivers.map((x) => DRIVER[x] ?? x).join(' and ') || 'an unusual week'}${w.tmaxC != null ? ` (high ${Math.round(w.tmaxC * 9 / 5 + 32)} °F)` : ''}. ${w.status === 'both' ? 'Both methods agree.' : 'One of two methods.'}`} />;
       })}
@@ -78,7 +81,7 @@ export default function YearSheet(p: YearSheetProps) {
           <h2>This field’s year</h2>
           <p>{diff}{up != null ? `; the crop greened up in ${dk(up)}` : ''}. {last < 2026 ? `${last + 1} imagery is not processed yet.` : ''}</p>
         </div>
-        <div className="seg small ml-seg" data-testid="ml-toggle">
+        <div className="seg small ml-seg d-only" data-testid="ml-toggle">
           <button className={!both ? 'on' : ''} onClick={() => setBoth(false)}>Satellite rule</button>
           <button className={both ? 'on' : ''} onClick={() => setBoth(true)} data-testid="ml-on" disabled={!p.ml} title={p.ml ? 'Show the machine-learning calendar under the rule, season by season' : verdict.long}>Compare with machine learning</button>
         </div>
@@ -87,8 +90,8 @@ export default function YearSheet(p: YearSheetProps) {
           <span><i className="hatch-u" />No clear view or not processed</span>
           <span><i className="rain-key hit" />1 inch of rain on bare ground</span>
           <span><i className="rain-key" />on a crop or water</span>
-          {p.extras?.stress && <span><i className="stress-key" />Crop-stress week (hover for why)</span>}
-          {p.extras?.water && <span><i className="opera-key" />Standing water seen by NASA OPERA</span>}
+          {detail && p.extras?.stress && <span><i className="stress-key" />Crop-stress week (hover for why)</span>}
+          {detail && p.extras?.water && <span><i className="opera-key" />Standing water seen by NASA OPERA</span>}
         </div>
         <button className="ys-play" onClick={() => p.setPlaying(!p.playing)} data-testid="play" title={p.playing ? 'Pause' : 'Replay the seasons on the map'}><Icon name={p.playing ? 'pause' : 'play'} size={18} />{p.playing ? 'Pause' : 'Replay on the map'}</button>
         <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close" data-testid="year-close"><Icon name="down" /></button>
@@ -115,8 +118,9 @@ export default function YearSheet(p: YearSheetProps) {
         })}
       </div>
       <div className="ys-foot">
+        <span className="ys-md"><MoreDetail what="Machine-learning comparison, crop-stress weeks, standing water, earlier years" /></span>
         {p.events.length > 0 && <span className="ys-events">{p.events.map((e) => <button key={e.date + e.type} className="link" onClick={() => p.setT(dateToT(e.date))} title={e.title}>{e.short}</button>)}</span>}
-        <button className="link" onClick={() => p.setShowEarlier(!p.showEarlier)} data-testid="earlier">{p.showEarlier ? 'Show only the last 4 seasons' : 'Show earlier years (2016–2022)'}</button>
+        <button className="link d-only" onClick={() => p.setShowEarlier(!p.showEarlier)} data-testid="earlier">{p.showEarlier ? 'Show only the last 4 seasons' : 'Show earlier years (2016–2022)'}</button>
         <span className="muted">{p.calSource}, every 10 days, whole field.{both ? ` Machine learning: ${p.ml?.model ?? 'random forest'} on Sentinel-2, trained on neighbouring fields.` : ''} Rain from NASA GPM IMERG. Click a square to move the map to that date.</span>
       </div>
     </div>

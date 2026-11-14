@@ -14,14 +14,20 @@ node ../../design/tools/shoot-app.mjs                         # screenshots -> d
 
 `VITE_API_BASE` sets where the API is: default `http://localhost:8000/api` in dev and same-origin `/api` in a build. There is no file bridge: everything real comes through the API. If the API does not answer, the app shows the bundled examples in `src/mock` and says so (top-right indicator and a note on the pick list).
 
+## Layout
+
+- **Top bar:** CropLytics wordmark, field switcher (search inside), section tabs (Field now · Coming season · This field's year · Compare · Print), the **Viewing** date control (quick picks, month picker, "Back to today"; a banner shows the date when it is not today) and Map layers. No bottom timeline; the map and panels use the full height.
+- **Farmer default, adviser detail:** each screen opens on the decision; one inline **More detail** disclosure (remembered for the session, `ui/Detail.tsx`, class `.d-only`) adds sources, the NASA list, ML comparison, stress weeks, standing water, 3D, percentiles and ranges, glossary, insurance, earlier years, every rotation, priorities and what-ifs.
+- **Phone (≤ 640 px):** wordmark, field switcher and a menu on top; bottom tab bar; the field panel is a bottom sheet (peek / half / full); sheets become full-screen pages. Mobile shell build: `VITE_API_BASE=https://croplytics-app.onrender.com/api VITE_BASE=./ npm run build`.
+
 ## Screens
 
-1. **Pick your field** (`ui/Options.tsx` `FieldPicker`): two fields, named the way a grower would ("Rice field 3.5 miles east of Williams"), with the crop record in one line.
-2. **Your field now** (`ui/Options.tsx` `FieldPanel`, `ui/FieldNow.tsx`, `ui/NasaSection.tsx`): crop and stage, green cover, rain since 1 Oct (NASA GPM IMERG), crop water use so far (rotation model with NASA POWER weather, OpenET check), irrigation need against the water limit, soil moisture and groundwater (NASA GRACE-FO; SMAP when cached), hot days (104 °F) and frost nights (NOAA stations); then **NASA data behind this field** (ISS photo with NASA's credit line, every NASA dataset with what it tells the grower, its footprint and whether it is live); then soil, slope (NASADEM), salt, water, crop-insurance payouts, bare days; the last 3 seasons. "What's this?" links explain greenness, crop water use, water balance, soil-moisture percentiles, frost and bare days.
-3. **Coming season** (`season/ComingSeason.tsx`): NOAA outlooks, drought, reservoirs, water in the ground going into winter (NASA IMERG and GRACE-FO), allocations, snowpack, the longest bare stretch this winter, irrigation need per rotation. "Outlooks, not forecasts".
-4. **Compare and print**: `compare/ComparePanel.tsx` (gain / give up against today; priorities and a drier/hotter what-if re-scored by `POST /score`; the side-by-side table) and `brief/RotationBrief.tsx` (one Letter page from fixed templates, with all four rotations at a glance).
-
-**This field's year** (`year/YearSheet.tsx`, from the timeline): typical year plus one strip per season, 2023–2026 (earlier years behind a link). "Compare with machine learning" adds the ML calendar under each season with a plain verdict: Kings is below the accuracy target (83% in the 2022 hold-out against 85%); Colusa's 99% is flagged as too good to take at face value.
+1. **Pick your field** (`ui/Options.tsx` `FieldPicker`): one list with a satellite thumbnail (outline drawn, `public/thumbs/`), a 2023–2026 season strip, one line of facts and one of what is notable.
+2. **Field now** (`ui/FieldNow.tsx`): a visual summary (thumbnail, this year's strip with a today tick, small bars for rain vs normal, water need vs limit, greenness, soil and groundwater percentiles) and four one-sentence answers. Each answer loads on its own (skeleton, then "Not available right now" after 15 s). More detail: green cover, crop water use (OpenET measured, model alongside), crop stress and standing water (NASA OPERA), heat and frost, the ISS photo and NASA dataset list, soil, slope, water, insurance, bare days, last seasons, sources.
+3. **Coming season** (`season/ComingSeason.tsx`): three sentences (winter rain, water supply, next season's need for today's rotation); More detail has the outlooks, drought, reservoirs, ground water, allocations, snowpack, bare stretch and every rotation.
+4. **This field's year** (`year/YearSheet.tsx`): typical year and 2023–2026 strips, events, "Replay on the map". More detail: ML comparison with a plain verdict, crop-stress weeks (hover for why), OPERA standing water, earlier years.
+5. **Compare** (`compare/ComparePanel.tsx`): today vs the two best-scoring alternatives in acre-feet and days; "See all options" for the full table. More detail: every rotation, soil and feed scores, priorities and rain/heat what-ifs (`POST /score`).
+6. **Print** (`brief/RotationBrief.tsx`): one Letter page from fixed templates.
 
 ## One definition per number
 
@@ -43,14 +49,13 @@ node ../../design/tools/shoot-app.mjs                         # screenshots -> d
 | Rotations; priorities and what-ifs | `GET .../strategies`, `POST .../score` |
 | Coming season | `GET .../outlook` |
 | News | `GET .../news` |
-| ISS photo | static files in `public/iss/<id>/` (copied and resized from `data/cache/<id>/iss/`) |
-| DWR field number, soil EC and texture, NASADEM fallback, crop-insurance totals | `src/mock/field_extra.json`: real values copied from backend outputs the API does not serve yet |
+| ISS photo, field thumbnails | static files in `public/iss/<id>/`, `public/thumbs/` |
+| Crop stress, standing water, measured water use, insurance, glossary | `GET .../stress`, `.../water_seen` (else the OPERA column of `nasa_series`), `.../openet`, `.../insurance`, `GET /api/glossary` |
+| Crop-insurance totals until `/insurance` answers | `src/mock/field_extra.json` (copied from backend/ground) |
 
-Still example numbers: the 3D "water use" view and its risk ticks, the water district text.
+The water district shows "not looked up yet" until the location route carries a looked-up district. Nothing else is example data when the API answers.
 
 ## API fields still wanted
 
-- `dwr_unique_id`, `soil.ec_ds_per_m`, `soil.texture_detail` in `GET /api/locations/{id}` (today from `field_extra.json`).
-- A crop-insurance route (`backend/ground/out/<id>/rma_profile.json`).
-- A stress-weeks route (`backend/ai/out/<id>/stress_weekly.json`) to mark crop-stress weeks on the year strips.
-- `GET /api/glossary` with real content (the "What's this?" text lives in `ui/What.tsx` for now).
+- `GET .../stress`, `GET .../insurance`, real `GET /api/glossary` (the app falls back without them).
+- A looked-up water district / GSA in `GET /api/locations/{id}` `water`.

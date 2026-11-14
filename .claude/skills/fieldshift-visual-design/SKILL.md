@@ -31,7 +31,7 @@ who print maps, not like a generated dashboard. Sources: `references.md`.
 - **Instruments go in the source line, not the heading.** Satellite name, pixel size, method and
   data status sit in one small `cite` line under the answer: "SMAP satellite, one 6-mile square
   around the field. Example numbers, not live yet." Translate pixel sizes to miles.
-- **Order of a field view:** what this field is -> 3-4 answers for the timeline date -> what you
+- **Order of a field view:** what this field is -> a visual summary (thumbnail, season strip, small bars) -> 4 answers for the viewing date -> what you
   can do next (normal buttons, the grower's words: "See this field's past 10 years", "Compare
   other rotations", "Print a summary for your adviser") -> about the field (soil, water, salt,
   when it is usually bare) -> crops grown -> what happened here -> "Where every number comes
@@ -72,15 +72,16 @@ no hex in components except data colours.
   a name, the heading is the name.
 - Label/value rows: label in `--muted` at the left, value in `--text`. Units always shown.
 - Dates in the grower's terms: "mid July 2023", "16 Apr 2024". Avoid dekad, DOY, ISO.
-- Every answer has one `cite` line: instrument in plain words + scale in miles + status.
+- Every answer has one `cite` line (shown under More detail): instrument in plain words + scale in miles.
 - Maps: say what a footprint means ("Soil moisture: one reading covers this square"), not "pixel".
 
 ## 5. Data status and uncertainty, without badge soup
 
-- Status is words at the end of the source line, not a pill: "Live." / "Live, from a saved
-  run." / "Example numbers, not live yet." Example data gets italics, the warn colour and a small
-  hatched square (hatching = "not measured" across the product, as on the timeline).
-- One global indicator top right: "Live data | 2 parts are examples". Clicking it lists sources.
+- Live data carries no status word. Only example data (API not answering) is flagged, in words, not a pill: "Example numbers."
+  in italics, the warn colour and a small hatched square (hatching = "not measured" across the product, as on the season strips).
+- No global live/example indicator and no status word on every source line. Sources live on one "Sources" sheet (link at
+  the bottom of the field panel), grouped NASA / other satellites / ground data / models, one line each. Only a part that is
+  genuinely missing says so, once, where it is used ("water district not looked up yet").
 - **NASA first.** Name the NASA source first in every source line (HLS, Landsat, SMAP, GRACE-FO, GPM IMERG, MODIS, ECOSTRESS,
   NASA POWER, NASADEM, ISS), then the others. The field panel has a "NASA data behind this field" list: what each dataset
   tells the grower, its footprint in feet or miles, and whether it is live.
@@ -93,6 +94,23 @@ no hex in components except data colours.
   comparing options. Do not add a progress bar under a single reading.
 - Say when a reading is not about the field: "Whole basin, not your own well."
 
+## 5b. Farmer default, adviser detail
+
+- Each screen opens on the decision: Field now = visual summary + 4 one-sentence answers (what's growing, rain vs normal, water
+  need vs limit, soil and groundwater); Coming season = 3 sentences (winter rain, water supply, next season's need); Compare =
+  today vs the top 2 alternatives in acre-feet and days.
+- Everything else (NASA list and sources, ML comparison, stress weeks, standing water, 3D, percentiles and ranges, glossary,
+  insurance, earlier years, every rotation, priorities and what-ifs) sits behind one inline "More detail" disclosure at the
+  end of the screen, remembered for the session (`components/ui/Detail.tsx`, class `.d-only`).
+- Each answer renders as soon as its own data arrives: a thin skeleton line while loading, "Not available right now" after a
+  timeout. Never one loading box for the whole panel.
+
+## 5c. Phone (up to 640 px)
+
+Top bar = wordmark, field switcher, menu (date control and map layers inside). Sections become a bottom tab bar. The field panel
+is a bottom sheet over the map (peek, half, full via the grab handle). Wide sheets become full-screen pages between the bars, one
+column. Touch targets at least 44 px; nothing scrolls sideways except inside a table.
+
 ## 6. Density, shape, iconography
 
 - Solid panels (`--panel`), 1px rules, radius 2-4px, one modest shadow. No blur/glass.
@@ -101,7 +119,9 @@ no hex in components except data colours.
 - **Navigation is a top bar, not an icon rail.** Wordmark "CropLytics" at the left (heading face, spot green), then a field
   switcher (county and acres small, field name in the heading face; click to change or search), then the sections as text tabs
   (Field now, Coming season, This field's year, Compare, Print for your adviser; the active tab gets a 3px spot-green underline),
-  then the data-status indicator and "Map layers" at the right. The bar is solid paper with a hairline bottom rule, a 3px
+  then the "Viewing" date control (quick picks and a month picker; a thin banner says "Showing Jul 2022 · Back to today"
+  whenever the date is not today) and "Map layers" at the right. There is no bottom timeline: the year strips, events and the
+  replay live on the "This field's year" tab, and the map, panels and 3D view use the full height. The bar is solid paper with a hairline bottom rule, a 3px
   spot-green band under it and a soft two-step shadow so it sits above the map. No stacked icon+label buttons, no flat grey slab.
 - Icons: the existing line set in `Icons.tsx`, 16-20px, only next to a text label (map layers, play, close, zoom).
   Logo is the wordmark "CropLytics" in the heading face; no initials tile, no gradient.

@@ -5,6 +5,7 @@ import type { Extras, ISSPhoto, NasaNow, ProvMap, RegionalLive } from '../../api
 import type { NasaDataset } from '../../nasa';
 import { ISSFigure, NasaList } from './NasaSection';
 import { SourcesSheet } from './Sources';
+import { MoreDetail } from './Detail';
 import type { Daily } from '../../season';
 import Icon from '../Icons';
 import { useEffect, useState } from 'react';
@@ -23,10 +24,12 @@ export function FieldPanel(p: FieldPanelProps) {
   const { loc } = p;
   const thumbs = useThumbs();
   const [src, setSrc] = useState(false);
+  const [snap, setSnap] = useState<'peek' | 'half' | 'full'>('half'); // phone bottom sheet height
   const now = latestCrop(loc);
   const isToday = p.t === TODAY_T;
   return (
-    <section className="panel fpanel" data-testid="field-panel">
+    <section className={`panel fpanel sheet-${snap}`} data-testid="field-panel">
+      <button className="fp-grab" onClick={() => setSnap(snap === 'peek' ? 'half' : snap === 'half' ? 'full' : 'peek')} aria-label="Resize the field panel" data-testid="grab"><i /></button>
       <header className="fp-head">
         <div className="fp-title">
           <h1>{fieldName(loc)}</h1>
@@ -38,6 +41,8 @@ export function FieldPanel(p: FieldPanelProps) {
       <div className="panel-scroll">
         <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}<small>{isToday ? `Today, ${whenT(p.t)}. Pick another date under “Viewing” to look back.` : <button className="link" onClick={() => p.setT(TODAY_T)}>Back to today</button>}</small></h2>
         <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
+        <MoreDetail what="NASA data and sources, soil, slope and insurance, past seasons, 3D view" />
+        <div className="d-only">
         <h2 className="fp-h" data-testid="nasa-section">NASA data behind this field<small>What each one tells you, how coarse it is, and whether it is live.</small></h2>
         <ISSFigure iss={p.iss} />
         {p.nasa ? <NasaList list={p.nasa} /> : <p className="muted">Loading…</p>}
@@ -48,6 +53,7 @@ export function FieldPanel(p: FieldPanelProps) {
         {p.events.length > 0 && <><h2 className="fp-h">What happened around here<small>Click one to move the timeline.</small></h2><EventLog events={p.events} setT={p.setT} /></>}
         <button className="link sources-link" onClick={() => setSrc(true)} data-testid="sources-link">Sources</button>
         {src && <SourcesSheet onClose={() => setSrc(false)} />}
+        </div>
         <p className="footnote">CropLytics helps the grower and adviser decide; it does not replace either.</p>
       </div>
       <footer className="fp-foot"><Actions onStep={p.onStep} /></footer>

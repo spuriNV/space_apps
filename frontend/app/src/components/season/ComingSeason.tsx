@@ -9,6 +9,7 @@ const band = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi :
 import Icon from '../Icons';
 import { Src, county } from '../ui/shared';
 import { What } from '../ui/What';
+import { MoreDetail } from '../ui/Detail';
 import { BARE_DEF } from '../../bare';
 
 const SEASON: Record<string, string> = { OND: 'Oct–Dec', NDJ: 'Nov–Jan', DJF: 'Dec–Feb', JFM: 'Jan–Mar', FMA: 'Feb–Apr', MAM: 'Mar–May', AMJ: 'Apr–Jun' };
@@ -29,6 +30,13 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
   const rainLean = o?.seasons.slice(0, 4).map((s) => lean(s.rain, 'rain').tilt) ?? [];
   const wetLean = rainLean.filter((x) => x > 0).length, dryLean = rainLean.filter((x) => x < 0).length;
   const surface = p.loc.water.source === 'surface';
+  const shasta = o?.reservoirs.find((r) => /shasta/i.test(r.name)) ?? o?.reservoirs[0];
+  const supply = !o ? 'Loading…' : surface
+    ? `${shasta ? `${words(shasta.name)} is at ${shasta.pctAvg != null ? `${Math.round(shasta.pctAvg)}% of average` : 'an unknown level'} for the date.` : ''}${o.cvpNow?.settlement != null ? ` This year’s federal allocation for Sacramento River settlement contractors was ${o.cvpNow.settlement}%.` : ''}`
+    : gw ? `Groundwater in the basin is ${band(gw.v, 'above usual', 'about usual', 'below usual')} for the time of year; the basin is under state pumping rules.` : 'Groundwater reading not available right now.';
+  const today = p.strategies.find((s) => s.is_baseline);
+  const nxt = today ? o?.irrigation?.[today.id]?.value ?? mmToAfac(today.water.irrigation_need_mm.value) : null;
+  const nextNeed = nxt == null ? 'Loading…' : `About ${nxt.toFixed(1)} acre-feet per acre; your limit is ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (an example, change it on Compare)' : ''}. ${nxt > p.allocation ? `About ${(nxt - p.allocation).toFixed(1)} short.` : 'It fits.'}`;
   const headline = !o ? 'Loading the outlooks…' : wetLean > dryLean ? 'NOAA’s outlook leans wetter than normal this winter' : dryLean > wetLean ? 'NOAA’s outlook leans drier than normal this winter' : 'NOAA’s outlook shows no clear lean this winter';
   const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const allYearsBw = bw;
@@ -41,7 +49,13 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
         </div>
         <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
       </header>
-      <div className="sheet-cols three">
+      <div className="cs-sum" data-testid="season-summary">
+        <div><h3>Winter rain</h3><p>{!o ? 'Loading…' : wetLean > dryLean ? 'Leans wetter than normal this winter.' : dryLean > wetLean ? 'Leans drier than normal this winter.' : 'No clear lean either way this winter.'}</p><small>NOAA 3-month outlooks, the odds, not a promise.</small></div>
+        <div><h3>Water supply</h3><p>{supply}</p></div>
+        <div><h3>Next season, today’s rotation</h3><p>{nextNeed}</p></div>
+      </div>
+      <div className="cs-more"><MoreDetail what="Month-by-month outlooks, drought, reservoirs, allocation history, snowpack, bare stretch, every rotation" /></div>
+      <div className="sheet-cols three d-only">
         <div className="sheet-col">
           <h3>Rain and temperature outlook</h3>
           <ul className="olist">

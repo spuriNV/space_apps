@@ -294,7 +294,7 @@ function extrasOf(oet: any, st: any, ins: any, w: any, ns: any, prov: ProvMap, u
 }
 
 // ---------- everything the field view needs ----------
-export interface FieldBundle { id: string; cells: CellGrid; cal: Calendar; regional: Regional; strategies: RotationStrategy[]; news: NewsItem[]; ml: MLInfo | null; nasa: NasaDataset[]; regionalLive: RegionalLive; nasaNow: NasaNow | null; extras: Extras; prov: ProvMap }
+export interface FieldBundle { id: string; cells: CellGrid | null; cal: Calendar; regional: Regional; strategies: RotationStrategy[]; news: NewsItem[]; ml: MLInfo | null; nasa: NasaDataset[]; regionalLive: RegionalLive; nasaNow: NasaNow | null; extras: Extras; prov: ProvMap }
 /** GET .../nasa_now: today's NASA readings. Rain since 1 Oct from GPM IMERG and its 2001-2025 normal (mm). */
 export interface NasaNow { rainWyMm: number | null; rainWyNormalMm: number | null; rainDate: string | null; dswxWater: number | null; dswxDate: string | null }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -333,7 +333,8 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     apiReal(`/api/locations/${id}/insurance`),
     apiReal(`/api/locations/${id}/water_seen`),
   ]);
-  let c = mCal, cells = (mockCells as unknown as ById<CellGrid>)[id], strategies = mockStrats(id), nws = (mockNews as unknown as ById<NewsItem[]>)[id];
+  // live: no stand-in squares in the 3D view while the real 30 m grid is still loading
+  let c = mCal, cells: CellGrid | null = null, strategies = mockStrats(id), nws = (mockNews as unknown as ById<NewsItem[]>)[id];
   // NASA first: the HLS calendar wins when the API serves it (it says so in its sources)
   const isHls = !!hls?.years && /hls/i.test(JSON.stringify(hls.source ?? hls.sources ?? hls.calendar_source ?? hls.method ?? ''));
   const calSrc = isHls ? hls : cal;
@@ -363,10 +364,11 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   const first: FieldBundle = { id, regional: reg, cells, cal: c, strategies, news: nws, ml, nasa: nasa(), regionalLive: { smap: !!sm, grace: !!gr, soilSource }, nasaNow: nowOf(now), extras, prov };
   lateP.then(([grid, news]) => {
     const p2 = { ...prov };
-    let cells2 = cells, nws2 = nws;
-    if (grid?.features) { cells2 = convertGrid(grid); p2.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells2.features.length} squares, Sentinel-2 greenness`); }
+    let cells2: CellGrid | null = cells, nws2 = nws;
+    if (grid?.features) { cells2 = convertGrid(grid); p2.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells2!.features.length} squares, Sentinel-2 greenness`); }
     if (news?.items?.length) { nws2 = news.items.map(normNews); p2.news = P('news', 'News headlines', 'api', `${news.items.length} saved headlines`); }
-    if (cells2 !== cells || nws2 !== nws) onLate?.({ ...first, cells: cells2, news: nws2, prov: p2 });
+    // after the caller has stored `first` (a late result must not be overwritten by the early one)
+    if (cells2 !== cells || nws2 !== nws) setTimeout(() => onLate?.({ ...first, cells: cells2, news: nws2, prov: p2 }), 0);
   });
   return first;
 }

@@ -5,6 +5,7 @@ import type { Calendar, CoverClass, Location, RotationStrategy, ScoreKey, Source
 import { scoreStrategies, type Scenario } from '../../api';
 import { BARE_DEF, observedBare } from '../../bare';
 import { What } from '../ui/What';
+import { MoreDetail, useDetail } from '../ui/Detail';
 import { CLASS_COLOR, mmToAfac } from '../../lib';
 import Icon from '../Icons';
 import { openetText } from '../ui/shared';
@@ -108,7 +109,10 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
   const ctx = useMemo(() => fieldCtx(strategies, p.daily, p.cal), [strategies, p.daily, p.cal]);
   const flat = useMemo(() => constantScores(strategies), [strategies]);
   const today = strategies.find((s) => s.is_baseline) ?? strategies[0];
-  const alts = strategies.filter((s) => s.id !== today.id);
+  const detail = useDetail().on;
+  const allAlts = strategies.filter((s) => s.id !== today.id);
+  // farmer default: the two best-scoring alternatives; every option behind "See all options" or More detail
+  const alts = detail ? allAlts : [...allAlts].sort((a, b) => b.composite.value - a.composite.value).slice(0, 2);
   // open on the alternative that saves the most water: the question a grower under a water limit asks first
   const [id, setId] = useState(() => [...alts].sort((a, b) => a.water.irrigation_need_mm.value - b.water.irrigation_need_mm.value)[0]?.id);
   const [weather, setWeather] = useState<Weather>('typical');
@@ -117,8 +121,8 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
   const alt = alts.find((s) => s.id === id) ?? alts[0];
   const heavy = p.loc.soil.hydrologic_group === 'D';
   const label = (m: Metric) => (m.key === 'infiltration' && heavy ? { ...m, gain: `${m.gain} (small effect on this heavy, slow-draining soil)`, loss: `${m.loss} (small effect on this heavy soil)` } : m);
-  const all = [...UNIT, ...SCORE.filter((m) => !flat.has(m.key)).map(label)];
-  const rows = useMemo(() => all.map((m) => { const a = m.get(alt, weather, ctx), b = m.get(today, weather, ctx); return { m, a, b, v: verdict(a, b, m.higherIsBetter) }; }), [alt, today, weather, ctx, flat]); // eslint-disable-line react-hooks/exhaustive-deps
+  const all = detail ? [...UNIT, ...SCORE.filter((m) => !flat.has(m.key)).map(label)] : UNIT;
+  const rows = useMemo(() => all.map((m) => { const a = m.get(alt, weather, ctx), b = m.get(today, weather, ctx); return { m, a, b, v: verdict(a, b, m.higherIsBetter) }; }), [alt, today, weather, ctx, flat, detail]); // eslint-disable-line react-hooks/exhaustive-deps
   const gains = rows.filter((r) => r.v === 'better'), losses = rows.filter((r) => r.v === 'worse');
   const unclear = rows.filter((r) => r.v === 'unclear' || r.v === 'same'), none = rows.filter((r) => r.v === 'none');
   const lead = (r: (typeof rows)[number] | undefined, k: 'gain' | 'loss') => (r ? `${r.m[k].toLowerCase()}, ${delta(r.m, r.a.v!, r.b.v!)}` : 'nothing clear');
@@ -145,16 +149,16 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
               <small>{(water(s).v ?? 0).toFixed(1)} acre-ft/acre · {fits(s).toLowerCase()}</small>
             </button>
           ))}
-          <button className={`see-all ${table ? 'on' : ''}`} onClick={() => setTable(!table)} data-testid="see-all"><b>{table ? 'Back to gain / give up' : 'See all side by side'}</b><small>Every rotation, every factor</small></button>
+          <button className={`see-all ${table ? 'on' : ''}`} onClick={() => setTable(!table)} data-testid="see-all"><b>{table ? 'Back to gain / give up' : 'See all options'}</b><small>Every rotation, every factor</small></button>
         </div>
         <div className="c2-ctl">
           <label>Your water limit <b>{p.allocation.toFixed(1)} acre-ft/acre</b>{p.exampleLimit && <em className="ex-limit">example, change to yours</em>}
             <input type="range" min={0.5} max={6} step={0.1} value={p.allocation} onChange={(e) => p.setAllocation(+e.target.value)} data-testid="alloc" /></label>
           <div className="seg small">{(Object.keys(WEATHER) as Weather[]).map((w) => <button key={w} className={weather === w ? 'on' : ''} onClick={() => setWeather(w)} data-testid={`replay-${w}`}>{WEATHER[w]}</button>)}</div>
-          <button className={`link tune-btn ${tune ? 'on' : ''}`} onClick={() => setTune(!tune)} data-testid="tune">{tune ? 'Hide priorities and what-ifs' : 'Your priorities, and what if it’s drier or hotter'}</button>
+          <button className={`link tune-btn d-only ${tune ? 'on' : ''}`} onClick={() => setTune(!tune)} data-testid="tune">{tune ? 'Hide priorities and what-ifs' : 'Your priorities, and what if it’s drier or hotter'}</button>
         </div>
       </div>
-      {tune && (
+      {tune && detail && (
         <div className="c2-tune" data-testid="tune-panel">
           <div className="tune-pri">
             <h4>What matters to you</h4>
@@ -193,7 +197,8 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
           <aside className="gl-col side">
             <h3>Water against your limit <What k="waterBalance" /></h3>
             <p><b>{fits(alt)}</b>: needs {water(alt).v?.toFixed(1)} acre-ft/acre ({rng(UNIT[0], water(alt))}) ({WEATHER[weather].toLowerCase()}); today needs {water(today).v?.toFixed(1)}.{/safflower|wheat/i.test(alt.name) ? ' An upper bound: soil water stored over winter is not counted.' : ''}</p>
-            <p className="how">{openetText(p.strategies)} That checks crop water use for today’s crop only; irrigation need and the other rotations use the same method, unchecked.</p>
+            <p className="how d-only">{openetText(p.strategies)} That checks crop water use for today’s crop only; irrigation need and the other rotations use the same method, unchecked.</p>
+            <div className="d-only">
             <h3>Bare days <What k="bare" /></h3>
             <p className="how">Today: {ctx.bare[today.id]?.v != null ? `${ctx.bare[today.id].v} days a year, seen by satellite ${ctx.bareYears[0]}–${ctx.bareYears[ctx.bareYears.length - 1]}` : `${Math.round(today.exposure.bare_days_per_year.value)} days a year (estimated)`}. Other rotations: estimated by the rotation model. {BARE_DEF}</p>
             <h3>No clear difference</h3>
@@ -201,24 +206,26 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
             <h3>Not scored yet</h3>
             <p className="how">{[...none.map((r) => r.m.label), ...SCORE.filter((m) => flat.has(m.key)).map((m) => m.label), 'Dollars per acre (no price data yet)'].map((x, i) => (i ? x.toLowerCase() : x)).join(', ')}.</p>
             <p className="how">Bars: the span of likely values; the tick is the best estimate. A gain counts only when the two spans don’t overlap.</p>
+            </div>
+            <MoreDetail what="All rotations, soil and feed scores, your priorities and what-ifs" />
             <button className="btn primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Print this comparison for your adviser<Icon name="right" size={16} /></button>
           </aside>
         </div>
       ) : (
         <div className="c1-body">
           <table className="tt">
-            <thead><tr><th /><th className="today">What you do now<small>{today.short_name}</small></th>{alts.map((s) => <th key={s.id}>Alternative<small>{s.short_name}</small></th>)}</tr></thead>
+            <thead><tr><th /><th className="today">What you do now<small>{today.short_name}</small></th>{allAlts.map((s) => <th key={s.id}>Alternative<small>{s.short_name}</small></th>)}</tr></thead>
             <tbody>
-              <tr className="grp"><td colSpan={alts.length + 2}>Water, days and weather · {WEATHER[weather].toLowerCase()}</td></tr>
-              {all.map((m, i) => {
+              <tr className="grp"><td colSpan={allAlts.length + 2}>Water, days and weather · {WEATHER[weather].toLowerCase()}</td></tr>
+              {[...UNIT, ...SCORE.filter((m) => !flat.has(m.key)).map(label)].map((m, i) => {
                 const b = m.get(today, weather, ctx);
                 return (
                   <Fragment key={m.key}>
-                    {i === UNIT.length && <tr className="grp"><td colSpan={alts.length + 2}>Soil, feed and pests · rules of thumb, 0 to 100, higher is better</td></tr>}
+                    {i === UNIT.length && <tr className="grp"><td colSpan={allAlts.length + 2}>Soil, feed and pests · rules of thumb, 0 to 100, higher is better</td></tr>}
                     <tr className={m.unit === 'score' && !MAIN_SCORES.has(m.key) ? 'extra' : ''}>
                       <th>{m.label}</th>
                       <td className="today">{fmt(m, b)} <small>{rng(m, b)}</small></td>
-                      {alts.map((s) => { const a = m.get(s, weather, ctx), v = verdict(a, b, m.higherIsBetter); return <td key={s.id}><span className={`vchip v-${v}`}>{v === 'better' ? 'Better' : v === 'worse' ? 'Worse' : v === 'none' ? 'Not scored' : 'Can’t tell'}</span> {fmt(m, a)} <small>{rng(m, a)}</small></td>; })}
+                      {allAlts.map((s) => { const a = m.get(s, weather, ctx), v = verdict(a, b, m.higherIsBetter); return <td key={s.id}><span className={`vchip v-${v}`}>{v === 'better' ? 'Better' : v === 'worse' ? 'Worse' : v === 'none' ? 'Not scored' : 'Can’t tell'}</span> {fmt(m, a)} <small>{rng(m, a)}</small></td>; })}
                     </tr>
                   </Fragment>
                 );

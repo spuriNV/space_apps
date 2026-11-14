@@ -149,11 +149,11 @@ export function FieldNow(p: FieldNowProps) {
         <dt>What is growing, and how far along?</dt>
         <dd>
           {st ? <b><i className={`sw-${st.sw}`} />{st.text}</b> : pend(p.dataState)}
-          <span>{crop ? `${cropName(crop)} on record for ${yr}.` : `${yr} crop map not published yet (USDA, early ${yr + 1}). ${lastRec}: ${cropName(loc.crop_history[lastRec]).toLowerCase()}.`} {st?.sub}</span>
+          <span className="d-only">{crop ? `${cropName(crop)} on record for ${yr}.` : `${yr} crop map not published yet (USDA, early ${yr + 1}). ${lastRec}: ${cropName(loc.crop_history[lastRec]).toLowerCase()}.`} {st?.sub}</span>
           <cite>{calSource(p.prov.calendar)}, 100 ft squares; crop from the USDA Cropland Data Layer.{behindNote} <Src p={p.prov.calendar} /></cite>
         </dd>
       </div>
-      <div className="ans">
+      <div className="ans d-only">
         <dt>How much green cover is there? <What k="greenness" /></dt>
         <dd>
           {fs && fs.cls !== 'u' && fs.cls !== 'w' ? <>
@@ -173,7 +173,7 @@ export function FieldNow(p: FieldNowProps) {
           </> : pend(p.dailyState)}
         </dd>
       </div>
-      <div className="ans">
+      <div className="ans d-only">
         <dt>How much water has the crop used? <What k="et" /></dt>
         <dd>
           {ms && ms.current ? <>
@@ -201,11 +201,11 @@ export function FieldNow(p: FieldNowProps) {
         <dt>Is the soil wetter or drier than usual? And the groundwater? <What k="soilAnomaly" /></dt>
         <dd>
           {!p.regional ? pend(p.dataState) : <b>{smap == null ? 'No soil reading' : band(smap, 'Soil wetter than usual', 'Soil about normal', 'Soil drier than usual')}; {grace == null ? 'no groundwater reading' : band(grace, 'more groundwater than usual', 'groundwater about normal', 'less groundwater than usual').toLowerCase()}</b>}
-          <span>{smap != null && `Soil moisture ${ordinal(Math.round(smap))} percentile for the date${sm && sm.t < t - 1 ? ` (latest, ${whenT(sm.t)})` : ''}; 50 is normal. `}{grace != null && `Groundwater ${ordinal(Math.round(grace))} percentile${gr && gr.t < t - 1 ? ` (latest, ${whenT(gr.t)})` : ''}, whole basin, not your own well.`}</span>
+          <span className="d-only">{smap != null && `Soil moisture ${ordinal(Math.round(smap))} percentile for the date${sm && sm.t < t - 1 ? ` (latest, ${whenT(sm.t)})` : ''}; 50 is normal. `}{grace != null && `Groundwater ${ordinal(Math.round(grace))} percentile${gr && gr.t < t - 1 ? ` (latest, ${whenT(gr.t)})` : ''}, whole basin, not your own well.`}</span>
           <cite>{p.regionalLive.soilSource === 'grace_da' ? 'Soil: NASA GRACE-FO with a land model, root zone, one reading for a 17-mile square (NASA SMAP readings still downloading).' : `Soil: NASA SMAP satellite, one reading for a 6-mile square${p.regionalLive.smap ? '' : ' (example numbers)'}.`} Groundwater: NASA GRACE-FO satellites{p.regionalLive.grace ? '' : ' (example numbers)'}, weekly. <Src p={p.prov.regional} /></cite>
         </dd>
       </div>
-      <div className="ans">
+      <div className="ans d-only">
         <dt>Has the crop been stressed, or the field under water? <What k="stress" /></dt>
         <dd>
           {p.dataState !== 'ready' ? pend(p.dataState) : <><b>{stressLine(p.extras, t)}</b>
@@ -213,7 +213,7 @@ export function FieldNow(p: FieldNowProps) {
           <cite>Crop stress: two statistical methods on satellite greenness and NASA POWER heat and dryness, growing season only. Standing water: NASA OPERA, 100 ft squares, clear images only. <Src p={p.prov.stress ?? p.prov.water_seen} /></cite>
         </dd>
       </div>
-      <div className="ans">
+      <div className="ans d-only">
         <dt>How many hot days and frost nights? <What k="frost" /></dt>
         <dd>
           {hf ? <>

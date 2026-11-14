@@ -14,6 +14,7 @@ import RotationBrief from './components/brief/RotationBrief';
 import { BCCard, LayersDrawer } from './components/Panels';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
 import { setGlossary } from './components/ui/What';
+import { DetailCtx, useDetailState } from './components/ui/Detail';
 import { ProvList, acres, county, fieldName, type Step } from './components/ui/shared';
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
@@ -27,6 +28,14 @@ const QUICK: { label: string; sub: string; t: number }[] = [
   { label: '2023 floods', sub: 'Mar 2023', t: tOf(2023, 7) },
   { label: '2022 drought', sub: 'Jul 2022', t: tOf(2022, 19) },
 ];
+const MOB: Record<string, string> = { now: 'Now', season: 'Season', year: 'Year', compare: 'Compare' };
+/** Phone width: the field panel becomes a bottom sheet and the sections a bottom tab bar. */
+function usePhone() {
+  const q = '(max-width: 640px)';
+  const [m, setM] = useState(() => typeof window !== 'undefined' && window.matchMedia(q).matches);
+  useEffect(() => { const mq = window.matchMedia(q); const f = () => setM(mq.matches); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, []);
+  return m;
+}
 const TABS: { id: Tab; label: string; short?: string }[] = [
   { id: 'now', label: 'Field now' },
   { id: 'season', label: 'Coming season' },
@@ -36,6 +45,7 @@ const TABS: { id: Tab; label: string; short?: string }[] = [
 ];
 
 export default function App() {
+  const [detail, setDetail] = useDetailState();
   const map = useRef<MapHandle>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -65,6 +75,7 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [switchOpen, setSwitchOpen] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [timedOut, setTimedOut] = useState<string | null>(null);
   const [strips, setStrips] = useState<Record<string, Record<number, string>>>({});
   useEffect(() => {
@@ -151,9 +162,10 @@ export default function App() {
   // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
   const toolPanel = panel === 'fields' ? panel : null;
   const leftPanel = yearExpanded ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
-  const leftInset = leftPanel === 'fields' ? 464 : leftPanel ? 412 : 0;
+  const phone = usePhone();
+  const leftInset = phone ? 0 : leftPanel === 'fields' ? 464 : leftPanel ? 412 : 0;
   const rightInset = layersOpen ? 344 : 0;
-  const bottomInset = yearExpanded ? (showEarlier ? 470 : 290) : 12;
+  const bottomInset = phone ? 64 + (leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
   const drilled = !!selected && view.zoom > 13.4;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;
@@ -186,7 +198,8 @@ export default function App() {
   };
 
   return (
-    <div className="app">
+    <DetailCtx.Provider value={{ on: detail, set: setDetail }}>
+    <div className={`app ${detail ? 'detail-on' : 'detail-off'}`}>
       <MapView ref={map} locations={locations} bc={bc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
         onSelect={select} onBC={goBC} onView={setView} />
@@ -217,7 +230,8 @@ export default function App() {
             <button key={tb.id} className={tabOn(tb.id) ? 'on' : ''} onClick={() => onTab(tb.id)} data-testid={`tab-${tb.id}`} disabled={!selected && tb.id !== 'now'} title={selected ? undefined : 'Pick a field first'}><span className="tb-long">{tb.label}</span>{tb.short && <span className="tb-short">{tb.short}</span>}</button>
           ))}
         </nav>
-        <div className="tb-right">
+        <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
+        <div className={`tb-right ${menuOpen ? 'open' : ''}`}>
           <div className="tb-date-wrap">
             <button className={`tb-date ${dateOpen ? 'open' : ''}`} onClick={() => setDateOpen(!dateOpen)} data-testid="date-control" aria-expanded={dateOpen}>
               <small>Viewing</small><b>{t === TODAY_T ? `Today, ${tLabel(t).charAt(0).toLowerCase()}${tLabel(t).slice(1)}` : tLabel(t)}</b><Icon name="down" size={16} />
@@ -244,9 +258,12 @@ export default function App() {
           <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => setLayersOpen(!layersOpen)} data-testid="layers-btn"><Icon name="layers" size={16} />Map layers</button>
         </div>
       </header>
+      <nav className="mob-tabs" aria-label="Sections">
+        {TABS.map((tb) => <button key={tb.id} className={tabOn(tb.id) ? 'on' : ''} onClick={() => { setMenuOpen(false); onTab(tb.id); }} disabled={!selected && tb.id !== 'now'} data-testid={`mtab-${tb.id}`}>{tb.short ?? MOB[tb.id] ?? tb.label}</button>)}
+      </nav>
       {t !== TODAY_T && <div className="date-banner" data-testid="date-banner">Showing {tLabel(t)}<button className="link" onClick={() => { setT(TODAY_T); setPlaying(false); }}>Back to today</button></div>}
 
-      {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
+      {leftPanel === 'card' && selected && <FieldPanel key={selected.id} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
       {leftPanel === 'fields' && <FieldPicker locations={locations} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
@@ -289,5 +306,6 @@ export default function App() {
 
       {briefOpen && selected && d && <RotationBrief loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} outlook={ol} nasaNow={d.nasaNow} cal={d.cal} daily={dl?.daily ?? null} onClose={() => setBriefOpen(false)} />}
     </div>
+    </DetailCtx.Provider>
   );
 }
