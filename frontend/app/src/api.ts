@@ -16,7 +16,8 @@ import { YEARS } from './lib';
 import type { Daily } from './season';
 import outlookExample from './mock/outlook.example.json';
 
-export const API = 'http://localhost:8000';
+const ENV = (import.meta as unknown as { env: Record<string, string | boolean | undefined> }).env;
+export const API: string = (ENV.VITE_API_ORIGIN as string | undefined) ?? (ENV.PROD ? '' : 'http://localhost:8000');
 type ById<T> = Record<string, T>;
 
 // ---------- provenance ----------
