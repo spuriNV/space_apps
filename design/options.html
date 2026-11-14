@@ -62,6 +62,13 @@
     <p class="note">Every number in these screenshots is mock data. The apps show a "Mock data" badge until the backend is wired in.</p>
   </header>
 
+  <div id="round2"></div>
+
+  <header>
+    <span class="eyebrow">Round 1 · the three directions</span>
+    <p class="lede">Chosen so far: overview and 3D drill-down from B, the printable brief from C. The rest of this page is the first round, kept for reference.</p>
+  </header>
+
   <div class="dirs">
     <div class="dir"><h3><span class="tag a">A</span>Maps classic</h3><p>Desktop Google Maps: search pill, category chips, a place card for each field, layers toggle. Scrolling in raises the field's 30 m cells.</p><code>http://localhost:5171</code></div>
     <div class="dir"><h3><span class="tag b">B</span>Earth explorer</h3><p>Google Earth: full-screen satellite, dark floating panels, a 2016–2025 timeline along the bottom. Scrolling in splits the field into surface, soil moisture and groundwater layers.</p><code>http://localhost:5172</code></div>
@@ -107,6 +114,30 @@
       row.appendChild(fig);
     }
     sec.appendChild(row); root.appendChild(sec);
+  }
+  const r2 = document.getElementById("round2");
+  r2.style.cssText = "display:flex;flex-direction:column;gap:44px";
+  const round2 = [
+    ["Your field's year: three new options", "Redesigned after \"I'm confused on what this is\". Real Sentinel-2/Landsat calendar for the Colusa field, 2016–2025. Each option asks one plain question and gives one headline sentence.", [
+      ["year-1", "1 · One year, round the clock", "When is your field bare, and what hit it then? One year as a clock face; dots show whether heavy rain hit bare ground."],
+      ["year-2", "2 · Ten years, one pattern (recommended)", "Is your field bare at the same time every year? A typical-year row on top, so fallow years stand out; one risk at a time."],
+      ["year-3", "3 · Two hard years", "What happened in the drought and the floods? 2022 and 2023 drawn against a normal year, with news beside them. Good for the pitch."]]],
+    ["Compare rotations: three new options", "Redesigned after \"hard to understand\". Real engine output on real weather; many agronomy inputs are still assumed, and the screens say so.", [
+      ["compare-1", "1 · Trade-offs in words", "What changes if you farm this field differently? Better / Worse / Can't tell / Same against today, in mm, acre-ft and days."],
+      ["compare-2", "2 · Gain / give up vs today (recommended)", "If you switched, what would you gain and give up? Two plain lists; overlapping ranges go under \"No clear difference\"."],
+      ["compare-3", "3 · Head-to-head", "Which of these two fits what matters to you? Priority sliders re-score live; the verdict is one phrase such as \"Too close to call\"."]]]
+  ];
+  for (const [title, blurb, items] of round2) {
+    const sec = document.createElement("section");
+    sec.innerHTML = `<div class="shead"><span class="eyebrow">Round 2</span><h2>${title}</h2><p>${blurb}</p></div>`;
+    const row = document.createElement("div"); row.className = "row";
+    for (const [file, name, cap] of items) {
+      const src = `shots/explore/${file}.png`, fig = document.createElement("figure");
+      fig.innerHTML = `<button type="button" aria-label="Enlarge ${name}"><img src="${src}" alt="${name}" loading="lazy"></button><figcaption><span><b>${name}</b><br>${cap}</span></figcaption>`;
+      fig.querySelector("button").addEventListener("click", () => { zimg.src = src; zimg.alt = name; zcap.textContent = name; dlg.showModal(); });
+      row.appendChild(fig);
+    }
+    sec.appendChild(row); r2.appendChild(sec);
   }
   dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
 </script>

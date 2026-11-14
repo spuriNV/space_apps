@@ -1,0 +1,1068 @@
+[
+{
+"id": "car0_rice_winterflood",
+"name": "Continuous rice with winter flood (current)",
+"baseline": true,
+"cycle_years": 1,
+"allocation_rule": null,
+"calendar": [
+{
+"year": 1,
+"crop_id": "open_water_flood",
+"plant": "11-01",
+"harvest": "02-01",
+"role": "water"
+},
+{
+"year": 1,
+"crop_id": "open_water_flood",
+"plant": "04-25",
+"harvest": "05-10",
+"role": "water"
+},
+{
+"year": 1,
+"crop_id": "rice_medium_grain",
+"plant": "05-10",
+"harvest": "10-07",
+"role": "cash"
+}
+],
+"composite": {
+"v": 19.4,
+"lo": 16.3,
+"hi": 22.3,
+"verified": false,
+"method": "computed",
+"rank": 4,
+"ties_with": [],
+"weights": {
+"water_use": 2,
+"forage_value": 2,
+"n_fixation": 2,
+"erosion": 2,
+"organic_matter": 2,
+"market": 2,
+"pest_break": 0,
+"infiltration": 0,
+"income": 0,
+"n_scavenging": 0
+}
+},
+"scores": {
+"water_use": {
+"v": 18.5,
+"lo": 0.0,
+"hi": 35.8,
+"verified": true,
+"method": "computed",
+"blocked": false
+},
+"forage_value": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"n_fixation": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"erosion": {
+"v": 15.0,
+"lo": 15.0,
+"hi": 15.0,
+"verified": true,
+"method": "computed",
+"blocked": false
+},
+"organic_matter": {
+"v": 32.8,
+"lo": 32.8,
+"hi": 32.8,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"market": {
+"v": 50.0,
+"lo": 50.0,
+"hi": 50.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"pest_break": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"infiltration": {
+"v": 6.1,
+"lo": 6.1,
+"hi": 6.1,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"n_scavenging": {
+"v": 0.8,
+"lo": 0.8,
+"hi": 0.8,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"income": {
+"v": null,
+"lo": null,
+"hi": null,
+"verified": false,
+"method": "computed",
+"blocked": true
+}
+},
+"water": {
+"irrigation_need_mm": {
+"v": 1667.6,
+"lo": 1314.6,
+"hi": 2046.6,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_af_ac": {
+"v": 5.47,
+"lo": 4.31,
+"hi": 6.71,
+"verified": true,
+"method": "computed"
+},
+"etc_mm_season": {
+"v": 1345.4,
+"lo": 1126.5,
+"hi": 1570.4,
+"verified": true,
+"method": "computed"
+}
+},
+"exposure": {
+"bare_days_per_year": {
+"v": 108.0,
+"lo": 108.0,
+"hi": 108.0,
+"verified": false,
+"method": "computed"
+},
+"exposed_rain_days": {
+"v": 2.9,
+"lo": 0.5,
+"hi": 2.9,
+"verified": true,
+"method": "computed"
+},
+"exposed_frost_days": {
+"v": 1.4,
+"lo": 1.4,
+"hi": 1.4,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 1.5,
+"lo": 1.5,
+"hi": 1.5,
+"verified": true,
+"method": "computed"
+}
+},
+"replay": {
+"2022": {
+"exposed_rain_days": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 3.0,
+"lo": 3.0,
+"hi": 3.0,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_mm": {
+"v": 1709.2,
+"lo": 1342.2,
+"hi": 2092.3,
+"verified": true,
+"method": "computed"
+}
+},
+"2023": {
+"exposed_rain_days": {
+"v": 3.0,
+"lo": 0.0,
+"hi": 3.0,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 3.0,
+"lo": 3.0,
+"hi": 3.0,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_mm": {
+"v": 1601.4,
+"lo": 1256.8,
+"hi": 1967.2,
+"verified": true,
+"method": "computed"
+}
+}
+},
+"local_review": [
+{
+"item": "Every alternative rotation needs review by the grower and an adviser before anything is seeded (spec B11).",
+"severity": "high"
+},
+{
+"item": "Market suitability is a table rule: confirm buyers, contracts, equipment and district/GSA rules locally.",
+"severity": "medium"
+},
+{
+"item": "Flooded field (winter flood / pre-seeding flood): flood fill depth and seepage water are not modelled (U); habitat value not scored",
+"severity": "medium"
+},
+{
+"item": "Pest note (Rice (medium grain, water-seeded)): weedy rice (U)",
+"severity": "low"
+},
+{
+"item": "Pest note (Rice (medium grain, water-seeded)): rice water weevil (U)",
+"severity": "low"
+},
+{
+"item": "Rice (medium grain, water-seeded): herbicide carryover to rotation crops (U)",
+"severity": "medium"
+}
+],
+"gaps": [
+"Yield or profit modelling",
+"Pest or disease data",
+"Tile drainage",
+"A real soil test"
+]
+},
+{
+"id": "car1_rice_wintercover",
+"name": "Rice + winter cover (cereal/vetch) instead of winter flood",
+"baseline": false,
+"cycle_years": 1,
+"allocation_rule": null,
+"calendar": [
+{
+"year": 1,
+"crop_id": "open_water_flood",
+"plant": "04-25",
+"harvest": "05-10",
+"role": "water"
+},
+{
+"year": 1,
+"crop_id": "rice_medium_grain",
+"plant": "05-10",
+"harvest": "10-07",
+"role": "cash"
+},
+{
+"year": 1,
+"crop_id": "cereal_vetch_cover",
+"plant": "10-25",
+"harvest": "03-20",
+"role": "cover"
+}
+],
+"composite": {
+"v": 26.0,
+"lo": 22.1,
+"hi": 33.5,
+"verified": false,
+"method": "computed",
+"rank": 3,
+"ties_with": [
+"car2_dryyear_safflower",
+"car3_rice_wheat"
+],
+"weights": {
+"water_use": 2,
+"forage_value": 2,
+"n_fixation": 2,
+"erosion": 2,
+"organic_matter": 2,
+"market": 2,
+"pest_break": 0,
+"infiltration": 0,
+"income": 0,
+"n_scavenging": 0
+}
+},
+"scores": {
+"water_use": {
+"v": 19.9,
+"lo": 2.6,
+"hi": 36.7,
+"verified": true,
+"method": "computed",
+"blocked": false
+},
+"forage_value": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"n_fixation": {
+"v": 20.0,
+"lo": 20.0,
+"hi": 20.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"erosion": {
+"v": 26.4,
+"lo": 20.4,
+"hi": 54.2,
+"verified": true,
+"method": "computed",
+"blocked": false
+},
+"organic_matter": {
+"v": 39.9,
+"lo": 39.5,
+"hi": 40.1,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"market": {
+"v": 50.0,
+"lo": 50.0,
+"hi": 50.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"pest_break": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"infiltration": {
+"v": 30.6,
+"lo": 30.6,
+"hi": 30.6,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"n_scavenging": {
+"v": 36.6,
+"lo": 36.6,
+"hi": 36.6,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"income": {
+"v": null,
+"lo": null,
+"hi": null,
+"verified": false,
+"method": "computed",
+"blocked": true
+}
+},
+"water": {
+"irrigation_need_mm": {
+"v": 1640.0,
+"lo": 1296.0,
+"hi": 1994.4,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_af_ac": {
+"v": 5.38,
+"lo": 4.25,
+"hi": 6.54,
+"verified": true,
+"method": "computed"
+},
+"etc_mm_season": {
+"v": 1382.8,
+"lo": 1143.3,
+"hi": 1677.4,
+"verified": true,
+"method": "computed"
+}
+},
+"exposure": {
+"bare_days_per_year": {
+"v": 91.0,
+"lo": 87.0,
+"hi": 98.0,
+"verified": false,
+"method": "computed"
+},
+"exposed_rain_days": {
+"v": 2.0,
+"lo": 0.2,
+"hi": 2.0,
+"verified": true,
+"method": "computed"
+},
+"exposed_frost_days": {
+"v": 1.0,
+"lo": 1.0,
+"hi": 1.0,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 1.5,
+"lo": 1.5,
+"hi": 1.5,
+"verified": true,
+"method": "computed"
+}
+},
+"replay": {
+"2022": {
+"exposed_rain_days": {
+"v": 1.0,
+"lo": 0.0,
+"hi": 1.0,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 3.0,
+"lo": 3.0,
+"hi": 3.0,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_mm": {
+"v": 1653.6,
+"lo": 1304.8,
+"hi": 2012.0,
+"verified": true,
+"method": "computed"
+}
+},
+"2023": {
+"exposed_rain_days": {
+"v": 2.0,
+"lo": 0.0,
+"hi": 2.0,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 3.0,
+"lo": 3.0,
+"hi": 3.0,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_mm": {
+"v": 1573.4,
+"lo": 1239.5,
+"hi": 1913.0,
+"verified": true,
+"method": "computed"
+}
+}
+},
+"local_review": [
+{
+"item": "Every alternative rotation needs review by the grower and an adviser before anything is seeded (spec B11).",
+"severity": "high"
+},
+{
+"item": "Market suitability is a table rule: confirm buyers, contracts, equipment and district/GSA rules locally.",
+"severity": "medium"
+},
+{
+"item": "Flooded field (winter flood / pre-seeding flood): flood fill depth and seepage water are not modelled (U); habitat value not scored",
+"severity": "medium"
+},
+{
+"item": "Pest note (Rice (medium grain, water-seeded)): weedy rice (U)",
+"severity": "low"
+},
+{
+"item": "Pest note (Rice (medium grain, water-seeded)): rice water weevil (U)",
+"severity": "low"
+},
+{
+"item": "Rice (medium grain, water-seeded): herbicide carryover to rotation crops (U)",
+"severity": "medium"
+},
+{
+"item": "Winter cover: cereal + vetch mix: termination timing before rice field prep (U)",
+"severity": "medium"
+}
+],
+"gaps": [
+"Yield or profit modelling",
+"Pest or disease data",
+"Tile drainage",
+"A real soil test"
+]
+},
+{
+"id": "car2_dryyear_safflower",
+"name": "Dry-year plan: safflower instead of rice (allocation < 50%)",
+"baseline": false,
+"cycle_years": 1,
+"allocation_rule": "Use this plan when surface-water allocation is below 50% of contract",
+"calendar": [
+{
+"year": 1,
+"crop_id": "cereal_vetch_cover",
+"plant": "01-01",
+"harvest": "03-01",
+"role": "cover"
+},
+{
+"year": 1,
+"crop_id": "safflower",
+"plant": "04-01",
+"harvest": "08-04",
+"role": "cash"
+}
+],
+"composite": {
+"v": 27.5,
+"lo": 26.1,
+"hi": 35.0,
+"verified": false,
+"method": "computed",
+"rank": 1,
+"ties_with": [
+"car1_rice_wintercover",
+"car3_rice_wheat"
+],
+"weights": {
+"water_use": 2,
+"forage_value": 2,
+"n_fixation": 2,
+"erosion": 2,
+"organic_matter": 2,
+"market": 2,
+"pest_break": 0,
+"infiltration": 0,
+"income": 0,
+"n_scavenging": 0
+}
+},
+"scores": {
+"water_use": {
+"v": 69.8,
+"lo": 61.3,
+"hi": 76.8,
+"verified": true,
+"method": "computed",
+"blocked": false
+},
+"forage_value": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"n_fixation": {
+"v": 8.1,
+"lo": 8.1,
+"hi": 8.1,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"erosion": {
+"v": 9.9,
+"lo": 9.9,
+"hi": 47.7,
+"verified": true,
+"method": "computed",
+"blocked": false
+},
+"organic_matter": {
+"v": 27.3,
+"lo": 27.1,
+"hi": 27.4,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"market": {
+"v": 50.0,
+"lo": 50.0,
+"hi": 50.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"pest_break": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"infiltration": {
+"v": 66.7,
+"lo": 66.7,
+"hi": 66.7,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"n_scavenging": {
+"v": 24.2,
+"lo": 24.2,
+"hi": 24.2,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"income": {
+"v": null,
+"lo": null,
+"hi": null,
+"verified": false,
+"method": "computed",
+"blocked": true
+}
+},
+"water": {
+"irrigation_need_mm": {
+"v": 618.8,
+"lo": 475.4,
+"hi": 791.5,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_af_ac": {
+"v": 2.03,
+"lo": 1.56,
+"hi": 2.6,
+"verified": true,
+"method": "computed"
+},
+"etc_mm_season": {
+"v": 737.7,
+"lo": 571.7,
+"hi": 938.6,
+"verified": true,
+"method": "computed"
+}
+},
+"exposure": {
+"bare_days_per_year": {
+"v": 205.0,
+"lo": 203.0,
+"hi": 209.0,
+"verified": false,
+"method": "computed"
+},
+"exposed_rain_days": {
+"v": 2.9,
+"lo": 0.2,
+"hi": 2.9,
+"verified": true,
+"method": "computed"
+},
+"exposed_frost_days": {
+"v": 1.9,
+"lo": 1.9,
+"hi": 1.9,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 41.7,
+"lo": 41.7,
+"hi": 41.7,
+"verified": true,
+"method": "computed"
+}
+},
+"replay": {
+"2022": {
+"exposed_rain_days": {
+"v": 2.0,
+"lo": 0.0,
+"hi": 2.0,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 44.0,
+"lo": 44.0,
+"hi": 44.0,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_mm": {
+"v": 630.9,
+"lo": 481.4,
+"hi": 828.6,
+"verified": true,
+"method": "computed"
+}
+},
+"2023": {
+"exposed_rain_days": {
+"v": 5.0,
+"lo": 0.0,
+"hi": 5.0,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 38.0,
+"lo": 38.0,
+"hi": 38.0,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_mm": {
+"v": 576.7,
+"lo": 439.3,
+"hi": 727.0,
+"verified": true,
+"method": "computed"
+}
+}
+},
+"local_review": [
+{
+"item": "Every alternative rotation needs review by the grower and an adviser before anything is seeded (spec B11).",
+"severity": "high"
+},
+{
+"item": "Market suitability is a table rule: confirm buyers, contracts, equipment and district/GSA rules locally.",
+"severity": "medium"
+},
+{
+"item": "Winter cover: cereal + vetch mix: termination timing before rice field prep (U)",
+"severity": "medium"
+},
+{
+"item": "Safflower: often grown on stored soil water with 0-1 irrigations (U)",
+"severity": "medium"
+}
+],
+"gaps": [
+"Yield or profit modelling",
+"Pest or disease data",
+"Tile drainage",
+"A real soil test"
+]
+},
+{
+"id": "car3_rice_wheat",
+"name": "Rice - winter wheat rotation (2-year)",
+"baseline": false,
+"cycle_years": 2,
+"allocation_rule": null,
+"calendar": [
+{
+"year": 1,
+"crop_id": "open_water_flood",
+"plant": "04-25",
+"harvest": "05-10",
+"role": "water"
+},
+{
+"year": 1,
+"crop_id": "rice_medium_grain",
+"plant": "05-10",
+"harvest": "10-07",
+"role": "cash"
+},
+{
+"year": 1,
+"crop_id": "winter_wheat",
+"plant": "12-01",
+"harvest": "05-30",
+"role": "cash"
+}
+],
+"composite": {
+"v": 26.1,
+"lo": 24.2,
+"hi": 30.9,
+"verified": false,
+"method": "computed",
+"rank": 2,
+"ties_with": [
+"car1_rice_wintercover",
+"car2_dryyear_safflower"
+],
+"weights": {
+"water_use": 2,
+"forage_value": 2,
+"n_fixation": 2,
+"erosion": 2,
+"organic_matter": 2,
+"market": 2,
+"pest_break": 0,
+"infiltration": 0,
+"income": 0,
+"n_scavenging": 0
+}
+},
+"scores": {
+"water_use": {
+"v": 53.0,
+"lo": 41.9,
+"hi": 62.8,
+"verified": true,
+"method": "computed",
+"blocked": false
+},
+"forage_value": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"n_fixation": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"erosion": {
+"v": 19.1,
+"lo": 19.1,
+"hi": 38.3,
+"verified": true,
+"method": "computed",
+"blocked": false
+},
+"organic_matter": {
+"v": 34.3,
+"lo": 34.1,
+"hi": 34.4,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"market": {
+"v": 50.0,
+"lo": 50.0,
+"hi": 50.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"pest_break": {
+"v": 0.0,
+"lo": 0.0,
+"hi": 0.0,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"infiltration": {
+"v": 28.6,
+"lo": 28.6,
+"hi": 28.6,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"n_scavenging": {
+"v": 15.8,
+"lo": 15.8,
+"hi": 15.8,
+"verified": false,
+"method": "computed",
+"blocked": false
+},
+"income": {
+"v": null,
+"lo": null,
+"hi": null,
+"verified": false,
+"method": "computed",
+"blocked": true
+}
+},
+"water": {
+"irrigation_need_mm": {
+"v": 962.3,
+"lo": 761.0,
+"hi": 1189.3,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_af_ac": {
+"v": 3.16,
+"lo": 2.5,
+"hi": 3.9,
+"verified": true,
+"method": "computed"
+},
+"etc_mm_season": {
+"v": 839.8,
+"lo": 705.0,
+"hi": 977.6,
+"verified": true,
+"method": "computed"
+}
+},
+"exposure": {
+"bare_days_per_year": {
+"v": 205.5,
+"lo": 204.0,
+"hi": 209.0,
+"verified": false,
+"method": "computed"
+},
+"exposed_rain_days": {
+"v": 4.9,
+"lo": 0.3,
+"hi": 4.9,
+"verified": true,
+"method": "computed"
+},
+"exposed_frost_days": {
+"v": 3.5,
+"lo": 3.5,
+"hi": 3.5,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 45.0,
+"lo": 45.0,
+"hi": 45.0,
+"verified": true,
+"method": "computed"
+}
+},
+"replay": {
+"2022": {
+"exposed_rain_days": {
+"v": 2.0,
+"lo": 0.0,
+"hi": 2.0,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 46.5,
+"lo": 46.5,
+"hi": 46.5,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_mm": {
+"v": 1037.5,
+"lo": 824.0,
+"hi": 1274.3,
+"verified": true,
+"method": "computed"
+}
+},
+"2023": {
+"exposed_rain_days": {
+"v": 9.5,
+"lo": 0.0,
+"hi": 9.5,
+"verified": true,
+"method": "computed"
+},
+"exposed_heat_days": {
+"v": 37.0,
+"lo": 37.0,
+"hi": 37.0,
+"verified": true,
+"method": "computed"
+},
+"irrigation_need_mm": {
+"v": 887.7,
+"lo": 700.9,
+"hi": 1085.3,
+"verified": true,
+"method": "computed"
+}
+}
+},
+"local_review": [
+{
+"item": "Every alternative rotation needs review by the grower and an adviser before anything is seeded (spec B11).",
+"severity": "high"
+},
+{
+"item": "Market suitability is a table rule: confirm buyers, contracts, equipment and district/GSA rules locally.",
+"severity": "medium"
+},
+{
+"item": "Flooded field (winter flood / pre-seeding flood): flood fill depth and seepage water are not modelled (U); habitat value not scored",
+"severity": "medium"
+},
+{
+"item": "Pest note (Rice (medium grain, water-seeded)): weedy rice (U)",
+"severity": "low"
+},
+{
+"item": "Pest note (Rice (medium grain, water-seeded)): rice water weevil (U)",
+"severity": "low"
+},
+{
+"item": "Rice (medium grain, water-seeded): herbicide carryover to rotation crops (U)",
+"severity": "medium"
+},
+{
+"item": "Spec B1 shows only the wheat year (wheat Jan-May, bare Jul-Oct, drill wheat Nov-Dec). We model a 2-year cycle: year 1 rice then wheat drilled 1 Dec; year 2 wheat to 30 May, bare until the next rice flood. Confirm with the team.",
+"severity": "medium"
+}
+],
+"gaps": [
+"Yield or profit modelling",
+"Pest or disease data",
+"Tile drainage",
+"A real soil test"
+]
+}
+]
