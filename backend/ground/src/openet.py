@@ -4,7 +4,7 @@ POST https://openet-api.org/raster/timeseries/polygon, header Authorization: <ke
 import sys, json, time, requests, pandas as pd
 from common import *
 URL = "https://openet-api.org/raster/timeseries/polygon"
-MODELS = ["ensemble", "ssebop", "eemetric", "disalexi", "geesebal", "ptjpl", "sims"]
+MODELS = ["Ensemble", "ssebop", "eemetric", "disalexi", "geesebal", "ptjpl", "sims"]
 
 def parse(js, model):
     rows = js if isinstance(js, list) else js.get("data", js.get("results", []))
@@ -20,8 +20,8 @@ def main(models):
     for preset in PRESETS:
         geom = polygon(preset); frames = []
         for m in models:
-            body = {"date_range": ["2016-01-01", "2025-12-31"], "interval": "monthly", "geojson": geom, "reducer": "mean",
-                    "model": m, "variable": "et", "reference_et": "gridmet", "units": "mm", "file_format": "json"}
+            body = {"date_range": ["2016-01-01", "2025-12-31"], "interval": "monthly", "geometry": [round(x, 6) for p in geom["coordinates"][0][:-1] for x in p], "reducer": "mean",
+                    "model": m, "variable": "ET", "reference_et": "gridMET", "units": "mm", "file_format": "JSON"}
             r = requests.post(URL, json=body, headers={"Authorization": key, "accept": "application/json", "Content-Type": "application/json"}, timeout=300)
             if r.status_code != 200:
                 print(f"{preset} {m}: HTTP {r.status_code} {r.text[:300]}"); continue
@@ -29,11 +29,11 @@ def main(models):
             except Exception: print(f"{preset} {m}: non-JSON response (zip?) {r.headers.get('content-type')}"); continue
             (GROUND / "out" / preset).mkdir(parents=True, exist_ok=True)
             json.dump(js, open(GROUND / "out" / preset / f"openet_raw_{m}.json", "w"))
-            frames.append(parse(js, "Ensemble" if m == "ensemble" else m)); time.sleep(4)
+            frames.append(parse(js, "Ensemble" if m.lower() == "ensemble" else m)); time.sleep(4)
         if not frames: continue
         df = pd.concat(frames, ignore_index=True); df["et_mm"] = pd.to_numeric(df["et_mm"], errors="coerce")
-        meta, path = write_cache(preset, "openet", df, URL, {**{k: v for k, v in body.items() if k != "geojson"}, "models": models, "geometry": "backend/field/polygons/%s.geojson" % preset})
+        meta, path = write_cache(preset, "openet", df, URL, {**{k: v for k, v in body.items() if k != "geometry"}, "models": models, "geometry_source": "backend/field/polygons/%s.geojson outer ring (flat lon,lat array; geojson param rejected as invalid)" % preset})
         save_meta(meta, path, source_note="OpenET v2.1 monthly mean ET over the field polygon; validation only", verified=True)
         print(f"{preset}: {len(df)} rows -> data/cache/{preset}/openet.parquet")
 if __name__ == "__main__":
-    main(MODELS if "--models" in sys.argv else ["ensemble"])
+    main(MODELS if "--models" in sys.argv else ["Ensemble"])

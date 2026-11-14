@@ -9,13 +9,14 @@ F = {"DayEto": "eto_mm", "DayPrecip": "precip_mm", "DayAirTmpMin": "tmin_c", "Da
 
 def main():
     key = need_key("CIMIS_APP_KEY")
+    if len(key) == 32 and "-" not in key: key = f"{key[:8]}-{key[8:12]}-{key[12:16]}-{key[16:20]}-{key[20:]}"  # WAF rejects undashed form
     for preset, sts in STATIONS.items():
         rows = []
         for st in sts:
             for y in range(2015, 2026):
                 p = {"appKey": key, "targets": st, "startDate": f"{y}-01-01", "endDate": f"{y}-12-31", "dataItems": ITEMS, "unitOfMeasure": "M"}
                 r = requests.get(URL, params=p, headers={"Accept": "application/json"}, timeout=120)
-                if r.status_code != 200: print(f"{preset} stn {st} {y}: HTTP {r.status_code} {r.text[:200]}"); continue
+                if r.status_code != 200 or "json" not in r.headers.get("content-type", "") and not r.text.lstrip().startswith("{"): print(f"{preset} stn {st} {y}: HTTP {r.status_code} {r.text[:200].replace(key, "KEY")}"); continue
                 for prov in r.json().get("Data", {}).get("Providers", []):
                     for rec in prov.get("Records", []):
                         d = {"date": rec["Date"], "station": st}
