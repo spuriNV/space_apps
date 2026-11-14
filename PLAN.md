@@ -88,3 +88,15 @@ Deliverables: 7 slides or a 30-second video, a recorded backup of the demo, and 
 - **Keys (grokbot):** Earthdata login first, then OpenET (see `SIGNUPS.md`).
 - **Team:** decide the scoring-formula fixes.
 - **Anyone:** show the app to one real grower or farm adviser for 10 minutes and write down what confused them.
+
+## Decisions made 14 Nov (afternoon)
+
+| Topic | Decision |
+|---|---|
+| Scoring formulas | Fix them (erosion baseline, pest-break, sorghum-sudan water, rice-then-wheat bare days). Engine owner fixes with cited reasons; checks updated. |
+| Machine-learning calendar | Shown as a comparison next to the rule-based calendar, not as the answer. Kings carries "below accuracy target" in plain words. |
+| Default water limit | Pre-filled example per field, clearly labelled "example, change to yours": Colusa 5.0 acre-ft/acre, Kings 3.0. |
+| Heat threshold | 104 °F (40 °C) everywhere, counted from NOAA stations. |
+| Brief wording | Fixed templates only for now; no LLM. |
+| ISS photos | Used, captioned "Seen from the ISS near your field, March 2020", with NASA's credit line. |
+| Options | No more option rounds. Build one version; change it after review. |
