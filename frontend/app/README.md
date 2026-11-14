@@ -1,6 +1,6 @@
 # CropLytics: main frontend (`frontend/app`)
 
-One product, one look, four screens (see `PLAN.md`). Satellite map, field panel on the left, timeline along the bottom, 3D stack when you scroll in. The look is the "Extension bulletin" style only (Zilla Slab + Libre Franklin, spot-green header band, paper panel; tokens at the top of `src/styles.css`, rules in `.claude/skills/fieldshift-visual-design/`).
+One product, one look, four screens (see `PLAN.md`). A top bar (wordmark, field switcher, section tabs, data status, map layers), satellite map, field panel on the left, timeline along the bottom, 3D stack when you scroll in. The look is the "Extension bulletin" style only (Zilla Slab + Libre Franklin, spot-green header band, paper panel; tokens at the top of `src/styles.css`, rules in `.claude/skills/fieldshift-visual-design/`).
 
 ## Run
 

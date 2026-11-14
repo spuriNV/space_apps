@@ -676,3 +676,57 @@ details.prov summary { cursor: pointer; font-size: 13px; color: var(--link); }
 .paper { padding: 32px 40px 24px; gap: 10px; font-size: 11px; }
 .paper h2 { margin-bottom: 5px; }
 .p-list { gap: 2px; }
+
+/* =====================================================================
+   Top bar (replaces the icon rail): wordmark, field switcher, section tabs, data status and map layers.
+   A solid paper surface with a hairline rule and a soft shadow so it sits above the map.
+   ===================================================================== */
+:root { --bar-h: 58px; --gap: 12px; }
+.rail, .search { display: none !important; }
+.topbar { position: absolute; left: 0; right: 0; top: 0; height: var(--bar-h); z-index: 45; display: flex; align-items: stretch; gap: 0;
+  background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 2px 4px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.22); }
+.topbar::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 3px; background: var(--head-band); }
+.tb-brand { font-family: var(--font-head); font-weight: 600; font-size: 24px; letter-spacing: -0.01em; color: var(--head-band); padding: 0 22px 0 20px; border-right: 1px solid var(--line-soft); }
+.tb-brand:hover { color: var(--text); }
+.tb-switch { position: relative; display: flex; border-right: 1px solid var(--line-soft); }
+.tb-field { display: flex; align-items: center; gap: 10px; padding: 0 14px 0 16px; min-width: 300px; max-width: 380px; text-align: left; color: var(--text); }
+.tb-field span { display: flex; flex-direction: column; min-width: 0; }
+.tb-field small { font-size: 11.5px; color: var(--muted); line-height: 1.2; }
+.tb-field b { font-family: var(--font-head); font-size: 16px; font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-field svg { flex: none; margin-left: auto; color: var(--text-2); }
+.tb-field:hover, .tb-switch.open .tb-field { background: var(--tint); }
+.tb-menu { position: absolute; top: calc(var(--bar-h) + 3px); left: 0; width: 400px; background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 6px; z-index: 50; }
+.tb-search { display: flex; align-items: center; gap: 8px; padding: 0 10px; height: 38px; border: 1px solid var(--line); margin-bottom: 4px; color: var(--muted); background: #fff; }
+.tb-search input { flex: 1; border: 0; outline: 0; background: none; font: inherit; font-size: 13.5px; color: var(--text); }
+.tb-menu > button { display: flex; flex-direction: column; width: 100%; text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line-soft); }
+.tb-menu > button:last-of-type { border-bottom: 0; }
+.tb-menu > button b { font-family: var(--font-head); font-size: 15px; font-weight: 600; }
+.tb-menu > button small { font-size: 12px; }
+.tb-menu > button:hover, .tb-menu > button.on { background: var(--accent-soft); }
+.tb-tabs { display: flex; align-items: stretch; flex: 1; min-width: 0; padding-left: 6px; }
+.tb-tabs button { position: relative; padding: 0 14px; font-size: 14px; font-weight: 600; color: var(--text-2); white-space: nowrap; }
+.tb-tabs button:hover:not(:disabled) { color: var(--text); background: var(--tint); }
+.tb-tabs button.on { color: var(--head-band); }
+.tb-tabs button.on::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: 0; height: 3px; background: var(--head-band); }
+.tb-tabs button:last-child { margin-left: 6px; }
+.tb-right { position: relative; display: flex; align-items: center; gap: 8px; padding: 0 14px; }
+.tb-right .data-ind { box-shadow: none; height: 34px; }
+.tb-layers { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border: 1px solid var(--line); font-weight: 600; font-size: 13px; color: var(--text); background: var(--panel); }
+.tb-layers:hover, .tb-layers.on { border-color: var(--head-band); color: var(--head-band); }
+.prov-pop { top: calc(var(--bar-h) - 6px); right: 14px; }
+/* everything else sits under the bar, flush left */
+.panel, .fpanel { left: var(--gap); top: calc(var(--bar-h) + 14px); }
+.sheet { left: var(--gap); right: var(--gap); top: calc(var(--bar-h) + 14px); }
+.drawer { top: calc(var(--bar-h) + 14px); right: var(--gap); }
+.timeline { left: var(--gap); right: var(--gap); }
+.reopen { left: var(--gap); top: calc(var(--bar-h) + 14px); }
+.hud { top: calc(var(--bar-h) + 14px); left: 424px; }
+.bc-float { top: calc(var(--bar-h) + 20px); }
+@media (max-width: 1360px) { .tb-tabs button { padding: 0 10px; font-size: 13.5px; } .tb-field { min-width: 260px; } .tb-brand { padding: 0 16px; } }
+
+.tb-short { display: none; }
+@media (max-width: 1500px) { .tb-tabs .tb-long + .tb-short { display: inline; } .tb-tabs button:has(.tb-short) .tb-long { display: none; } }
+@media (max-width: 1360px) { .tb-right .data-ind em { display: none; } }
+@media (max-width: 1340px) { .tb-field { min-width: 0; max-width: 320px; } }
+.ml-note { max-width: none; margin: 0 4px 8px; padding: 6px 10px; background: var(--panel-2); border-left: 3px solid var(--accent); }
+.ml-note.warn { border-left-color: var(--warn); }

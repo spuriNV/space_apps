@@ -67,7 +67,6 @@ export default function YearSheet(p: YearSheetProps) {
         <div className="ys-title">
           <h2>This field’s year</h2>
           <p>{diff}{up != null ? `; the crop greened up in ${dk(up)}` : ''}. {last < 2026 ? `${last + 1} imagery is not processed yet.` : ''}</p>
-          {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}
         </div>
         <div className="seg small ml-seg" data-testid="ml-toggle">
           <button className={!both ? 'on' : ''} onClick={() => setBoth(false)}>Satellite rule</button>
@@ -81,6 +80,7 @@ export default function YearSheet(p: YearSheetProps) {
         </div>
         <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close"><Icon name="down" /></button>
       </div>
+      {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}
       <div className="yr-grid">
         <div className="yr-row yr-months"><span /><span /><div className="yr-m">{MONTHS.map((m) => <span key={m}>{m}</span>)}</div><span className="yr-n">Bare days a year</span><span className="yr-n">1-inch rain days on bare ground</span></div>
         <div className="yr-row typical">

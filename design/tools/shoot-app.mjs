@@ -51,14 +51,14 @@ await open();
 if (want('overview')) await shot('overview.png');
 await pickField();
 if (want('field-now')) await shot('field-now.png');
-if (want('coming-season')) { await page.click('[data-testid="step-season"]'); await page.waitForSelector('[data-testid="coming-season"]'); await shot('coming-season.png', false); await page.click('[data-testid="rail-none"]'); }
-if (want('year')) { await page.click('[data-testid="year-toggle"]'); await page.waitForSelector('[data-testid="year-sheet"]'); await page.click('[data-testid="ml-on"]').catch(() => console.log('  (no ML calendar)')); await shot('year.png'); await page.click('[data-testid="year-toggle"]'); }
+if (want('coming-season')) { await page.click('[data-testid="tab-season"]'); await page.waitForSelector('[data-testid="coming-season"]'); await shot('coming-season.png', false); await page.click('[data-testid="tab-now"]'); }
+if (want('year')) { await page.click('[data-testid="tab-year"]'); await page.waitForSelector('[data-testid="year-sheet"]'); await page.click('[data-testid="ml-on"]').catch(() => console.log('  (no ML calendar)')); await shot('year.png'); await page.click('[data-testid="year-toggle"]'); }
 if (want('compare') || want('brief')) {
-  await page.click('[data-testid="rail-compare"]');
+  await page.click('[data-testid="tab-compare"]');
   await page.waitForSelector('[data-testid="compare"]');
   if (want('compare')) await shot('compare.png', false);
   if (want('brief')) { await page.click('[data-testid="to-brief"]'); await page.waitForSelector('[data-testid="brief"]'); await shot('brief.png', false); await page.click('.br-head .sq-btn'); }
-  await page.click('[data-testid="rail-none"]');
+  await page.click('[data-testid="tab-now"]');
 }
 if (want('drilldown')) {
   await page.evaluate((t) => window.__app.setT(t), T_JUL_2025);
@@ -68,8 +68,10 @@ if (want('drilldown')) {
 }
 if (want('field-now-kings') || want('kings')) {
   await page.evaluate(() => window.__app.setT((2026 - 2016) * 36 + 31));
-  await page.click('[data-testid="rail-fields"]');
-  await pickField('caf_tulare_forage');
+  await page.click('[data-testid="field-switch"]');
+  await page.click('[data-testid="switch-caf_tulare_forage"]');
+  await page.waitForFunction(() => window.__app?.ready, null, { timeout: 30000 });
+  await page.waitForTimeout(1500);
   await shot('field-now-kings.png');
 }
 await browser.close();

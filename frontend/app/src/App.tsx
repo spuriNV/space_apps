@@ -15,14 +15,13 @@ import { ProvList, acres, county, fieldName, type Step } from './components/ui/s
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
 type Panel = 'none' | 'fields' | 'season' | 'compare';
-const RAIL: { id: Panel | 'search' | 'layers' | 'brief'; icon: string; label: string }[] = [
-  { id: 'search', icon: 'search', label: 'Find' },
-  { id: 'fields', icon: 'fields', label: 'Fields' },
-  { id: 'none', icon: 'info', label: 'Field now' },
-  { id: 'season', icon: 'drop', label: 'Coming season' },
-  { id: 'compare', icon: 'compare', label: 'Compare' },
-  { id: 'brief', icon: 'brief', label: 'Print' },
-  { id: 'layers', icon: 'layers', label: 'Map layers' },
+type Tab = 'now' | 'season' | 'year' | 'compare' | 'brief';
+const TABS: { id: Tab; label: string; short?: string }[] = [
+  { id: 'now', label: 'Field now' },
+  { id: 'season', label: 'Coming season' },
+  { id: 'year', label: 'This field’s year' },
+  { id: 'compare', label: 'Compare' },
+  { id: 'brief', label: 'Print for your adviser', short: 'Print' },
 ];
 
 export default function App() {
@@ -54,7 +53,13 @@ export default function App() {
   const [bcOpen, setBcOpen] = useState(false);
   const [provOpen, setProvOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [searchFocus, setSearchFocus] = useState(false);
+  const [switchOpen, setSwitchOpen] = useState(false);
+  useEffect(() => {
+    if (!switchOpen) return;
+    const off = (e: MouseEvent) => { if (!(e.target as HTMLElement).closest('.tb-switch')) setSwitchOpen(false); };
+    document.addEventListener('mousedown', off);
+    return () => document.removeEventListener('mousedown', off);
+  }, [switchOpen]);
   const [view, setView] = useState({ zoom: 5.75, pitch: 0, bearing: 0, lat: 37.35, lon: -119.9 });
 
   useEffect(() => {
@@ -130,7 +135,7 @@ export default function App() {
   // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
   const toolPanel = panel === 'fields' ? panel : null;
   const leftPanel = yearExpanded ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
-  const leftInset = 64 + (leftPanel ? 396 : 0);
+  const leftInset = leftPanel ? 412 : 0;
   const rightInset = layersOpen ? 344 : 0;
   const bottomInset = yearExpanded ? (showEarlier ? 520 : 330) : 110;
   const drilled = !!selected && view.zoom > 13.4;
@@ -155,6 +160,15 @@ export default function App() {
   }, [query, locations, select]);
 
   const mockParts = Object.values(prov).filter((p) => p.origin === 'mock').length;
+  const tabOn = (id: Tab) => !!selected && (id === 'brief' ? briefOpen : id === 'year' ? yearExpanded : id === 'now' ? panel === 'none' && !yearExpanded && leftPanel === 'card' : panel === id);
+  const onTab = (id: Tab) => {
+    setSwitchOpen(false);
+    if (!selected) { setPanel('none'); setSwitchOpen(true); return; }
+    if (id === 'now') openPanel('none');
+    else if (id === 'year') onStep('year');
+    else if (id === 'brief') onStep('brief');
+    else openPanel(id);
+  };
 
   return (
     <div className="app">
@@ -162,49 +176,48 @@ export default function App() {
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
         onSelect={select} onBC={goBC} onView={setView} />
 
-      <nav className="rail glass">
-        <button className="rail-logo" onClick={goHome} title="CropLytics: back to all of California"><span>Crop<br />Lytics</span></button>
-        {RAIL.map((r) => {
-          const on = r.id === 'layers' ? layersOpen : r.id === 'search' ? searchFocus : r.id === 'brief' ? briefOpen : r.id === 'none' ? !!selected && panel === 'none' && leftPanel === 'card' : panel === r.id;
-          return (
-            <button key={r.id} className={`rail-btn ${on ? 'on' : ''}`} data-testid={`rail-${r.id}`} title={r.label}
-              onClick={() => (r.id === 'search' ? searchRef.current?.focus() : r.id === 'layers' ? setLayersOpen(!layersOpen) : r.id === 'brief' ? (selected ? setBriefOpen(true) : openPanel('fields')) : openPanel(r.id as Panel))}>
-              <Icon name={r.icon} size={20} /><span>{r.label}</span>
-            </button>
-          );
-        })}
-      </nav>
-
-      <div className={`search glass ${searchFocus ? 'open' : ''}`}>
-        <Icon name="search" size={18} />
-        <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onFocus={() => setSearchFocus(true)} onBlur={() => setTimeout(() => setSearchFocus(false), 150)} placeholder="Find a field by town, county or crop" data-testid="search" />
-        {searchFocus && (
-          <div className="search-results">
-            {results.map((r) => (
-              <button key={r.key} onMouseDown={(e) => { e.preventDefault(); r.go(); setQuery(''); searchRef.current?.blur(); }}>
-                <span className="sr-ico"><Icon name={r.icon} size={16} /></span><span><b>{r.title}</b><small>{r.sub}</small></span>
-              </button>
-            ))}
-            {results.length === 0 && <p className="muted pad">Only the two California fields are set up so far.</p>}
-          </div>
-        )}
-      </div>
-
-      <div className="top-right" style={{ right: 16 + rightInset }}>
-        {live != null && (
-          <button className={`data-ind ${live ? 'live' : 'example'}`} onClick={() => setProvOpen(!provOpen)} data-testid="data-indicator"
-            title={live ? 'Real outputs from the CropLytics API and backend files; parts marked "example numbers" are still illustrative' : 'API not reachable: showing the bundled example data'}>
-            <i />{live ? 'Live data' : 'Example data only'}{selected && mockParts > 0 && <em>{mockParts} parts are examples</em>}
+      <header className="topbar" data-testid="topbar">
+        <button className="tb-brand" onClick={goHome} title="Back to all of California">CropLytics</button>
+        <div className={`tb-switch ${switchOpen ? 'open' : ''}`}>
+          <button className="tb-field" onClick={() => { setSwitchOpen(!switchOpen); setTimeout(() => searchRef.current?.focus(), 0); }} data-testid="field-switch" aria-expanded={switchOpen}>
+            <span><small>{selected ? `${county(selected)} County, ${acres(selected)} acres` : 'No field picked'}</small><b>{selected ? fieldName(selected) : 'Pick your field'}</b></span>
+            <Icon name="down" size={18} />
           </button>
-        )}
-        <button className={`pill glass ${layersOpen ? 'on' : ''}`} onClick={() => setLayersOpen(!layersOpen)} data-testid="layers-btn"><Icon name="layers" size={16} />Map layers</button>
-        {provOpen && (
-          <div className="prov-pop glass">
-            <h4>{live ? 'Where each part of this view comes from' : 'Example data: the CropLytics API is not reachable'}</h4>
-            {selected ? <ProvList prov={prov} /> : <p className="muted">Pick a field to see where each part of the view comes from.</p>}
-          </div>
-        )}
-      </div>
+          {switchOpen && (
+            <div className="tb-menu" data-testid="field-menu">
+              <div className="tb-search"><Icon name="search" size={16} />
+                <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Escape') setSwitchOpen(false); if (e.key === 'Enter' && results[0]) { results[0].go(); setQuery(''); setSwitchOpen(false); } }} placeholder="Find a field by town, county or crop" data-testid="search" />
+              </div>
+              {results.map((r) => (
+                <button key={r.key} className={r.key === selectedId ? 'on' : ''} onClick={() => { r.go(); setQuery(''); setSwitchOpen(false); }} data-testid={`switch-${r.key}`}>
+                  <b>{r.title}</b><small>{r.sub}</small>
+                </button>
+              ))}
+              {results.length === 0 && <p className="muted pad">Only the two California fields are set up so far.</p>}
+            </div>
+          )}
+        </div>
+        <nav className="tb-tabs" aria-label="Sections">
+          {TABS.map((tb) => (
+            <button key={tb.id} className={tabOn(tb.id) ? 'on' : ''} onClick={() => onTab(tb.id)} data-testid={`tab-${tb.id}`} disabled={!selected && tb.id !== 'now'} title={selected ? undefined : 'Pick a field first'}><span className="tb-long">{tb.label}</span>{tb.short && <span className="tb-short">{tb.short}</span>}</button>
+          ))}
+        </nav>
+        <div className="tb-right">
+          {live != null && (
+            <button className={`data-ind ${live ? 'live' : 'example'}`} onClick={() => setProvOpen(!provOpen)} data-testid="data-indicator"
+              title={live ? 'Real outputs from the CropLytics API; parts marked "example numbers" are still illustrative' : 'API not reachable: showing the bundled example data'}>
+              <i />{live ? 'Live data' : 'Example data only'}{selected && mockParts > 0 && <em>{mockParts} parts are examples</em>}
+            </button>
+          )}
+          <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => setLayersOpen(!layersOpen)} data-testid="layers-btn"><Icon name="layers" size={16} />Map layers</button>
+          {provOpen && (
+            <div className="prov-pop glass">
+              <h4>{live ? 'Where each part of this view comes from' : 'Example data: the CropLytics API is not reachable'}</h4>
+              {selected ? <ProvList prov={prov} /> : <p className="muted">Pick a field to see where each part of the view comes from.</p>}
+            </div>
+          )}
+        </div>
+      </header>
 
       {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} iss={issNow} loading={!d || !dl}

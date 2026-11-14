@@ -98,7 +98,12 @@ no hex in components except data colours.
 - Solid panels (`--panel`), 1px rules, radius 2-4px, one modest shadow. No blur/glass.
 - Dense but readable: 13px body, 12-12.5px secondary, 11.5px source lines, 15-17px answers.
   Rows separated by hairlines, not cards in cards.
-- Icons: the existing line set in `Icons.tsx`, 16-20px, always with a text label in the rail.
+- **Navigation is a top bar, not an icon rail.** Wordmark "CropLytics" at the left (heading face, spot green), then a field
+  switcher (county and acres small, field name in the heading face; click to change or search), then the sections as text tabs
+  (Field now, Coming season, This field's year, Compare, Print for your adviser; the active tab gets a 3px spot-green underline),
+  then the data-status indicator and "Map layers" at the right. The bar is solid paper with a hairline bottom rule, a 3px
+  spot-green band under it and a soft two-step shadow so it sits above the map. No stacked icon+label buttons, no flat grey slab.
+- Icons: the existing line set in `Icons.tsx`, 16-20px, only next to a text label (map layers, play, close, zoom).
   Logo is the wordmark "CropLytics" in the heading face; no initials tile, no gradient.
 - Actions: full-width rows with a title and one-line description; one primary per panel
   (the printable summary). Chevron at the right only for things that open a view.
