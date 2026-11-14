@@ -1,0 +1,150 @@
+{
+ "practice": "340 Cover Crop",
+ "cost_list": "California EQIP-1",
+ "state": "CA",
+ "counties_checked": [
+  "06011",
+  "06031"
+ ],
+ "fiscal_year": "not stated by the tool (live schedule; NRCS releases the new one Oct-Dec each FY); no static PDF exists",
+ "page": "n/a (HTML report, not a PDF)",
+ "access_method": "POST form at https://nrcs-prod.azureedge.us/getting-assistance/payment-schedules report_type=cost_list_report state_cost=06 county_code=06011 cost_list_name='California EQIP-1'",
+ "all_340_rows": [
+  {
+   "component": "Adaptive Management",
+   "unit": "No",
+   "usd_per_unit": 2639.82
+  },
+  {
+   "component": "HU-Adaptive Management",
+   "unit": "No",
+   "usd_per_unit": 3167.79
+  },
+  {
+   "component": "PR-Adaptive Management",
+   "unit": "No",
+   "usd_per_unit": 3167.79
+  },
+  {
+   "component": "Any Species",
+   "unit": "Ac",
+   "usd_per_unit": 74.82
+  },
+  {
+   "component": "HU-Any Species",
+   "unit": "Ac",
+   "usd_per_unit": 89.78
+  },
+  {
+   "component": "PR-Any Species",
+   "unit": "Ac",
+   "usd_per_unit": 89.78
+  },
+  {
+   "component": "Any Species, Organic",
+   "unit": "Ac",
+   "usd_per_unit": 100.62
+  },
+  {
+   "component": "HU-Any Species, Organic",
+   "unit": "Ac",
+   "usd_per_unit": 120.75
+  },
+  {
+   "component": "PR-Any Species, Organic",
+   "unit": "Ac",
+   "usd_per_unit": 120.75
+  },
+  {
+   "component": "Biomass",
+   "unit": "Ac",
+   "usd_per_unit": 111.57
+  },
+  {
+   "component": "HU-Biomass",
+   "unit": "Ac",
+   "usd_per_unit": 133.88
+  },
+  {
+   "component": "PR-Biomass",
+   "unit": "Ac",
+   "usd_per_unit": 133.88
+  },
+  {
+   "component": "HU-Islands, Any Species",
+   "unit": "Ac",
+   "usd_per_unit": 297.07
+  },
+  {
+   "component": "Islands, Any Species",
+   "unit": "Ac",
+   "usd_per_unit": 247.56
+  },
+  {
+   "component": "PR-Islands, Any Species",
+   "unit": "Ac",
+   "usd_per_unit": 297.07
+  },
+  {
+   "component": "HU-Islands, Legume",
+   "unit": "Ac",
+   "usd_per_unit": 51.75
+  },
+  {
+   "component": "Islands, Legume",
+   "unit": "Ac",
+   "usd_per_unit": 43.13
+  },
+  {
+   "component": "PR-Islands, Legume",
+   "unit": "Ac",
+   "usd_per_unit": 51.75
+  }
+ ],
+ "standard_acre_scenarios_used": [
+  {
+   "component": "Any Species",
+   "unit": "Ac",
+   "usd_per_unit": 74.82
+  },
+  {
+   "component": "Any Species, Organic",
+   "unit": "Ac",
+   "usd_per_unit": 100.62
+  },
+  {
+   "component": "Biomass",
+   "unit": "Ac",
+   "usd_per_unit": 111.57
+  }
+ ],
+ "usd_per_acre": {
+  "value": 93.19,
+  "low": 74.82,
+  "high": 111.57,
+  "unit": "USD/acre",
+  "method": "lookup",
+  "source": {
+   "id": "nrcs_ca_eqip_payment_schedule",
+   "title": "NRCS Payment Schedules tool, California EQIP-1, practice 340 Cover Crop",
+   "url": "https://www.nrcs.usda.gov/getting-assistance/payment-schedules",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "Range over standard (non historically-underserved, non-islands) per-acre scenarios: Any Species, Any Species Organic, Biomass. HU/PR (historically underserved) rates are ~20 pct higher (e.g. Biomass 133.88); Islands scenarios excluded."
+ },
+ "usd_per_ha": {
+  "low": 184.88,
+  "high": 275.7,
+  "unit": "USD/ha",
+  "method": "computed",
+  "source": {
+   "id": "nrcs_ca_eqip_payment_schedule",
+   "title": "NRCS Payment Schedules tool, California EQIP-1, practice 340 Cover Crop",
+   "url": "https://www.nrcs.usda.gov/getting-assistance/payment-schedules",
+   "accessed": "2026-11-14",
+   "verified": true
+  }
+ },
+ "caveat": "Payment rate, not cost; confirm eligibility and rates with the local NRCS office."
+}

@@ -27,7 +27,7 @@ We are building a NASA Space Apps hackathon tool that pulls NASA Earth-observati
 - **Sign up:** https://auth.etdata.org (linked from https://openetdata.org as "API"; the older account.etdata.org redirects here)
 - **What you get:** an API key shown in the account dashboard.
 - **Unblocks:** measured field-level water use, which is our headline validation chart.
-- **Note:** the free tier has monthly query quotas. We only query two fields, so the free tier is enough. Record the quota shown on the dashboard.
+- **Note:** the free tier allows about 100 queries a month (20 a minute) and a 50,000-acre area cap; a 400-query tier needs a linked Google Earth Engine account, which we don't need. A normal run uses 2 queries. Record the quota shown on the dashboard.
 
 ## 3. CIMIS AppKey
 

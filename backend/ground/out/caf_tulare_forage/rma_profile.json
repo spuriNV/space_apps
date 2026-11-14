@@ -1,0 +1,450 @@
+{
+ "preset_id": "caf_tulare_forage",
+ "years": [
+  2010,
+  2024
+ ],
+ "file_url_template": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip",
+ "page_url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss",
+ "layout_url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/COL_Summary_of_Business_with_Month_All_Years.pdf",
+ "grouping": {
+  "drought": [
+   "Drought",
+   "Failure of Irrigation Supply"
+  ],
+  "excess_moisture": [
+   "Excess Moisture/Precipitation/Rain",
+   "Flood",
+   "Cold Wet Weather"
+  ],
+  "heat": [
+   "Heat",
+   "Hot Wind"
+  ],
+  "other": "all remaining causes (incl. cold/frost/freeze, wind, hail, insects, disease, ARPI/SCO/ECO etc.)"
+ },
+ "profiles": {
+  "Kings County|alfalfa_forage": {
+   "scope": "Kings County",
+   "crop": "alfalfa_forage",
+   "commodity_names_matched": [
+    "Forage Production",
+    "PASTURE,RANGELAND,FORAGE",
+    "Pasture,Rangeland,Forage"
+   ],
+   "total_indemnity_usd": 6956492.0,
+   "years_with_indemnity": [
+    2011,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2011": 663772.0,
+    "2014": 7326.0,
+    "2015": 122298.0,
+    "2016": 23336.0,
+    "2017": 169949.0,
+    "2018": 165822.0,
+    "2019": 137915.0,
+    "2020": 658059.0,
+    "2021": 417044.0,
+    "2022": 2950308.0,
+    "2023": 1229143.0,
+    "2024": 411520.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.0028,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.9972,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "ARPI/SCO/ECO/STAX/MP/HIP-WI/PACE Crops Only": 0.6008,
+    "GRP/Grip Crops": 0.0954,
+    "ARPI/SCO/STAX/MP/HIP WI Crops Only": 0.0946,
+    "ARPI/SCO/STAX/MP Crops Only": 0.0698,
+    "ARPI/SCO/ECO/STAX/MP/HIP WI Crops Only": 0.06,
+    "ARPI/SCO/ECO/STAX/MP/PACE Crops Only": 0.0592,
+    "ARPI/SCO/STAX Crops Only": 0.0175,
+    "Failure of Irrigation Supply": 0.0028
+   },
+   "share_peril_unattributed": 0.9972,
+   "caveat": "Insurance history, not a forecast. Alfalfa is insured in CA under Forage Production / Pasture,Rangeland,Forage (rainfall-index plan); matched names listed. Most forage indemnity is area-yield/index-plan (ARPI/SCO/GRP) with no peril attribution: see share_peril_unattributed; do NOT present the drought/moisture split as meaningful when that share is high."
+  },
+  "Kings+Tulare|alfalfa_forage": {
+   "scope": "Kings+Tulare",
+   "crop": "alfalfa_forage",
+   "commodity_names_matched": [
+    "Forage Production",
+    "PASTURE,RANGELAND,FORAGE",
+    "Pasture,Rangeland,Forage"
+   ],
+   "total_indemnity_usd": 19816166.0,
+   "years_with_indemnity": [
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2011": 1074355.0,
+    "2012": 102796.0,
+    "2013": 714441.0,
+    "2014": 703287.0,
+    "2015": 1218461.0,
+    "2016": 28217.0,
+    "2017": 591216.0,
+    "2018": 450350.0,
+    "2019": 138390.0,
+    "2020": 2133987.0,
+    "2021": 3022921.0,
+    "2022": 6722566.0,
+    "2023": 2497815.0,
+    "2024": 417364.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.001,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings+Tulare alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings+Tulare alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings+Tulare alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.999,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings+Tulare alfalfa_forage, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "ARPI/SCO/ECO/STAX/MP/HIP-WI/PACE Crops Only": 0.4653,
+    "ARPI/SCO/ECO/STAX/MP/HIP WI Crops Only": 0.1525,
+    "ARPI/SCO/STAX/MP/HIP WI Crops Only": 0.1077,
+    "GRP/Grip Crops": 0.0955,
+    "ARPI/SCO/STAX Crops Only": 0.0614,
+    "ARPI/SCO/STAX/MP Crops Only": 0.0604,
+    "ARPI Crops Only": 0.0351,
+    "ARPI/SCO/ECO/STAX/MP/PACE Crops Only": 0.0211,
+    "Failure of Irrigation Supply": 0.001
+   },
+   "share_peril_unattributed": 0.999,
+   "caveat": "Insurance history, not a forecast. Alfalfa is insured in CA under Forage Production / Pasture,Rangeland,Forage (rainfall-index plan); matched names listed. Most forage indemnity is area-yield/index-plan (ARPI/SCO/GRP) with no peril attribution: see share_peril_unattributed; do NOT present the drought/moisture split as meaningful when that share is high."
+  },
+  "Kings County|corn": {
+   "scope": "Kings County",
+   "crop": "corn",
+   "commodity_names_matched": [
+    "Corn"
+   ],
+   "total_indemnity_usd": 5961590.0,
+   "years_with_indemnity": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2014": 1163471.0,
+    "2015": 1448512.0,
+    "2016": 1860216.0,
+    "2017": 9519.0,
+    "2018": 120646.0,
+    "2019": 51422.0,
+    "2020": 14151.0,
+    "2021": 220933.0,
+    "2022": 64899.0,
+    "2023": 801684.0,
+    "2024": 206137.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.7868,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings County corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.1133,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings County corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0307,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings County corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.0692,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings County corn, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "Failure of Irrigation Supply": 0.7868,
+    "Excess Moisture/Precipitation/Rain": 0.0853,
+    "Wind/Excess Wind": 0.0364,
+    "Flood": 0.028,
+    "Heat": 0.0192,
+    "Insects": 0.0141,
+    "Hot Wind": 0.0115,
+    "ARPI/SCO/ECO/STAX/MP/HIP-WI/PACE Crops Only": 0.0084,
+    "ARPI/SCO/STAX Crops Only": 0.0034,
+    "Failure of Irrigation Equipment": 0.0033,
+    "All Other Causes": 0.0031,
+    "ARPI/SCO/ECO/STAX/MP/PACE Crops Only": 0.0005
+   },
+   "share_peril_unattributed": 0.0123,
+   "caveat": "Insurance history, not a forecast."
+  },
+  "Kings+Tulare|corn": {
+   "scope": "Kings+Tulare",
+   "crop": "corn",
+   "commodity_names_matched": [
+    "Corn"
+   ],
+   "total_indemnity_usd": 8358940.0,
+   "years_with_indemnity": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2014": 1513665.0,
+    "2015": 2374157.0,
+    "2016": 2144332.0,
+    "2017": 143952.0,
+    "2018": 120646.0,
+    "2019": 51422.0,
+    "2020": 36513.0,
+    "2021": 516442.0,
+    "2022": 379711.0,
+    "2023": 836783.0,
+    "2024": 241317.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.8025,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings+Tulare corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.0833,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings+Tulare corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0365,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings+Tulare corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.0777,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Kings+Tulare corn, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "Failure of Irrigation Supply": 0.8025,
+    "Excess Moisture/Precipitation/Rain": 0.0634,
+    "Heat": 0.0283,
+    "Wind/Excess Wind": 0.026,
+    "Flood": 0.02,
+    "ARPI/SCO/STAX Crops Only": 0.0197,
+    "Insects": 0.01,
+    "ARPI/SCO/STAX/MP Crops Only": 0.0097,
+    "Hot Wind": 0.0082,
+    "ARPI/SCO/ECO/STAX/MP/HIP-WI/PACE Crops Only": 0.006,
+    "Failure of Irrigation Equipment": 0.0037,
+    "All Other Causes": 0.0022,
+    "ARPI/SCO/ECO/STAX/MP/PACE Crops Only": 0.0004
+   },
+   "share_peril_unattributed": 0.0357,
+   "caveat": "Insurance history, not a forecast."
+  }
+ }
+}

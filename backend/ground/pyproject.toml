@@ -1,0 +1,7 @@
+[project]
+name = "field-shift-ground"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["pandas", "numpy", "pyarrow", "requests", "shapely", "pdfplumber"]
+[tool.uv]
+package = false
