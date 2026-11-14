@@ -21,7 +21,7 @@ Combined results of three research agents, 2026-11-14. Read alongside `field-shi
   - Hay went from $75 to $190 a bale, and some ranchers considered selling their herds.
 - **What NASA data adds:** SMAP soil moisture, GRACE-FO groundwater and HLS vegetation index in spring, compared with the same signals in past cut-off years.
 - **Sources:**
-  - https://news.gov.bc.ca/releases/2023FOR0059-001512
+  - https://news.gov.bc.ca/releases/2023FOR0052-001305 (16 Aug 2023 Salmon River/Bessette Creek order). Correction: 2023FOR0059-001512, cited here earlier, is the 27 Sept 2023 bulletin rescinding the Koksilah and Tsolum orders.
   - https://www.countrylifeinbc.com/water-curtailments-squeeze-forage-production/
   - https://globalnews.ca/news/9834742/bc-farmers-drought-impacts-summer-2023
   - https://amp.cbc.ca/lite/story/1.6907515

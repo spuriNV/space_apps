@@ -211,14 +211,16 @@ Companion files:
 
 ## 5. Team (6 per team)
 
+This split matches `planner-spec.md` section B10.3.
+
 | # | Stream | Owns |
 |---|---|---|
-| 1 | Regional data | POWER, IMERG, SMAP, GRACE, stations; reference ET; regional grid; disagreement metrics; Trends data |
-| 2 | Field data + AI | Sentinel-2, Landsat, MODIS, ECOSTRESS; bare calendar; in-field zones; rule vs. ML season model; stress anomaly model |
-| 3 | Rotation engine | crops.json (factsheets, FAO-56); scoring with ranges, including pest break, infiltration, N scavenging and income; scenario sliders; LLM brief text with source check |
-| 4 | Frontend | All 8 screens; printable brief; glossary; phone width |
-| 5 | Validation + integration | Repo, schemas, fixtures, "every number has a source" check; California adapter; units, dates, coordinates; demo laptop and cache |
-| 6 | Story + submission | Multigenerational-farm story; news timeline content; 7 slides; 30-second video; rehearsal; submit |
+| 1 | Regional data + news | POWER, IMERG, SMAP, GRACE for all 3 presets; reference ET; risk days; news feeds cached and ranked; SMAP lead-time computation; Trends layers |
+| 2 | Field data + zones | HLS, Sentinel-2, MODIS, ECOSTRESS, elevation, AAFC/CDL crop history; weekly feature table; rule-based detector; in-field zones |
+| 3 | AI | Rule vs. ML bare/season detectors with accuracy reports; z-score vs. isolation-forest stress model; LLM brief text with a number checker |
+| 4 | Rotation engine + adapters | crops.json; 12 strategies; scoring with ranges, scenario sliders, pest break, infiltration, N scavenging, income; BC and California data adapters; API |
+| 5 | Frontend | All 8 screens; glossary and crop-role cards; printable brief; phone width |
+| 6 | Integration, validation, story | Repo, schemas, fixtures, source check, validation scripts; demo laptop and offline cache; farmer story, slides, 30-second video, submit |
 
 ### First-hour agreements
 1. Shared JSON schemas: SourcedNumber, Location, Crop, RotationStrategy, plus API routes.
