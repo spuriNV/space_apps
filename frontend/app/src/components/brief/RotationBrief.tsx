@@ -2,20 +2,22 @@
 // the option chosen, what it gains and gives up, what to check locally, and sources. No scores as headlines.
 import { useState } from 'react';
 import type { Calendar, CoverClass, Location, RotationStrategy, Source } from '../../types';
-import type { Outlook, ProvMap } from '../../api';
+import type { NasaNow, Outlook, ProvMap } from '../../api';
 import type { Daily } from '../../season';
-import { bareWindow, rainSoFar, fmtIn } from '../../season';
+import { bareWindow, fmtIn } from '../../season';
+import { rainNow } from '../ui/FieldNow';
 import { CLASS_COLOR, MONTHS, TODAY_T, lastDataT, mmToAfac, yearOf } from '../../lib';
 import Icon from '../Icons';
 import { Src, fieldCode, fieldName, acres, county, cropName, openetText } from '../ui/shared';
-import { tradeoffs } from '../compare/ComparePanel';
+import { fieldCtx, tradeoffs, HEAT_NOTE } from '../compare/ComparePanel';
+import { BARE_DEF, observedBare, usuallyBareMonths } from '../../bare';
 
 const lean = (c?: { category: string; prob: number | null } | null) => (!c || c.category.startsWith('equal') || (c.prob ?? 40) <= 35 ? 'no clear lean' : c.category.startsWith('above') ? 'leans wetter than normal' : 'leans drier than normal');
 /** Engine review notes are written for the team; strip spec references and convert mm to acre-feet per acre. */
 const plain = (t: string) => t.replace(/\s*\((spec [^)]*|U)\)/g, '').replace(/(\d[\d,]*)\s?mm/g, (_, n) => `${(Number(n.replace(/,/g, '')) / 304.8).toFixed(1)} acre-ft/acre`);
 const SEASON: Record<string, string> = { NDJ: 'Nov–Jan', DJF: 'Dec–Feb', JFM: 'Jan–Mar', FMA: 'Feb–Apr' };
 
-export default function RotationBrief(p: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; prov: ProvMap; outlook: Outlook | null; cal: Calendar | null; daily: Daily | null; onClose: () => void }) {
+export default function RotationBrief(p: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; exampleLimit: boolean; prov: ProvMap; outlook: Outlook | null; nasaNow: NasaNow | null; cal: Calendar | null; daily: Daily | null; onClose: () => void }) {
   const { loc, strategies } = p;
   const s = strategies.find((x) => x.id === p.pick) ?? strategies.find((x) => !x.is_baseline) ?? strategies[0];
   const base = strategies.find((x) => x.is_baseline) ?? strategies[0];
@@ -31,11 +33,15 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
   const need = s.water.irrigation_need_mm, needB = base.water.irrigation_need_mm;
   const afv = (v: number | null | undefined) => (v == null ? '–' : mmToAfac(v).toFixed(1));
   const over = mmToAfac(need.low ?? need.value) > p.allocation, within = mmToAfac(need.high ?? need.value) <= p.allocation;
-  const tr = s.is_baseline ? null : tradeoffs(base, s);
+  const ctx = fieldCtx(strategies, p.daily, p.cal);
+  const tr = s.is_baseline ? null : tradeoffs(base, s, ctx, strategies, loc.soil.hydrologic_group === 'D');
+  const ob = observedBare(p.cal), bareWhen = usuallyBareMonths(p.cal);
+  const upper = /safflower|wheat/i.test(s.name);
+  const limitWord = p.exampleLimit ? ' (an example limit; write in yours)' : '';
   const last = p.cal ? yearOf(lastDataT(p.cal)) : 2025;
-  const recent = [last - 2, last - 1, last].map((y) => `${y} ${cropName(loc.crop_history[y]).toLowerCase()}`).join(', ');
+  const recent = [last - 2, last - 1, last].map((y) => `${y} ${loc.crop_history[y] ? cropName(loc.crop_history[y]).toLowerCase() : '(crop map not out yet)'}`).join(', ');
   const soil = loc.soil, inFt = (soil.awc_mm_per_m.value / 1000) * 12, saline = (soil.ec_ds_per_m ?? 0) >= 4;
-  const o = p.outlook, rain = p.daily ? rainSoFar(p.daily, TODAY_T) : null;
+  const o = p.outlook, rain = rainNow(p.nasaNow, p.daily, TODAY_T);
   const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const wet = o?.seasons.filter((x) => x.rain?.category.startsWith('above')).length ?? 0;
   const res = o?.reservoirs[0];
@@ -48,7 +54,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
         <article className="paper">
           <header className="p-head">
             <div>
-              <div className="p-kicker">Field Shift summary for the grower and adviser · prepared 14 Nov 2026</div>
+              <div className="p-kicker">CropLytics summary for the grower and adviser · prepared 14 Nov 2026</div>
               <h1>{fieldName(loc)}</h1>
               <div className="p-sub">{acres(loc)} acres, {county(loc)} County, California · {fieldCode(loc).replace('DWR ', 'state field no. ')}</div>
             </div>
@@ -58,7 +64,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <div className="p-cols">
             <section>
               <h2>1. This field</h2>
-              <p>{soil.muname.split(',')[0]}: {soil.drainage_class.toLowerCase()}, holds about {inFt.toFixed(1)} in of water per foot of soil{saline ? ', salty enough to limit salt-sensitive crops' : ''}.{cite(loc.area_ha.source)} Water from {loc.water.source === 'surface' ? 'a surface-water district' : 'wells, under a groundwater allocation'}. Last three seasons: {recent}. {loc.observed_cover.summary}.</p>
+              <p>{soil.muname.split(',')[0]}: {soil.drainage_class.toLowerCase()}, holds about {inFt.toFixed(1)} in of water per foot of soil{saline ? ', salty enough to limit salt-sensitive crops' : ''}.{cite(loc.area_ha.source)} Water from {loc.water.source === 'surface' ? 'a surface-water district' : 'wells, under a groundwater allocation'}. Last three seasons: {recent}. {ob ? `Bare about ${ob.value} days a year, mostly ${bareWhen} (satellite, ${ob.years[0]}–${ob.years[ob.years.length - 1]}).` : ''} {openetText(strategies)}{cite(base.water.etc_vs_openet_pct?.source)}</p>
             </section>
             <section>
               <h2>2. What’s likely this season <small>outlooks, not forecasts</small></h2>
@@ -66,9 +72,9 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
                 {o && o.seasons.length > 0 && <li>NOAA’s rain outlook: {o.seasons.slice(0, 3).map((x) => `${SEASON[x.season] ?? x.season} ${lean(x.rain)}`).join('; ')}.</li>}
                 {o?.droughtOutlook && <li>Drought: {o.droughtNow ? (o.droughtNow.category.startsWith('None') ? 'no drought now' : `${o.droughtNow.category.replace(/^D\d /, '').toLowerCase()} now`) : ''}; {o.droughtOutlook.category === 'No_Drought' ? 'none expected' : o.droughtOutlook.category.toLowerCase()} through {o.droughtOutlook.target}.</li>}
                 {res && <li>{res.name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())} reservoir is at {res.pctAvg != null ? `${Math.round(res.pctAvg)}% of average` : 'unknown'} for the date.</li>}
-                {rain && <li>Rain {rain.period.label}: {fmtIn(rain.inches)} in, {rain.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} (weather stations).</li>}
-                {o?.bare ? (o.bare.start ? <li>Usually bare {o.bare.start} to {o.bare.end}; a 1-inch rain day landed in that window in {Math.round(o.bare.chance ?? 0)}% of past winters{o.bare.chanceOutlook != null ? `, about ${Math.round(o.bare.chanceOutlook)}% with this winter’s outlook` : ''}.</li>
-                  : <li>Usually covered or flooded all winter: no regular bare stretch.</li>) : bw && bw.days > 0 ? <li>Usually bare {bw.from} to {bw.to}; a 1-inch rain day fell in that window in {bw.hits} of the last {bw.winters} winters{wet ? ', and the outlook leans wet' : ''}.</li> : <li>Usually covered or flooded all winter: no regular bare stretch.</li>}
+                {rain && <li>Rain {rain.period.label}: {fmtIn(rain.inches)} in, {rain.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} (NASA GPM IMERG satellite rain).</li>}
+                {o?.bare ? (o.bare.start ? <li>Longest bare stretch in winter: usually {o.bare.start} to {o.bare.end}; a 1-inch rain day landed in it in {Math.round(o.bare.chance ?? 0)}% of past winters{wet ? ', and the outlook leans wet' : ''}.</li>
+                  : <li>Usually covered or flooded all winter: no regular bare stretch.</li>) : bw && bw.days > 0 ? <li>Longest bare stretch in winter: usually {bw.from} to {bw.to}; a 1-inch rain day fell in that window in {bw.hits} of the last {bw.winters} winters{wet ? ', and the outlook leans wet' : ''}.</li> : <li>Usually covered or flooded all winter: no regular bare stretch.</li>}
               </ul>
             </section>
           </div>
@@ -76,8 +82,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <section>
             <h2>3. The option: {s.name.replace(/ \(current\)/, '')}</h2>
             <div className="p-months">{s.month_cover.split('').map((c, i) => <div key={i}><span>{MONTHS[i]}</span><i style={{ background: CLASS_COLOR[c as CoverClass] }} /><em>{s.calendar_months[i]}</em></div>)}</div>
-            <p className="p-water">Irrigation need about <b>{afv(need.value)} acre-feet per acre</b> a year (likely {afv(need.low)}–{afv(need.high)}){s.is_baseline ? '' : `, against ${afv(needB.value)} for what the field grows now`}. Your limit is {p.allocation.toFixed(1)}: <b className={over ? 'st bad' : within ? 'st good' : 'st warn'}>{over ? 'over the limit' : within ? 'fits' : 'may go over'}</b>.{cite(need.source)} In a dry year like 2022: {afv(s.exposure.replay['2022']?.irrigation_need_mm.value)}; a wet year like 2023: {afv(s.exposure.replay['2023']?.irrigation_need_mm.value)}.</p>
-            <p className="p-note">{openetText(strategies)}{cite(base.water.etc_vs_openet_pct?.source)}</p>
+            <p className="p-water">Irrigation need about <b>{afv(need.value)} acre-feet per acre</b> a year (likely {afv(need.low)}–{afv(need.high)}){s.is_baseline ? '' : `, against ${afv(needB.value)} for what the field grows now`}. {upper ? ' An upper bound: soil water stored over winter is not counted, so a dry-farmed or one-irrigation crop can need much less.' : ''} Your limit is {p.allocation.toFixed(1)}{limitWord}: <b className={over ? 'st bad' : within ? 'st good' : 'st warn'}>{over ? 'over the limit' : within ? 'fits' : 'may go over'}</b>.{cite(need.source)} In a dry year like 2022: {afv(s.exposure.replay['2022']?.irrigation_need_mm.value)}; a wet year like 2023: {afv(s.exposure.replay['2023']?.irrigation_need_mm.value)}.</p>
           </section>
 
           {tr && (
@@ -89,7 +94,17 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           )}
 
           <section>
-            <h2>{tr ? '5' : '4'}. Check locally before anything is seeded</h2>
+            <h2>{tr ? '5' : '4'}. All four rotations at a glance <small>typical year</small></h2>
+            <table className="p-table">
+              <thead><tr><th>Rotation</th><th>Irrigation need, acre-ft/acre</th><th>Against the limit</th><th>Bare days a year</th><th>Hot bare days (104 °F)</th></tr></thead>
+              <tbody>{strategies.map((x) => { const nd = x.water.irrigation_need_mm, bd = ctx.bare[x.id]?.v ?? x.exposure.bare_days_per_year.value, hb = ctx.heat[x.id]?.v; const ov = mmToAfac(nd.low ?? nd.value) > p.allocation, ok = mmToAfac(nd.high ?? nd.value) <= p.allocation; return (
+                <tr key={x.id} className={x.id === s.id ? 'pick' : ''}><th>{x.short_name}{x.is_baseline ? ' (today)' : ''}</th><td>{afv(nd.value)} ({afv(nd.low)}–{afv(nd.high)}){/safflower|wheat/i.test(x.name) ? '*' : ''}</td><td>{ov ? 'over' : ok ? 'fits' : 'may go over'}</td><td>{Math.round(bd)}{x.is_baseline && ctx.bare[x.id] ? ' seen' : ' est.'}</td><td>{hb != null ? hb.toFixed(1) : '–'}</td></tr>); })}</tbody>
+            </table>
+            <p className="p-note">Seen = satellite record for this field; est. = rotation model. * Upper bound: stored soil water not counted.</p>
+          </section>
+
+          <section>
+            <h2>{tr ? '6' : '5'}. Check locally before anything is seeded</h2>
             <ul className="p-review">
               {checks.map((c) => <li key={c.constraint}><label><input type="checkbox" /><span>{plain(c.detail)}</span></label></li>)}
               {review.map((r) => <li key={r.item}><label><input type="checkbox" checked={!!ticks[r.item]} onChange={(e) => setTicks({ ...ticks, [r.item]: e.target.checked })} /><span>{plain(r.item)}</span></label>{r.severity === 'high' && <em className="sev high">important</em>}</li>)}
@@ -101,9 +116,10 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <footer className="p-foot">
             <div className="p-sources"><b>Sources</b>
               {sources.map((src, i) => <span key={src.id}>{i + 1}. {src.title ?? src.id}{src.verified ? '' : ' (unverified)'}</span>)}
-              <span>Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Field calendar: Sentinel-2 and Landsat satellites. Soil: USDA soil survey (SSURGO).</span>
+              <span>NASA: Landsat (NASA/USGS) for the field calendar with Sentinel-2 (ESA), cross-checked with HLS; NASA POWER sun, wind and humidity for crop water use; NASADEM for slope. Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Soil: USDA soil survey (SSURGO). {BARE_DEF} {HEAT_NOTE}</span>
             </div>
             <div className="p-disclaimer">This summary supports a conversation between grower and adviser; it does not replace one.</div>
+            <div>CropLytics, made for the NASA Space Apps challenge “Field Shift: Adapting Farms with NASA Data”.</div>
           </footer>
         </article>
       </div>

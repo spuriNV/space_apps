@@ -58,6 +58,11 @@ export function lastDataT(cal: Calendar) {
 export const dataT = (cal: Calendar, t: number) => Math.min(t, lastDataT(cal));
 /** Value of a 10-day series at t, holding the last value past the end of the series. */
 export const atT = <T,>(vals: T[], t: number): T | undefined => vals[Math.min(t, vals.length - 1)];
+/** Latest non-empty value at or before t, and when it was (weekly/monthly NASA products lag a few weeks). */
+export function latestAt(vals: (number | null)[], t: number, maxBack = 12): { v: number; t: number } | null {
+  for (let k = Math.min(t, vals.length - 1); k >= 0 && t - k <= maxBack; k--) if (vals[k] != null) return { v: vals[k] as number, t: k };
+  return null;
+}
 
 export interface FieldState { cls: CoverClass; ndvi: number; et: number; disagree: boolean; ruleCls: CoverClass; mlCls: CoverClass }
 export function fieldState(cal: Calendar, t: number, detector: 'rule' | 'ml'): FieldState {
@@ -115,7 +120,7 @@ export function gridLayerFor(cells: CellGrid, t: number): GridLayer | null {
   const scene = cells.layers.find((l) => l.kind === 'scene' && l.date && Math.abs(Date.parse(l.date) - tt) <= 12 * 864e5);
   return scene ?? cells.layers.find((l) => l.kind === 'quarter_median' && l.year === y && l.quarter === Math.floor((m - 1) / 3) + 1) ?? null;
 }
-export const gridLayerLabel = (l: GridLayer | null) => !l ? 'no layer' : l.kind === 'scene' ? `Sentinel-2 scene ${fmtDate(l.date!)}` : `Q${l.quarter} ${l.year} median of ${l.n_scenes} Sentinel-2 scene${l.n_scenes === 1 ? '' : 's'}`;
+export const gridLayerLabel = (l: GridLayer | null) => !l ? 'no image for this date' : l.kind === 'scene' ? `image of ${fmtDate(l.date!)}` : `${['Jan–Mar', 'Apr–Jun', 'Jul–Sep', 'Oct–Dec'][(l.quarter ?? 1) - 1]} ${l.year}, middle of ${l.n_scenes} image${l.n_scenes === 1 ? '' : 's'}`;
 export function realCellState(c: CellProps, layer: GridLayer | null, fs: FieldState): CellState {
   const v = layer ? c.nd?.[layer.key] : null;
   if (v == null) return { cls: 'u', ndvi: 0, et: 0 };

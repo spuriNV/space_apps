@@ -3,8 +3,18 @@
 import type { Calendar, RotationStrategy } from './types';
 import { MONTHS, dekadOf, yearOf } from './lib';
 
-export interface DailyRow { date: string; precip_mm: number | null; eto_mm: number | null; ncei_precip_mm: number | null; ncei_tmax_c: number | null; ncei_tmin_c: number | null }
+export interface DailyRow { date: string; precip_mm: number | null; eto_mm: number | null; ncei_precip_mm: number | null; ncei_tmax_c: number | null; ncei_tmin_c: number | null; imerg_precip_mm?: number | null; grace_gw_pct?: number | null }
 export interface Daily { rows: DailyRow[]; first: string; last: string }
+/** The daily record restricted to days that have `key` (each source has its own end date: stations stop in Dec 2025, NASA IMERG and POWER run to this week). */
+export function only(daily: Daily, key: keyof DailyRow): Daily | null {
+  const rows = daily.rows.filter((r) => r[key] != null);
+  return rows.length ? { rows, first: rows[0].date, last: rows[rows.length - 1].date } : null;
+}
+/** Daily rain: NASA GPM IMERG over the field when present, else the NOAA station mean. */
+export const rainOf = (r: DailyRow) => r.imerg_precip_mm ?? r.ncei_precip_mm;
+
+/** Heat threshold for every hot-day count in the app: 104 °F (40 °C), NOAA station highs (PLAN.md decisions, 14 Nov). */
+export const HOT_C = 40, HOT_F = 104;
 
 const MONTH_END = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -34,6 +44,8 @@ function periodFor(daily: Daily, t: number, kind: 'water' | 'calendar'): Period 
   const startY = kind === 'water' ? wyStart(cut) : +cut.slice(0, 4);
   const from = kind === 'water' ? `${startY}-10-01` : `${startY}-01-01`;
   if (daily.last >= cut && daily.first <= from) return { label: kind === 'water' ? `since 1 Oct ${startY}` : `since 1 Jan ${startY}`, from, to: cut, current: true };
+  // the record stops inside the current season: count up to its last day and say so
+  if (daily.last >= from && daily.first <= from) return { label: `${kind === 'water' ? `1 Oct ${startY}` : `1 Jan ${startY}`} to ${fmtShort(daily.last).replace(/ \d{4}$/, '')}`, from, to: daily.last, current: true };
   // fall back to the last complete season in the record
   const lastY = +daily.last.slice(0, 4);
   if (kind === 'water') { const e = mmdd(daily.last) >= '09-30' ? lastY : lastY - 1; return { label: `last season, Oct ${e - 1} to Sep ${e}`, from: `${e - 1}-10-01`, to: `${e}-09-30`, current: false }; }
@@ -52,20 +64,28 @@ function normalOf(daily: Daily, p: Period, f: (r: DailyRow) => number | null, ag
   return { mean: vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null, n: vals.length, first: y0 - vals.length };
 }
 
-export interface RainSoFar { period: Period; inches: number; normal: number | null; nSeasons: number; pct: number | null }
-export function rainSoFar(daily: Daily, t: number): RainSoFar {
+export interface RainSoFar { period: Period; inches: number; normal: number | null; nSeasons: number; pct: number | null; source: 'imerg' | 'stations' }
+/** Rain so far this season: NASA GPM IMERG over the field (runs to this week), normal = the same dates in earlier seasons of IMERG.
+ *  Falls back to the NOAA stations when IMERG is missing. */
+export function rainSoFar(all: Daily, t: number): RainSoFar | null {
+  const im = only(all, 'imerg_precip_mm'), key: keyof DailyRow = im ? 'imerg_precip_mm' : 'ncei_precip_mm';
+  const daily = im ?? only(all, 'ncei_precip_mm');
+  if (!daily) return null;
+  const f = (r: DailyRow) => r[key] as number | null;
   const p = periodFor(daily, t, 'water');
-  const { s } = sumWhere(daily.rows, p.from, p.to, (r) => r.ncei_precip_mm);
-  const nm = normalOf(daily, p, (r) => r.ncei_precip_mm);
+  const { s } = sumWhere(daily.rows, p.from, p.to, f);
+  const nm = normalOf(daily, p, f);
   const inches = inch(s), normal = nm.mean == null ? null : inch(nm.mean);
-  return { period: p, inches, normal, nSeasons: nm.n, pct: normal ? (inches / normal) * 100 : null };
+  return { period: p, inches, normal, nSeasons: nm.n, pct: normal ? (inches / normal) * 100 : null, source: im ? 'imerg' : 'stations' };
 }
 
 export interface HeatFrost { period: Period; hot: number; hotNormal: number | null; frost: number; frostNormal: number | null; frostPeriod: Period; nSeasons: number }
-/** Hot days: station high at or above 100 °F. Frost nights: station low at or below 32 °F, counted over the rain season (Oct to Sep). */
-export function heatFrost(daily: Daily, t: number): HeatFrost {
+/** Hot days: station high at or above 104 °F (40 °C), the threshold used everywhere in the app. Frost nights: station low at or below 32 °F, counted over the rain season (Oct to Sep). */
+export function heatFrost(all: Daily, t: number): HeatFrost | null {
+  const daily = only(all, 'ncei_tmax_c');
+  if (!daily) return null;
   const p = periodFor(daily, t, 'calendar'), pf = periodFor(daily, t, 'water');
-  const hotF = (r: DailyRow) => (r.ncei_tmax_c != null && F(r.ncei_tmax_c) >= 100 ? 1 : null);
+  const hotF = (r: DailyRow) => (r.ncei_tmax_c != null && r.ncei_tmax_c >= HOT_C ? 1 : null);
   const frostF = (r: DailyRow) => (r.ncei_tmin_c != null && F(r.ncei_tmin_c) <= 32 ? 1 : null);
   const hot = sumWhere(daily.rows, p.from, p.to, hotF).n, frost = sumWhere(daily.rows, pf.from, pf.to, frostF).n;
   const hn = normalOf(daily, p, hotF, 'count'), fn = normalOf(daily, pf, frostF, 'count');
@@ -80,7 +100,9 @@ export function heatFrost(daily: Daily, t: number): HeatFrost {
 
 /** Crop water use so far for today's rotation: the engine's monthly crop water use, scaled by how thirsty this year's weather was
  *  (reference ET from NASA POWER, this year vs the same months on average). A model estimate, not a measurement. */
-export function cropWaterSoFar(daily: Daily, base: RotationStrategy, t: number) {
+export function cropWaterSoFar(all: Daily, base: RotationStrategy, t: number) {
+  const daily = only(all, 'eto_mm');
+  if (!daily) return null;
   const p = periodFor(daily, t, 'calendar');
   const months = base.water.etc_by_month_mm;
   if (!months?.length) return null;
@@ -108,14 +130,14 @@ const dekadName = (d: number) => `${PART[d % 3]} ${MONTHS[Math.floor(d / 3)]}`;
 export function bareWindow(cal: Calendar, daily: Daily | null, years: number[]): BareWindow | null {
   const ys = cal.years.filter((y) => years.includes(y.year) && y.rule.replace(/u/g, '').length > 6);
   if (!ys.length) return null;
-  // a winter step counts as "usually bare" when it was bare or thin in at least half the winters with a clear view
+  // a winter step counts as "usually bare" when it was bare (greenness below 0.2) in at least half the winters with a clear view
   const bare = WINTER.map((d) => {
     let b = 0, n = 0;
     for (const y of ys) {
       const yy = d >= 30 ? y : cal.years.find((x) => x.year === y.year + 1);
       const c = yy?.rule[d];
       if (!c || c === 'u') continue;
-      n++; if (c === 'b' || c === 'p') b++;
+      n++; if (c === 'b') b++;
     }
     return n ? b / n : 0;
   });
@@ -144,3 +166,24 @@ export function bareWindow(cal: Calendar, daily: Daily | null, years: number[]):
 
 export const fmtIn = (v: number) => (v < 10 ? v.toFixed(1) : Math.round(v).toString());
 export { fmtShort };
+
+/** Hot days (station high >= 104 °F) that land while a rotation leaves the field bare, per year on average.
+ *  Uses the rotation's month-by-month cover and NOAA station highs, every full year in the daily record. */
+export function hotBareDays(all: Daily, monthCover: string) {
+  const daily = only(all, 'ncei_tmax_c');
+  if (!daily) return null;
+  const y0 = +daily.first.slice(0, 4), y1 = +daily.last.slice(0, 4) - (daily.last.slice(5) >= '12-31' ? 0 : 1);
+  const per: number[] = [];
+  for (let y = y0; y <= y1; y++) {
+    let n = 0, seen = 0;
+    for (const r of daily.rows) {
+      if (!r.date.startsWith(String(y)) || r.ncei_tmax_c == null) continue;
+      seen++;
+      if (r.ncei_tmax_c >= HOT_C && monthCover[+r.date.slice(5, 7) - 1] === 'b') n++;
+    }
+    if (seen > 300) per.push(n);
+  }
+  if (!per.length) return null;
+  const mean = per.reduce((a, b) => a + b, 0) / per.length;
+  return { value: mean, low: Math.min(...per), high: Math.max(...per), years: per.length, from: y0, to: y1 };
+}

@@ -1,11 +1,15 @@
 // "Coming season": outlooks for this winter and next season, always labelled as outlooks, not forecasts.
-import type { Calendar, Location, RotationStrategy } from '../../types';
-import type { Outlook, OutlookCat, ProvMap } from '../../api';
+import type { Calendar, Location, Regional, RotationStrategy } from '../../types';
+import type { NasaNow, Outlook, OutlookCat, ProvMap, RegionalLive } from '../../api';
+import { whenT } from '../ui/FieldNow';
 import type { Daily } from '../../season';
 import { bareWindow } from '../../season';
-import { fmtDate, mmToAfac } from '../../lib';
+import { TODAY_T, fmtDate, latestAt, mmToAfac, ordinal } from '../../lib';
+const band = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi : v > 33 ? mid : lo);
 import Icon from '../Icons';
-import { Src, county, openetText } from '../ui/shared';
+import { Src, county } from '../ui/shared';
+import { What } from '../ui/What';
+import { BARE_DEF } from '../../bare';
 
 const SEASON: Record<string, string> = { OND: 'Oct–Dec', NDJ: 'Nov–Jan', DJF: 'Dec–Feb', JFM: 'Jan–Mar', FMA: 'Feb–Apr', MAM: 'Mar–May', AMJ: 'Apr–Jun' };
 const lean = (c: OutlookCat | null, kind: 'rain' | 'temp') => {
@@ -19,8 +23,9 @@ const maf = (af: number) => (af >= 1e6 ? `${(af / 1e6).toFixed(2)} million acre-
 const title = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 const words = (s: string) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 
-export default function ComingSeason(p: { loc: Location; outlook: Outlook | null; cal: Calendar | null; daily: Daily | null; strategies: RotationStrategy[]; allocation: number; prov: ProvMap; onCompare: () => void; onClose: () => void }) {
+export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Regional | null; regionalLive: RegionalLive; loc: Location; outlook: Outlook | null; cal: Calendar | null; daily: Daily | null; strategies: RotationStrategy[]; allocation: number; exampleLimit: boolean; prov: ProvMap; onCompare: () => void; onClose: () => void }) {
   const o = p.outlook;
+  const soil = p.regional ? latestAt(p.regional.smap_rootzone_pct.values, TODAY_T, 14) : null, gw = p.regional ? latestAt(p.regional.grace_gw_pct.values, TODAY_T, 14) : null;
   const rainLean = o?.seasons.slice(0, 4).map((s) => lean(s.rain, 'rain').tilt) ?? [];
   const wetLean = rainLean.filter((x) => x > 0).length, dryLean = rainLean.filter((x) => x < 0).length;
   const surface = p.loc.water.source === 'surface';
@@ -74,6 +79,14 @@ export default function ComingSeason(p: { loc: Location; outlook: Outlook | null
           </ul>
           <cite>California Data Exchange Center (CDEC), {o?.reservoirs[0]?.date ? fmtDate(o.reservoirs[0].date) : 'latest'}; “average” is CDEC’s own for the date. <Src p={o?.prov.water} /></cite>
 
+          <h3>Water in the ground going into winter</h3>
+          <dl className="facts">
+            <div><dt>Rain since 1 Oct</dt><dd>{p.nasaNow?.rainWyMm != null && p.nasaNow.rainWyNormalMm ? <>{(p.nasaNow.rainWyMm / 25.4).toFixed(1)} in, {Math.round((p.nasaNow.rainWyMm / p.nasaNow.rainWyNormalMm) * 100)}% of normal for the date</> : 'Not loaded'}</dd></div>
+            <div><dt>Root-zone soil</dt><dd>{soil ? <>{band(soil.v, 'Wetter than usual', 'About normal', 'Drier than usual')} ({ordinal(Math.round(soil.v))} percentile, {whenT(soil.t)})</> : 'Not loaded'}</dd></div>
+            <div><dt>Groundwater</dt><dd>{gw ? <>{band(gw.v, 'Above usual', 'About usual', 'Below usual')} ({ordinal(Math.round(gw.v))} percentile, {whenT(gw.t)}); whole basin, not your well</> : 'Not loaded'}</dd></div>
+          </dl>
+          <cite>NASA GPM IMERG rain (normal 2001–2025); NASA GRACE-FO {p.regionalLive.soilSource === 'smap' ? 'groundwater and NASA SMAP soil moisture' : 'with a land model, for soil and groundwater'}. {p.regionalLive.grace ? '' : 'Example numbers. '}<Src p={p.prov.regional} /></cite>
+
           <h3>Water allocations</h3>
           {surface && o?.cvpNow && <p className="olead">This year’s federal (Central Valley Project) allocations: Sacramento River settlement contractors {o.cvpNow.settlement}%, farms north of the Delta {o.cvpNow.northAg}%, farms south of the Delta {o.cvpNow.southAg}%.{o.swpNow ? ` State Water Project: ${o.swpNow.pct}%${o.swpNow.verified ? '' : ' (from a news copy of the DWR release)'}.` : ''}</p>}
           {surface && o?.storageVsAlloc && o.storageVsAlloc.length > 0 && <>
@@ -95,15 +108,15 @@ export default function ComingSeason(p: { loc: Location; outlook: Outlook | null
         </div>
 
         <div className="sheet-col">
-          <h3>When this field is bare this winter</h3>
+          <h3>Longest bare stretch this winter <What k="bare" /></h3>
           {o?.bare ? (o.bare.start ? <>
             <p className="big">Usually bare from {o.bare.start} to {o.bare.end}</p>
-            <p>About {Math.round(o.bare.days ?? 0)} days{o.bare.low != null ? ` (${Math.round(o.bare.low)}–${Math.round(o.bare.high ?? 0)} in past winters)` : ''}. A day with 1 inch of rain or more landed in that window in <b>{Math.round(o.bare.chance ?? 0)}% of past winters</b>{o.bare.chanceOutlook != null ? <>; with this winter’s outlook, about <b>{Math.round(o.bare.chanceOutlook)}%</b></> : null}.</p>
+            <p>About {Math.round(o.bare.days ?? 0)} days{o.bare.low != null ? ` (${Math.round(o.bare.low)}–${Math.round(o.bare.high ?? 0)} in past winters)` : ''}. A day with 1 inch of rain or more landed in that window in <b>{Math.round(o.bare.chance ?? 0)}% of past winters</b>{o.bare.chanceOutlook != null ? <>; this winter’s outlook leans {o.seasons.slice(0, 3).filter((x) => x.rain?.category.startsWith('above')).length >= 2 ? 'wetter, so the odds are a little higher' : o.seasons.slice(0, 3).filter((x) => x.rain?.category.startsWith('below')).length >= 2 ? 'drier, so the odds are a little lower' : 'neither way'}</> : null}.</p>
           </> : <p className="big">Usually covered or flooded all winter: no regular bare stretch</p>) : allYearsBw && allYearsBw.days > 0 ? <>
             <p className="big">Usually bare from {allYearsBw.from} to {allYearsBw.to}</p>
             <p>About {allYearsBw.days} days. {allYearsBw.chance != null ? <>In <b>{allYearsBw.hits} of the last {allYearsBw.winters} winters</b> at least one day with 1 inch of rain or more fell in that window.</> : null}</p>
           </> : allYearsBw ? <p className="big">Usually covered or flooded all winter: no regular bare stretch</p> : <p>Loading…</p>}
-          <cite>{o?.bare ? 'Longest bare run in this field’s satellite calendar each winter, and NOAA station rain 1981–2024 weighted by NOAA’s outlook.' : 'Satellite calendar of this field, winters 2016–2025, and NOAA station rain.'} Past record, not a forecast. <Src p={o?.bare ? o.prov.cpc : p.prov.calendar} /></cite>
+          <cite>{o?.bare ? 'Longest bare run in this field’s satellite calendar each winter, and NOAA station rain 1981–2024.' : 'Satellite calendar of this field, winters 2016–2025, and NOAA station rain.'} Past record, not a forecast. {BARE_DEF} <Src p={o?.bare ? o.prov.cpc : p.prov.calendar} /></cite>
 
           <h3>Irrigation need next season, by rotation</h3>
           <table className="otable">
@@ -124,8 +137,8 @@ export default function ComingSeason(p: { loc: Location; outlook: Outlook | null
               })}
             </tbody>
           </table>
-          <p className="how">Acre-feet per acre a year. Your limit: {p.allocation.toFixed(1)}; brown means over it. {o?.irrigation ? (() => { const sp = Math.max(...Object.values(o.irrigation).map((x) => x.high - x.low)); return sp < 0.15 ? `In the model, this winter’s outlook moves irrigation need by ${sp < 0.1 ? 'less than 0.1' : 'about 0.1'} acre-foot per acre: rain falls mostly before the crop needs water.` : `Outlook range: up to ${sp.toFixed(1)} acre-feet per acre between scenarios.`; })() : ''}</p>
-          <cite>Rotation model, weather 2015–2025. {openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
+          <p className="how">Acre-feet per acre a year. Your limit: {p.allocation.toFixed(1)}{p.exampleLimit ? ' (example, change to yours on Compare)' : ''}; brown means over it. {o?.irrigation ? (() => { const sp = Math.max(...Object.values(o.irrigation).map((x) => x.high - x.low)); return sp < 0.15 ? `In the model, this winter’s outlook moves irrigation need by ${sp < 0.1 ? 'less than 0.1' : 'about 0.1'} acre-foot per acre: rain falls mostly before the crop needs water.` : `Outlook range: up to ${sp.toFixed(1)} acre-feet per acre between scenarios.`; })() : ''}</p>
+          <cite>Rotation model driven by NASA POWER sun, wind and humidity, weather 2015–2025. Safflower and wheat are upper bounds (stored soil water not counted). <Src p={p.prov.strategies} /></cite>
           <button className="btn primary wide" onClick={p.onCompare}>Compare rotations<Icon name="right" size={16} /></button>
         </div>
       </div>

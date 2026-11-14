@@ -1,0 +1,49 @@
+{
+ "credit": "Image courtesy of the Earth Science and Remote Sensing Unit, NASA Johnson Space Center",
+ "source": "https://eol.jsc.nasa.gov/SearchPhotos/",
+ "note": "Cataloged photos with a centre point inside the search box; centre points are stored to 0.1 degree.",
+ "photos": [
+  {
+   "photo_id": "ISS062-E-75297",
+   "date": "2020-03-03",
+   "time_gmt": "16:51:54",
+   "center_lat": 36.1,
+   "center_lon": -119.8,
+   "lens_mm": 400,
+   "camera": "Nikon D5 Electronic Still Camera",
+   "tilt_deg": "20",
+   "features": "AGRICULTURE , SAN JOAQUIN VALLEY",
+   "altitude_km": "417",
+   "page_url": "https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=ISS062&roll=E&frame=75297",
+   "file": "ISS062-E-75297.jpg"
+  },
+  {
+   "photo_id": "ISS062-E-75293",
+   "date": "2020-03-03",
+   "time_gmt": "16:51:52",
+   "center_lat": 36.3,
+   "center_lon": -119.9,
+   "lens_mm": 400,
+   "camera": "Nikon D5 Electronic Still Camera",
+   "tilt_deg": "20",
+   "features": "AGRICULTURE , SAN JOAQUIN VALLEY , KINGS RIVER",
+   "altitude_km": "417",
+   "page_url": "https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=ISS062&roll=E&frame=75293",
+   "file": "ISS062-E-75293.jpg"
+  },
+  {
+   "photo_id": "ISS062-E-75296",
+   "date": "2020-03-03",
+   "time_gmt": "16:51:54",
+   "center_lat": 36.3,
+   "center_lon": -120.0,
+   "lens_mm": 400,
+   "camera": "Nikon D5 Electronic Still Camera",
+   "tilt_deg": "17",
+   "features": "SAN JOAQUIN VALLEY , LEMOORE NAVAL AIR STATION",
+   "altitude_km": "417",
+   "page_url": "https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=ISS062&roll=E&frame=75296",
+   "file": "ISS062-E-75296.jpg"
+  }
+ ]
+}

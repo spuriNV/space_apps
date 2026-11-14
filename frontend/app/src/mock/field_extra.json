@@ -1,0 +1,75 @@
+{
+ "_note": "Real values copied from backend outputs the API does not serve yet: DWR field number, soil EC and texture split (location route), NASADEM slope and low spots (terrain route). Regenerate if those files change.",
+ "fields": {
+  "car_colusa_rice": {
+   "dwr_id": "0605542",
+   "ec_ds_per_m": 1.04,
+   "texture_detail": {
+    "sand_pct": 28.8,
+    "silt_pct": 32.5,
+    "clay_pct": 38.7
+   },
+   "_from": [
+    "data/cache/car_colusa_rice/soil.json",
+    "backend/field/polygons/car_colusa_rice.geojson",
+    "backend/nasa_open/out/car_colusa_rice/terrain.json",
+    "backend/ground/out/car_colusa_rice/rma_profile.json"
+   ],
+   "nasadem": {
+    "slope_mean_pct": 1.829,
+    "slope_p90_pct": 3.091,
+    "low_spot_fraction": 0.092,
+    "elev_m": 17.246
+   },
+   "rma": {
+    "scope": "Colusa County",
+    "crop": "rice",
+    "total_usd": 247816322,
+    "from": 2014,
+    "to": 2024,
+    "top_year": 2022,
+    "top_usd": 145565846,
+    "share_drought": 0.8417,
+    "share_excess_moisture": 0.1465,
+    "share_heat": 0.0049,
+    "source": "USDA RMA Cause of Loss, Summary of Business 2010-2024",
+    "url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss"
+   }
+  },
+  "caf_tulare_forage": {
+   "dwr_id": "1603054",
+   "ec_ds_per_m": 6.01,
+   "texture_detail": {
+    "sand_pct": 69.9,
+    "silt_pct": 16.5,
+    "clay_pct": 13.6
+   },
+   "_from": [
+    "data/cache/caf_tulare_forage/soil.json",
+    "backend/field/polygons/caf_tulare_forage.geojson",
+    "backend/nasa_open/out/caf_tulare_forage/terrain.json",
+    "backend/ground/out/caf_tulare_forage/rma_profile.json"
+   ],
+   "nasadem": {
+    "slope_mean_pct": 0.949,
+    "slope_p90_pct": 1.62,
+    "low_spot_fraction": 0.0,
+    "elev_m": 64.808
+   },
+   "rma": {
+    "scope": "Kings County",
+    "crop": "alfalfa_forage",
+    "total_usd": 6956492,
+    "from": 2011,
+    "to": 2024,
+    "top_year": 2022,
+    "top_usd": 2950308,
+    "share_drought": 0.0028,
+    "share_excess_moisture": 0.0,
+    "share_heat": 0.0,
+    "source": "USDA RMA Cause of Loss, Summary of Business 2010-2024",
+    "url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss"
+   }
+  }
+ }
+}

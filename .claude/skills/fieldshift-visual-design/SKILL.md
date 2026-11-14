@@ -1,15 +1,17 @@
 ---
 name: fieldshift-visual-design
-description: Design language and farmer-first content rules for Field Shift (the California crop-rotation planner). Use whenever anyone builds, restyles or reviews Field Shift UI (frontend/app, design variants, map overlays, the field panel), charts, the printable rotation brief, judges pages or slides, or writes labels, units and copy for them. Covers typefaces, palette tokens, text over satellite imagery, units and sources, data status, and the AI-default patterns to avoid.
+description: Design language and farmer-first content rules for CropLytics (the California crop-rotation planner built for the NASA Space Apps challenge "Field Shift"). Use whenever anyone builds, restyles or reviews CropLytics UI (frontend/app, design variants, map overlays, the field panel), charts, the printable rotation brief, judges pages or slides, or writes labels, units and copy for them. Covers typefaces, palette tokens, text over satellite imagery, units and sources, data status, and the AI-default patterns to avoid.
 ---
 
-# Field Shift visual design
+# CropLytics visual design
 
-Field Shift is used by California growers and their advisers. The reader knows their ground,
+One look only: the "Extension bulletin" style (spot-green header band, slab headings, paper panel). There are no theme options and no `?theme=` switch.
+
+CropLytics is used by California growers and their advisers. The reader knows their ground,
 their crop, their water allocation and their town. They do not know NDVI, SMAP, GRACE or
 percentile maths. Real tools they trust (John Deere Operations Center, FieldView, CropX,
 CIMIS, Web Soil Survey, irrigation-district letters, a USGS quad) speak in fields, acres,
-inches and acre-feet. Field Shift should feel like it belongs on that shelf, made by people
+inches and acre-feet. CropLytics should feel like it belongs on that shelf, made by people
 who print maps, not like a generated dashboard. Sources: `references.md`.
 
 ## 1. Farmer-first content (do this before any styling)
@@ -39,44 +41,30 @@ who print maps, not like a generated dashboard. Sources: `references.md`.
   understand in 10 seconds. If the answer needs a dataset name, rewrite the screen.
 - Copy: sentence case everywhere; plain verbs; no em dashes in UI copy; no marketing words.
 
-## 2. Typefaces (all SIL OFL, on Google Fonts; self-host for offline demos)
+## 2. Typefaces (SIL OFL, Google Fonts)
 
-Pair one reading/heading face with one working sans. Never a monospace for labels; use
-`font-variant-numeric: tabular-nums lining-nums` for columns of numbers instead.
+| Use | Face | Why |
+|---|---|---|
+| Headings, place names, answers | Zilla Slab 500/600 | Slab like the farm bulletins, seed lists and county newspapers growers already read |
+| UI, data, source lines | Libre Franklin 400/600/700 | Franklin Gothic, the workhorse of farm print; base of USWDS Public Sans |
 
-| Theme | Headings, place names | UI, data | Why |
-|---|---|---|---|
-| 1 Survey sheet (default) | Source Serif 4 600 | Overpass 400/600/700 | Serif for names as on printed maps; Overpass is drawn from FHWA Highway Gothic, the US federal sign alphabet |
-| 2 Extension bulletin | Zilla Slab 500/600 | Libre Franklin 400/600/700 | Slab + Franklin Gothic: the workhorse faces of farm bulletins, seed lists and newspapers; Libre Franklin is the base of USWDS Public Sans |
-| 3 Field desk | Barlow Semi Condensed 500/600 | Barlow 400-700 | Barlow is modelled on California highway signs and plates; condensed width packs labels on a dense GIS panel |
-
-Fallbacks: Overpass -> Helvetica Neue, Arial; Source Serif 4 -> Iowan Old Style, Georgia;
-Libre Franklin -> Franklin Gothic Book, Arial; Zilla Slab -> Rockwell, Georgia; Barlow -> Arial Narrow.
-Notes: Overpass's middle dot sits off-centre, so `themes.css` maps U+00B7 to a system face.
-Atkinson Hyperlegible Next was tried for theme 3 and dropped: its slashed zero reads as code.
+Fallbacks: Zilla Slab -> Rockwell, Georgia; Libre Franklin -> Franklin Gothic Book, Arial.
+Never a monospace for labels; use `font-variant-numeric: tabular-nums lining-nums` for columns of numbers.
 Avoid the default-attractor faces: Inter, Geist, Space Grotesk, IBM Plex, Instrument Serif, Roboto/Google Sans, any mono.
 
-## 3. Palette: map inks and ground, not "tech"
+## 3. Palette: two-colour print, not "tech"
 
-Tokens live in `frontend/app/src/themes.css` (`--panel`, `--text`, `--text-2`, `--muted`,
-`--line`, `--accent`, `--link`, `--good`, `--warn`, `--bad`, `--mark`, `--font-ui`,
-`--font-head`). Components read tokens only; no hex in components except data colours.
+Tokens live at the top of `frontend/app/src/styles.css` (`--panel`, `--panel-2`, `--head-band`, `--text`, `--text-2`, `--muted`,
+`--line`, `--accent`, `--link`, `--good`, `--warn`, `--bad`, `--mark`, `--font-ui`, `--font-head`). Components read tokens only;
+no hex in components except data colours.
 
-- **Survey sheet:** paper `#fbfaf6`, black ink `#1d1f1c`, hydrography blue `#1b5e9e` (actions,
-  links), vegetation green `#3c7428`, contour brown `#8a5a2b` (warnings, example data), road red
-  `#b3261e` (problems). These are the USGS quad ink roles; keep them in those roles.
-- **Extension bulletin:** two-colour print. Black `#191c16` + one spot green `#2f5d34` (header
-  band, primary action); brown `#8a5a00` only for "example numbers".
-- **Field desk:** solid warm graphite `#1f201d` (not blue-black slate), text `#f1f0ea`, survey
-  yellow `#f0c24b` for the primary action and selection, sky `#9cc3ea` for links.
-- **Data colours are fixed across themes** (`lib.ts`): bare soil `#a8703f`, partial `#b7d77a`,
-  covered `#2f9e4b`, water `#3d97e8`, no clear view = hatched grey. Crop record: rice blue,
-  alfalfa green, corn yellow, fallow tan. Never reuse a data colour for chrome.
-- **Contrast:** body text >= 7:1 on its panel, muted text >= 4.5:1 (measured: muted 5.9:1 / 6.1:1 /
-  6.3:1 for themes 1/2/3; example-data brown 5.6:1; links 6.4:1 or better). Never put text straight on imagery: map labels sit in a solid label box
-  with a 1px ink border (theme 1/2: ink on paper; theme 3: paper on graphite), plus a 1-2px
-  shadow. Field selection on imagery is yellow `#ffd166` corner ticks with a dark drop shadow;
-  footprints are dashed outlines, not fills.
+- **Extension bulletin:** paper `#f7f6f0`, black ink `#191c16`, one spot green `#2f5d34` (header band, primary action, links,
+  "live"), brown `#8a5a00` only for "example numbers" and "over the limit", red `#a12a1c` for problems.
+- **Data colours are fixed** (`lib.ts`): bare soil `#a8703f`, partial `#b7d77a`, covered `#2f9e4b`, water `#3d97e8`, no clear
+  view = hatched grey. Crop record: rice blue, alfalfa green, corn yellow, fallow tan. Never reuse a data colour for chrome.
+- **Contrast:** body text >= 7:1 on its panel, muted text >= 4.5:1 (muted 6.1:1; example-data brown 5.6:1). Never put text
+  straight on imagery: map labels sit in a solid paper label box with a 1px ink border and a 1-2px shadow. Field selection on
+  imagery is yellow `#ffd166` corner ticks with a dark drop shadow; footprints are dashed outlines, not fills.
 
 ## 4. Labels, units and sources
 
@@ -92,7 +80,15 @@ Tokens live in `frontend/app/src/themes.css` (`--panel`, `--text`, `--text-2`, `
 - Status is words at the end of the source line, not a pill: "Live." / "Live, from a saved
   run." / "Example numbers, not live yet." Example data gets italics, the warn colour and a small
   hatched square (hatching = "not measured" across the product, as on the timeline).
-- One global indicator top right: "Live data | 4 parts are examples". Clicking it lists sources.
+- One global indicator top right: "Live data | 2 parts are examples". Clicking it lists sources.
+- **NASA first.** Name the NASA source first in every source line (HLS, Landsat, SMAP, GRACE-FO, GPM IMERG, MODIS, ECOSTRESS,
+  NASA POWER, NASADEM, ISS), then the others. The field panel has a "NASA data behind this field" list: what each dataset
+  tells the grower, its footprint in feet or miles, and whether it is live.
+- **One definition per quantity, everywhere.** Bare = satellite greenness below 0.2 and not under water (`src/bare.ts`).
+  Hot days = NOAA station highs of 104 °F (40 °C) or more. Today's rotation uses what the satellites saw; alternatives use the
+  model, labelled "estimated".
+- Example inputs (the water limit) say "example, change to yours" next to the number.
+- Jargon a grower may not know gets a small "What's this?" link with a plain explanation (`components/ui/What.tsx`).
 - Ranges are words plus numbers: "2.7-4.1 acre-ft/acre", "about 4.1". Show a range bar only when
   comparing options. Do not add a progress bar under a single reading.
 - Say when a reading is not about the field: "Whole basin, not your own well."
@@ -103,7 +99,7 @@ Tokens live in `frontend/app/src/themes.css` (`--panel`, `--text`, `--text-2`, `
 - Dense but readable: 13px body, 12-12.5px secondary, 11.5px source lines, 15-17px answers.
   Rows separated by hairlines, not cards in cards.
 - Icons: the existing line set in `Icons.tsx`, 16-20px, always with a text label in the rail.
-  Logo is the wordmark "Field Shift" in the heading face; no initials tile, no gradient.
+  Logo is the wordmark "CropLytics" in the heading face; no initials tile, no gradient.
 - Actions: full-width rows with a title and one-line description; one primary per panel
   (the printable summary). Chevron at the right only for things that open a view.
 
@@ -124,6 +120,7 @@ Tokens live in `frontend/app/src/themes.css` (`--panel`, `--text`, `--text-2`, `
 
 ## Where things are
 
-- Tokens and themes: `frontend/app/src/themes.css` (`?theme=1|2|3`; 1 is default).
-- Field panel and pick list: `frontend/app/src/components/ui/Options.tsx`, `shared.tsx`.
-- Screenshots: `node design/tools/shoot-app.mjs [theme1|theme2|theme3|drilldown|brief]`.
+- Tokens: top of `frontend/app/src/styles.css`. One look; no theme switch.
+- Field panel and pick list: `frontend/app/src/components/ui/Options.tsx`, `FieldNow.tsx`, `NasaSection.tsx`, `shared.tsx`.
+- Screenshots: `node design/tools/shoot-app.mjs [overview|field-now|kings|coming-season|year|compare|brief|drilldown]`
+  (APP_URL=... to shoot a dev server that is already running).

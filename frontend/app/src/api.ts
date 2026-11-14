@@ -1,8 +1,8 @@
 // Single data-access seam (CONTRACT.md).
-// Order per part: FastAPI route (http://localhost:8000) -> repo output file through the dev-server bridge (/repo/...,
-// only for outputs the API has no route for yet; see README "API routes still needed") -> bundled mock (src/mock).
-// If /api/health does not answer, everything comes from the bundled mocks and the UI says "Example data".
-import type { Story, BCInfo, Calendar, CalendarYear, CellGrid, CoverClass, Dataset, GridLayer, Location, NewsItem, Regional, RotationStrategy, SourcedNumber, Source, ScoreKey } from './types';
+// Everything real comes from the CropLytics API at VITE_API_BASE: http://localhost:8000/api in dev, same-origin /api in a
+// production build (the backend serves the built app and the API from one origin). Anything the API does not answer falls
+// back to the bundled examples in src/mock, and the UI says so in the source line.
+import type { BCInfo, Calendar, CalendarYear, CellGrid, CoverClass, Dataset, GridLayer, Location, NewsItem, Regional, RotationStrategy, SourcedNumber, Source, ScoreKey } from './types';
 import mockLocations from './mock/locations.json';
 import mockCells from './mock/cells.json';
 import mockCalendar from './mock/calendar.json';
@@ -11,17 +11,21 @@ import mockStrategies from './mock/strategies.json';
 import mockNews from './mock/news.json';
 import datasets from './mock/datasets.json';
 import bc from './mock/bc.json';
-import story from './mock/story.json';
-import { YEARS } from './lib';
+import fieldExtra from './mock/field_extra.json';
+import { YEARS, dateToT } from './lib';
 import type { Daily } from './season';
 import outlookExample from './mock/outlook.example.json';
+import { nasaList, type NasaDataset, type NasaStatus } from './nasa';
 
-const ENV = (import.meta as unknown as { env: Record<string, string | boolean | undefined> }).env;
-export const API: string = (ENV.VITE_API_ORIGIN as string | undefined) ?? (ENV.PROD ? '' : 'http://localhost:8000');
+export const API_BASE = ((import.meta.env.VITE_API_BASE as string | undefined) ?? (import.meta.env.DEV ? 'http://localhost:8000/api' : '/api')).replace(/\/+$/, '');
+const BASE = import.meta.env.BASE_URL ?? '/';
 type ById<T> = Record<string, T>;
 
+/** Example water limit per field, until the grower types their own (PLAN.md decisions, 14 Nov). acre-ft/acre */
+export const EXAMPLE_LIMIT: Record<string, number> = { car_colusa_rice: 5.0, caf_tulare_forage: 3.0 };
+
 // ---------- provenance ----------
-/** api = FastAPI real output; file = real repo output read via the dev bridge (no API route yet); mock = illustrative */
+/** api = real backend output from the API; file = real output copied into the app (no route yet); mock = illustrative */
 export type Origin = 'api' | 'file' | 'mock';
 export interface Prov { part: string; label: string; origin: Origin; detail: string }
 export type ProvMap = Record<string, Prov>;
@@ -29,7 +33,7 @@ const P = (part: string, label: string, origin: Origin, detail: string): Prov =>
 export const isMock = (p?: Prov) => !p || p.origin === 'mock';
 
 // ---------- fetch helpers ----------
-async function getJSON(url: string, init?: RequestInit, ms = 15000) {
+async function getJSON(url: string, init?: RequestInit, ms = 20000) {
   const ctl = new AbortController();
   const h = setTimeout(() => ctl.abort(), ms);
   try {
@@ -38,74 +42,57 @@ async function getJSON(url: string, init?: RequestInit, ms = 15000) {
     return await r.json();
   } finally { clearTimeout(h); }
 }
+/** `route` is written as the API path (`/api/locations/...`); API_BASE replaces the `/api` prefix. */
+const get = (route: string, init?: RequestInit) => getJSON(`${API_BASE}${route.replace(/^\/api/, '')}`, init);
 let health: Promise<boolean> | null = null;
-/** true when the FastAPI app answers. Cached for the session. */
-export const apiLive = () => (health ??= getJSON(`${API}/api/health`, undefined, 20000).then((b) => !!b?.ok).catch(() => false));
-const file = (path: string) => getJSON(`/repo/${path}`);
-/** API route if it serves real data (`_source: real`), else null */
+/** true when the API answers. Cached for the session. */
+export const apiLive = () => (health ??= get('/api/health').then((b) => !!b?.ok).catch(() => false));
+/** The route's body if it is real data (`_source: real`, or no `_source` for routes that are real-only), else null. */
 async function apiReal(route: string, init?: RequestInit) {
   if (!(await apiLive())) return null;
-  try { const b = await getJSON(`${API}${route}`, init); return b?._source === 'real' ? b : null; } catch { return null; }
+  try { const b = await get(route, init); return b && (b._source === 'real' || b._source === undefined) ? b : null; } catch { return null; }
 }
 
 // ---------- static / editorial ----------
 export const getDatasets = () => Promise.resolve(datasets as Dataset[]);
 export const getBC = () => Promise.resolve(bc as BCInfo);
-export const getStory = (id: string) => Promise.resolve((story as unknown as ById<Story>)[id]);
 
-// ---------- locations: mock card text + real outline, area, soil, crop history ----------
+// ---------- locations: bundled card text + the API's outline, area, soil, crop history ----------
 const KINGS = { short_name: 'Kings County forage', name: 'Kings County forage field for dairy (example)' };
 const COUNTY: Record<string, string> = { '011': 'Colusa', '031': 'Kings' };
+const EXTRA = (fieldExtra as unknown as { fields: ById<{ dwr_id: string; ec_ds_per_m: number; texture_detail: { sand_pct: number; silt_pct: number; clay_pct: number }; nasadem?: Location['nasadem']; rma?: Location['rma'] }> }).fields;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function realLocation(base: Location, live: boolean, apiLoc?: any): Promise<{ loc: Location; prov: ProvMap }> {
-  const id = base.id;
+function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: ProvMap } {
   const prov: ProvMap = {
     outline: P('outline', 'Field outline', 'mock', 'placeholder square'),
-    soil: P('soil', 'Soil (SSURGO)', 'mock', 'illustrative'),
-    crop_history: P('crop_history', 'Crop on record (CDL)', 'mock', 'illustrative'),
-    water: P('water', 'Water source, district, stations', 'mock', 'spec B1 text, unverified'),
+    soil: P('soil', 'Soil (USDA soil survey)', 'mock', 'illustrative'),
+    crop_history: P('crop_history', 'Crop on record (USDA Cropland Data Layer)', 'mock', 'illustrative'),
+    water: P('water', 'Water source and district', 'mock', 'project brief, not looked up'),
   };
-  if (!live) return { loc: base, prov };
-  let loc: Location = { ...base, ...(id === 'caf_tulare_forage' ? KINGS : {}) };
-  const [poly, soil, hist] = await Promise.all([
-    file(`backend/field/polygons/${id}.geojson`).catch(() => null),
-    file(`data/cache/${id}/soil.json`).catch(() => null),
-    file(`backend/field/out/${id}/crop_history.json`).catch(() => null),
-  ]);
-  if (poly?.features?.[0]) {
-    const f = poly.features[0], pr = f.properties, bs = pr.boundary_source ?? {};
-    loc = { ...loc, geometry: f.geometry, centroid: pr.centroid,
-      area_ha: { value: pr.area_ha, low: null, high: null, unit: 'ha', method: 'computed', source: { id: bs.id, title: bs.title, url: bs.url, verified: !!bs.verified }, note: 'area of the DWR outline in EPSG:32610' },
-      county: bs.dwr_attributes?.COUNTY, dwr_id: bs.dwr_unique_id, boundary_title: bs.title };
-    prov.outline = P('outline', 'Field outline', 'file', `DWR/Land IQ 2023 field ${bs.dwr_unique_id ?? ''}`.trim());
-  }
-  if (soil?.muname) {
-    loc = { ...loc, soil: { muname: soil.muname, drainage_class: soil.drainage_class, hydrologic_group: soil.hydrologic_group, texture_class: soil.texture_class, awc_mm_per_m: soil.awc_mm_per_m, om_pct: soil.om_pct, ec_ds_per_m: soil.ec_ds_per_m, texture_detail: soil.texture_detail } };
-    prov.soil = P('soil', 'Soil (SSURGO)', 'file', soil.muname);
-  }
-  if (hist?.by_year) {
-    loc = { ...loc, crop_history: hist.by_year, cdl_source: hist.source };
-    prov.crop_history = P('crop_history', 'Crop on record (CDL)', 'file', `USDA CDL ${Object.keys(hist.by_year)[0]}–${Object.keys(hist.by_year).slice(-1)[0]}`);
-  }
-  // GET /api/locations (real since build_real.py): outline, area, soil, crop history win over the files when present.
-  // Water, events, card text stay from the bundled copy (the API also marks them as spec statements, U).
-  if (apiLoc?.geometry) {
-    const a = apiLoc;
-    loc = { ...loc, geometry: a.geometry, centroid: a.centroid, area_ha: a.area_ha, county: COUNTY[a.county_fips] ?? loc.county,
-      soil: { ...loc.soil, ...a.soil }, crop_history: a.crop_history ?? loc.crop_history };
-    const tag = (k: string, label: string, d: string) => (prov[k] = P(k, label, 'api', d));
-    tag('outline', 'Field outline', `DWR/Land IQ 2023${loc.dwr_id ? ` field ${loc.dwr_id}` : ''}`);
-    if (a.soil?.muname) tag('soil', 'Soil (SSURGO)', a.soil.muname);
-    if (a.crop_history) tag('crop_history', 'Crop on record (CDL)', 'USDA CDL 2008–2025');
-  }
+  if (EXTRA[base.id]?.rma) prov.rma = P('rma', 'Crop-insurance payouts (USDA RMA)', 'file', 'backend/ground, 2010–2024');
+  let loc: Location = { ...base, rma: EXTRA[base.id]?.rma, water: { ...base.water, allocation_input: { unit: 'acre-ft/acre', value: EXAMPLE_LIMIT[base.id] ?? base.water.allocation_input.value } } };
+  if (!apiLoc?.geometry) return { loc, prov };
+  const a = apiLoc, x = EXTRA[base.id];
+  loc = { ...loc, ...(base.id === 'caf_tulare_forage' ? KINGS : {}),
+    geometry: a.geometry, centroid: a.centroid, area_ha: a.area_ha, county: COUNTY[a.county_fips] ?? loc.county,
+    dwr_id: a.dwr_unique_id ?? a.dwr_id ?? x?.dwr_id,
+    soil: { ...loc.soil, ...a.soil, ec_ds_per_m: a.soil?.ec_ds_per_m ?? x?.ec_ds_per_m, texture_detail: a.soil?.texture_detail ?? x?.texture_detail },
+    crop_history: a.crop_history ?? loc.crop_history, nasa_datasets: a.nasa_datasets, datasets: a.datasets, terrain: a.terrain ?? loc.terrain,
+    nasadem: a.terrain?.slope_mean_pct?.value != null ? { slope_mean_pct: a.terrain.slope_mean_pct.value, slope_p90_pct: a.terrain.slope_p90_pct?.value, low_spot_fraction: a.terrain.low_spot_fraction?.value } : x?.nasadem };
+  if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', a.terrain?.slope_mean_pct?.value != null ? 'api' : 'file', 'NASA JPL elevation, 30 m');
+  prov.outline = P('outline', 'Field outline', 'api', `DWR / Land IQ 2023${loc.dwr_id ? ` field ${loc.dwr_id}` : ''}`);
+  if (a.soil?.muname) prov.soil = P('soil', 'Soil (USDA soil survey)', 'api', a.soil.muname);
+  if (a.crop_history) prov.crop_history = P('crop_history', 'Crop on record (USDA Cropland Data Layer)', 'api', 'USDA CDL 2008–2025');
   return { loc, prov };
 }
 export async function getLocations(): Promise<{ locations: Location[]; prov: ById<ProvMap>; live: boolean }> {
   const live = await apiLive();
   const real = live ? await apiReal('/api/locations') : null;
   const byId = Object.fromEntries(((real?.items ?? []) as { id: string }[]).map((x) => [x.id, x]));
-  const out = await Promise.all((mockLocations as unknown as Location[]).map((l) => realLocation(l, live, byId[l.id])));
-  return { locations: out.map((o) => o.loc), prov: Object.fromEntries(out.map((o) => [o.loc.id, o.prov])), live };
+  // the list route may omit newer per-field keys (nasa_datasets); the single-field route carries them
+  const one = live ? await Promise.all((mockLocations as unknown as Location[]).map((l) => apiReal(`/api/locations/${l.id}`))) : [];
+  const out = (mockLocations as unknown as Location[]).map((l, i) => realLocation(l, one[i]?.geometry ? one[i] : byId[l.id]));
+  return { locations: out.map((o) => o.loc), prov: Object.fromEntries(out.map((o) => [o.loc.id, o.prov])), live: live && !!real };
 }
 
 // ---------- satellite calendar (backend/field/out/<id>/calendar.json) -> 10-day steps ----------
@@ -117,18 +104,23 @@ interface RealCalYear { year: number; segments: { start_doy: number; end_doy: nu
 const blankYear = (year: number, cdl = 'Not published yet'): CalendarYear => ({ year, cdl, rule: 'u'.repeat(36), ml: 'u'.repeat(36), ndvi: Array(36).fill(0), et_mm_day: Array(36).fill(0), greenup_dekad: null, senescence_dekad: null, risks: [] });
 /** Pad a calendar to YEARS (the bundled mock stops at 2025). */
 const padCalendar = (c: Calendar): Calendar => ({ ...c, years: YEARS.map((y, i) => c.years.find((x) => x.year === y) ?? c.years[i] ?? blankYear(y)) });
-function convertCalendar(real: { years: RealCalYear[] }, mock: Calendar, hist: Record<string, string>): Calendar {
+/** One year of a real calendar (rule or ML) as 36 ten-day classes. */
+function classString(ry: RealCalYear | undefined, year: number) {
+  if (!ry) return 'u'.repeat(36);
+  let out = '';
+  for (let k = 0; k < 36; k++) { const [y, m, d] = dekadDate(year, k), q = doy(y, m, d); const seg = ry.segments.find((s) => q >= s.start_doy && q <= s.end_doy); out += CLS[seg?.class ?? 'unknown'] ?? 'u'; }
+  return out;
+}
+function convertCalendar(real: { years: RealCalYear[] }, mock: Calendar, hist: Record<string, string>, ml: { years: RealCalYear[] } | null): Calendar {
   const years: CalendarYear[] = YEARS.map((year, yi) => {
     const ry = real.years.find((y) => y.year === year);
     const my = mock.years[yi] ?? blankYear(year, hist[year] ?? 'Not published yet');
     if (!ry) return year > 2025 ? blankYear(year, hist[year] ?? 'Not published yet') : my;
     const obs = ry.observations.filter((o) => o.ndvi != null).map((o) => ({ t: Date.parse(o.date), v: o.ndvi as number }));
-    let rule = '';
+    const rule = classString(ry, year);
     const ndvi: number[] = [];
     for (let k = 0; k < 36; k++) {
-      const [y, m, d] = dekadDate(year, k), q = doy(y, m, d), tt = Date.UTC(y, m - 1, d);
-      const seg = ry.segments.find((s) => q >= s.start_doy && q <= s.end_doy);
-      rule += CLS[seg?.class ?? 'unknown'] ?? 'u';
+      const [y, m, d] = dekadDate(year, k), tt = Date.UTC(y, m - 1, d);
       const i = obs.findIndex((o) => o.t >= tt);
       const a = obs[i - 1], b = obs[i];
       ndvi.push(a && b && b.t - a.t <= 30 * 864e5 ? a.v + ((b.v - a.v) * (tt - a.t)) / (b.t - a.t || 1) : (b ?? a)?.v ?? 0);
@@ -136,8 +128,10 @@ function convertCalendar(real: { years: RealCalYear[] }, mock: Calendar, hist: R
     const dk = (iso?: string) => { if (!iso) return null; const [, m, d] = iso.split('-').map(Number); return (m - 1) * 3 + (d <= 10 ? 0 : d <= 20 ? 1 : 2); };
     const up = ry.markers.find((m) => m.type === 'green_up' && m.date.startsWith(String(year)));
     const dn = ry.markers.find((m) => m.type === 'senescence_harvest' && m.date.startsWith(String(year)) && (!up || m.date > up.date));
-    // ML detector output does not exist yet: ml mirrors the rule. ET and risk ticks stay illustrative (mock).
-    return { ...my, year, cdl: hist[year] ?? my.cdl, rule, ml: rule, ndvi, greenup_dekad: dk(up?.date), senescence_dekad: dk(dn?.date) };
+    // ML calendar (GET .../calendar_ml) when it exists; otherwise "no reading" so the comparison never shows a copy of the rule
+    const mlStr = ml ? classString(ml.years.find((y) => y.year === year), year) : 'u'.repeat(36);
+    // crop water use per 10-day step and the risk ticks stay from the bundled example (no route yet)
+    return { ...my, year, cdl: hist[year] ?? my.cdl, rule, ml: mlStr, ndvi, greenup_dekad: dk(up?.date), senescence_dekad: dk(dn?.date) };
   });
   return { ...mock, years, real: true };
 }
@@ -199,8 +193,9 @@ function normStrategy(s: any): RotationStrategy {
 const mockStrats = (id: string) => (mockStrategies as unknown as RotationStrategy[]).filter((s) => s.location_id === id);
 
 /** POST /api/locations/{id}/score: allocation in acre-ft/acre; returns null if the API is down */
-export async function scoreStrategies(id: string, allocation: number, weights?: Partial<Record<ScoreKey, number>>) {
-  const b = await apiReal(`/api/locations/${id}/score`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ allocation, ...(weights ? { weights } : {}) }) });
+export interface Scenario { dT_c: number; dP_pct: number }
+export async function scoreStrategies(id: string, allocation: number, weights?: Partial<Record<ScoreKey, number>>, scenario?: Scenario) {
+  const b = await apiReal(`/api/locations/${id}/score`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ allocation, ...(weights ? { weights } : {}), ...(scenario ? { scenario } : {}) }) });
   return b?.items ? (b.items as unknown[]).map(normStrategy) : null;
 }
 
@@ -208,47 +203,124 @@ export async function scoreStrategies(id: string, allocation: number, weights?: 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const normNews = (n: any): NewsItem => ({ ...n, verified: !!n.url && !n.url.includes('news.google.com'), signal: { label: n.signal?.dataset ?? '', value_pct: null, lead_days: null, ...n.signal } });
 
+// ---------- machine-learning calendar: how good is it? (GET .../models) ----------
+export interface MLInfo { acc2022: number | null; f1Bare2022: number | null; meetsTarget: boolean; inflated: boolean; disagreePct: number | null; model: string }
+/** Accuracy target for the bare/cover detector, tested on 2022 (held out): accuracy >= 85% and bare-ground F1 >= 0.80 (backend/ai). */
+export const ML_TARGET = { acc: 0.85, f1: 0.8 };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mlInfo(models: any, mlCal: any): MLInfo | null {
+  if (!mlCal?.years) return null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const m = (models?.items ?? []).find((x: any) => x.task === 'bare_cover' && x.method === (mlCal.detector ?? 'random_forest') && x.split?.type === 'year');
+  const acc = m?.metrics?.accuracy_2022 ?? null, f1 = m?.metrics?.f1_bare_2022 ?? null;
+  return { acc2022: acc, f1Bare2022: f1, meetsTarget: acc != null && f1 != null && acc >= ML_TARGET.acc && f1 >= ML_TARGET.f1, inflated: acc != null && acc > 0.97,
+    disagreePct: mlCal.disagreement_with_rule_obs_pct ?? null, model: String(mlCal.detector ?? 'random_forest').replace(/_/g, ' ') };
+}
+
+// ---------- regional NASA series (GET .../nasa_series: one row per 10-day step from 2015) ----------
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function seriesOf(b: any, key: string): (number | null)[] | null {
+  if (!b?.rows) return null;
+  const out: (number | null)[] = Array(YEARS.length * 36).fill(null);
+  let n = 0;
+  for (const r of b.rows as Record<string, unknown>[]) {
+    const v = r[key];
+    if (typeof r.date !== 'string' || typeof v !== 'number') continue;
+    const t = dateToT(r.date);
+    if (t >= 0 && t < out.length) { out[t] = v; n++; }
+  }
+  return n ? out : null;
+}
+
 // ---------- everything the field view needs ----------
-export interface FieldBundle { id: string; cells: CellGrid; cal: Calendar; regional: Regional; strategies: RotationStrategy[]; news: NewsItem[]; story: Story; prov: ProvMap }
+export interface FieldBundle { id: string; cells: CellGrid; cal: Calendar; regional: Regional; strategies: RotationStrategy[]; news: NewsItem[]; ml: MLInfo | null; nasa: NasaDataset[]; regionalLive: RegionalLive; nasaNow: NasaNow | null; prov: ProvMap }
+/** GET .../nasa_now: today's NASA readings. Rain since 1 Oct from GPM IMERG and its 2001-2025 normal (mm). */
+export interface NasaNow { rainWyMm: number | null; rainWyNormalMm: number | null; rainDate: string | null; dswxWater: number | null; dswxDate: string | null }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const nowOf = (b: any): NasaNow | null => { const r = b?.readings; if (!r) return null; return { rainWyMm: r.imerg_wy_to_date_mm?.value ?? null, rainWyNormalMm: r.imerg_wy_to_date_normal_mm?.value ?? null, rainDate: r.imerg_wy_to_date_mm?.obs_date ?? null, dswxWater: r.dswx_water_frac?.value ?? null, dswxDate: r.dswx_water_frac?.obs_date ?? null }; };
+/** Which soil-moisture / groundwater readings are real. soilSource says whose soil reading it is. */
+export interface RegionalLive { smap: boolean; grace: boolean; soilSource?: 'smap' | 'grace_da' | null }
 export async function getField(loc: Location, live: boolean): Promise<FieldBundle> {
   const id = loc.id;
   const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[id]);
   const prov: ProvMap = {
-    calendar: P('calendar', 'Bare / covered / water calendar', 'mock', 'illustrative'),
-    grid: P('grid', '30 m surface cells (3D top layer)', 'mock', 'illustrative'),
-    strategies: P('strategies', 'Rotations and scores', 'mock', 'illustrative'),
-    news: P('news', 'News headlines', 'mock', 'spec examples'),
-    regional: P('regional', 'SMAP / GRACE slabs, trends', 'mock', 'no real trends route yet'),
-    et: P('et', 'Crop water use (ET) and risk ticks', 'mock', 'OpenET needs a key; risk days not routed'),
-    ml: P('ml', 'ML detector', 'mock', live ? 'not trained yet: toggle shows the rule' : 'illustrative'),
+    calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', 'illustrative'),
+    grid: P('grid', '100 ft squares in the 3D view', 'mock', 'illustrative'),
+    strategies: P('strategies', 'Rotations, water need and scores', 'mock', 'illustrative'),
+    news: P('news', 'News headlines', 'mock', 'project brief examples'),
+    regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', 'no real series served yet'),
+    et: P('et', '3D "water use" view and risk ticks', 'mock', 'no route yet'),
+    ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
   };
-  const base = { id, regional: (regional as unknown as ById<Regional>)[id], story: (story as unknown as ById<Story>)[id] };
-  if (!live) return { ...base, cells: (mockCells as unknown as ById<CellGrid>)[id], cal: mCal, strategies: mockStrats(id), news: (mockNews as unknown as ById<NewsItem[]>)[id], prov };
-  const [cal, grid, strat, news] = await Promise.all([
-    apiReal(`/api/locations/${id}/calendar`).then((b) => b ?? file(`backend/field/out/${id}/calendar.json`).then((x) => ({ ...x, _via: 'file' }))).catch(() => null),
-    apiReal(`/api/locations/${id}/grid`).then((b) => b ?? file(`backend/field/out/${id}/grid.geojson`).then((x) => ({ ...x, _via: 'file' }))).catch(() => null),
+  const reg0 = (regional as unknown as ById<Regional>)[id];
+  const used: Partial<Record<string, NasaStatus>> = loc.nasadem ? { nasadem: 'live' } : {};
+  const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, { ...used, ...(soilExample() ? { smap: 'example' as const } : {}) }).list;
+  let soilShown: 'smap' | 'grace_da' | null = null;
+  const soilExample = () => soilShown == null; // the soil answer shows SMAP example numbers when no real soil series came back
+  if (!live) return { id, regional: reg0, cells: (mockCells as unknown as ById<CellGrid>)[id], cal: mCal, strategies: mockStrats(id), news: (mockNews as unknown as ById<NewsItem[]>)[id], ml: null, nasa: nasa().map((d) => (d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)), regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, prov };
+  const [cal, hls, grid, strat, news, mlCal, models, ns, now] = await Promise.all([
+    apiReal(`/api/locations/${id}/calendar`),
+    apiReal(`/api/locations/${id}/calendar?source=hls`),
+    apiReal(`/api/locations/${id}/grid`),
     apiReal(`/api/locations/${id}/strategies`),
     apiReal(`/api/locations/${id}/news`),
+    apiReal(`/api/locations/${id}/calendar_ml`),
+    apiReal(`/api/locations/${id}/models`),
+    apiReal(`/api/locations/${id}/nasa_series`),
+    apiReal(`/api/locations/${id}/nasa_now`),
   ]);
   let c = mCal, cells = (mockCells as unknown as ById<CellGrid>)[id], strategies = mockStrats(id), nws = (mockNews as unknown as ById<NewsItem[]>)[id];
-  if (cal?.years) { c = convertCalendar(cal, mCal, loc.crop_history); prov.calendar = P('calendar', 'Bare / covered / water calendar', cal._via === 'file' ? 'file' : 'api', 'Sentinel-2 + Landsat, NDVI rule'); }
-  if (grid?.features) { cells = convertGrid(grid); prov.grid = P('grid', '30 m surface cells (3D top layer)', grid._via === 'file' ? 'file' : 'api', `${cells.features.length} cells · Sentinel-2 NDVI`); }
-  if (strat?.items?.length) { strategies = strat.items.map(normStrategy); prov.strategies = P('strategies', 'Rotations and scores', 'api', 'rotation engine'); }
-  if (news?.items?.length) { nws = news.items.map(normNews); prov.news = P('news', 'News headlines', 'api', `${news.items.length} cached headlines`); }
-  return { ...base, cells, cal: c, strategies, news: nws, prov };
+  // NASA first: the HLS calendar wins when the API serves it (it says so in its sources)
+  const isHls = !!hls?.years && /hls/i.test(JSON.stringify(hls.source ?? hls.sources ?? hls.calendar_source ?? hls.method ?? ''));
+  const calSrc = isHls ? hls : cal;
+  const ml = mlInfo(models, mlCal);
+  if (calSrc?.years) {
+    c = convertCalendar(calSrc, mCal, loc.crop_history, mlCal?.years ? mlCal : null);
+    prov.calendar = P('calendar', 'Bare / green / flooded calendar', 'api', isHls ? 'NASA/USGS HLS, greenness rule' : 'Landsat (NASA/USGS) and Sentinel-2, greenness rule');
+    used.landsat = 'live';
+    if (isHls) used.hls = 'live';
+  }
+  if (mlCal?.years) prov.ml = P('ml', 'Machine-learning calendar (comparison)', 'api', `${ml?.model ?? 'random forest'}, Sentinel-2`);
+  if (grid?.features) { cells = convertGrid(grid); prov.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells.features.length} squares, Sentinel-2 greenness`); }
+  if (strat?.items?.length) { strategies = strat.items.map(normStrategy); prov.strategies = P('strategies', 'Rotations, water need and scores', 'api', 'rotation model, NASA POWER weather'); used.power = 'live'; }
+  if (news?.items?.length) { nws = news.items.map(normNews); prov.news = P('news', 'News headlines', 'api', `${news.items.length} saved headlines`); }
+  let reg = reg0;
+  // GET .../nasa_series: SMAP root-zone percentile when cached; otherwise NASA's GRACE-FO data-assimilation root-zone percentile
+  const smapS = seriesOf(ns, 'smap_rootzone_pct'), gdaSoil = seriesOf(ns, 'grace_rootzone_pct');
+  const sm = smapS ?? gdaSoil, gr = seriesOf(ns, 'grace_gw_pct');
+  const soilSource: 'smap' | 'grace_da' | null = smapS ? 'smap' : gdaSoil ? 'grace_da' : null;
+  soilShown = soilSource;
+  if (sm || gr) {
+    reg = { ...reg0, smap_rootzone_pct: sm ? { ...reg0.smap_rootzone_pct, values: sm } : reg0.smap_rootzone_pct, grace_gw_pct: gr ? { ...reg0.grace_gw_pct, values: gr } : reg0.grace_gw_pct };
+    if (smapS) used.smap = 'live';
+    if (gr || gdaSoil) used.grace = 'live';
+    if (/imerg/.test(JSON.stringify(ns?.sources ?? ''))) used.imerg = 'live'; // rain so far this season reads IMERG from the daily record
+    prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', sm && gr ? 'api' : 'mock', `${soilSource === 'smap' ? 'SMAP' : soilSource === 'grace_da' ? 'GRACE-FO data assimilation (SMAP not cached yet)' : 'soil: example numbers'}; ${gr ? 'GRACE-FO groundwater' : 'groundwater: example numbers'}`);
+  }
+  return { id, regional: reg, cells, cal: c, strategies, news: nws, ml, nasa: nasa(), regionalLive: { smap: !!sm, grace: !!gr, soilSource }, nasaNow: nowOf(now), prov };
+}
+
+// ---------- ISS astronaut photos (copied into public/iss/<id>/ from data/cache/<id>/iss) ----------
+export interface ISSPhoto { photo_id: string; date: string; center_lat: number; center_lon: number; lens_mm: number; features: string; page_url: string; file: string; url: string; miles: number }
+export async function getISS(loc: Location): Promise<{ photo: ISSPhoto; credit: string } | null> {
+  try {
+    const j = await getJSON(`${BASE}iss/${loc.id}/iss.json`);
+    const mi = (p: ISSPhoto) => Math.hypot((p.center_lat - loc.centroid.lat) * 69, (p.center_lon - loc.centroid.lon) * 69 * Math.cos((loc.centroid.lat * Math.PI) / 180));
+    const ps = (j.photos as ISSPhoto[]).map((p) => ({ ...p, url: `${BASE}iss/${loc.id}/${p.file}`, miles: mi(p) })).sort((a, b) => a.miles - b.miles);
+    return ps[0] ? { photo: ps[0], credit: j.credit } : null;
+  } catch { return null; }
 }
 
 // ---------- daily weather (GET .../daily): NOAA station means + NASA POWER reference ET ----------
 export async function getDaily(id: string): Promise<{ daily: Daily | null; prov: Prov }> {
   const b = await apiReal(`/api/locations/${id}/daily`);
-  if (!b?.rows?.length) return { daily: null, prov: P('daily', 'Rain, heat and frost (weather stations)', 'mock', 'daily route not reachable') };
+  if (!b?.rows?.length) return { daily: null, prov: P('daily', 'Rain (NASA GPM IMERG), heat and frost (NOAA stations)', 'mock', 'daily route not reachable') };
   const rows = b.rows as Daily['rows'];
-  return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', 'Rain, heat and frost (weather stations)', 'api', `NOAA station mean, ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 4)}`) };
+  return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', 'Rain (NASA GPM IMERG), heat and frost (NOAA stations)', 'api', `daily record ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 7)}`) };
 }
 
 // ---------- coming-season outlooks ----------
-// Order: GET .../outlook (not built yet) -> backend/outlook/out/<id>/outlook.json -> backend/outlook/out/{cpc,water_now}.json
-// (real, saved runs) -> src/mock/outlook.example.json for parts nothing live covers (allocation history).
+// GET .../outlook (backend/outlook) -> else src/mock/outlook.example.json, labelled as example numbers.
 export interface OutlookCat { category: string; prob: number | null }
 export interface OutlookSeason { season: string; temp: OutlookCat | null; rain: OutlookCat | null }
 export interface Reservoir { id: string; name: string; storageAf: number; capacityAf: number | null; pctAvg: number | null; pctCap: number | null; yearAgoAf: number | null; date: string }
@@ -299,17 +371,8 @@ export async function getOutlook(id: string, live: boolean): Promise<Outlook> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ex = outlookExample as any;
   const exAlloc = ex.presets[id]?.allocations ?? null;
-  if (live) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pick = (j: any) => j?.presets?.[id] ?? j;
-    const full = (await apiReal(`/api/locations/${id}/outlook`)) ?? (await file(`backend/outlook/out/${id}/outlook.json`).catch(() => null));
-    if (full) return fromOutlookFile(pick(full), exAlloc, full._source === 'real' ? 'api' : 'file');
-    const [c, w] = await Promise.all([file('backend/outlook/out/cpc.json').catch(() => null), file('backend/outlook/out/water_now.json').catch(() => null)]);
-    if (c || w) {
-      const fetched = (c?.fetched_at ?? w?.fetched_at ?? '').slice(0, 10);
-      return adaptOutlook(pick(c), pick(w), exAlloc, { cpc: c ? 'file' : 'mock', water: w ? 'file' : 'mock', alloc: 'mock' }, `backend/outlook, fetched ${fetched}`);
-    }
-  }
+  const full = live ? await apiReal(`/api/locations/${id}/outlook`) : null;
+  if (full) return fromOutlookFile(full.presets?.[id] ?? full, exAlloc, 'api');
   return adaptOutlook(ex.example_full, ex.example_full, exAlloc, { cpc: 'mock', water: 'mock', alloc: 'mock' }, 'example file');
 }
 

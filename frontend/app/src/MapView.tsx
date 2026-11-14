@@ -3,7 +3,8 @@ import maplibregl, { type GeoJSONSource, type StyleSpecification } from 'maplibr
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { acres, fieldName, latestCrop } from './components/ui/shared';
 import type { BCInfo, Calendar, CellGrid, Dataset, Location, Regional } from './types';
-import { atT, dataT, CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
+import type { RegionalLive } from './api';
+import { atT, latestAt, dataT, CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
 
 // Tile sources fixed by CONTRACT.md (no API keys).
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
@@ -40,7 +41,7 @@ export interface MapHandle {
 interface Props {
   locations: Location[]; bc: BCInfo | null; datasets: Dataset[];
   selected: Location | null; cells: CellGrid | null; cal: Calendar | null; regional: Regional | null;
-  t: number; detector: 'rule' | 'ml'; metric: 'cover' | 'et'; layersOn: Record<string, boolean>;
+  t: number; detector: 'rule' | 'ml'; metric: 'cover' | 'et'; layersOn: Record<string, boolean>; regionalLive: RegionalLive;
   leftInset: number; bottomInset: number; rightInset: number;
   onSelect: (id: string) => void; onBC: () => void;
   onView: (v: { zoom: number; pitch: number; bearing: number; lat: number; lon: number }) => void;
@@ -164,7 +165,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
           const w = loc.centroid.lon - (ds.footprint_m * ox) / m.lon, s = loc.centroid.lat - (ds.footprint_m * oy) / m.lat;
           const e = w + ds.footprint_m / m.lon, n = s + ds.footprint_m / m.lat;
           fps.push(rect(w, s, e, n, { color: ds.color }));
-          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${({ smap: 'Soil moisture', grace: 'Groundwater', imerg: 'Rainfall', modis: 'Greenness' } as Record<string, string>)[ds.id] ?? ds.name}: one reading covers this square (${(ds.footprint_m / 1609).toFixed(0)} miles across)` }, geometry: { type: 'Point', coordinates: [e, n] } });
+          lbls.push({ type: 'Feature', properties: { color: ds.color, label: ds.id === 'grace' ? `Groundwater (NASA GRACE-FO): one reading for this ${(ds.footprint_m / 1609).toFixed(0)}-mile square; the satellites sense about 190 miles` : `${({ smap: 'Soil moisture (NASA SMAP)', imerg: 'Rainfall (NASA GPM)', modis: 'Greenness (NASA MODIS)' } as Record<string, string>)[ds.id] ?? ds.name}: one reading covers this square (${(ds.footprint_m / 1609).toFixed(0)} miles across)${ds.id === 'smap' && !live.current.regionalLive.smap ? '; readings still downloading' : ''}` }, geometry: { type: 'Point', coordinates: [e, n] } });
         } else if (ds.id !== 'hls') {
           const pad = ds.footprint_m * 2, lines: number[][][] = [];
           const w = b.w - pad / m.lon, e = b.e + pad / m.lon, s = b.s - pad / m.lat, n = b.n + pad / m.lat;
@@ -186,7 +187,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       return new maplibregl.Marker({ element: d, anchor: 'top-right', offset: [-6, 6] }).setLngLat(l.geometry.coordinates).addTo(map);
     });
     return () => mk.forEach((m) => m.remove());
-  }, [ready, p.locations, p.selected, p.layersOn, p.datasets]);
+  }, [ready, p.locations, p.selected, p.layersOn, p.datasets, p.regionalLive.smap]);
 
   // ---------- exploded layer stack for the scrubber date ----------
   useEffect(() => {
@@ -203,7 +204,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const S = (cells.cols * cells.cell_m) / 990; // keep proportions across field sizes
     const tt = dataT(cal, p.t); // past the last processed image, show the latest clear view
     const fs = fieldState(cal, tt, p.detector);
-    const smap = atT(regional.smap_rootzone_pct.values, p.t) ?? null, grace = atT(regional.grace_gw_pct.values, p.t) ?? null;
+    const smap = latestAt(regional.smap_rootzone_pct.values, p.t)?.v ?? null, grace = latestAt(regional.grace_gw_pct.values, p.t)?.v ?? null;
     const info: typeof stackInfo.current = [];
     const cellBase = 430 * S;
     if (p.layersOn.hls) {
@@ -216,20 +217,20 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       }));
       const mean = n ? sum / n : 0;
       const real = !!cells.layers;
-      info.push({ key: 'hls', alt: cellBase + 60 * S, pad: 0, color: '#7ee081', tag: real ? `Sentinel-2 satellite, 30 m squares${p.metric === 'et' ? ' · water use is example numbers' : ''}` : 'Landsat and Sentinel-2, 30 m squares · example numbers', title: p.metric === 'et' ? 'The crop: water it is using' : `The crop: ${CLASS_LABEL[fs.cls].toLowerCase()}`,
+      info.push({ key: 'hls', alt: cellBase + 60 * S, pad: 0, color: '#7ee081', tag: real ? `Sentinel-2 satellite, 100 ft squares${p.metric === 'et' ? ' · water use is example numbers' : ''}` : 'Landsat and Sentinel-2, 100 ft squares · example numbers', title: p.metric === 'et' ? 'The crop: water it is using' : `The crop: ${CLASS_LABEL[fs.cls].toLowerCase()}`,
         value: (real ? !n : fs.cls === 'u') ? 'No clear view (cloud)' : p.metric === 'et' ? `${mean.toFixed(1)} mm/day (${(mean / 25.4).toFixed(2)} in/day)` : `Greenness ${mean.toFixed(2)} on a 0 to 1 scale`,
-        note: real ? `${cells.features.length} cells · ${gridLayerLabel(layer)}` : `${cells.features.length} cells inside your field · ${p.detector === 'rule' ? 'rule' : 'ML'} detector${fs.disagree ? ' · detectors disagree' : ''}` });
+        note: real ? `${cells.features.length} squares · ${gridLayerLabel(layer)}` : `${cells.features.length} cells inside your field · ${p.detector === 'rule' ? 'rule' : 'ML'} detector${fs.disagree ? ' · detectors disagree' : ''}` });
     } else set('cells', []);
     if (p.layersOn.smap) {
       const b = 235 * S, col = smap == null ? '#737a86' : ramp(SMAP_RAMP, smap);
       set('slab-smap', [padded(loc, 110 * S, { b, h: b + (14 + (smap ?? 10) * 0.42) * S, col })]);
-      info.push({ key: 'smap', alt: b + 20 * S, pad: 110 * S, color: '#5ab0ff', tag: 'SMAP satellite · example numbers', title: 'Soil moisture in the root zone', value: smap == null ? 'No reading' : `${smap >= 67 ? 'Wetter than usual' : smap > 33 ? 'About normal' : 'Drier than usual'} (${ordinal(smap)} percentile)`,
+      info.push({ key: 'smap', alt: b + 20 * S, pad: 110 * S, color: '#5ab0ff', tag: p.regionalLive.soilSource === 'grace_da' ? 'NASA GRACE-FO with a land model, root zone' : `NASA SMAP satellite${p.regionalLive.smap ? '' : ' · example numbers'}`, title: 'Soil moisture in the root zone', value: smap == null ? 'No reading' : `${smap >= 67 ? 'Wetter than usual' : smap > 33 ? 'About normal' : 'Drier than usual'} (${ordinal(Math.round(smap))} percentile)`,
         note: fs.cls === 'w' ? 'Reading is unreliable over standing water' : `One reading covers about ${Math.round(81 / (loc.area_ha.value / 100))} fields this size` });
     } else set('slab-smap', []);
     if (p.layersOn.grace) {
       const b = 45 * S, col = grace == null ? '#5d636e' : ramp(GRACE_RAMP, grace);
       set('slab-grace', [padded(loc, 230 * S, { b, h: b + (14 + (grace ?? 4) * 0.42) * S, col })]);
-      info.push({ key: 'grace', alt: b + 16 * S, pad: 230 * S, color: '#ff7eb6', tag: 'GRACE-FO satellites · example numbers', title: 'Groundwater in the basin', value: grace == null ? 'No reading: gap between satellite missions' : `${grace >= 67 ? 'More than usual' : grace > 33 ? 'About normal' : 'Less than usual'} (${ordinal(grace)} percentile)`,
+      info.push({ key: 'grace', alt: b + 16 * S, pad: 230 * S, color: '#ff7eb6', tag: `NASA GRACE-FO satellites${p.regionalLive.grace ? '' : ' · example numbers'}`, title: 'Groundwater in the basin', value: grace == null ? 'No reading: gap between satellite missions' : `${grace >= 67 ? 'More than usual' : grace > 33 ? 'About normal' : 'Less than usual'} (${ordinal(Math.round(grace))} percentile)`,
         note: 'Basin-wide signal, not your own well' });
     } else set('slab-grace', []);
     // corner posts tie the slabs together
@@ -239,7 +240,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     stackInfo.current = info;
     updateLabels();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, p.selected, p.cells, p.cal, p.regional, p.t, p.detector, p.metric, p.layersOn]);
+  }, [ready, p.selected, p.cells, p.cal, p.regional, p.regionalLive, p.t, p.detector, p.metric, p.layersOn]);
 
   // ---------- labels pinned to each slab (projected with altitude) ----------
   function updateLabels() {
@@ -286,7 +287,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   const sorted = [...labels].sort((a, b) => a.ay - b.ay);
   const lx = Math.min(Math.max(0, ...labels.map((l) => l.ax)) + 34, (el.current?.clientWidth ?? 1440) - p.rightInset - 290);
   let lastY = -1e9;
-  const placed = sorted.map((l) => { const y = Math.max(l.ay - 30, lastY + 104); lastY = y; return { ...l, lx, ly: y }; });
+  const placed = sorted.map((l) => { const y = Math.max(l.ay - 30, lastY + 112); lastY = y; return { ...l, lx, ly: y }; });
 
   return (
     <div className={`map-wrap zoom-${zoomClass}`}>

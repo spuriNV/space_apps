@@ -18,6 +18,12 @@ export interface Location {
   crop_history: Record<string, string>;
   observed_cover: { summary: string };
   events: FieldEvent[];
+  /** GET /api/locations/{id}: NASA dataset status (when the API sends it) and backend fetch status */
+  nasa_datasets?: unknown;
+  /** NASADEM slope and low spots (backend/nasa_open terrain.json) */
+  /** USDA RMA crop-insurance payouts for the county and crop (backend/ground rma_profile.json) */
+  rma?: { scope: string; crop: string; total_usd: number; from: number; to: number; top_year: number; top_usd: number; share_drought: number; share_excess_moisture: number | null; source: string; url: string };
+  nasadem?: { slope_mean_pct?: number; slope_p90_pct?: number; low_spot_fraction?: number; elev_m?: number }; datasets?: Record<string, { status?: string; reason?: string }>;
 }
 
 export type CoverClass = 'b' | 'p' | 'c' | 'w' | 'u';
@@ -49,5 +55,3 @@ export interface RotationStrategy {
 export interface NewsItem { date: string; title: string; source: string; url: string | null; rank: number; verified: boolean; date_note?: string; signal: { dataset: string; label: string; value_pct: number | null; lead_days: number | null } }
 export interface Dataset { id: string; name: string; long_name: string; sees: string; native_scale: string; footprint_m: number; cadence: string; since: number; group: 'field' | 'regional'; color: string; in_stack?: string; caveat?: string }
 export interface BCInfo { title: string; intro: string; lines: { label: string; text: string }[]; limit: string; places: { name: string; lat: number; lon: number }[]; news: { date: string; title: string; source: string; url: string; verified: boolean }[]; next_step: { label: string; ref: string } }
-export interface StoryChapter { date: string; camera: 'card' | 'drill'; title: string; saw: { dataset: string; scale: string; series: 'smap' | 'grace' | 'imerg' | 'cover'; text: string }; reported: string[] }
-export interface Story { title: string; window: [number, number]; chapters: StoryChapter[] }

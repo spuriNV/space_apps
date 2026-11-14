@@ -13,7 +13,7 @@ import { BCCard, LayersDrawer } from './components/Panels';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
 import { ProvList, acres, county, fieldName, type Step } from './components/ui/shared';
 
-// One look (Extension bulletin, tokens in themes.css). Four screens: pick a field, your field now, coming season, compare and print.
+// One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
 type Panel = 'none' | 'fields' | 'season' | 'compare';
 const RAIL: { id: Panel | 'search' | 'layers' | 'brief'; icon: string; label: string }[] = [
   { id: 'search', icon: 'search', label: 'Find' },
@@ -39,6 +39,7 @@ export default function App() {
   const [showEarlier, setShowEarlier] = useState(false);
   const [daily, setDaily] = useState<{ id: string; daily: Daily | null; prov: api.Prov } | null>(null);
   const [outlook, setOutlook] = useState<{ id: string; o: api.Outlook } | null>(null);
+  const [iss, setISS] = useState<{ id: string; v: Awaited<ReturnType<typeof api.getISS>> } | null>(null);
   const [playing, setPlaying] = useState(false);
   const [panel, setPanel] = useState<Panel>('none');
   const [cardOpen, setCardOpen] = useState(true);
@@ -68,6 +69,7 @@ export default function App() {
     api.getField(selected, live).then((b) => ok && setData(b));
     api.getDaily(selected.id).then((r) => ok && setDaily({ id: selected.id, ...r }));
     api.getOutlook(selected.id, live).then((o) => ok && setOutlook({ id: selected.id, o }));
+    api.getISS(selected).then((v) => ok && setISS({ id: selected.id, v }));
     return () => { ok = false; };
   }, [selected, live]);
   // re-score through POST /score when the water allocation changes (engine applies the allocation check)
@@ -93,6 +95,10 @@ export default function App() {
   useEffect(() => { (window as unknown as Record<string, unknown>).__app = { setT, select: (id: string) => select(id), ready: !!d }; });
   const dl = daily && daily.id === selectedId ? daily : null;
   const ol = outlook && outlook.id === selectedId ? outlook.o : null;
+  const issNow = iss && iss.id === selectedId ? iss.v : null;
+  const regional = d?.regional ?? null;
+  const regionalLive: api.RegionalLive = d?.regionalLive ?? { smap: false, grace: false, soilSource: null };
+  const exampleLimit = !!selected && allocation[selected.id] === api.EXAMPLE_LIMIT[selected.id];
   const prov: api.ProvMap = { ...(selected ? locProv[selected.id] : {}), ...(d?.prov ?? {}), ...(dl ? { daily: dl.prov } : {}), ...(ol ? { outlook_cpc: ol.prov.cpc, outlook_water: ol.prov.water, outlook_alloc: ol.prov.alloc } : {}) };
 
   const select = useCallback((id: string) => {
@@ -152,12 +158,12 @@ export default function App() {
 
   return (
     <div className="app">
-      <MapView ref={map} locations={locations} bc={bc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={d?.regional ?? null}
-        t={t} detector={detector} metric={metric} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
+      <MapView ref={map} locations={locations} bc={bc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
+        t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
         onSelect={select} onBC={goBC} onView={setView} />
 
       <nav className="rail glass">
-        <button className="rail-logo" onClick={goHome} title="Field Shift: back to all of California"><span>Field<br />Shift</span></button>
+        <button className="rail-logo" onClick={goHome} title="CropLytics: back to all of California"><span>Crop<br />Lytics</span></button>
         {RAIL.map((r) => {
           const on = r.id === 'layers' ? layersOpen : r.id === 'search' ? searchFocus : r.id === 'brief' ? briefOpen : r.id === 'none' ? !!selected && panel === 'none' && leftPanel === 'card' : panel === r.id;
           return (
@@ -187,26 +193,27 @@ export default function App() {
       <div className="top-right" style={{ right: 16 + rightInset }}>
         {live != null && (
           <button className={`data-ind ${live ? 'live' : 'example'}`} onClick={() => setProvOpen(!provOpen)} data-testid="data-indicator"
-            title={live ? 'Real outputs from the Field Shift API and backend files; parts marked "example numbers" are still illustrative' : 'API not reachable: showing the bundled example data'}>
+            title={live ? 'Real outputs from the CropLytics API and backend files; parts marked "example numbers" are still illustrative' : 'API not reachable: showing the bundled example data'}>
             <i />{live ? 'Live data' : 'Example data only'}{selected && mockParts > 0 && <em>{mockParts} parts are examples</em>}
           </button>
         )}
         <button className={`pill glass ${layersOpen ? 'on' : ''}`} onClick={() => setLayersOpen(!layersOpen)} data-testid="layers-btn"><Icon name="layers" size={16} />Map layers</button>
         {provOpen && (
           <div className="prov-pop glass">
-            <h4>{live ? 'Where each part of this view comes from' : 'Example data: the Field Shift API is not reachable'}</h4>
+            <h4>{live ? 'Where each part of this view comes from' : 'Example data: the CropLytics API is not reachable'}</h4>
             {selected ? <ProvList prov={prov} /> : <p className="muted">Pick a field to see where each part of the view comes from.</p>}
           </div>
         )}
       </div>
 
-      {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={d?.regional ?? null} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} daily={dl?.daily ?? null}
+      {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
+        nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} iss={issNow} loading={!d || !dl}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldPicker locations={locations} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {leftPanel === 'fields' && <FieldPicker locations={locations} live={live} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen pill glass" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
-      {panel === 'season' && selected && d && <ComingSeason loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}
-      {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} allocation={allocation[selected.id]} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
+      {panel === 'season' && selected && d && <ComingSeason nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}
+      {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} daily={dl?.daily ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} live={!!live} cal={d.cal} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
         onBrief={(id) => { setBriefPick(id); setBriefOpen(true); }} onClose={() => setPanel('none')} />}
 
       {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} metric={metric} setMetric={setMetric} onClose={() => setLayersOpen(false)} />}
@@ -238,10 +245,10 @@ export default function App() {
         </div>
       </div>
 
-      <Timeline t={t} setT={setT} playing={playing} setPlaying={setPlaying} loc={selected} cal={d?.cal ?? null} daily={dl?.daily ?? null} events={events}
+      <Timeline t={t} setT={setT} playing={playing} setPlaying={setPlaying} loc={selected} cal={d?.cal ?? null} daily={dl?.daily ?? null} ml={d?.ml ?? null} prov={d?.prov.calendar} events={events}
         showEarlier={showEarlier} setShowEarlier={setShowEarlier} expanded={yearExpanded} setExpanded={(b) => { setYearOpen(b); if (b && (panel === 'compare' || panel === 'season')) setPanel('none'); }} />
 
-      {briefOpen && selected && d && <RotationBrief loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} prov={prov} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} onClose={() => setBriefOpen(false)} />}
+      {briefOpen && selected && d && <RotationBrief loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} outlook={ol} nasaNow={d.nasaNow} cal={d.cal} daily={dl?.daily ?? null} onClose={() => setBriefOpen(false)} />}
     </div>
   );
 }
