@@ -87,3 +87,9 @@ Known data caveats the UI should not hide: POWER overstates rain vs the NCEI sta
 - Default weights: spec says six brief priorities plus pest_break, infiltration, income (default 0); I took the six as water_use, forage_value, n_fixation, erosion, organic_matter, market and also defaulted n_scavenging to 0.
 - Who fills `Location.datasets` entries (shape is free: `{status, meta_path, ...}`)?
 - Fixture polygons are placeholder squares around the preset centres, not CDL-checked fields.
+
+## Static export and Pages deploy
+
+`uv run python export_static.py` (from `backend/api`) calls every GET route in-process with FastAPI's TestClient and writes the responses to `frontend/app/public/api/` (git-ignored), mirroring the URL path with `.json` appended: `locations.json`, `locations/{id}.json`, `locations/{id}/{daily,features/weekly,strategies,models,zones,validation,news,calendar,calendar_ml,grid,outlook}.json`, `locations/{id}/trends/{layer}.json` (default year) and `trends/{layer}/{year}.json`, `crops/{cid}.json`, `bc/news.json`, `bc/signal.json`, `glossary.json`. `POST /score` is precomputed per preset to `locations/{id}/score/{variant}.json` for `default`, `replay-2022`, `replay-2023` and `dT{0,2,4}_dP{-20,0,20}` (default weights). `manifest.json` lists files, sizes and generation time; routes that fail are printed and recorded under `skipped`. Total is about 11 MB (grids ~1.8 MB / 0.9 MB, daily ~1 MB each). It reads only committed files; no keys, no `.env`.
+
+`.github/workflows/deploy-pages.yml` runs the exporter, then `VITE_BASE=/space_apps/ npm run build:static` in `frontend/app`, and deploys `dist` with GitHub Pages on pushes to main touching `frontend/`, `backend/`, `data/` or `fixtures/`, or by manual dispatch. One-time repo setup: Settings -> Pages -> Source: GitHub Actions. Site URL: https://spurinv.github.io/space_apps/. Local check: `VITE_BASE=/space_apps/ npm run build:static && npx vite preview --base /space_apps/`.
