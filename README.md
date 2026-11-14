@@ -1,4 +1,4 @@
-# Field Shift
+# CropLytics
 
 NASA Space Apps Challenge 2026, Vancouver: **Field Shift: Adapting Farms with NASA Data**.
 

@@ -1,4 +1,4 @@
-# Field Shift: working plan
+# CropLytics: working plan
 
 One product, one look, four screens. No more option rounds unless something is clearly broken; we change things by editing the one version. Judged on the rubric in `docs/judging-rubric.md`. Submission is due Sunday 23:59; feature freeze is Saturday 22:00.
 

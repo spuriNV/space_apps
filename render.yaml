@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: field-shift
+    name: croplytics
     runtime: docker
     plan: free   # free plans sleep after idle (slow first load); use starter to stay awake
     dockerfilePath: ./Dockerfile

@@ -1,4 +1,4 @@
-# Field Shift: pitch, slides and video
+# CropLytics: pitch, slides and video
 
 NASA Space Apps 2026, Vancouver. Challenge: **Field Shift: Adapting Farms with NASA Data**.
 Submission: the 7 slides in `docs/slides/index.html` (or the 30-second video), due Sunday 23:59, plus a 3-minute live pitch.
@@ -26,7 +26,7 @@ Spoken lines are in quotes. **Speaker** talks, **Driver** clicks the app. About 
 
 *Driver switches to the app, already open on the overview (`overview.png`). Click the card **"Rice field 3.5 miles east of Williams"**.*
 
-> "This is a real 149-acre rice field in Colusa County. Field Shift answers three questions a grower asks: what is happening on my field, what is likely this winter, and what would a different rotation cost me."
+> "This is a real 149-acre rice field in Colusa County. CropLytics answers three questions a grower asks: what is happening on my field, what is likely this winter, and what would a different rotation cost me."
 
 (37 words)
 
@@ -67,7 +67,7 @@ Spoken lines are in quotes. **Speaker** talks, **Driver** clicks the app. About 
 
 *Driver switches back to the slides, slide 7.*
 
-> "Field Shift supports the grower and the adviser; it doesn't replace them. Every number is sourced or marked as our assumption. It runs on two fields today, and some NASA layers aren't in yet. The next step is home: a BC field, with a measured water check, before we'd show it to a BC farmer. Thank you."
+> "CropLytics supports the grower and the adviser; it doesn't replace them. Every number is sourced or marked as our assumption. It runs on two fields today, and some NASA layers aren't in yet. The next step is home: a BC field, with a measured water check, before we'd show it to a BC farmer. Thank you."
 
 (57 words)
 
@@ -97,7 +97,7 @@ Spoken lines are in quotes. **Speaker** talks, **Driver** clicks the app. About 
 Built as `docs/slides/index.html`. Arrow keys move; Print (Cmd+P, landscape, no margins, background graphics on) gives a 7-page PDF.
 
 **1. Title**
-- Headline: **Field Shift**: plan next season's rotation with NASA Earth data.
+- Headline: **CropLytics**: plan next season's rotation with NASA Earth data.
 - A crop-rotation planner for a grower and their farm adviser. NASA Space Apps 2026, Vancouver.
 - Challenge: Field Shift: Adapting Farms with NASA Data.
 - Image: ISS astronaut photo of the Sacramento Valley near Colusa, 4 Mar 2020 (`img/iss-sacramento-valley.jpg`, from `data/cache/car_colusa_rice/iss/ISS062-E-81144.jpg`), with NASA's credit line.
@@ -151,7 +151,7 @@ Built as `docs/slides/index.html`. Arrow keys move; Print (Cmd+P, landscape, no 
 | 0:09–0:15 | Screen recording: "This field's year", earlier years open, cursor on 2022 | "A Colusa rice field from NASA's Landsat and Sentinel-2 imagery: fallow in the 2022 drought." | 2022: no rice |
 | 0:15–0:20 | Screen recording: "Coming season", rain outlook and Shasta | "This winter's outlook, reservoirs and allocations, in one place." | Outlook, not a forecast |
 | 0:20–0:25 | Screen recording: Compare, "Dry-year safflower" | "What a switch gains and gives up. Our water model runs 16 to 21% above OpenET." | Checked against OpenET: runs 16–21% high |
-| 0:25–0:30 | Brief slides in; end card (slide 7 closing line, team, event) | "One page for the adviser. Next stop: BC." | Field Shift · NASA Space Apps 2026, Vancouver |
+| 0:25–0:30 | Brief slides in; end card (slide 7 closing line, team, event) | "One page for the adviser. Next stop: BC." | CropLytics · NASA Space Apps 2026, Vancouver |
 
 Voice-over: 77 words, a brisk but clear read for 30 seconds. Keep the music low or leave it out; captions carry it on mute.
 
