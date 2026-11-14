@@ -76,7 +76,63 @@ Rules (spec B5.1, thresholds U, not tuned): observation used if field clear frac
 30 m cells in EPSG:32610 (edges on multiples of 30 m) clipped to the polygon, written in EPSG:4326. Feature properties: `cell_id, row, col, area_m2, frac_in_field`, then per layer `ndvi_<key>` (null if no clear pixel) and `n_ndvi_<key>`. Layers (listed in the top-level `layers` array): `ndvi_<year>_q<1-4>` = median over S2 scenes (field clear ≥ 0.5) of the cell mean, 2016-2025, with `n_` = scenes; `ndvi_d_<YYYYMMDD>` = single clear (≥ 0.95) scene nearest 15 Jan/Apr/Jul/Oct of 2021-2023, with `n_` = 10 m pixels. Cell value = mean of the 10 m S2 pixels whose centre is in the cell (10 → 30 m mean, B2.14). For CAF the S2/HLS tiles are in UTM 11, so CAF cells are not HLS-aligned (S2 pixels are reprojected point-wise into the 32610 cells).
 
 ## Verified / results
-RESULTS_PLACEHOLDER
+Run on 2026-11-14 under Python 3.12.13 with rasterio 1.5.2 (GDAL 3.12) wheels. uv installed them without problems.
+
+**Polygons** (chosen from DWR 2023 field outlines, scored against CDL):
+- `car_colusa_rice`: DWR field 0605542, Colusa County, **60.25 ha**, centroid 39.14139 N, -122.08334 W (1.7 km from the spec centre). Of the 189 DWR fields in a ~4 km window, 22 have CDL majority Rice 2021, Fallow 2022 and Rice 2023. This one has the best purity at about 60 ha (min purity 98.8%). DWR 2023 main crop is R1 (rice).
+- `caf_tulare_forage`: DWR field 1603054, **Kings County**, **29.47 ha**, centroid 36.23675 N, -119.63470 W (5.1 km from the spec centre). 11 of 209 fields pass the rule (>= 8 Alfalfa/Corn years and >= 3 Alfalfa years). This one has the most alfalfa and corn years. DWR 2023 main crop is F16 (corn/sorghum/sudan group), which matches CDL 2023 Corn. It is not in the Tulare Lake bed. CDL 2023 is corn, and no water was seen in spring 2023.
+
+**Crop history (CDL majority, purity)**
+- CAR: 2008 Fallow 96, 2009 Rice 98, 2010 Fallow 97, 2011-2015 Rice 97-99, 2016 Fallow 98, 2017-2019 Rice 98-99, 2020 Fallow 96, 2021 Rice 99, 2022 Fallow 99, 2023 Rice 99, 2024 Rice 99.8, 2025 Rice 99.5. The field has 5 fallow years, all in drought or rotation years.
+- CAF: Alfalfa 2008-2010 (99/99/92), 2011 Dbl Crop WinWht/Corn 97, Alfalfa 2012-2015 (98-99), 2016 Corn 88, Alfalfa 2017-2020 (88-96), 2021 Corn 95, 2022 Alfalfa 74, 2023 Corn 95, Alfalfa 2024-2025 (94/96).
+
+**Scenes** (rows in cache; usable = field clear >= 0.5): CAR S2 710 (461 usable, 2015-11..2026-11), Landsat 868 (619); CAF S2 724 (496), Landsat 489 (362). There were 4 Landsat window reads that failed after retries (listed in `landsat.meta.json` `errors`). Those scenes were skipped.
+
+**Checks output** (`uv run python checks/run_checks.py`):
+```
+PASS | lon/lat order car_colusa_rice | first vertex (x=-122.08658, y=39.13788) -> x is lon in CA range: True, y is lat in CA range: True
+PASS | polygon area car_colusa_rice | 60.25 ha in EPSG:32610 (target ~60 ha, accepted 50-150%); centroid 39.14139 N, -122.08334 E
+PASS | training box car_colusa_rice | 10.0 x 10.0 km in EPSG:32610
+PASS | lon/lat order caf_tulare_forage | first vertex (x=-119.63508, y=36.23316) -> x is lon in CA range: True, y is lat in CA range: True
+PASS | polygon area caf_tulare_forage | 29.47 ha in EPSG:32610 (target ~32 ha, accepted 50-150%); centroid 36.23675 N, -119.63470 E
+PASS | training box caf_tulare_forage | 10.0 x 10.0 km in EPSG:32610
+PASS | CAR CDL 2021 is Rice | majority Rice (98.8% of 670 px)
+PASS | CAR CDL 2022 is Fallow/Idle Cropland | majority Fallow/Idle Cropland (99.0% of 670 px)
+PASS | CAR CDL 2023 is Rice | majority Rice (99.1% of 670 px)
+PASS | CAF CDL alfalfa/corn history | 17/18 years Alfalfa or Corn; Alfalfa [2008, 2009, 2010, 2012, 2013, 2014, 2015, 2017, 2018, 2019, 2020, 2022, 2024, 2025]; Corn [2016, 2021, 2023]
+INFO | CAF CDL 2023 | Corn (95.1%)
+PASS | NDVI in [-1,1] s2 car_colusa_rice | 1596 values, min -0.336, max 0.994; 710 scenes 2015-11-17..2026-11-11
+PASS | clear_frac in [0,1] s2 car_colusa_rice | median 1.00; scenes with clear_frac>=0.5: 461
+PASS | NDVI in [-1,1] landsat car_colusa_rice | 2070 values, min -0.433, max 0.963; 868 scenes 2016-01-03..2026-10-29
+PASS | clear_frac in [0,1] landsat car_colusa_rice | median 0.97; scenes with clear_frac>=0.5: 619
+PASS | NDVI in [-1,1] s2 caf_tulare_forage | 1605 values, min -0.003, max 0.987; 724 scenes 2015-10-05..2026-11-11
+PASS | clear_frac in [0,1] s2 caf_tulare_forage | median 1.00; scenes with clear_frac>=0.5: 496
+PASS | NDVI in [-1,1] landsat caf_tulare_forage | 1119 values, min -0.009, max 0.938; 489 scenes 2016-01-13..2026-11-08
+PASS | clear_frac in [0,1] landsat caf_tulare_forage | median 0.98; scenes with clear_frac>=0.5: 362
+PASS | usable obs per year car_colusa_rice (total(S2/Landsat), need >=12) | 2016:66(10/56) 2017:67(16/51) 2018:90(47/43) 2019:81(40/41) 2020:98(51/47) 2021:89(45/44) 2022:96(51/45) 2023:104(48/56) 2024:103(49/54) 2025:94(51/43)
+PASS | usable obs per year caf_tulare_forage (total(S2/Landsat), need >=12) | 2016:46(13/33) 2017:50(19/31) 2018:81(52/29) 2019:77(52/25) 2020:77(49/28) 2021:82(54/28) 2022:70(51/19) 2023:91(51/40) 2024:74(47/27) 2025:80(57/23)
+PASS | CAR 2022 calendar mostly bare | bare 297 of 365 known days (81%); all: {'unknown': 0, 'bare': 297, 'partial': 34, 'covered': 0, 'water': 34}
+FAIL | CAR winter (Nov-Feb after a CDL rice year) reads water rather than bare | 3/6 winters with water days > bare days | 2017/18: water 19 bare 54 partial 5 covered 0 unknown 42; 2018/19: water 0 bare 74 partial 46 covered 0 unknown 0; 2019/20: water 48 bare 37 partial 35 covered 0 unknown 0; 2021/22: water 37 bare 58 partial 25 covered 0 unknown 0; 2023/24: water 38 bare 36 partial 46 covered 0 unknown 0; 2024/25: water 31 bare 25 partial 64 covered 0 unknown 0
+INFO | CAF spring 2023 (Mar-Jun) water on the field | no water seen: days {'unknown': 0, 'bare': 34, 'partial': 42, 'covered': 46, 'water': 0}; 36 obs, max field-median NDWI -0.241
+PASS | grid car_colusa_rice | 724 cells, clipped area 60.25 ha, 52 NDVI layers, values in [-1,1]: True
+PASS | grid caf_tulare_forage | 365 cells, clipped area 29.47 ha, 52 NDVI layers, values in [-1,1]: True
+---- 23 PASS, 1 FAIL, 2 INFO
+```
+
+What the data says:
+- CAR 2022 is 81% bare. The 34 water days are in Jan 2022, when S2 SCL marked 61-78% of the field as water and the field-median NDWI was only about 0.0-0.13. So the water class comes from the mask, not from the NDWI > 0.3 rule.
+- Winter flooding is only partly seen: water beat bare in 3 of 6 post-rice winters (the check needs more than half, so it FAILs). Some winters show near-zero NDVI with NDWI around 0 and no SCL water (e.g. 2024-01-29: NDVI 0.01, NDWI -0.02). These may be shallow flood over stubble that the NDWI > 0.3 threshold misses, or the field may not have been flooded. DSWx would settle this, but it needs Earthdata (see Blocked). Thresholds were not changed.
+- CAF spring 2023: no water. Max field-median NDWI was -0.24 from March to June.
+- Markers: CAF alfalfa years show 9-14 senescence_harvest markers per year, which are cuttings. Corn years show 3-6.
+- B10.1 check 7's "consensus vs modelled baseline >= 60%" needs the engine's modelled cover. It is not part of this chunk and is not run here.
+- Cross-sensor note: over bare soil in 2022, Landsat field NDVI is about 0.04 higher than S2 (0.19 vs 0.15). No harmonisation is applied, and S2 wins when both sensors observe the same day.
+
 
 ## Blocked
-BLOCKED_PLACEHOLDER
+- **HLS (B2.4), MODIS (B2.7), ECOSTRESS (B2.8), OPERA DSWx (B2.11)**: these need a NASA Earthdata login, which we do not have, so nothing was attempted. With a login, DSWx would give an independent water check for the CAR winter floods and the CAF 2023 flood extent. HLS would be the spec's primary 30 m record.
+- **OpenET 30 m (B2.12, B7.3)**: needs an OpenET API key. Not attempted.
+- **CropScape CDL API** `https://nassgeodata.gmu.edu/axis2/services/CDLService/GetCDLFile?year=2022&bbox=...`: `curl: Operation timed out after 60006 milliseconds with 0 bytes received`, and again at 240 s. Not needed, because the CroplandCROS image service works.
+- **Earth Search S2** (`sentinel-2-c1-l2a`): not blocked, but incomplete for these fields (0 items in 2016, 6 in 2022 at CAR). Planetary Computer is used instead.
+- **4 Landsat scenes** failed to read after 4 retries with GDAL `/vsicurl/` errors on MPC blobs: LC08 044033 2022-11-03, LC08 045033 2022-07-21, LC09 044033 2022-05-19 (CAR), and LC09 042035 2022-04-03 (CAF). Re-running `timeseries landsat` may recover them.
+- **Check FAIL (data, not a bug)**: "CAR winter reads water rather than bare", 3/6 winters. See above.
+

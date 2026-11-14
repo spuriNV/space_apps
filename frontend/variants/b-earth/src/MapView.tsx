@@ -105,7 +105,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     // Scroll-driven drill-down: wheel/pinch zoom near the selected field tilts the camera as the stack explodes.
     map.on('zoom', (e) => {
       const sel = live.current.selected;
-      if (!sel || programmatic.current || !(e as { originalEvent?: Event }).originalEvent) return;
+      if (!sel || !(e as { originalEvent?: Event }).originalEvent) return;
       const c = map.getCenter();
       if (Math.abs(c.lat - sel.centroid.lat) > 0.06 || Math.abs(c.lng - sel.centroid.lon) > 0.08) return;
       const f = clamp((map.getZoom() - (EXPLODE_Z0 - 0.3)) / (EXPLODE_Z1 - EXPLODE_Z0), 0, 1);

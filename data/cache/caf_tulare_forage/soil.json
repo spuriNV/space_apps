@@ -1,18 +1,18 @@
 {
- "mukey": "461792",
- "muname": "Kimberlina fine sandy loam, sandy substratum",
+ "mukey": "461791",
+ "muname": "Kimberlina fine sandy loam, saline-alkali",
  "drainage_class": "Well drained",
- "hydrologic_group": "A",
+ "hydrologic_group": "C",
  "dominant_component": {
   "compname": "Kimberlina",
   "comppct_r": "85",
   "taxorder": "Entisols"
  },
  "awc_mm_per_m": {
-  "value": 113.7,
+  "value": 50.1,
   "unit": "mm/m",
-  "low": 93.5,
-  "high": 124.9,
+  "low": 20.1,
+  "high": 80.1,
   "method": "lookup",
   "source": {
    "id": "ssurgo_sda",
@@ -24,10 +24,10 @@
   "note": "0-100 cm depth-weighted awc_r (cm/cm x 1000), comppct-weighted, area-weighted over map units; low/high = awc_l/awc_h"
  },
  "om_pct": {
-  "value": 0.74,
+  "value": 0.55,
   "unit": "%",
-  "low": 0.53,
-  "high": 0.94,
+  "low": 0.5,
+  "high": 0.6,
   "method": "lookup",
   "source": {
    "id": "ssurgo_sda",
@@ -40,218 +40,169 @@
  },
  "texture_class": "sandy loam",
  "texture_detail": {
-  "sand_pct": 72.9,
-  "silt_pct": 15.8,
-  "clay_pct": 11.4,
+  "sand_pct": 69.9,
+  "silt_pct": 16.5,
+  "clay_pct": 13.6,
   "surface_horizon_texture_code": "FSL",
   "method": "USDA triangle on 0-100 cm weighted sand/silt/clay"
  },
- "ec_ds_per_m": 2.89,
+ "ec_ds_per_m": 6.01,
  "map_units": [
   {
-   "mukey": "461792",
-   "muname": "Kimberlina fine sandy loam, sandy substratum",
-   "area_share": 0.604,
+   "mukey": "461791",
+   "muname": "Kimberlina fine sandy loam, saline-alkali",
+   "area_share": 0.996,
    "components": [
     {
      "compname": "Kimberlina",
      "comppct_r": "85",
      "drainage_class": "Well drained",
-     "hydrologic_group": "A",
-     "taxorder": "Entisols"
-    },
-    {
-     "compname": "Cajon",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Nord",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Kimberlina",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Excelsior",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Wasco",
-     "comppct_r": "1",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Unnamed",
-     "comppct_r": "1",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Unnamed",
-     "comppct_r": "1",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    }
-   ]
-  },
-  {
-   "mukey": "461782",
-   "muname": "Grangeville fine sandy loam, saline-alkali, partially d rained",
-   "area_share": 0.259,
-   "components": [
-    {
-     "compname": "Grangeville",
-     "comppct_r": "85",
-     "drainage_class": "Somewhat poorly drained",
-     "hydrologic_group": "B/D",
-     "taxorder": "Mollisols"
-    },
-    {
-     "compname": "Grangeville",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Kimberlina",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Nord",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Whitewolf",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Vanguard",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    }
-   ]
-  },
-  {
-   "mukey": "461840",
-   "muname": "Whitewolf coarse sandy loam",
-   "area_share": 0.125,
-   "components": [
-    {
-     "compname": "Whitewolf",
-     "comppct_r": "85",
-     "drainage_class": "Somewhat excessively drained",
-     "hydrologic_group": "A",
-     "taxorder": "Entisols"
-    },
-    {
-     "compname": "Cajon",
-     "comppct_r": "4",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Kimberlina",
-     "comppct_r": "4",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Wasco",
-     "comppct_r": "4",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Unnamed",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    }
-   ]
-  },
-  {
-   "mukey": "461796",
-   "muname": "Lakeside clay loam, drained",
-   "area_share": 0.012,
-   "components": [
-    {
-     "compname": "Lakeside",
-     "comppct_r": "85",
-     "drainage_class": "Somewhat poorly drained",
      "hydrologic_group": "C",
-     "taxorder": "Mollisols"
+     "taxorder": "Entisols"
+    },
+    {
+     "compname": "Nord",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Wasco",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
     },
     {
      "compname": "Excelsior",
-     "comppct_r": "4",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Grangeville",
-     "comppct_r": "3",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Corona",
      "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Kimberlina",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "1",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "1",
      "drainage_class": null,
      "hydrologic_group": null,
      "taxorder": null
     },
     {
      "compname": "Garces",
-     "comppct_r": "2",
-     "drainage_class": null,
-     "hydrologic_group": null,
-     "taxorder": null
-    },
-    {
-     "compname": "Kimberlina",
-     "comppct_r": "2",
+     "comppct_r": "1",
      "drainage_class": null,
      "hydrologic_group": null,
      "taxorder": null
     },
     {
      "compname": "Melga",
+     "comppct_r": "1",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Yound",
+     "comppct_r": "1",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Remnoy",
+     "comppct_r": "1",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Cajon",
+     "comppct_r": "1",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  },
+  {
+   "mukey": "461793",
+   "muname": "Kimberlina saline alkali-Garces complex",
+   "area_share": 0.004,
+   "components": [
+    {
+     "compname": "Kimberlina",
+     "comppct_r": "50",
+     "drainage_class": "Well drained",
+     "hydrologic_group": "C",
+     "taxorder": "Entisols"
+    },
+    {
+     "compname": "Garces",
+     "comppct_r": "35",
+     "drainage_class": "Well drained",
+     "hydrologic_group": "D",
+     "taxorder": "Aridisols"
+    },
+    {
+     "compname": "Cajon",
+     "comppct_r": "4",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Goldberg",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Lakeside",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Lemoore",
      "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Nord",
+     "comppct_r": "1",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "1",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "1",
      "drainage_class": null,
      "hydrologic_group": null,
      "taxorder": null
@@ -259,7 +210,7 @@
    ]
   }
  ],
- "footprint": "400 m square around preset centre (placeholder until field polygon exists)",
+ "footprint": "field polygon backend/field/polygons/caf_tulare_forage.geojson",
  "source": {
   "id": "ssurgo_sda",
   "url": "https://sdmdataaccess.sc.egov.usda.gov/",

@@ -96,7 +96,7 @@ def check_series():
                 line("FAIL", f"{src} series {pid}", "missing parquet"); continue
             d = pd.read_parquet(f)
             cols = [c for c in d.columns if c.startswith("ndvi_")]
-            v = d[cols].stack()
+            v = d[cols].stack().dropna()
             ok = bool(((v >= -1) & (v <= 1)).all())
             line("PASS" if ok else "FAIL", f"NDVI in [-1,1] {src} {pid}",
                  f"{len(v)} values, min {v.min():.3f}, max {v.max():.3f}; {len(d)} scenes {d.date.min()}..{d.date.max()}")
