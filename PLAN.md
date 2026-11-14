@@ -101,3 +101,5 @@ Deliverables: 7 slides or a 30-second video, a recorded backup of the demo, and 
 | ISS photos | Used, captioned "Seen from the ISS near your field, March 2020", with NASA's credit line. |
 | Options | No more option rounds. Build one version; change it after review. |
 | Timeline | No bottom timeline bar. A "Viewing: Today ▾" date control in the top bar (quick picks: today, last summer, last spring, 2023 floods, 2022 drought; month picker 2023–2026). Scrubbing and replay live on "This field's year". |
+| Farmer-first default | Each screen shows only what a farmer needs to decide (Field now: summary + 4 answers; Coming season: 3 items; Compare: today vs top 2). Everything else (NASA list, sources, ML, stress strip, 3D, percentiles, glossary, insurance, news, earlier years) sits behind "More detail". |
+| Mobile | Android and iOS apps wrap the same web app with Capacitor (`mobile/`); the web app gets a phone layout (bottom tabs, bottom-sheet field panel). Store publishing needs paid developer accounts; not done. |
