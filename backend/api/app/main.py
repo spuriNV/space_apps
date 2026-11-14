@@ -370,3 +370,21 @@ def grid(pid: str, resp: Response, layer: list[str] | None = Query(None)):
              "features": [{**f, "properties": {k: v for k, v in f["properties"].items() if k in keep or (k.startswith("n_") and k[2:] in keep)}} for f in d["features"]]}
     d["location_id"] = pid
     return send(resp, d, "real")
+
+
+# Optional: serve the built frontend from the same origin (set FRONTEND_DIST to frontend/app/dist). /api routes win.
+_dist = os.environ.get("FRONTEND_DIST")
+if _dist and (Path(_dist) / "index.html").is_file():
+    from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
+
+    _dist_p = Path(_dist).resolve()
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def spa(path: str):
+        if path == "api" or path.startswith("api/"):
+            raise HTTPException(404, "not found")
+        f = (_dist_p / path).resolve()
+        if path and f.is_file() and _dist_p in f.parents:
+            return FileResponse(f)
+        return FileResponse(_dist_p / "index.html")
