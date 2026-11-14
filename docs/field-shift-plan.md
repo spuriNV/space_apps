@@ -3,10 +3,16 @@
 NASA Space Apps Challenge 2026, Vancouver local event (SFU Burnaby).
 Challenge: **Field Shift: Adapting Farms with NASA Data**.
 
-Companion files:
-- `planner-spec.md`: detailed build spec.
-- `research-findings.md`: data sources, news and the problem research.
-- `brief-coverage.md`: a line-by-line check against the official brief.
+**Decision:** California is the product; BC is the motivation.
+- The pitch opens with BC's 2023 Salmon River irrigation order and the 2021 Sumas flood, and points out that BC lacks the ground data to prove a tool works.
+- It then shifts: "so we built and validated it where the data is rich."
+- The whole demo runs on two California example farms.
+
+**Companion files:**
+- `planner-spec.md`: build spec v3.
+- `rotation-factors.md`: what the planner scores.
+- `brief-coverage.md`: a check against the official brief.
+- `research-findings.md`: data sources and APIs.
 
 ---
 
@@ -15,249 +21,222 @@ Companion files:
 - **Brief:** https://www.spaceappschallenge.org/2026/challenges/adapting-farms-with-nasa-data/
 - **Judging guide:** https://www.spaceappschallenge.org/resources/judging-awards-guide/
 - **Local event:** https://www.spaceappschallenge.org/2026/local-events/vancouver/
-- **Max 6 people per team**, all registered to the same local event. A bigger group splits into teams.
-- **Submission:** 7 slides or a 30-second video, due Sunday 11:59 pm.
-- **Global judging (1–5 each):**
+- **Max 6 people per team.** The submission is 7 slides or a 30-second video, due Sunday 11:59 pm.
+- **Global judging, 1–5 each:**
   - Impact.
   - Creativity.
   - Validity: scientifically sound, feasible, usable.
-  - Relevance: NASA data central, not an add-on.
+  - Relevance: NASA data central.
   - Presentation.
-- **Local awards** are judged separately. The Vancity prize isn't on the event page, so ask the organizers.
+- **Local awards** are judged separately. Ask the organizers about the Vancity prize.
 
 ### What the official brief asks for
-- **Core task:** a decision-support tool that uses NASA Earth observations plus local soil information, crop characteristics and farmer priorities to explore crop rotations for soil health and resilience.
-- **Datasets named:** SMAP, ECOSTRESS, GPM, Landsat, MODIS, NASA POWER, GRACE/GRACE-FO, SRTM. GEDI is also named, under data fusion.
-- **Analyze:** temperature, heat stress, rainfall, soil moisture, evaporation, frost risk, extreme precipitation, vegetation stress, long-term water trends.
-- **Farmer priorities:** water use, forage value, nitrogen-fixing potential, erosion reduction, organic matter, market suitability.
-- **Highlight:**
-  - when fields are typically bare;
-  - when current crops are most vulnerable;
-  - rotations that interrupt pest cycles, reduce water demand, improve infiltration or add supplemental income.
-- **Compare at least 3 rotations including the existing one.** For each, give:
-  - why it was suggested;
-  - the evidence;
-  - the benefits;
-  - where information is missing;
-  - risks needing local review.
-- **AI:** the brief's "SI" appears to be its spelling of AI. It asks teams to compare AI or statistical approaches, highlight seasonal transitions, bare periods and crop stress, explain uncertainty, and put datasets onto a common analysis grid.
-- **Maps and visuals:**
-  - long-term trend maps (soil moisture, heat waves, water storage);
-  - field-level vulnerability zones (erosion, water stress, frost-prone areas);
-  - timelines, dataset overlays and scenario sliders for rainfall and temperature.
-- **Farmer-centred design:**
-  - plain language;
-  - explanations of ET, soil-moisture anomalies, NDVI, frost risk and water balance;
-  - farmer inputs for water, equipment and market;
-  - reminders that the tool supports local expertise and doesn't replace it.
-- **Inspiration:** "multigenerational farming experience." The hero photo is a Nevada alfalfa field.
+- **Core task:** a decision-support tool using NASA Earth observations plus local soil, crop characteristics and farmer priorities to explore crop rotations for soil health and resilience.
+- **NASA datasets named:** SMAP, ECOSTRESS, GPM, Landsat, MODIS, NASA POWER, GRACE/GRACE-FO, SRTM; GEDI under data fusion.
+- **Farmer priorities:** water use, forage value, nitrogen fixing, erosion reduction, organic matter, market suitability.
+- **Highlight:** bare periods, when current crops are vulnerable, pest-cycle breaks, lower water demand, infiltration, supplemental income.
+- **Compare at least 3 rotations including the existing one,** each with why, evidence, benefits, gaps and risks needing local review.
+- **AI:** "SI" appears to be the brief's spelling of AI. Compare AI or statistical approaches; detect seasonal transitions, bare periods and crop stress; explain uncertainty; harmonize data onto a common grid.
+- **Maps and visuals:** long-term trend maps, field-level vulnerability zones, timelines, dataset overlays, rainfall and temperature scenario sliders.
+- **Farmer-centred design:** plain-language explanations of ET, soil-moisture anomaly, NDVI, frost risk and water balance; farmer inputs; "supports, doesn't replace" reminders.
+- **The brief's own facts:** it's inspired by "multigenerational farming experience," and its hero photo is a Nevada alfalfa field.
 
 ### Judges
 - **NASA (Johnson Space Center):**
-  - Sadie Burnett Boudro: challenge author, Artemis engineer.
-  - Mani Deep Gogineni: data architect who builds web apps.
-  - William Stefanov: Earth scientist, ISS imagery for disaster response.
+  - Sadie Burnett Boudro: challenge author.
+  - Mani Deep Gogineni: data architect.
+  - William Stefanov: Earth scientist, ISS imagery.
   - Alex Stoken: ML on astronaut photography.
 - **Local (best-guess identities):**
-
-| Judge | Background | What will land |
-|---|---|---|
-| Amr Marzouk | SFU Mechatronics lecturer, P.Eng. | A demo that works |
-| Shahbano Farooq | SFU PhD student, HCI | Farmer-friendly design |
-| Sohan Seemakurthy | SFU Mechatronics; agricultural data work in the ReSEC Lab | A sound data pipeline |
-| Dawn Zheng | UBC Physics; Canadian Space Agency intern | Correct satellite use and scale |
-| Ebrahim Al-Yousefi | ISSofBC communications | A clear human story |
+  - Amr Marzouk: SFU Mechatronics.
+  - Shahbano Farooq: SFU HCI.
+  - Sohan Seemakurthy: SFU; agricultural data work.
+  - Dawn Zheng: UBC Physics; CSA intern.
+  - Ebrahim Al-Yousefi: ISSofBC communications.
 
 ---
 
 ## 2. The problem
 
-**One rotation planner for two water extremes.** Drought and flood are the lens, and every screen ends in a rotation comparison.
+### Motivation: BC (pitch opener only)
+- **16 Aug 2023:** about 398 licence holders on the lower Salmon River and Bessette Creek were ordered to stop irrigating forage. Mid-June letters had already asked for up to 50% cuts.
+  - Source: https://news.gov.bc.ca/releases/2023FOR0052-001305
+- **Nov 2021:** the Sumas Prairie atmospheric-river flood.
+- **BC's data gap:**
+  - no OpenET field-level water use;
+  - no field-scale soil API;
+  - about one weather station per valley;
+  - crop labels only from 2011.
+- **Takeaway:** BC has the problem and NASA's data, but not the ground data to prove a tool works.
 
-### Drought preset (lead story): Shuswap / Salmon River forage growers
-- In 2023, about 398 Salmon River/Bessette Creek and about 108 Koksilah licence holders were ordered to stop irrigating forage mid-season.
-- Hay went from $75 to $190 a bale.
-- **Decision:** in March–April, how much land stays in irrigated alfalfa or hay versus a drought-tolerant or early-harvest mix.
-- **Gap:** the orders arrive mid-summer with no warning for one field.
-- **NASA adds:**
-  - SMAP soil moisture, GRACE storage, and MODIS/HLS vegetation in spring, compared with past cut-off years;
-  - POWER-based crop water need for each rotation.
-
-### Wet preset: Fraser Valley / Sumas Prairie dairy fields
-- **Decision:** which cover or relay crop to plant, and when, before the October–December atmospheric-river season.
-- **Gap:** silage-corn ground sits bare from about October to April under the heaviest rain of the year.
-- **Evidence:** an Italian ryegrass relay crop cut runoff 53% and sediment 74% (find the primary paper).
-- Don't pitch this as flood prevention. The 2021 flood came from a dyke failure.
-
-### California preset: Sacramento Valley rice
-- This is the data-rich ceiling. The valley had a 2021–22 drought that fallowed about half the rice, then the 2023 floods.
-- **Extra data:**
-  - OpenET measured water use;
-  - SSURGO field soils;
-  - 15+ years of crop history (CDL), which gives labels for the AI;
-  - crop-insurance loss history.
-- **Pitch framing:** "California shows the tool with full ground data; BC shows it running on NASA data alone, like most of the world."
-
-### Why a Google search fails
-- Orders, drought levels and prices are spread across dozens of releases.
-- Nothing is tied to one field.
-- Reports come after the event, never at planting time.
-- Nothing weighs the trade-offs.
+### Product: California, two example farms
+1. **Colusa County rice (Sacramento Valley):**
+   - The 2022 drought cut Colusa rice planting by 84%.
+   - The 2023 atmospheric rivers then delayed planting and harvest.
+   - Source: NASA Earth Observatory, https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/
+2. **Tulare/Kings dairy forage (San Joaquin Valley):**
+   - Alfalfa and silage corn grown under groundwater limits.
+   - Tulare Lake re-flooded to about 114,000 acres in 2023.
+   - The basin was put on SGMA probation in April 2024 for over-pumping.
+   - Alfalfa matches the brief's photo.
 
 ### Users
-**A farmer and a regional agrologist working together.** The agrologist is the person most likely to open the tool.
+**A grower and an adviser working together.** The adviser is a UCCE farm advisor, NRCS planner, or water district/GSA staff member, and is the person most likely to open the tool.
+
+### Why a Google search fails
+- Allocations, drought status, prices and news are spread across dozens of sources.
+- Nothing is tied to one field.
+- Reports come after the event.
+- Nothing weighs the trade-offs.
+- Nothing shows how accurate it is against measured data.
 
 ---
 
 ## 3. The tool
 
 ### Screens
-1. **Pick a field:** a preset or a drawn boundary. Includes a satellite pixel-size overlay and an **in-field zone map**:
-   - erosion zones from slope;
-   - frost-prone low spots;
-   - stress hotspots from ECOSTRESS and NDVI.
-2. **Your field's year:** the bare-field calendar for 2019–2025, with:
-   - rain, frost, heat and dry-spell ticks;
-   - a current-crop vulnerability strip;
-   - green-up and senescence dates detected by the AI model;
-   - the AAFC/CDL crop history.
-3. **Trends:** long-term SMAP anomaly, heatwave days per year and GRACE water storage, with a year slider.
+1. **Pick a field:**
+   - two California example cards (rich ground data);
+   - a **"Why not BC yet"** card;
+   - pixel-size overlay and in-field zones.
+2. **Your field's year:**
+   - bare / covered / water calendar for 2016–2025;
+   - rule vs. ML detector toggle;
+   - risk ticks;
+   - current-crop vulnerability strip;
+   - CDL crop history;
+   - news timeline.
+3. **Trends:** long-term SMAP soil moisture, heatwave days, GRACE groundwater vs. DWR wells, MODIS vegetation.
 4. **Priorities and constraints:**
    - six sliders;
-   - irrigation licence volume;
+   - water source and allocation (acre-ft/acre);
    - livestock;
    - equipment;
-   - market preference (sell hay / feed own herd / none).
-5. **Compare:** the baseline plus 3 rotations, with range whiskers and ties.
-   - Extra lines for pest-cycle break, infiltration, nitrogen scavenging and supplemental income.
-   - **Climate scenario sliders** (+°C, ±% rain) re-score everything live.
-   - Replay toggles for 2021 and 2023.
-6. **Rotation brief:** a printable page with why, evidence, benefits, gaps and a local-review checklist.
-   - An LLM writes the text using only sourced numbers.
-   - Crop-role explainer cards cover nitrogen-fixing, cover, deep-rooting and drought-tolerant crops.
+   - market preference;
+   - climate scenario sliders.
+5. **Compare:**
+   - baseline + 3 rotations with ranges and ties;
+   - irrigation need vs. allocation;
+   - OpenET check badge;
+   - crop-insurance loss history;
+   - replays of 2022 and 2023.
+6. **Rotation brief:** printable, with AI-written text checked against sources, cover-crop funding (EQIP 340) as a range, and a local-review checklist.
 7. **Satellite vs. ground:**
-   - station rain vs. IMERG;
-   - the model comparison panel (rule vs. ML accuracy, feature importance);
-   - the news timeline: dated BC orders and headlines next to the NASA signal, with SMAP lead time computed from data.
-8. **Glossary:** ET, soil-moisture anomaly, NDVI, frost risk and water balance in plain language, linked from every chart label.
+   - **OpenET measured ET vs. our modelled crop water use (headline chart)**;
+   - CIMIS vs. POWER;
+   - rain sources compared;
+   - GRACE vs. wells;
+   - the model comparison panel.
+8. **Limits:** includes "BC is out of scope; transferability is a claim to test."
 
 ### AI component (the brief's "SI")
 1. **Bare-field and season detection:**
-   - Compare an NDVI threshold rule with a random forest or gradient-boosted classifier on HLS/Sentinel-2 bands and time-series features.
-   - Labels come from CDL (California) and AAFC ACI (BC).
-   - Train and test on different years, and report accuracy and where the two methods disagree.
-2. **Crop-stress anomaly detection:** compare a z-score against the field's own climatology with an isolation forest. Inputs: NDVI, ECOSTRESS land-surface temperature and ET, and SMAP.
-3. **Explanation layer:** an LLM writes the brief text from sourced numbers only. A check rejects any number that isn't in the data.
+   - Compare an NDVI threshold rule with random forest / gradient boosting.
+   - Trained on **real CDL crop labels** across thousands of fields near each example farm.
+   - 2022 (the fallow year) is held out as the test year.
+   - Spatial hold-out by field, so the test isn't just neighbouring pixels.
+2. **Crop-stress anomaly detection:** compare a z-score with an isolation forest. Inputs: MODIS and HLS vegetation, ECOSTRESS, SMAP and OpenET anomalies.
+3. **Explanation layer:** an LLM writes the brief text using only sourced numbers. A checker rejects any number that isn't in the data.
 
-### Uncertainty, three ways
-1. **Sources disagree:** IMERG vs. POWER vs. station, and SMAP vs. a model.
-2. **Scale mismatch:** a pixel-size badge showing pixel area divided by field area.
-3. **Agronomic gaps:** a count of assumed and unverified values per rotation, listed on the brief.
+### Rotations compared
+| Colusa rice | Tulare/Kings forage |
+|---|---|
+| **Baseline:** continuous rice with winter flooding | **Baseline:** alfalfa, 7–8 cuts, 4–5 year stand |
+| Rice + winter cover crop instead of winter flood | Winter small-grain silage + silage corn |
+| Dry-year plan: fallow with cover or safflower when water allocation is under 50% | Winter small-grain silage + sorghum-sudan (less water than corn) |
+| Rice–winter wheat | Shorter alfalfa stand + winter-cereal break + unirrigated summer |
 
-### Common analysis grid
-- **Field and zone grid:** fine data (Sentinel-2, Landsat, ECOSTRESS, SRTM, MODIS) is averaged to the field and its zones.
-- **Regional grid:** coarse data (SMAP 9 km grid; IMERG, POWER, GRACE resampled to it).
-- Both are shown on the Satellite vs. ground page.
-
-### Cut
-- The ISS photo classifier.
-- The Arduino probe.
-- Flood extents, dykes and evacuation layers.
+### Scoring
+See `rotation-factors.md`. In brief:
+- the brief's six priorities;
+- pest break, infiltration, nitrogen scavenging and income;
+- exposure (bare days × risky weather);
+- every score shown as a range, with ties when ranges overlap.
 
 ---
 
-## 4. Data (full list in `research-findings.md`)
-
+## 4. Data
 - **NASA:**
   - POWER;
   - SMAP L3/L4;
   - GPM IMERG;
-  - Landsat / HLS;
-  - **MODIS MOD13Q1**;
-  - **ECOSTRESS** (land-surface temperature and ET);
-  - **GRACE-DA**;
+  - HLS / Landsat;
+  - MODIS;
+  - ECOSTRESS;
+  - GRACE-DA;
   - SRTM / NASADEM;
-  - optional: OPERA DSWx and GEDI.
-  - Use AppEEARS for subsetting. Everything needs an Earthdata login.
-- **ESA:** Sentinel-2 L2A via STAC.
-- **BC ground:**
-  - AAFC Crop Inventory and Crop Rotations;
-  - ECCC stations;
-  - SoilGrids;
-  - BC Data Catalogue;
-  - BC drought levels (website only).
-- **California ground:**
-  - OpenET;
-  - SSURGO Soil Data Access;
-  - CDL;
+  - optional: OPERA DSWx (2023 flood extent).
+  - All need an Earthdata login; use AppEEARS for subsetting.
+- **ESA:** Sentinel-2.
+- **California ground data:**
+  - CDL crop history (the AI labels);
+  - SSURGO soils;
+  - **OpenET (validation)**;
   - CIMIS;
-  - CDEC, DWR and USGS;
-  - USDA RMA cause of loss.
-- **Planting decisions:**
-  - FAO-56 crop coefficients;
-  - BC cover-crop factsheets;
-  - Open-Meteo;
-  - NASS / StatCan;
-  - USDA AMS hay prices;
-  - NOAA seasonal outlook;
-  - funding: BC IAF, USDA EQIP.
+  - CDEC;
+  - DWR wells and SGMA status;
+  - USDA RMA cause of loss;
+  - NASS and AMS prices;
+  - EQIP 340;
+  - US Drought Monitor;
+  - NOAA outlooks.
 - **News:**
-  - BC Gov News RSS;
-  - Google News RSS (cached);
-  - GDELT (pre-fetched archive).
-- **Cache everything locally.** The demo never calls a live server.
+  - Google News RSS (US and Canada);
+  - GDELT archive;
+  - DWR and State Water Board releases;
+  - Ag Alert;
+  - BC Gov News for the opener.
+- **Cache everything.** The demo never calls a live server.
 
 ---
 
-## 5. Team (6 per team)
-
-This split matches `planner-spec.md` section B10.3.
+## 5. Team (6 per team; matches spec B10.3)
 
 | # | Stream | Owns |
 |---|---|---|
-| 1 | Regional data + news | POWER, IMERG, SMAP, GRACE for all 3 presets; reference ET; risk days; news feeds cached and ranked; SMAP lead-time computation; Trends layers |
-| 2 | Field data + zones | HLS, Sentinel-2, MODIS, ECOSTRESS, elevation, AAFC/CDL crop history; weekly feature table; rule-based detector; in-field zones |
-| 3 | AI | Rule vs. ML bare/season detectors with accuracy reports; z-score vs. isolation-forest stress model; LLM brief text with a number checker |
-| 4 | Rotation engine + adapters | crops.json; 12 strategies; scoring with ranges, scenario sliders, pest break, infiltration, N scavenging, income; BC and California data adapters; API |
-| 5 | Frontend | All 8 screens; glossary and crop-role cards; printable brief; phone width |
-| 6 | Integration, validation, story | Repo, schemas, fixtures, source check, validation scripts; demo laptop and offline cache; farmer story, slides, 30-second video, submit |
+| 1 | Regional data + news | POWER, IMERG, SMAP, GRACE, USDM; reference ET; risk days; California and BC news cached; lead-time computation; Trends |
+| 2 | Field data + zones | HLS, Sentinel-2, MODIS, ECOSTRESS, elevation, CDL, OpenET; weekly feature table; rule detector; in-field zones |
+| 3 | AI | CDL labels; RF/HGB detectors with accuracy reports; z-score vs. isolation forest; LLM brief + number checker |
+| 4 | Rotation engine + CA adapter | crops.json (FAO-56, UC ANR, cover-crop selector); 8 strategies; scoring, scenarios, allocation check; SSURGO, OpenET, CIMIS, CDEC, DWR, RMA, prices, EQIP |
+| 5 | Frontend | 8 screens, glossary and crop-role cards, "Why not BC yet" card, printable brief |
+| 6 | Integration, validation, story | Repo, schemas, fixtures, checks (OpenET headline first); BC opener story and news; slides, video, submit |
 
 ### First-hour agreements
-1. Shared JSON schemas: SourcedNumber, Location, Crop, RotationStrategy, plus API routes.
-2. Preset IDs and field boundaries for the Salmon River, Sumas and Sacramento presets.
-3. Cache paths and fixture files, so the frontend starts immediately.
-4. Earthdata logins and AppEEARS authorization; STAC reachable on the venue Wi-Fi.
-5. A number is "done" only with value, unit, low, high, method and source URL.
+1. Shared schemas and API routes, plus the California adapter interface.
+2. Preset IDs `car_colusa_rice` and `caf_tulare_forage`; field boundaries and 10 km training boxes.
+3. Fixtures, so the frontend starts at hour 2.
+4. **Keys:** Earthdata (GES DISC, NSIDC, AppEEARS), OpenET, CIMIS, USDA NASS, USDA AMS, an LLM API. Start the GDELT pre-fetch and download the RMA files.
+5. **Definitions of done:**
+   - every number has a source;
+   - every model has an accuracy report;
+   - every AI sentence is checked;
+   - nobody writes a water slide until the OpenET-vs-model check produces a number.
 
 ### Must-have vs. stretch
 - **Must-have:**
-  - the two BC presets;
-  - bare-field calendar;
-  - compare with ranges;
-  - rotation brief;
-  - scenario sliders;
-  - rule vs. ML season detection;
+  - both California presets end to end;
+  - the CA data adapter;
+  - calendar with both detectors;
+  - stress model;
+  - OpenET validation;
+  - compare with ranges and scenarios;
+  - rotation brief with AI check;
   - Satellite vs. ground page;
-  - glossary.
-- **Next:**
-  - the California preset;
-  - Trends map;
-  - in-field zones;
-  - stress anomaly model;
-  - news timeline;
-  - LLM brief text.
+  - glossary;
+  - the BC news timeline for the opener.
 - **Stretch:**
-  - GEDI;
-  - OPERA;
-  - drawing your own field with full data.
+  - the Trends map with year slider;
+  - zone maps per 30 m cell;
+  - cross-valley ML test;
+  - OPERA flood extent;
+  - the BC NASA-only chart.
 
 ### Schedule
-- **Sat, first hour:** register teams, agree on schemas, set up Earthdata accounts.
-- **Sat, day:** streams build in parallel and merge every 3 hours.
-- **Sat 22:00:** stop adding features, integrate, cache all demo data.
+- **Sat, first hour:** register teams, agree on schemas, set up keys.
+- **Sat, day:** build in parallel and merge every 3 hours.
+- **Sat 22:00:** feature freeze; integrate and cache.
 - **Sun morning:**
-  - validation;
-  - compute the SMAP lead time;
+  - run all checks;
   - polish;
   - record the video;
   - rehearse 3+ times.
@@ -266,35 +245,33 @@ This split matches `planner-spec.md` section B10.3.
 ---
 
 ## 6. Pitch (3 min)
-1. **Story (20s):** a family three generations on the Salmon River. "In 2023 the province told them to stop irrigating in July. Hay went from $75 to $190 a bale."
-2. **Problem (20s):** bare or thirsty fields meet a water extreme, and soil, nitrogen and water are lost.
-3. **Live demo (1:50):**
-   - calendar with risk ticks;
-   - AI-detected seasons;
-   - set priorities;
-   - compare with ranges and a tie;
-   - scenario slider set to +2 °C;
-   - open a brief;
-   - Satellite vs. ground page with the news timeline;
-   - switch to Sumas and replay November 2021.
-4. **Close (30s):** "It supports the farmer and agrologist, it doesn't replace them. Every number has a source. Built on SMAP, GPM, POWER, Landsat, MODIS, ECOSTRESS and GRACE."
+1. **BC opener (30 s):**
+   - "Three generations on the lower Salmon River. On 16 August 2023, about 398 licence holders were told to stop irrigating forage. Two years earlier, Sumas Prairie went under."
+   - Show the BC news timeline.
+   - "BC has the problem and NASA's satellites see it, but there's no ground data to prove a tool works. So we built and validated it where the data is rich."
+2. **California demo (2 min):**
+   - Colusa calendar: 2022 fallow, 2023 storms, rule vs. ML.
+   - OpenET vs. modelled chart.
+   - Priorities with allocation.
+   - Compare with ties, insurance history and the scenario slider.
+   - One brief.
+   - 15 seconds on Tulare/Kings: alfalfa under a pumping cap.
+3. **Close (30 s):** "Supports the grower and adviser, never replaces them. Every number has a source; every model shows its accuracy; water numbers are checked against measured ET. Next step: bring it home to BC."
 
-**Submission slides:**
+**Slides:**
 1. Title.
-2. Problem.
-3. What it does.
-4. Compare and scenario.
-5. AI and validation.
-6. Data and scale.
-7. Limits and next steps.
+2. BC motivation and data gap.
+3. Built where data is rich: California.
+4. Calendar, detectors, validation.
+5. Compare and scenarios.
+6. Brief, AI check, uncertainty.
+7. Limits and next step (BC).
 
 ---
 
 ## 7. Verify before pitching
-- The 398 and 108 licence counts, against the primary BC release.
-- The SMAP lead time before the 2023 orders, computed from real data.
-- The primary paper for the −53% runoff / −74% sediment result.
-- The team-size limit and submission format.
-- The Vancity prize, and the judge names, with the organizers.
-- The BC IAF fund cap ($100k vs. $30k).
-- Everything marked "U" in `planner-spec.md`.
+- The 398 count and the 16 Aug 2023 date (release 2023FOR0052-001305; Fable checked it, but confirm).
+- The hay price ($75 → $190), if used.
+- California calendars, CIMIS station IDs, CDL class codes, rice flood-water term, sorghum-sudan water savings, EQIP rates. All are marked "U" in the spec.
+- The OpenET-vs-model bias and the lead times, produced by the pipeline before anyone quotes them.
+- Team size, submission format, the Vancity prize and the judges, with the organizers.
