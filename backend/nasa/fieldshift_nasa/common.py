@@ -179,7 +179,8 @@ class AppEEARS:
 def clean_appeears_df(df: pd.DataFrame, layers: list[str], fill: dict[str, float]) -> pd.DataFrame:
     keep = ["Date"] + [l for l in layers if l in df.columns]
     out = df.loc[:, ~df.columns.duplicated()][keep].copy()
-    out["date"] = pd.to_datetime(out.pop("Date"))
+    dt = pd.to_datetime(out.pop("Date"))
+    out["date"] = dt.dt.tz_convert(None) if dt.dt.tz is not None else dt  # AppEEARS dates are UTC strings
     for l, fv in fill.items():
         if l in out.columns:
             out.loc[out[l] == fv, l] = float("nan")

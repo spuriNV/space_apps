@@ -37,8 +37,8 @@ for p in presets:
         "url": f"{C.APPEEARS}/task (point), products " + ", ".join(PRODS), "collection": list(PRODS),
         "params": {"point_lon_lat": [lon, lat], "start": start, "end": end, "layers": PRODS},
         "timestep": "irregular ISS overpasses (long format: one row per scene per product)",
-        "units": {"LST": "K", "LST_err": "K", "ETdaily": "W m-2 (AppEEARS-listed unit; daily-mean latent heat flux; "
-                                                             "convert to mm/day with lambda ~2.45e6 J/kg: x 0.0353)",
+        "units": {"LST": "K", "LST_err": "K", "ETdaily": "mm/day (AppEEARS lists W m-2, but the returned values are 0-7.4, "
+                                                             "i.e. mm/day as in the ECO_L3T_JET v002 user guide; checked 14 Nov 2026)",
                   "ESI": "ratio 0-1", "PET": "W m-2"},
         "native_res_m": 70, "fill_value": "NaN / cloud=255",
         **extra, "quality_handling": "cloud and water mask columns kept raw (1 = cloud / water); LST outside 150-400 K -> NaN. "

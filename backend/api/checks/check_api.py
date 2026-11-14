@@ -30,10 +30,16 @@ fails = 0
 SOURCES = {}  # route label (preset id replaced by {id}) -> set of X-Data-Source values seen
 # Routes that must be served from real output (a regression to fixture is a FAIL). Everything else may be fixture.
 EXPECT_REAL = ["/api/locations", "/api/locations/{id}", "/daily", "/features/weekly", "/strategies", "/score", "/zones",
-               "/trends?layer=heatwave_days", "/trends?layer=precip_anomaly", "/trends?layer=usdm_d2_weeks", "/trends?layer=reservoir_storage", "/news", "/validation", "/calendar", "/grid", "/api/bc/news", "/api/crops/{cid}"]
+               "/trends?layer=heatwave_days", "/trends?layer=precip_anomaly", "/trends?layer=usdm_d2_weeks", "/trends?layer=reservoir_storage", "/trends?layer=grace_gw_pct", "/news", "/validation", "/calendar", "/grid", "/api/bc/news", "/api/crops/{cid}"]
 EXPECT_FIXTURE_OK = {"/models": "no producer (AI workstream)", "/api/bc/signal": "SMAP/GRACE need Earthdata (blocked)",
-                     "/api/glossary": "no producer", "/trends?layer=smap_anomaly": "SMAP needs Earthdata (blocked)",
-                     "/trends?layer=grace_gw_pct": "GRACE needs Earthdata (blocked)", "/trends?layer=modis_ndvi_anomaly": "MODIS needs Earthdata (blocked)"}
+                     "/api/glossary": "no producer"}
+EXPECT_REAL += ["/openet", "/nasa_now", "/nasa_series"]
+# NASA AppEEARS layers: must be real once their cache exists for both presets (backend/nasa); fixture is allowed only before that
+for _layer, _ds in (("smap_anomaly", "smap_l4"), ("modis_ndvi_anomaly", "modis")):
+    if all((ROOT / "data" / "cache" / _p / f"{_ds}.parquet").exists() for _p in PRESETS):
+        EXPECT_REAL.append(f"/trends?layer={_layer}")
+    else:
+        EXPECT_FIXTURE_OK[f"/trends?layer={_layer}"] = f"{_ds} not cached yet (AppEEARS task pending in backend/nasa)"
 
 
 def check(method, url, validator_, body=None, expect=200):
@@ -82,6 +88,9 @@ for p in PRESETS:
     check("POST", L + "/score", validator("responses.schema.json", "Score"),
           {"weights": {"water_use": 4, "forage_value": 0}, "constraints": {}, "market_preference": "sell", "allocation": None,
            "replay_year": 2022, "scenario": {"dT_c": 2, "dP_pct": -10}})
+    rs = client.post(L + "/score", json={"weights": {"water_use": 2}})
+    ok = rs.status_code == 200 and all("etc_vs_openet_pct" in st["water"] and "openet_et_mm_season" in st["water"] for st in rs.json()["items"])
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} POST /score items carry water.etc_vs_openet_pct and openet_et_mm_season")
     check("POST", L + "/score", ANY, {"weights": {"bogus": 1}}, expect=422)
     check("GET", L + "/models", validator("responses.schema.json", "Models"))
     check("GET", L + "/zones", validator("responses.schema.json", "Zones"))
@@ -91,6 +100,25 @@ for p in PRESETS:
     check("GET", L + "/validation", validator("responses.schema.json", "Validation"))
     check("GET", L + "/calendar", ANY)
     check("GET", L + "/calendar?year=2022", ANY)
+    rh = check("GET", L + "/calendar?source=hls&year=2026", ANY)
+    check("GET", L + "/calendar?source=bogus", ANY, expect=422)
+    ro = check("GET", L + "/openet?from=2023-01-01&to=2023-12-31", ANY)
+    if ro is not None and ro.status_code == 200:
+        ok = len(ro.json()["rows"]) == 12
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /openet 2023 has 12 monthly rows")
+    rn = check("GET", L + "/nasa_now", ANY)
+    check("GET", L + "/nasa_now?date=2022-08-01", ANY)
+    check("GET", L + "/nasa_series?from=2023-01-01&to=2023-03-31", ANY)
+    if rn is not None and rn.status_code == 200:
+        rd = rn.json()["readings"]
+        ok = all(k in rd and rd[k]["value"] is not None for k in ("grace_gw_pct", "imerg_wy_to_date_mm"))
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /nasa_now has GRACE groundwater and IMERG season rain")
+    loc = client.get(L).json()
+    ok = isinstance(loc.get("nasa_datasets"), list) and any(d["status"] == "live" for d in loc["nasa_datasets"])
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} location.nasa_datasets present ({sum(d['status'] == 'live' for d in loc.get('nasa_datasets', []))} live)")
+    dl = client.get(L + "/daily?from=2026-01-01").json()["rows"]
+    ok = len(dl) > 250 and any(r_.get("imerg_precip_mm") is not None for r_ in dl)
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /daily reaches {dl[-1]['date'] if dl else None} with IMERG rain in 2026")
     check("GET", L + "/grid?layer=ndvi_2023_q3", ANY)
     check("GET", L + "/grid?layer=bogus", ANY, expect=422)
     crop_ids = sorted({c["crop_id"] for s in (r.json()["items"] if r else []) for c in s["calendar"]})

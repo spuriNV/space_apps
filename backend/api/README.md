@@ -2,7 +2,7 @@
 
 FastAPI app serving the spec B3 routes. No database. Each route returns a real output file if one exists, otherwise a fixture from `fixtures/`.
 
-**Real data:** `uv run python build_real.py` (no network, offline) converts the other chunks' outputs into the API's lookup files in `backend/api/out/<id>/` (committed): `location, daily, features_weekly, zones, validation, trends_<layer>`. It reads `data/cache/<id>/*` (POWER, NCEI, USDM, CDEC, soil), `backend/regional/out`, `backend/field/{polygons,out}` and the engine's observed-cover consensus. Re-run it after any of those change. The engine strategies, crops, news, calendar and grid are served straight from their chunks' outputs.
+**Real data:** `uv run python build_real.py` (no network, offline) converts the other chunks' outputs into the API's lookup files in `backend/api/out/<id>/` (committed): `location, daily, features_weekly, zones, validation, trends_<layer>`. It reads `data/cache/<id>/*` (POWER, NCEI, USDM, CDEC, soil, and the NASA caches from `backend/nasa` and `backend/nasa_open`: IMERG, SMAP L3/L4, GRACE-DA, MODIS, ECOSTRESS, OPERA DSWx, HLS, POWER near-real-time), `backend/regional/out`, `backend/field/{polygons,out}`, `backend/nasa_open/out` (NASADEM terrain) and the engine's observed-cover consensus. The NASA part lives in `nasa_build.py`; it also writes `out/<id>/nasa_series.json` and `out/bc_signal.json`. A NASA dataset that is not cached yet stays null / `pending`; nothing is filled in. Re-run it after any of those change. The engine strategies, crops, news, calendar and grid are served straight from their chunks' outputs.
 
 ## Run
 
@@ -39,10 +39,13 @@ Paths are relative to the repo root; first existing file wins. `{id}` is `car_co
 | `GET .../news?from&to` | `news.json` | `backend/news/out/{id}.json`, `data/cache/{id}/news.json` |
 | `GET .../validation` | `validation.json` | `backend/api/out/{id}/validation.json`, `backend/regional/out/{id}/validation.json`, `backend/field/out/{id}/validation.json`, `data/cache/{id}/validation.json` |
 | `GET /api/bc/news` | `bc_news.json` | `backend/news/out/bc_opener.json`, `backend/news/out/bc_news.json`, `data/cache/bc/news.json` |
-| `GET /api/bc/signal` | `bc_signal.json` | `backend/regional/out/bc_signal.json`, `data/cache/bc/signal.json` |
+| `GET /api/bc/signal` | `bc_signal.json` | `backend/api/out/bc_signal.json` (from `data/cache/bc/signal_raw.parquet`), `backend/regional/out/bc_signal.json`, `data/cache/bc/signal.json` |
 | `GET /api/glossary` | `glossary.json` | `backend/engine/out/glossary.json`, `data/cache/glossary.json` |
 | `GET /api/crops/{cid}` | `crops/{cid}.json` | `backend/engine/out/crops/{cid}.json`, or the entry with that `id` in `backend/engine/crops.json` (`{"crops": [...]}`) |
-| `GET .../calendar?year=` | none (404 if backend/field has not run) | `backend/field/out/{id}/calendar.json` + `crop_history.json` |
+| `GET .../calendar?year=&source=` | none (404 if not built) | `source=s2_landsat` (default): `backend/field/out/{id}/calendar.json`; `source=hls`: `backend/nasa/out/{id}/calendar_hls.json` (same detector on NASA HLS only); both + `crop_history.json` |
+| `GET .../openet?from&to` | none | `data/cache/{id}/openet.parquet`: monthly measured ET (mm and inches) plus annual totals |
+| `GET .../nasa_now?date=` | none | `backend/api/out/{id}/nasa_series.json`: NASA readings for the 10-day step containing `date` (default today) |
+| `GET .../nasa_series?from&to` | none | same file, one row per 10-day step (1st/11th/21st) |
 | `GET .../grid?layer=` | none (404 if backend/field has not run) | `backend/field/out/{id}/grid.geojson` |
 | `GET /api/health` | | not in spec; shows root and presets |
 
@@ -56,18 +59,19 @@ Paths are relative to the repo root; first existing file wins. `{id}` is `car_co
 
 | Route | Source | Notes |
 |---|---|---|
-| `GET /api/locations`, `/api/locations/{id}` | real | field polygon (DWR/Land IQ 2023 outline, ~60 ha CAR / ~29 ha CAF), SSURGO soil, NOAA stations, `county_fips` 011 (Colusa) / **031 (Kings)**, `crop_history` (CDL 2008-2025), `observed_cover.typically_bare_doy_ranges` (satellite consensus), `datasets` status. `terrain.*` is `value: null` ("blocked: no DEM"), except `elev_m` = POWER cell elevation (flagged in its note). `water.*`, `market_preference`, `regime`, `events` are spec statements (U) copied from the fixtures. `regional_cell.grid` is `POWER_MERRA2_0.5x0.625` (no SMAP EASE grid yet) |
-| `GET .../daily?from&to` | real | 2015-2025 daily: POWER `tmax_c/tmin_c/precip_mm`, Hargreaves `eto_mm`, `cover_class` from the satellite calendar (`unknown` before 2016 and across gaps), `ndvi` only on observation days, plus `ncei_tmax_c/ncei_tmin_c/ncei_precip_mm` (station mean), `heatwave_day`, `severe_heat_40c`. `smap_sm_pct` is always null (blocked) |
-| `GET .../features/weekly` | real | 2016-2025 weeks (Monday start): NDVI/BSI from S2+Landsat observations, POWER Tmax/Tmin/ETo, `usdm_category`. Everything needing Earthdata/OpenET is null |
-| `GET .../strategies`, `POST .../score` | real | rotation engine, real SSURGO soil, baseline exposure uses observed consensus cover (see backend/engine/README) |
-| `GET .../zones` | real, partial | `stress_hotspot` features = lowest-decile mean Jul-Sep NDVI 30 m cells (2016-2025, U). `slope` and `low_spot` are present with `meaningful:false` and a "blocked: no DEM" note; `openet_zone` absent (OpenET key) |
-| `GET .../trends?layer=&year=` | real for `heatwave_days`, `precip_anomaly`, `usdm_d2_weeks`, `reservoir_storage`; fixture for `smap_anomaly`, `grace_gw_pct`, `modis_ndvi_anomaly` (Earthdata) | real layers have **one cell** (`cells` has a single `{row:0,col:0}`; `grid` is `POWER_MERRA2_0.5x0.625`, `county_<fips>` or `cdec_<stations>`), not an 11x11 neighbourhood. Real files hold every year; `year` omitted -> `default_year` (2025; 2022 for USDM/reservoir), a year with no data -> 404. `field_cell_series` is the per-year value (POWER 1981-2025, USDM/CDEC 2015-2025). `note` explains each layer. Units: `days/yr`, `% of 1991-2020 mean`, `weeks/yr` (>= 50% of county in D2+), `thousand acre-ft (annual mean)` |
-| `GET .../validation` | real | `power_vs_ncei_precip`, `power_vs_ncei_tmax`, `power_vs_ncei_tmin` (monthly bias/RMSE/R2 plus `by_calendar_month`), `power_vs_ncei_heat40` (days >= 40 C per year, POWER vs each station). `openet_vs_etc`, `cimis_vs_power`, `station_vs_imerg` are `status: "blocked"` ("needs OpenET API key" / "needs CIMIS appKey" / "needs Earthdata login") |
-| `GET .../calendar?year=` | real (new) | backend/field `calendar.json` as documented in backend/field/README (classes, per-year `segments` tiling every day, `transitions`, `markers`, `observations`) plus `crop_history` (`by_year`, `years` with purity). `year` keeps one year |
-| `GET .../grid?layer=` | real (new) | 30 m GeoJSON (EPSG:4326), top-level `layers` metadata and `source`; ~1.8 MB for CAR with all 52 NDVI layers, so pass repeatable `layer=ndvi_2023_q3` to slim it (`layer` keys are listed in `layers[].key`) |
-| `GET .../news`, `GET /api/bc/news` | real | backend/news |
-| `GET /api/crops/{cid}` | real | engine crops.json |
-| `GET .../models`, `GET /api/bc/signal`, `GET /api/glossary` | fixture | no producer (AI workstream) / SMAP+GRACE blocked / no producer |
+| `GET /api/locations`, `/api/locations/{id}` | real | as before, plus: **`nasa_datasets`** (list: `id, name, tells_you` (plain words), `resolution, date_range, rows, status` live/pending/blocked, `used_in, source_url, note`) for the "NASA data behind this field" panel; `terrain.*` now **NASADEM** (smoothed slope, elevation, low-spot fraction) from backend/nasa_open; `datasets.*` statuses updated (`real` for IMERG, GRACE, HLS, DEM, OpenET once cached) |
+| `GET .../daily?from&to` | real | **2015-01-01 to the latest POWER near-real-time day (2026-11-11)**. New columns: `imerg_precip_mm` + `imerg_run` (GPM IMERG Final, Late after 2025-09-30; to 2026-11-13), `smap_sm_pct` (SMAP L4 root-zone percentile), `smap_rootzone_m3m3`, `smap_l3_sm_m3m3`, `grace_gw_pct` (weekly), `power_run` (`archive`/`nrt`), `cover_source` (`s2_landsat` or `hls`). NCEI station columns stay null after the station cache ends |
+| `GET .../features/weekly` | real | weeks through 2026; `imerg_7d_mm`, `smap_sm`, `smap_sm_pct`, `grace_*_pct`, `modis_ndvi_anomaly`, `esi` filled where the dataset is cached |
+| `GET .../trends?layer=&year=` | real for all 7 layers once SMAP/MODIS are cached | `grace_gw_pct` (annual mean GRACE-DA groundwater percentile, 2003-2026), `smap_anomaly` (SMAP L4 root-zone standardized anomaly, sd), `modis_ndvi_anomaly` (MOD13Q1 NDVI minus 2000-2025 same-period mean). Still one cell (`row 0, col 0`) |
+| `GET .../validation` | real | adds `station_vs_imerg` (IMERG vs NOAA station monthly rain, with `by_water_year` IMERG / POWER / stations totals) and `imerg_vs_power_precip`; `openet_vs_etc` now computed (copied from the engine baseline). `cimis_vs_power` still blocked |
+| `GET .../nasa_now?date=` | real (new) | `readings.{smap_rootzone_pct, smap_rootzone_m3m3, smap_surface_m3m3, smap_l3_sm_m3m3, grace_gw_pct, grace_rootzone_pct, imerg_rain_mm, imerg_wy_to_date_mm, imerg_wy_to_date_normal_mm, modis_ndvi, modis_ndvi_anomaly, ecostress_esi, ecostress_et_mm_day, dswx_water_frac, hls_ndvi}` each `{value, step, obs_date, stale_steps}`; `plain_language` lines for SMAP and GRACE; `latest_by_dataset`; values older than ~6 months are omitted |
+| `GET .../nasa_series?from&to` | real (new) | the same fields per 10-day step from 2015, for the 3D soil-moisture and groundwater slabs |
+| `GET .../openet` | real (new) | 120 monthly rows 2016-2025 (OpenET Ensemble v2.1, field polygon), `annual` totals |
+| `GET .../calendar?source=hls` | real (new) | NASA-native calendar: backend/field's rule detector on HLS v2.0 (Planetary Computer 2017-08..2025 + LP DAAC 2016-2019 and 2026) |
+| `POST .../score` | real | items now carry `water.etc_vs_openet_pct` and `water.openet_et_mm_season` (copied from GET /strategies; default weather, not recomputed per scenario) |
+| `GET .../strategies`, `zones`, `calendar`, `grid`, `news`, `crops` | real | unchanged |
+| `GET /api/bc/signal` | real once `fetch_bc_signal.py` finishes | SMAP L4 root-zone percentile, GRACE-DA groundwater percentile and POWER Tmax at 50.62 N -119.33 W, Mar-Oct 2023, weekly; markers from the spec with `lead_days` (rule ours, U) |
+| `GET .../models`, `GET /api/glossary` | fixture | no producer |
 
 Known data caveats the UI should not hide: POWER overstates rain vs the NCEI stations (+54% CAR, +68% CAF in monthly totals) and runs warm in summer (JJA Tmax about +3.4 C CAR, +3.8 C CAF), so `heatwave_days`, `severe_heat_40c` and the engine's heat/dry-day counts are high-biased. See `backend/regional/README.md`.
 
@@ -79,7 +83,7 @@ Known data caveats the UI should not hide: POWER overstates rain vs the NCEI sta
 
 - `backend/regional/out/{id}/` has `eto_monthly.json`, `risk_days_by_year.json`, `daily_derived.parquet`, none a B3 payload; the builder turns them (plus POWER/NCEI/USDM/CDEC caches) into `backend/api/out/{id}/`. The API still has no parquet reader, only JSON.
 - `backend/news/out/{id}.json` matches (bare array, wrapped). BC items are in `bc_opener.json`.
-- Schema changes made for real data: `trends.layer` gained `usdm_d2_weeks`, `reservoir_storage`; `trends.grid` and `location.regional_cell.grid` are free strings (were const `EASE2_G9km`); `validation.checks[].id` gained `power_vs_ncei_{precip,tmax,tmin,heat40}`.
+- Schema changes made for real data: `trends.layer` gained `usdm_d2_weeks`, `reservoir_storage`; `trends.grid` and `location.regional_cell.grid` are free strings (were const `EASE2_G9km`); `validation.checks[].id` gained `power_vs_ncei_{precip,tmax,tmin,heat40}` and `imerg_vs_power_precip`.
 - No chunk owns `models.json` (AI workstream) or `glossary.json`; both stay fixtures.
 
 ## Open questions

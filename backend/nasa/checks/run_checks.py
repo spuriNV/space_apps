@@ -14,6 +14,8 @@ n_fail = 0
 
 def out(ok, msg):
     global n_fail
+    if ok is not None:
+        ok = bool(ok)
     tag = "PASS" if ok is True else "FAIL" if ok is False else "INFO"
     n_fail += ok is False
     print(f"{tag}  {msg}")
@@ -97,7 +99,7 @@ for p in PRESETS:
         if len(s):
             out(s.mean() < 30, f"{p}/grace 2021-22 groundwater percentile mean {s.mean():.0f}, {(s<30).mean():.0%} of weeks < 30 (spec: below 30)")
         gaps = pd.to_datetime(d.date).diff().dt.days
-        out(None, f"{p}/grace largest gap {int(gaps.max())} days (expected ~11 months across GRACE/GRACE-FO gap 2017-18)")
+        out(None, f"{p}/grace largest gap {int(gaps.max())} days (GRACE-DA is a model that assimilates GRACE/GRACE-FO, so the 2017-18 satellite gap is filled by the model, not missing)")
     d = load(p, "modis")
     if d is not None:
         any_data = True
@@ -113,7 +115,7 @@ for p in PRESETS:
         if "ESI" in d:
             rng(p, "ecostress", d, "ESI", 0, 1.5, "ratio")
         if "ETdaily" in d:
-            rng(p, "ecostress", d, "ETdaily", 0, 400, "W/m2")
+            rng(p, "ecostress", d, "ETdaily", 0, 15, "mm/day")
     d = load(p, "dswx")
     if d is not None:
         any_data = True
@@ -126,6 +128,16 @@ for p in PRESETS:
                 w = clear[clear.datetime.dt.month.isin([12, 1, 2])]
                 out(bool(len(w) and w.frac_water.max() > 0.1),
                     f"{p}/dswx winter (Dec-Feb) clear scenes {len(w)}; max frac_water {w.frac_water.max() if len(w) else float('nan'):.2f}, mean {w.frac_water.mean() if len(w) else float('nan'):.2f} (spec: water on Colusa in winter)")
+                # per winter (Nov-Apr 15): was > half the field water on at least one clear scene?
+                cw = clear[clear.datetime.dt.month.isin([11, 12, 1, 2, 3, 4])].copy()
+                cw["winter"] = np.where(cw.datetime.dt.month >= 11, cw.datetime.dt.year, cw.datetime.dt.year - 1)
+                per = cw.groupby("winter").agg(n=("frac_water", "size"), mx=("frac_water", "max"),
+                                               wet=("frac_water", lambda s: int((s > 0.5).sum())))
+                per = per[per.n >= 5]
+                flooded = per[per.mx > 0.5]
+                out(None, f"{p}/dswx winters with >= 5 clear scenes: {len(per)}; winters with > 50% of field water on a clear scene: "
+                          f"{len(flooded)} ({', '.join(f'{y}-{(y + 1) % 100:02d} max {r.mx:.2f} in {int(r.wet)}/{int(r.n)}' for y, r in per.iterrows())}). "
+                          "No DSWx scenes exist over this field for winters 2020-21 and 2021-22.")
             else:
                 out(None, f"{p}/dswx spring 2023 clear scenes {len(clear)}; max frac_water {clear.frac_water.max() if len(clear) else float('nan'):.2f} (spec: flag if inside 2023 water extent)")
         else:

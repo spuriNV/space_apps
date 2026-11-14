@@ -203,6 +203,17 @@ export async function scoreStrategies(id: string, allocation: number, weights?: 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const normNews = (n: any): NewsItem => ({ ...n, verified: !!n.url && !n.url.includes('news.google.com'), signal: { label: n.signal?.dataset ?? '', value_pct: null, lead_days: null, ...n.signal } });
 
+/** 2023-2026 season strips for the pick list: 36 ten-day classes per year from the field calendar (HLS when served). */
+export async function getStrips(ids: string[]): Promise<Record<string, Record<number, string>>> {
+  if (!(await apiLive())) return {};
+  const out: Record<string, Record<number, string>> = {};
+  await Promise.all(ids.map(async (id) => {
+    const c = (await apiReal(`/api/locations/${id}/calendar?source=hls`)) ?? (await apiReal(`/api/locations/${id}/calendar`));
+    if (c?.years) out[id] = Object.fromEntries([2023, 2024, 2025, 2026].map((y) => [y, classString((c.years as RealCalYear[]).find((x) => x.year === y), y)]));
+  }));
+  return out;
+}
+
 // ---------- machine-learning calendar: how good is it? (GET .../models) ----------
 export interface MLInfo { acc2022: number | null; f1Bare2022: number | null; meetsTarget: boolean; inflated: boolean; disagreePct: number | null; model: string }
 /** Accuracy target for the bare/cover detector, tested on 2022 (held out): accuracy >= 85% and bare-ground F1 >= 0.80 (backend/ai). */

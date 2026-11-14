@@ -1,6 +1,7 @@
 """Field Shift API. Serves spec B3 routes: real output file if present, else fixture. No database."""
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,7 @@ from pydantic import BaseModel, Field
 
 ROOT = Path(os.environ.get("FIELDSHIFT_ROOT", Path(__file__).resolve().parents[3]))
 FIX = ROOT / "fixtures"
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # backend/api, for nasa_build
 PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
 LAYERS = ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly", "usdm_d2_weeks", "reservoir_storage"]
 DEFAULT_W = {"water_use": 1, "forage_value": 1, "n_fixation": 1, "erosion": 1, "organic_matter": 1, "market": 1,
@@ -27,10 +29,12 @@ LOOKUP = {
     "news": ["backend/news/out/{p}.json", "data/cache/{p}/news.json"],
     "validation": ["backend/api/out/{p}/validation.json", "backend/regional/out/{p}/validation.json", "backend/field/out/{p}/validation.json", "data/cache/{p}/validation.json"],
     "bc_news": ["backend/news/out/bc_opener.json", "backend/news/out/bc_news.json", "data/cache/bc/news.json"],
-    "bc_signal": ["backend/regional/out/bc_signal.json", "data/cache/bc/signal.json"],
+    "bc_signal": ["backend/api/out/bc_signal.json", "backend/regional/out/bc_signal.json", "data/cache/bc/signal.json"],
     "glossary": ["backend/engine/out/glossary.json", "data/cache/glossary.json"],
     "crop": ["backend/engine/out/crops/{c}.json"],
     "calendar": ["backend/field/out/{p}/calendar.json"],
+    "calendar_hls": ["backend/nasa/out/{p}/calendar_hls.json"],
+    "nasa_series": ["backend/api/out/{p}/nasa_series.json"],
     "crop_history": ["backend/field/out/{p}/crop_history.json"],
     "grid": ["backend/field/out/{p}/grid.geojson"],
     "calendar_ml": ["backend/ai/out/{p}/calendar_ml.json"],
@@ -209,6 +213,28 @@ def _engine_score(pid: str, req: ScoreRequest, w: dict):
         return None
 
 
+OPENET_KEYS = ("etc_vs_openet_pct", "openet_et_mm_season")
+
+
+def _with_openet(pid: str, items: list) -> list:
+    """The engine's score() does not recompute the OpenET check; copy water.etc_vs_openet_pct / openet_et_mm_season from the
+    stored strategies (same id) so POST /score carries them like GET /strategies. The check compares the default-weather
+    model with OpenET, so it does not change with weights/scenario; the note says so."""
+    try:
+        stored, _ = resolve("strategies", pid)
+    except HTTPException:
+        return items
+    by_id = {s["id"]: s for s in stored.get("items", []) if isinstance(s, dict)}
+    for st in items:
+        src = (by_id.get(st.get("id")) or {}).get("water", {})
+        wat = st.setdefault("water", {})
+        for k in OPENET_KEYS:
+            if k in src and k not in wat:
+                wat[k] = {**src[k], "note": (src[k].get("note", "") + " Copied from GET /strategies (default weather); "
+                                             "not recomputed for this request's scenario.").strip()}
+    return items
+
+
 @app.post("/api/locations/{pid}/score")
 def score(pid: str, req: ScoreRequest, resp: Response):
     """Scores via the rotation engine (weights, constraints, market_preference, allocation, replay_year, scenario all applied).
@@ -224,7 +250,7 @@ def score(pid: str, req: ScoreRequest, resp: Response):
         raise HTTPException(422, "at least one weight must be > 0")
     items = _engine_score(pid, req, w)
     if items is not None:
-        items = [normalize_strategy(st) for st in items]
+        items = [normalize_strategy(st) for st in _with_openet(pid, items)]
         out = {"location_id": pid, "request": req.model_dump(), "items": items, "ranking": _rank(items),
                "note": "scored by backend/engine (rule of thumb, not a model)"}
         return send(resp, out, "real")
@@ -323,10 +349,11 @@ def _real_only(kind: str, pid: str) -> dict:
 
 
 @app.get("/api/locations/{pid}/calendar")
-def calendar(pid: str, resp: Response, year: int | None = None):
-    """Observed field calendar (backend/field rule detector) + CDL crop history. Real only; 404 if backend/field has not run."""
+def calendar(pid: str, resp: Response, year: int | None = None, source: str = Query("s2_landsat", pattern="^(s2_landsat|hls)$")):
+    """Observed field calendar + CDL crop history. Real only. source=s2_landsat (default, backend/field: Sentinel-2 + Landsat)
+    or source=hls (same rule detector on NASA HLS v2.0 only, backend/nasa/out/<id>/calendar_hls.json)."""
     check_preset(pid)
-    d = _real_only("calendar", pid)
+    d = _real_only("calendar_hls" if source == "hls" else "calendar", pid)
     if year is not None:
         d = {**d, "years": [y for y in d["years"] if y["year"] == year]}
     try:
@@ -336,6 +363,53 @@ def calendar(pid: str, resp: Response, year: int | None = None):
         pass
     d["location_id"] = pid
     return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/openet")
+def openet(pid: str, resp: Response, from_: str | None = Query(None, alias="from"), to: str | None = None):
+    """Monthly measured actual ET (OpenET Ensemble, field polygon) from data/cache/<id>/openet.parquet. Real only."""
+    check_preset(pid)
+    f = ROOT / "data" / "cache" / pid / "openet.parquet"
+    if not f.is_file():
+        raise HTTPException(404, f"no OpenET cache for {pid}")
+    import pandas as pd
+    df = pd.read_parquet(f)
+    meta_f = f.with_suffix(".meta.json")
+    meta = _read(meta_f) if meta_f.is_file() else {}
+    rows = [{"date": pd.Timestamp(r.date).strftime("%Y-%m-%d"), "month": pd.Timestamp(r.date).strftime("%Y-%m"),
+             "et_mm": round(float(r.et_mm), 1), "et_in": round(float(r.et_mm) / 25.4, 2), "model": r.model}
+            for r in df.sort_values("date").itertuples() if r.et_mm == r.et_mm]
+    years = {}
+    for r_ in rows:
+        years.setdefault(r_["date"][:4], []).append(r_["et_mm"])
+    d = {"location_id": pid, "unit": "mm/month", "rows": rows,
+         "annual": [{"year": int(y), "et_mm": round(sum(v), 0), "months": len(v)} for y, v in sorted(years.items())],
+         "source": {"id": "openet", "title": "OpenET Ensemble monthly actual ET over the field polygon", "url": meta.get("url", "https://openet-api.org"),
+                    "accessed": (meta.get("fetched_at") or "")[:10], "verified": True},
+         "note": "Measured (satellite ensemble) actual crop water use, not a model of this app. Used to check the engine, never as a score input."}
+    return send(resp, filter_dates(d, "rows", from_, to), "real")
+
+
+@app.get("/api/locations/{pid}/nasa_now")
+def nasa_now(pid: str, resp: Response, date: str | None = None):
+    """NASA readings for the field at a date (default today): SMAP root-zone percentile, GRACE groundwater percentile,
+    IMERG rain season to date vs normal, MODIS/HLS greenness, ECOSTRESS stress, DSWx water, each with its observation date.
+    Values come from the 10-day series; a field with no value in that step falls back to its latest earlier step (stale_steps)."""
+    check_preset(pid)
+    s = _real_only("nasa_series", pid)
+    from nasa_build import now_reading  # noqa: PLC0415  (backend/api/nasa_build.py, pandas only)
+    d = now_reading(s, date)
+    d["location_id"] = pid
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/nasa_series")
+def nasa_series(pid: str, resp: Response, from_: str | None = Query(None, alias="from"), to: str | None = None):
+    """10-day NASA series (1st/11th/21st) for the 3D slabs and timeline: same fields as /nasa_now, one row per step."""
+    check_preset(pid)
+    d = _real_only("nasa_series", pid)
+    d["location_id"] = pid
+    return send(resp, filter_dates(d, "rows", from_, to), "real")
 
 
 @app.get("/api/locations/{pid}/calendar_ml")

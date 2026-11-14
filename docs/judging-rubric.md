@@ -64,16 +64,19 @@ The judging sheet scores five criteria, 1–5 each, 25 total. This file quotes e
   - AI or statistical approaches compared;
   - uncertainty shown;
   - maps and timelines.
-- **NASA data in use today:**
-  - NASA POWER;
-  - Landsat (NASA/USGS).
+- **NASA data live (14 Nov 2026, Earthdata login working).** Every dataset is served by the API and listed per field in `GET /api/locations/{id}` → `nasa_datasets` ("NASA data behind this field"):
+  - **GPM IMERG** daily rain, 2000-06 to 2026-11-13 (Final run, then Late run): the `/daily` rain column, rain so far this season vs normal, and a three-way rain check (IMERG vs NOAA stations vs POWER) in `/validation`.
+  - **GRACE/GRACE-FO** groundwater percentile (data-assimilation product), weekly 2003 to 2026-08-31: the groundwater answer in `/nasa_now`, the 3D groundwater slab (`/nasa_series`) and the `grace_gw_pct` trend.
+  - **SMAP** L4 root-zone and L3 surface soil moisture, 2015 to Nov 2026: soil moisture vs normal and the `smap_anomaly` trend (AppEEARS, see backend/nasa README for status).
+  - **OPERA DSWx** surface water, 30 m: Colusa winters 2016-17 to 2026-27 and Kings spring 2023. It settled the winter-flood question: water covered more than half the field in all 8 winters with scenes.
+  - **HLS** v2.0, 2016 to Oct/Nov 2026 (Planetary Computer and NASA LP DAAC): a NASA-only field calendar (`/calendar?source=hls`) built with the same rule detector.
+  - **MODIS** NDVI anomaly (2000+) and **ECOSTRESS** stress index (2018+), via AppEEARS.
+  - **NASA POWER** weather to 2026-11-11 (near-real-time), **NASADEM** slope and low spots, **Landsat**, **ISS** astronaut photos.
 
 **Gaps (biggest risk on the sheet)**
-- **Live NASA data is still thin.** Most of the field imagery is Sentinel-2 (ESA), and SMAP, GPM IMERG, GRACE, MODIS, ECOSTRESS, HLS and OPERA are all blocked on the Earthdata login. The 3D stack's soil-moisture and groundwater layers are still example numbers. **Getting the Earthdata login is the single most valuable step for this criterion.**
-- **No-login NASA data we can add now:**
-  - NASADEM elevation from Microsoft Planetary Computer, for slope and low spots.
-  - HLS (NASA's harmonised Landsat-Sentinel product) where an anonymous mirror exists.
-  - ISS astronaut photographs of the two areas from NASA's Gateway to Astronaut Photography of Earth. Two NASA judges work with this collection.
+- **The frontend still shows example numbers** for soil moisture and groundwater. It should switch to `GET .../nasa_now` and `.../nasa_series`, show `nasa_datasets`, and name the NASA dataset in each source line.
+- **The main calendar is still Sentinel-2 led.** The HLS calendar exists; making it the default (or showing both) makes the field record NASA-native.
+- **IMERG reads 40-70% wetter than the NOAA stations at Colusa** (POWER reads about 50% wetter too). Say so beside any rain number; the stations are the ground truth here.
 - **Make NASA data the core of each screen** (exposure, the 3D stack, the calendar), and name the dataset in each screen's source line.
 
 ## 5. Presentation

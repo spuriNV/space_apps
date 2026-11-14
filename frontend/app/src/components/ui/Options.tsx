@@ -6,7 +6,8 @@ import type { NasaDataset } from '../../nasa';
 import { ISSFigure, NasaList } from './NasaSection';
 import type { Daily } from '../../season';
 import Icon from '../Icons';
-import { AboutField, Actions, CROP_COL, EventLog, ProvList, acres, coords, county, fieldCode, fieldName, latestCrop, mainCrop, nearTown, recordLine, type Step } from './shared';
+import { useEffect, useState } from 'react';
+import { AboutField, Actions, EventLog, ProvList, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, type Step } from './shared';
 import { FieldNow, LastSeasons, whenT } from './FieldNow';
 import { TODAY_T } from '../../lib';
 
@@ -51,43 +52,59 @@ export function FieldPanel(p: FieldPanelProps) {
   );
 }
 
-/** "Pick your field": the overview list, in the words a grower would use. */
-export function FieldPicker(p: { locations: Location[]; live: boolean | null; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void }) {
+/** "Pick your field": one paper surface, one row per field with a satellite thumbnail (outline drawn), a 2023-2026 season strip,
+ *  one line of facts in grower units and one line of what is notable. BC is a quiet text row at the bottom. */
+export function FieldPicker(p: { locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void }) {
+  const [thumbs, setThumbs] = useState<Record<string, { bbox: number[] }> | null>(null);
+  useEffect(() => { fetch(`${import.meta.env.BASE_URL}thumbs/thumbs.json`).then((r) => r.json()).then((j) => setThumbs(j.fields)).catch(() => setThumbs({})); }, []);
   return (
-    <section className="panel fpanel picker" data-testid="fields-panel">
-      <header className="fp-head">
-        <div className="fp-title"><h1>Pick your field</h1>{p.onClose && <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>}</div>
-        <p className="fp-facts">See what is happening on it now, what this winter is likely to bring, and what a different rotation would cost in water.</p>
+    <section className="picker2" data-testid="fields-panel">
+      <header className="pk-head">
+        <h1>Pick your field</h1>
+        <p>What is happening on it now, what this winter may bring, and what another rotation would cost in water.</p>
+        {p.onClose && <button className="pk-close" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>}
       </header>
-      <div className="panel-scroll">
-        {p.live === false && <p className="offline-note" data-testid="offline-note">The CropLytics server is not answering, so every number below is an example. Start the API (see the README) and reload for real data.</p>}
-        {p.locations.length === 0 ? <p className="loading-note">Loading the fields…</p> : <p className="muted pick-note">Two California fields are set up so far. Choose one, or click its outline on the map.</p>}
-        <ul className="picklist" data-testid="field-table">
-          {p.locations.map((l) => {
-            const now = latestCrop(l);
-            return (
-              <li key={l.id}>
-                <button className={p.selectedId === l.id ? 'on' : ''} onClick={() => p.onSelect(l.id)} data-testid={`row-${l.id}`}>
-                  <i className="pick-sw" style={{ background: CROP_COL(mainCrop(l)) }} />
-                  <span>
-                    <b>{mainCrop(l)} field {nearTown(l)}</b>
-                    <span className="pick-facts">{county(l)} County, {acres(l)} acres, {now.crop.toLowerCase()} in {now.year}</span>
-                    <small>{recordLine(l)}</small>
+      {p.live === false && <p className="offline-note" data-testid="offline-note">The CropLytics server is not answering, so every number is an example. Start the API (see the README) and reload for real data.</p>}
+      {p.locations.length === 0 && <p className="loading-note">Loading the fields…</p>}
+      <ul className="pk-list" data-testid="field-table">
+        {p.locations.map((l) => {
+          const now = latestCrop(l), th = thumbs?.[l.id], strip = p.strips[l.id];
+          return (
+            <li key={l.id}>
+              <button className={`pk-row ${p.selectedId === l.id ? 'on' : ''}`} onClick={() => p.onSelect(l.id)} data-testid={`row-${l.id}`}>
+                <span className="pk-thumb">
+                  <img src={`${import.meta.env.BASE_URL}thumbs/${l.id}.jpg`} alt={`Satellite view of ${fieldName(l)}`} />
+                  {th && <svg viewBox="0 0 360 240" preserveAspectRatio="none" aria-hidden="true"><polygon points={outlinePts(l, th.bbox)} /></svg>}
+                </span>
+                <span className="pk-body">
+                  <b>{fieldName(l)}</b>
+                  <span className="pk-facts">{county(l)} County · {acres(l)} acres · {now.crop.toLowerCase()} in {now.year}</span>
+                  <span className="pk-note">{notable(l)}</span>
+                  <span className="pk-strip" title="Bare, green or flooded, 2023 to 2026, from satellites">
+                    {[2023, 2024, 2025, 2026].map((y) => <span key={y}><i>{(strip?.[y] ?? 'u'.repeat(36)).split('').map((c, k) => <em key={k} className={`c-${c}`} />)}</i><small>{y}</small></span>)}
                   </span>
-                  <Icon name="right" size={16} />
-                </button>
-              </li>
-            );
-          })}
-          <li>
-            <button className="dim" onClick={p.onBC}>
-              <i className="pick-sw none" />
-              <span><b>Sumas Prairie, British Columbia</b><span className="pick-facts">Not set up yet</span><small>Why not yet, and what it would take.</small></span>
-              <Icon name="right" size={16} />
-            </button>
-          </li>
-        </ul>
-      </div>
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <button className="pk-bc" onClick={p.onBC}>British Columbia: not set up yet. <u>See why</u></button>
     </section>
   );
+}
+/** Field outline in thumbnail coordinates (360 x 240, plate carrée over a small box). */
+function outlinePts(l: Location, b: number[]) {
+  return l.geometry.coordinates[0].map(([x, y]) => `${(((x - b[0]) / (b[2] - b[0])) * 360).toFixed(1)},${(((b[3] - y) / (b[3] - b[1])) * 240).toFixed(1)}`).join(' ');
+}
+/** One line of what is notable about the field, from its record. */
+function notable(l: Location) {
+  const notes: string[] = [];
+  const fallow = Object.entries(l.crop_history).filter(([y, c]) => +y >= 2016 && cropName(c) === 'Left fallow').map(([y]) => +y);
+  if (fallow.includes(2022)) notes.push('Left fallow in the 2022 drought');
+  else if (fallow.length) notes.push(`Left fallow in ${fallow[fallow.length - 1]}`);
+  if (l.water.source !== 'surface') notes.push('wells, in a basin under state groundwater probation since 2024');
+  else notes.push('surface water from the Sacramento River');
+  const s = notes.join('; ');
+  return s.charAt(0).toUpperCase() + s.slice(1) + '.';
 }

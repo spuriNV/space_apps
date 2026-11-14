@@ -1,13 +1,13 @@
 {
- "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=GRACEDADM_CLSM025GL_7D&version=3.0 (data.gesdisc.earthdata.nasa.gov, streamed via earthaccess)",
+ "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=GRACEDADM_CLSM025GL_7D&version=3.0 (Cloud OPeNDAP hyperslab per granule)",
  "collection": "GRACEDADM_CLSM025GL_7D.3.0 (C2283200566-GES_DISC)",
  "params": {
   "point_lon_lat": [
    -122.083339,
    39.141386
   ],
-  "start": "2021-01-01",
-  "end": "2025-12-31",
+  "start": "2003-02-01",
+  "end": "2026-11-14",
   "variables": [
    "gws_inst",
    "rtzsm_inst",
@@ -24,10 +24,11 @@
  "native_res_m": 25000,
  "fill_value": -999.0,
  "quality_handling": "fill -> NaN. Values are percentiles per CMR variable metadata (units '%'); confirm against the first fetched file. 3-6 month latency.",
- "n_granules": 5,
+ "n_granules": 1231,
  "n_read_errors": 0,
- "fetched_at": "2026-11-14T22:34:05Z",
- "n_rows": 5,
+ "access": "Cloud OPeNDAP (opendap.earthdata.nasa.gov) DAP2 ascii hyperslab",
+ "fetched_at": "2026-11-14T22:51:49Z",
+ "n_rows": 1231,
  "footprint_geojson": {
   "type": "Polygon",
   "coordinates": [

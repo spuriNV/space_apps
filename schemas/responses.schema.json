@@ -87,7 +87,7 @@
       "type": "object", "required": ["location_id", "checks"],
       "properties": {"location_id": {"type": "string"},
         "checks": {"type": "array", "items": {"type": "object", "required": ["id", "title", "status", "metrics"],
-          "properties": {"id": {"enum": ["openet_vs_etc", "cimis_vs_power", "station_vs_imerg", "power_vs_ncei_precip", "power_vs_ncei_tmax", "power_vs_ncei_tmin", "power_vs_ncei_heat40"]}, "title": {"type": "string"},
+          "properties": {"id": {"enum": ["openet_vs_etc", "cimis_vs_power", "station_vs_imerg", "imerg_vs_power_precip", "power_vs_ncei_precip", "power_vs_ncei_tmax", "power_vs_ncei_tmin", "power_vs_ncei_heat40"]}, "title": {"type": "string"},
             "status": {"enum": ["computed", "pending", "blocked"]},
             "metrics": {"type": "object", "additionalProperties": {"$ref": "sourced_number.schema.json"}}, "note": {"type": "string"}}}}}
     },

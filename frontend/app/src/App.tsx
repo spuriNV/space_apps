@@ -54,6 +54,7 @@ export default function App() {
   const [provOpen, setProvOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [switchOpen, setSwitchOpen] = useState(false);
+  const [strips, setStrips] = useState<Record<string, Record<number, string>>>({});
   useEffect(() => {
     if (!switchOpen) return;
     const off = (e: MouseEvent) => { if (!(e.target as HTMLElement).closest('.tb-switch')) setSwitchOpen(false); };
@@ -63,7 +64,7 @@ export default function App() {
   const [view, setView] = useState({ zoom: 5.75, pitch: 0, bearing: 0, lat: 37.35, lon: -119.9 });
 
   useEffect(() => {
-    api.getLocations().then(({ locations: ls, prov, live: lv }) => { setLocations(ls); setLocProv(prov); setLive(lv); setAllocation(Object.fromEntries(ls.map((l) => [l.id, l.water.allocation_input.value]))); });
+    api.getLocations().then(({ locations: ls, prov, live: lv }) => { api.getStrips(ls.map((l) => l.id)).then(setStrips); setLocations(ls); setLocProv(prov); setLive(lv); setAllocation(Object.fromEntries(ls.map((l) => [l.id, l.water.allocation_input.value]))); });
     api.getDatasets().then(setDatasets);
     api.getBC().then(setBC);
   }, []);
@@ -135,7 +136,7 @@ export default function App() {
   // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
   const toolPanel = panel === 'fields' ? panel : null;
   const leftPanel = yearExpanded ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
-  const leftInset = leftPanel ? 412 : 0;
+  const leftInset = leftPanel === 'fields' ? 464 : leftPanel ? 412 : 0;
   const rightInset = layersOpen ? 344 : 0;
   const bottomInset = yearExpanded ? (showEarlier ? 520 : 330) : 110;
   const drilled = !!selected && view.zoom > 13.4;
@@ -222,7 +223,7 @@ export default function App() {
       {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} iss={issNow} loading={!d || !dl}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldPicker locations={locations} live={live} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {leftPanel === 'fields' && <FieldPicker locations={locations} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen pill glass" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
       {panel === 'season' && selected && d && <ComingSeason nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}
