@@ -42,7 +42,7 @@ The judging sheet scores five criteria, 1–5 each, 25 total. This file quotes e
 - A working app that runs on real data.
 
 **Gaps (most important first)**
-1. **Measured-water check is blocked.** The model-vs-OpenET comparison is the planned headline validation and needs the OpenET key. Until then, don't claim the water numbers are validated.
+1. **Measured-water check: done (14 Nov).** On years the baseline crop was actually grown, our FAO-56 estimate runs +16% above OpenET for Colusa rice and +21% for Kings alfalfa, inside the ±25% target and on the high side as expected for a fully watered crop. Nothing was fitted to OpenET. Details in `backend/engine/README.md` ("Validation against OpenET").
 2. **POWER runs hot and wet** compared with the stations: about +3.5 °C summer highs, 54–68% more rain, and 51 vs 12–30 days at or above 40 °C at Colusa in 2022. Heat-day and rain counts must use stations or show both sources.
 3. **Scoring-formula problems are open** (`backend/engine/README.md`):
    - the erosion baseline cannot reach 0 as the spec requires;
@@ -94,7 +94,7 @@ The judging sheet scores five criteria, 1–5 each, 25 total. This file quotes e
 
 ## Top actions by points at stake
 1. **Earthdata login, then run `backend/nasa`:** relevance and validity.
-2. **OpenET key:** the model-vs-measured check, for validity.
+2. ~~OpenET key~~ done: model within +16% / +21% of measured water use. Fix the CIMIS key next for the station ET check.
 3. **NASADEM, HLS and ISS photos without a login:** relevance and creativity.
 4. **Settle and fix the scoring-formula problems:** validity.
 5. **Show the app to one real grower or adviser and note what confused them:** validity and impact.
