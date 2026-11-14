@@ -37,7 +37,7 @@ async function idle(extra = 900) {
 async function shot(name, map = true) { if (map) await idle(); else await page.waitForTimeout(500); await page.screenshot({ path: join(OUT, name) }); console.log('wrote', name); }
 async function open() {
   await page.goto(BASE, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.__map && window.__map.loaded() && document.querySelector('[data-testid="data-indicator"]'), null, { timeout: 90000 });
+  await page.waitForFunction(() => window.__map && window.__map.loaded() && document.querySelector('[data-testid="topbar"]') && document.querySelector('[data-testid="fields-panel"]'), null, { timeout: 90000 });
   await page.evaluate(() => document.fonts.ready);
 }
 async function pickField(id = FIELD) {
@@ -52,7 +52,7 @@ if (want('overview')) await shot('overview.png');
 await pickField();
 if (want('field-now')) await shot('field-now.png');
 if (want('coming-season')) { await page.click('[data-testid="tab-season"]'); await page.waitForSelector('[data-testid="coming-season"]'); await shot('coming-season.png', false); await page.click('[data-testid="tab-now"]'); }
-if (want('year')) { await page.click('[data-testid="tab-year"]'); await page.waitForSelector('[data-testid="year-sheet"]'); await page.click('[data-testid="ml-on"]').catch(() => console.log('  (no ML calendar)')); await shot('year.png'); await page.click('[data-testid="year-toggle"]'); }
+if (want('year')) { await page.click('[data-testid="tab-year"]'); await page.waitForSelector('[data-testid="year-sheet"]'); await page.click('[data-testid="ml-on"]').catch(() => console.log('  (no ML calendar)')); await shot('year.png'); await page.click('[data-testid="year-close"]'); }
 if (want('compare') || want('brief')) {
   await page.click('[data-testid="tab-compare"]');
   await page.waitForSelector('[data-testid="compare"]');

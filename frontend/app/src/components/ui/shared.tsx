@@ -48,9 +48,9 @@ export const fieldName = (l: Location) => `${mainCrop(l).split(',')[0]} field ${
 
 /** Data status as words in the source line, not a pill: measured / from a saved run / example numbers. */
 export function Src({ p }: { p?: Prov }) {
-  if (!p) return null;
-  const t = p.origin === 'mock' ? 'mock' : p.origin === 'api' ? 'api' : 'file';
-  return <span className={`src-tag ${t}`} title={`${p.label}: ${p.detail}${p.origin === 'file' ? ' (real output file; API route pending)' : ''}`}>{p.origin === 'mock' ? 'Example numbers, not live yet.' : p.origin === 'api' ? 'Live.' : 'Live, from a saved run.'}</span>;
+  // live parts carry no status words; only example data (API not answering) is flagged
+  if (!p || p.origin !== 'mock') return null;
+  return <span className="src-tag mock" title={`${p.label}: ${p.detail}`}>Example numbers.</span>;
 }
 
 /** The satellites behind the field calendar, NASA first. */
@@ -87,7 +87,7 @@ export function AboutField({ loc, prov, cal, insurance }: { loc: Location; prov:
       <div><dt>Holds</dt><dd>{inFt.toFixed(1)} in of water per foot of soil{inFt < 1.4 ? ' (low: needs frequent, short irrigations)' : inFt > 2 ? ' (high)' : ''}</dd></div>
       <div><dt>Drainage</dt><dd>{s.drainage_class}{s.hydrologic_group ? `; runoff group ${s.hydrologic_group}` : ''}</dd></div>
       <div><dt>Salt</dt><dd className={saline ? 'warn' : ''}>{s.ec_ds_per_m == null ? 'Not in the soil survey' : saline ? 'Salty soil; limits salt-sensitive crops' : 'Low salt'}{s.ec_ds_per_m != null && <small> (EC {s.ec_ds_per_m.toFixed(1)} dS/m)</small>}</dd></div>
-      <div><dt>Water</dt><dd>{loc.water.source === 'surface' ? 'Surface water' : 'Groundwater (wells)'}, {loc.water.district.replace(' (U)', '')} <cite><Src p={prov.water} /></cite></dd></div>
+      <div><dt>Water</dt><dd>{loc.water.source === 'surface' ? 'Surface water' : 'Groundwater (wells)'}{loc.water_real ? `, ${loc.water.district}${loc.water.sgma_subbasin ? `; ${loc.water.sgma_subbasin} subbasin` : ''}` : <small className="na-line">; water district not looked up yet</small>}</dd></div>
       {dem?.slope_mean_pct != null && <div><dt>Slope</dt><dd>{dem.slope_mean_pct < 2 ? 'Nearly flat' : dem.slope_mean_pct < 5 ? 'Gentle slope' : 'Sloping'}, about {dem.slope_mean_pct.toFixed(1)}% on average{dem.low_spot_fraction ? `; low spots on about ${Math.round(dem.low_spot_fraction * 100)}% of the field, where water ponds and frost settles` : ''}. <cite>NASA NASADEM elevation, 100 ft squares; radar elevation reads 1 to 2% on a levelled field. <Src p={prov.terrain} /></cite></dd></div>}
       {rma && <div><dt>Crop insurance</dt><dd>{usd(rma.total_usd)} paid out on {rma.scope} {rma.crop.replace('_forage', '').replace(/_/g, ' ')}, {rma.from}–{rma.to}; {usd(rma.top_usd)} in {rma.top_year} alone.{rma.share_drought >= 0.3 ? ` ${Math.round(rma.share_drought * 100)}% of it for drought or failed irrigation water.` : ''} <cite>USDA Risk Management Agency, county totals, not this farm. <Src p={prov.rma} /></cite></dd></div>}
       <div><dt>Usually bare</dt><dd>{ob ? <>About {ob.value} days a year, mostly {when} <cite>Seen by satellite, {ob.years[0]}–{ob.years[ob.years.length - 1]}. {BARE_DEF} <Src p={prov.calendar} /></cite></> : loc.observed_cover.summary}</dd></div>

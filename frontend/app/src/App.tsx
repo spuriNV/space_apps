@@ -2,10 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MapView, { type MapHandle } from './MapView';
 import * as api from './api';
 import type { BCInfo, CoverClass, Dataset, FieldEvent, Location } from './types';
-import { CLASS_COLOR, CLASS_LABEL, ET_RAMP, T_MAX, TODAY_T, dateToT } from './lib';
+import { CLASS_COLOR, CLASS_LABEL, ET_RAMP, MONTHS, RECENT_FROM, T_MAX, TODAY_T, YEARS, dateToT, tLabel, tOf, yearOf, dekadOf } from './lib';
 import type { Daily } from './season';
 import Icon from './components/Icons';
-import Timeline, { tStart } from './components/Timeline';
+import YearSheet from './components/year/YearSheet';
+import { calSource } from './components/ui/shared';
+const tStart = (earlier: boolean) => tOf(earlier ? YEARS[0] : RECENT_FROM, 0);
 import ComingSeason from './components/season/ComingSeason';
 import ComparePanel from './components/compare/ComparePanel';
 import RotationBrief from './components/brief/RotationBrief';
@@ -17,6 +19,14 @@ import { ProvList, acres, county, fieldName, type Step } from './components/ui/s
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
 type Panel = 'none' | 'fields' | 'season' | 'compare';
 type Tab = 'now' | 'season' | 'year' | 'compare' | 'brief';
+/** Quick dates in the grower's words for the "Viewing" control. */
+const QUICK: { label: string; sub: string; t: number }[] = [
+  { label: 'Today', sub: 'mid Nov 2026', t: TODAY_T },
+  { label: 'Last summer', sub: 'Jul 2026', t: tOf(2026, 19) },
+  { label: 'Last spring', sub: 'Apr 2026', t: tOf(2026, 10) },
+  { label: '2023 floods', sub: 'Mar 2023', t: tOf(2023, 7) },
+  { label: '2022 drought', sub: 'Jul 2022', t: tOf(2022, 19) },
+];
 const TABS: { id: Tab; label: string; short?: string }[] = [
   { id: 'now', label: 'Field now' },
   { id: 'season', label: 'Coming season' },
@@ -46,22 +56,23 @@ export default function App() {
   const [layersOpen, setLayersOpen] = useState(false);
   const [yearOpen, setYearOpen] = useState(false);
   const detector = 'rule' as const;
-  const [metric, setMetric] = useState<'cover' | 'et'>('cover');
+  const metric = 'cover' as const; // the 3D view shows ground cover; measured water use is on the panel (OpenET)
   const [layersOn, setLayersOn] = useState<Record<string, boolean>>({ hls: true, smap: true, grace: true, imerg: false, modis: false, ecostress: false });
   const [allocation, setAllocation] = useState<Record<string, number>>({});
   const [briefOpen, setBriefOpen] = useState(false);
   const [briefPick, setBriefPick] = useState<string | null>(null);
   const [bcOpen, setBcOpen] = useState(false);
-  const [provOpen, setProvOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [switchOpen, setSwitchOpen] = useState(false);
+  const [dateOpen, setDateOpen] = useState(false);
+  const [timedOut, setTimedOut] = useState<string | null>(null);
   const [strips, setStrips] = useState<Record<string, Record<number, string>>>({});
   useEffect(() => {
-    if (!switchOpen) return;
-    const off = (e: MouseEvent) => { if (!(e.target as HTMLElement).closest('.tb-switch')) setSwitchOpen(false); };
+    if (!switchOpen && !dateOpen) return;
+    const off = (e: MouseEvent) => { const el = e.target as HTMLElement; if (!el.closest('.tb-switch')) setSwitchOpen(false); if (!el.closest('.tb-date-wrap')) setDateOpen(false); };
     document.addEventListener('mousedown', off);
     return () => document.removeEventListener('mousedown', off);
-  }, [switchOpen]);
+  }, [switchOpen, dateOpen]);
   const [view, setView] = useState({ zoom: 5.75, pitch: 0, bearing: 0, lat: 37.35, lon: -119.9 });
 
   useEffect(() => {
@@ -74,11 +85,13 @@ export default function App() {
   useEffect(() => {
     if (!selected || live == null) { setData(null); return; }
     let ok = true;
-    api.getField(selected, live).then((b) => ok && setData(b));
+    setTimedOut(null);
+    const to = setTimeout(() => ok && setTimedOut(selected.id), 15000);
+    api.getField(selected, live, (b) => ok && setData(b)).then((b) => ok && setData(b));
     api.getDaily(selected.id).then((r) => ok && setDaily({ id: selected.id, ...r }));
     api.getOutlook(selected.id, live).then((o) => ok && setOutlook({ id: selected.id, o }));
     api.getISS(selected).then((v) => ok && setISS({ id: selected.id, v }));
-    return () => { ok = false; };
+    return () => { ok = false; clearTimeout(to); };
   }, [selected, live]);
   // re-score through POST /score when the water allocation changes (engine applies the allocation check)
   const alloc = selected ? allocation[selected.id] : undefined;
@@ -140,7 +153,7 @@ export default function App() {
   const leftPanel = yearExpanded ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
   const leftInset = leftPanel === 'fields' ? 464 : leftPanel ? 412 : 0;
   const rightInset = layersOpen ? 344 : 0;
-  const bottomInset = yearExpanded ? (showEarlier ? 520 : 330) : 110;
+  const bottomInset = yearExpanded ? (showEarlier ? 470 : 290) : 12;
   const drilled = !!selected && view.zoom > 13.4;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;
@@ -162,7 +175,6 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, locations, select]);
 
-  const mockParts = Object.values(prov).filter((p) => p.origin === 'mock').length;
   const tabOn = (id: Tab) => !!selected && (id === 'brief' ? briefOpen : id === 'year' ? yearExpanded : id === 'now' ? panel === 'none' && !yearExpanded && leftPanel === 'card' : panel === id);
   const onTab = (id: Tab) => {
     setSwitchOpen(false);
@@ -206,24 +218,36 @@ export default function App() {
           ))}
         </nav>
         <div className="tb-right">
-          {live != null && (
-            <button className={`data-ind ${live ? 'live' : 'example'}`} onClick={() => setProvOpen(!provOpen)} data-testid="data-indicator"
-              title={live ? 'Real outputs from the CropLytics API; parts marked "example numbers" are still illustrative' : 'API not reachable: showing the bundled example data'}>
-              <i />{live ? 'Live data' : 'Example data only'}{selected && mockParts > 0 && <em>{mockParts} parts are examples</em>}
+          <div className="tb-date-wrap">
+            <button className={`tb-date ${dateOpen ? 'open' : ''}`} onClick={() => setDateOpen(!dateOpen)} data-testid="date-control" aria-expanded={dateOpen}>
+              <small>Viewing</small><b>{t === TODAY_T ? `Today, ${tLabel(t).charAt(0).toLowerCase()}${tLabel(t).slice(1)}` : tLabel(t)}</b><Icon name="down" size={16} />
             </button>
-          )}
+            {dateOpen && (
+              <div className="tb-datepop" data-testid="date-pop">
+                <div className="dp-quick">
+                  {QUICK.map((q) => <button key={q.label} className={t === q.t ? 'on' : ''} onClick={() => { setT(q.t); setPlaying(false); setDateOpen(false); }}>{q.label}<small>{q.sub}</small></button>)}
+                </div>
+                <div className="dp-months">
+                  {YEARS.filter((y) => showEarlier || y >= RECENT_FROM).slice().reverse().map((y) => (
+                    <div key={y} className="dp-year"><b>{y}</b>
+                      {MONTHS.map((m, k) => { const tt = tOf(y, k * 3 + 1), future = tt > TODAY_T; return <button key={m} disabled={future} className={yearOf(t) === y && Math.floor(dekadOf(t) / 3) === k ? 'on' : ''} onClick={() => { setT(tt); setPlaying(false); setDateOpen(false); }}>{m}</button>; })}
+                    </div>
+                  ))}
+                </div>
+                <div className="dp-foot">
+                  <button className="link" onClick={() => setShowEarlier(!showEarlier)}>{showEarlier ? 'Hide earlier years' : 'Show earlier years (2016–2022)'}</button>
+                  {t !== TODAY_T && <button className="link" onClick={() => { setT(TODAY_T); setDateOpen(false); }}>Back to today</button>}
+                </div>
+              </div>
+            )}
+          </div>
           <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => setLayersOpen(!layersOpen)} data-testid="layers-btn"><Icon name="layers" size={16} />Map layers</button>
-          {provOpen && (
-            <div className="prov-pop glass">
-              <h4>{live ? 'Where each part of this view comes from' : 'Example data: the CropLytics API is not reachable'}</h4>
-              {selected ? <ProvList prov={prov} /> : <p className="muted">Pick a field to see where each part of the view comes from.</p>}
-            </div>
-          )}
         </div>
       </header>
+      {t !== TODAY_T && <div className="date-banner" data-testid="date-banner">Showing {tLabel(t)}<button className="link" onClick={() => { setT(TODAY_T); setPlaying(false); }}>Back to today</button></div>}
 
       {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
-        nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} loading={!d || !dl}
+        nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
       {leftPanel === 'fields' && <FieldPicker locations={locations} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen pill glass" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
@@ -232,20 +256,15 @@ export default function App() {
       {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} daily={dl?.daily ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} live={!!live} cal={d.cal} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
         onBrief={(id) => { setBriefPick(id); setBriefOpen(true); }} onClose={() => setPanel('none')} />}
 
-      {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} metric={metric} setMetric={setMetric} onClose={() => setLayersOpen(false)} />}
+      {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected}  onClose={() => setLayersOpen(false)} />}
 
       {drilled && panel !== 'compare' && panel !== 'season' && (
         <div className="hud glass" data-testid="hud">
           <span className="hud-title"><Icon name="cube" size={16} />Under the field</span>
-          <div className="seg small">
-            <button className={metric === 'cover' ? 'on' : ''} onClick={() => setMetric('cover')}>Ground cover</button>
-            <button className={metric === 'et' ? 'on' : ''} onClick={() => setMetric('et')}>Water use</button>
-          </div>
+
           <div className="hud-legend">
-            {metric === 'cover'
-              ? (['b', 'p', 'c', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{({ b: 'Bare', p: 'Thin', c: 'Crop', w: 'Flooded' } as Record<string, string>)[c]}</span>)
-              : <span className="grad"><em>0</em><i style={{ background: `linear-gradient(90deg, ${ET_RAMP.map((s) => s[1]).join(',')})` }} /><em>9 mm/day</em></span>}
-            <span className="hud-note">taller = {metric === 'cover' ? 'greener (NDVI)' : 'more water used'}</span>
+            {(['b', 'p', 'c', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{({ b: 'Bare', p: 'Thin', c: 'Crop', w: 'Flooded' } as Record<string, string>)[c]}</span>)}
+            <span className="hud-note">taller = greener</span>
           </div>
         </div>
       )}
@@ -261,8 +280,12 @@ export default function App() {
         </div>
       </div>
 
-      <Timeline t={t} setT={setT} playing={playing} setPlaying={setPlaying} loc={selected} cal={d?.cal ?? null} daily={dl?.daily ?? null} ml={d?.ml ?? null} extras={d?.extras ?? null} prov={d?.prov.calendar} events={events}
-        showEarlier={showEarlier} setShowEarlier={setShowEarlier} expanded={yearExpanded} setExpanded={(b) => { setYearOpen(b); if (b && (panel === 'compare' || panel === 'season')) setPanel('none'); }} />
+      {yearExpanded && selected && d?.cal && (
+        <div className="year-dock" data-testid="year-dock">
+          <YearSheet t={t} setT={setT} loc={selected} cal={d.cal} daily={dl?.daily ?? null} ml={d.ml} extras={d.extras} calSource={calSource(d.prov.calendar)} events={events}
+            playing={playing} setPlaying={setPlaying} showEarlier={showEarlier} setShowEarlier={setShowEarlier} setExpanded={(b) => setYearOpen(b)} />
+        </div>
+      )}
 
       {briefOpen && selected && d && <RotationBrief loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} outlook={ol} nasaNow={d.nasaNow} cal={d.cal} daily={dl?.daily ?? null} onClose={() => setBriefOpen(false)} />}
     </div>

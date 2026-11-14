@@ -4,22 +4,25 @@ import type { Calendar, FieldEvent, Location, Regional, RotationStrategy } from 
 import type { Extras, ISSPhoto, NasaNow, ProvMap, RegionalLive } from '../../api';
 import type { NasaDataset } from '../../nasa';
 import { ISSFigure, NasaList } from './NasaSection';
+import { SourcesSheet } from './Sources';
 import type { Daily } from '../../season';
 import Icon from '../Icons';
 import { useEffect, useState } from 'react';
 import { AboutField, Actions, EventLog, ProvList, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, type Step } from './shared';
-import { FieldNow, LastSeasons, whenT } from './FieldNow';
+import { FieldNow, LastSeasons, whenT, type LoadState } from './FieldNow';
 import { TODAY_T } from '../../lib';
 
 export interface FieldPanelProps {
   loc: Location; prov: ProvMap; cal: Calendar | null; regional: Regional | null; regionalLive: RegionalLive; strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; daily: Daily | null;
-  nasa: NasaDataset[] | null; nasaNow: NasaNow | null; extras: Extras; iss: { photo: ISSPhoto; credit: string } | null; loading: boolean;
+  nasa: NasaDataset[] | null; nasaNow: NasaNow | null; extras: Extras; iss: { photo: ISSPhoto; credit: string } | null; dataState: LoadState; dailyState: LoadState;
   t: number; setT: (t: number) => void; events: FieldEvent[];
   onStep: (s: Step) => void; onClose: () => void;
 }
 
 export function FieldPanel(p: FieldPanelProps) {
   const { loc } = p;
+  const thumbs = useThumbs();
+  const [src, setSrc] = useState(false);
   const now = latestCrop(loc);
   const isToday = p.t === TODAY_T;
   return (
@@ -33,9 +36,8 @@ export function FieldPanel(p: FieldPanelProps) {
         <p className="fp-id">{fieldCode(loc).replace('DWR ', 'State field no. ')}, {coords(loc)}</p>
       </header>
       <div className="panel-scroll">
-        <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}<small>{isToday ? `Today, ${whenT(p.t)}. Drag the timeline to look back.` : <button className="link" onClick={() => p.setT(TODAY_T)}>Back to today</button>}</small></h2>
-        {p.loading && <p className="loading-note" data-testid="field-loading">Loading this field’s satellite, weather and water data…</p>}
-        <FieldNow extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
+        <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}<small>{isToday ? `Today, ${whenT(p.t)}. Pick another date under “Viewing” to look back.` : <button className="link" onClick={() => p.setT(TODAY_T)}>Back to today</button>}</small></h2>
+        <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
         <h2 className="fp-h" data-testid="nasa-section">NASA data behind this field<small>What each one tells you, how coarse it is, and whether it is live.</small></h2>
         <ISSFigure iss={p.iss} />
         {p.nasa ? <NasaList list={p.nasa} /> : <p className="muted">Loading…</p>}
@@ -44,7 +46,8 @@ export function FieldPanel(p: FieldPanelProps) {
         <h2 className="fp-h">The last 3 seasons</h2>
         <LastSeasons loc={loc} cal={p.cal} t={p.t} />
         {p.events.length > 0 && <><h2 className="fp-h">What happened around here<small>Click one to move the timeline.</small></h2><EventLog events={p.events} setT={p.setT} /></>}
-        <details className="prov"><summary>Where every number comes from</summary><ProvList prov={p.prov} /></details>
+        <button className="link sources-link" onClick={() => setSrc(true)} data-testid="sources-link">Sources</button>
+        {src && <SourcesSheet onClose={() => setSrc(false)} />}
         <p className="footnote">CropLytics helps the grower and adviser decide; it does not replace either.</p>
       </div>
       <footer className="fp-foot"><Actions onStep={p.onStep} /></footer>
@@ -55,8 +58,7 @@ export function FieldPanel(p: FieldPanelProps) {
 /** "Pick your field": one paper surface, one row per field with a satellite thumbnail (outline drawn), a 2023-2026 season strip,
  *  one line of facts in grower units and one line of what is notable. BC is a quiet text row at the bottom. */
 export function FieldPicker(p: { locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void }) {
-  const [thumbs, setThumbs] = useState<Record<string, { bbox: number[] }> | null>(null);
-  useEffect(() => { fetch(`${import.meta.env.BASE_URL}thumbs/thumbs.json`).then((r) => r.json()).then((j) => setThumbs(j.fields)).catch(() => setThumbs({})); }, []);
+  const thumbs = useThumbs();
   return (
     <section className="picker2" data-testid="fields-panel">
       <header className="pk-head">
@@ -107,4 +109,12 @@ function notable(l: Location) {
   else notes.push('surface water from the Sacramento River');
   const s = notes.join('; ');
   return s.charAt(0).toUpperCase() + s.slice(1) + '.';
+}
+
+let thumbsP: Promise<Record<string, { bbox: number[] }>> | null = null;
+/** Satellite thumbnails of each field (public/thumbs), with the bounds needed to draw the outline. */
+function useThumbs() {
+  const [t, setT] = useState<Record<string, { bbox: number[] }> | null>(null);
+  useEffect(() => { (thumbsP ??= fetch(`${import.meta.env.BASE_URL}thumbs/thumbs.json`).then((r) => r.json()).then((j) => j.fields).catch(() => ({}))).then(setT); }, []);
+  return t;
 }

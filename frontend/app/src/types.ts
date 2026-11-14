@@ -22,6 +22,8 @@ export interface Location {
   nasa_datasets?: unknown;
   /** NASADEM slope and low spots (backend/nasa_open terrain.json) */
   /** USDA RMA crop-insurance payouts for the county and crop (backend/ground rma_profile.json) */
+  /** true once GET /api/locations/{id} carries a looked-up water district / GSA (not the project brief's placeholder) */
+  water_real?: boolean;
   rma?: { scope: string; crop: string; total_usd: number; from: number; to: number; top_year: number; top_usd: number; share_drought: number; share_excess_moisture: number | null; source: string; url: string };
   nasadem?: { slope_mean_pct?: number; slope_p90_pct?: number; low_spot_fraction?: number; elev_m?: number }; datasets?: Record<string, { status?: string; reason?: string }>;
 }

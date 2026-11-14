@@ -21,7 +21,7 @@ export function BCCard({ bc, onClose, floating }: { bc: BCInfo; onClose?: () => 
 }
 
 // ---------- Layers drawer ----------
-export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolean>; toggle: (id: string) => void; loc: Location | null; metric: 'cover' | 'et'; setMetric: (m: 'cover' | 'et') => void; onClose: () => void }) {
+export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolean>; toggle: (id: string) => void; loc: Location | null; onClose: () => void }) {
   const fieldKm2 = p.loc ? p.loc.area_ha.value / 100 : 0.6;
   const group = (g: 'field' | 'regional', title: string, sub: string) => (
     <div className="lg">
@@ -48,13 +48,6 @@ export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolea
     <aside className="drawer glass" data-testid="layers-drawer">
       <header className="panel-head"><h2>Layers <small>NASA Earth data</small></h2><button className="icon-btn" onClick={p.onClose}><Icon name="close" size={18} /></button></header>
       <div className="panel-scroll">
-        <div className="lg">
-          <h3>Surface layer shows</h3>
-          <div className="seg full">
-            <button className={p.metric === 'cover' ? 'on' : ''} onClick={() => p.setMetric('cover')}>Cover</button>
-            <button className={p.metric === 'et' ? 'on' : ''} onClick={() => p.setMetric('et')} data-testid="metric-et">Crop water use (ET)</button>
-          </div>
-        </div>
         {group('field', 'Sees inside your field', 'pixel smaller than the field')}
         {group('regional', 'Sees your district or basin', 'one pixel covers many fields')}
         <div className="scale-ruler">

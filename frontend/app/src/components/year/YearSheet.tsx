@@ -1,4 +1,4 @@
-import type { CoverClass, Location, Calendar, CalendarYear } from '../../types';
+import type { CoverClass, FieldEvent, Location, Calendar, CalendarYear } from '../../types';
 import { useState } from 'react';
 import { rainOf, type Daily } from '../../season';
 import type { Extras, MLInfo } from '../../api';
@@ -26,7 +26,7 @@ function typical(years: CalendarYear[]) {
   return s;
 }
 
-export interface YearSheetProps { extras: Extras | null; calSource: string; t: number; setT: (t: number) => void; loc: Location; cal: Calendar; daily: Daily | null; ml: MLInfo | null; showEarlier: boolean; setShowEarlier: (b: boolean) => void; setExpanded: (b: boolean) => void }
+export interface YearSheetProps { events: FieldEvent[]; playing: boolean; setPlaying: (b: boolean) => void; extras: Extras | null; calSource: string; t: number; setT: (t: number) => void; loc: Location; cal: Calendar; daily: Daily | null; ml: MLInfo | null; showEarlier: boolean; setShowEarlier: (b: boolean) => void; setExpanded: (b: boolean) => void }
 
 const pct = (x: number | null) => (x == null ? '?' : `${Math.round(x * 100)}%`);
 /** What the machine-learning calendar is worth on this field, in plain words. */
@@ -90,7 +90,8 @@ export default function YearSheet(p: YearSheetProps) {
           {p.extras?.stress && <span><i className="stress-key" />Crop-stress week (hover for why)</span>}
           {p.extras?.water && <span><i className="opera-key" />Standing water seen by NASA OPERA</span>}
         </div>
-        <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close"><Icon name="down" /></button>
+        <button className="ys-play" onClick={() => p.setPlaying(!p.playing)} data-testid="play" title={p.playing ? 'Pause' : 'Replay the seasons on the map'}><Icon name={p.playing ? 'pause' : 'play'} size={18} />{p.playing ? 'Pause' : 'Replay on the map'}</button>
+        <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close" data-testid="year-close"><Icon name="down" /></button>
       </div>
       {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}
       <div className="yr-grid">
@@ -114,6 +115,7 @@ export default function YearSheet(p: YearSheetProps) {
         })}
       </div>
       <div className="ys-foot">
+        {p.events.length > 0 && <span className="ys-events">{p.events.map((e) => <button key={e.date + e.type} className="link" onClick={() => p.setT(dateToT(e.date))} title={e.title}>{e.short}</button>)}</span>}
         <button className="link" onClick={() => p.setShowEarlier(!p.showEarlier)} data-testid="earlier">{p.showEarlier ? 'Show only the last 4 seasons' : 'Show earlier years (2016–2022)'}</button>
         <span className="muted">{p.calSource}, every 10 days, whole field.{both ? ` Machine learning: ${p.ml?.model ?? 'random forest'} on Sentinel-2, trained on neighbouring fields.` : ''} Rain from NASA GPM IMERG. Click a square to move the map to that date.</span>
       </div>

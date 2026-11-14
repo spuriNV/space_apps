@@ -43,14 +43,14 @@ async function getJSON(url: string, init?: RequestInit, ms = 20000) {
   } finally { clearTimeout(h); }
 }
 /** `route` is written as the API path (`/api/locations/...`); API_BASE replaces the `/api` prefix. */
-const get = (route: string, init?: RequestInit) => getJSON(`${API_BASE}${route.replace(/^\/api/, '')}`, init);
+const get = (route: string, init?: RequestInit, ms?: number) => getJSON(`${API_BASE}${route.replace(/^\/api/, '')}`, init, ms);
 let health: Promise<boolean> | null = null;
 /** true when the API answers. Cached for the session. */
 export const apiLive = () => (health ??= get('/api/health').then((b) => !!b?.ok).catch(() => false));
 /** The route's body if it is real data (`_source: real`, or no `_source` for routes that are real-only), else null. */
-async function apiReal(route: string, init?: RequestInit) {
+async function apiReal(route: string, init?: RequestInit, ms = 12000) {
   if (!(await apiLive())) return null;
-  try { const b = await get(route, init); return b && (b._source === 'real' || b._source === undefined) ? b : null; } catch { return null; }
+  try { const b = await get(route, init, ms); return b && (b._source === 'real' || b._source === undefined) ? b : null; } catch { return null; }
 }
 
 // ---------- static / editorial ----------
@@ -85,6 +85,9 @@ function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: Prov
     crop_history: a.crop_history ?? loc.crop_history, nasa_datasets: a.nasa_datasets, datasets: a.datasets, terrain: a.terrain ?? loc.terrain,
     nasadem: a.terrain?.slope_mean_pct?.value != null ? { slope_mean_pct: a.terrain.slope_mean_pct.value, slope_p90_pct: a.terrain.slope_p90_pct?.value, low_spot_fraction: a.terrain.low_spot_fraction?.value } : undefined };
   if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', 'api', 'NASA JPL elevation, 30 m');
+  // water district / GSA: use the API's only when it is looked up (the placeholder text carries "(U)")
+  const w = a.water;
+  if (w?.district && !/\(U\)/.test(String(w.district)) && w.verified !== false) { loc = { ...loc, water: { ...loc.water, ...w, allocation_input: loc.water.allocation_input }, water_real: true }; prov.water = P('water', 'Water source and district', 'api', String(w.district)); }
   prov.outline = P('outline', 'Field outline', 'api', `DWR / Land IQ 2023${loc.dwr_id ? ` field ${loc.dwr_id}` : ''}`);
   if (a.soil?.muname) prov.soil = P('soil', 'Soil (USDA soil survey)', 'api', a.soil.muname);
   if (a.crop_history) prov.crop_history = P('crop_history', 'Crop on record (USDA Cropland Data Layer)', 'api', 'USDA CDL 2008–2025');
@@ -298,7 +301,8 @@ export interface NasaNow { rainWyMm: number | null; rainWyNormalMm: number | nul
 const nowOf = (b: any): NasaNow | null => { const r = b?.readings; if (!r) return null; return { rainWyMm: r.imerg_wy_to_date_mm?.value ?? null, rainWyNormalMm: r.imerg_wy_to_date_normal_mm?.value ?? null, rainDate: r.imerg_wy_to_date_mm?.obs_date ?? null, dswxWater: r.dswx_water_frac?.value ?? null, dswxDate: r.dswx_water_frac?.obs_date ?? null }; };
 /** Which soil-moisture / groundwater readings are real. soilSource says whose soil reading it is. */
 export interface RegionalLive { smap: boolean; grace: boolean; soilSource?: 'smap' | 'grace_da' | null }
-export async function getField(loc: Location, live: boolean): Promise<FieldBundle> {
+/** Everything the field view needs. Resolves as soon as the answers' data is in; the 3D grid and the news arrive later through onLate. */
+export async function getField(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void): Promise<FieldBundle> {
   const id = loc.id;
   const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[id]);
   const prov: ProvMap = {
@@ -307,7 +311,6 @@ export async function getField(loc: Location, live: boolean): Promise<FieldBundl
     strategies: P('strategies', 'Rotations, water need and scores', 'mock', 'illustrative'),
     news: P('news', 'News headlines', 'mock', 'project brief examples'),
     regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', 'no real series served yet'),
-    et: P('et', '3D "water use" view and risk ticks', 'mock', 'no route yet'),
     ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
   };
   const reg0 = (regional as unknown as ById<Regional>)[id];
@@ -316,12 +319,11 @@ export async function getField(loc: Location, live: boolean): Promise<FieldBundl
   let soilShown: 'smap' | 'grace_da' | null = null;
   const soilExample = () => soilShown == null; // the soil answer shows SMAP example numbers when no real soil series came back
   if (!live) return { id, regional: reg0, cells: (mockCells as unknown as ById<CellGrid>)[id], cal: mCal, strategies: mockStrats(id), news: (mockNews as unknown as ById<NewsItem[]>)[id], ml: null, nasa: nasa().map((d) => (d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)), regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, extras: { openet: null, stress: null, insurance: null, water: null }, prov };
-  const [cal, hls, grid, strat, news, mlCal, models, ns, now, oet, stressB, insB, waterB] = await Promise.all([
+  const lateP = Promise.all([apiReal(`/api/locations/${id}/grid`, undefined, 30000), apiReal(`/api/locations/${id}/news`)]);
+  const [cal, hls, strat, mlCal, models, ns, now, oet, stressB, insB, waterB] = await Promise.all([
     apiReal(`/api/locations/${id}/calendar`),
     apiReal(`/api/locations/${id}/calendar?source=hls`),
-    apiReal(`/api/locations/${id}/grid`),
     apiReal(`/api/locations/${id}/strategies`),
-    apiReal(`/api/locations/${id}/news`),
     apiReal(`/api/locations/${id}/calendar_ml`),
     apiReal(`/api/locations/${id}/models`),
     apiReal(`/api/locations/${id}/nasa_series`),
@@ -343,9 +345,7 @@ export async function getField(loc: Location, live: boolean): Promise<FieldBundl
     if (isHls) used.hls = 'live';
   }
   if (mlCal?.years) prov.ml = P('ml', 'Machine-learning calendar (comparison)', 'api', `${ml?.model ?? 'random forest'}, Sentinel-2`);
-  if (grid?.features) { cells = convertGrid(grid); prov.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells.features.length} squares, Sentinel-2 greenness`); }
   if (strat?.items?.length) { strategies = strat.items.map(normStrategy); prov.strategies = P('strategies', 'Rotations, water need and scores', 'api', 'rotation model, NASA POWER weather'); used.power = 'live'; }
-  if (news?.items?.length) { nws = news.items.map(normNews); prov.news = P('news', 'News headlines', 'api', `${news.items.length} saved headlines`); }
   let reg = reg0;
   // GET .../nasa_series: SMAP root-zone percentile when cached; otherwise NASA's GRACE-FO data-assimilation root-zone percentile
   const smapS = seriesOf(ns, 'smap_rootzone_pct'), gdaSoil = seriesOf(ns, 'grace_rootzone_pct');
@@ -360,7 +360,15 @@ export async function getField(loc: Location, live: boolean): Promise<FieldBundl
     prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', sm && gr ? 'api' : 'mock', `${soilSource === 'smap' ? 'SMAP' : soilSource === 'grace_da' ? 'GRACE-FO data assimilation (SMAP not cached yet)' : 'soil: example numbers'}; ${gr ? 'GRACE-FO groundwater' : 'groundwater: example numbers'}`);
   }
   const extras = extrasOf(oet, stressB, insB, waterB, ns, prov, used);
-  return { id, regional: reg, cells, cal: c, strategies, news: nws, ml, nasa: nasa(), regionalLive: { smap: !!sm, grace: !!gr, soilSource }, nasaNow: nowOf(now), extras, prov };
+  const first: FieldBundle = { id, regional: reg, cells, cal: c, strategies, news: nws, ml, nasa: nasa(), regionalLive: { smap: !!sm, grace: !!gr, soilSource }, nasaNow: nowOf(now), extras, prov };
+  lateP.then(([grid, news]) => {
+    const p2 = { ...prov };
+    let cells2 = cells, nws2 = nws;
+    if (grid?.features) { cells2 = convertGrid(grid); p2.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells2.features.length} squares, Sentinel-2 greenness`); }
+    if (news?.items?.length) { nws2 = news.items.map(normNews); p2.news = P('news', 'News headlines', 'api', `${news.items.length} saved headlines`); }
+    if (cells2 !== cells || nws2 !== nws) onLate?.({ ...first, cells: cells2, news: nws2, prov: p2 });
+  });
+  return first;
 }
 
 // ---------- ISS astronaut photos (copied into public/iss/<id>/ from data/cache/<id>/iss) ----------

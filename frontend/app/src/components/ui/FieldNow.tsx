@@ -69,10 +69,33 @@ export function rainNow(nasaNow: NasaNow | null, daily: Daily | null, t: number)
   if (nn) return { period: { label: `1 Oct to ${fmtShort(nn.rainDate!).replace(/ \d{4}$/, '')}`, from: '', to: '', current: true }, inches: nn.rainWyMm! / 25.4, normal: nn.rainWyNormalMm! / 25.4, nSeasons: 25, pct: (nn.rainWyMm! / nn.rainWyNormalMm!) * 100, source: 'imerg' };
   return daily ? rainSoFar(daily, t) : null;
 }
-export interface FieldNowProps { extras: Extras; nasaNow: NasaNow | null; loc: Location; cal: Calendar | null; regional: Regional | null; regionalLive: RegionalLive; strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; t: number; daily: Daily | null; prov: ProvMap }
+export type LoadState = 'loading' | 'ready' | 'timeout';
+/** Thin loading line for one answer. */
+const Skel = () => <span className="skel" aria-label="Loading" />;
+/** The latest 10-day step with a clear satellite reading at or before t, at most 6 weeks back. */
+function latestClearT(cal: Calendar, t: number, maxBack = 4): number | null {
+  for (let k = t; k >= 0 && t - k <= maxBack; k--) { const y = cal.years[Math.floor(k / 36)]; const c = y?.rule[k % 36]; if (c && c !== 'u') return k; }
+  return null;
+}
+/** One small reading: label, value, a bar with a reference mark. */
+function Meter(m: { label: string; value: string | null; state: LoadState; pct: number | null; mark: number | null; markLabel: string; note: string; warn?: boolean }) {
+  return (
+    <div className="meter">
+      <span className="m-label">{m.label}</span>
+      {m.value == null ? (m.state === 'timeout' ? <span className="m-val na">Not available</span> : <span className="skel" />) : <>
+        <span className="m-val">{m.value}</span>
+        <i className="m-track">{m.pct != null && <em className={`m-fill ${m.warn ? 'warn' : ''}`} style={{ width: `${m.pct * 100}%` }} />}{m.mark != null && <b className="m-mark" style={{ left: `${Math.min(1, m.mark) * 100}%` }} title={m.markLabel} />}</i>
+        <span className="m-note">{m.note}{m.mark != null ? ` · line = ${m.markLabel}` : ''}</span>
+      </>}
+    </div>
+  );
+}
+export interface FieldNowProps { dataState: LoadState; dailyState: LoadState; thumb: { bbox: number[] } | null; extras: Extras; nasaNow: NasaNow | null; loc: Location; cal: Calendar | null; regional: Regional | null; regionalLive: RegionalLive; strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; t: number; daily: Daily | null; prov: ProvMap }
 export function FieldNow(p: FieldNowProps) {
   const { loc, cal, t } = p;
-  const dt = cal ? dataT(cal, t) : t, behind = cal ? t > lastDataT(cal) : false;
+  const dt = cal ? latestClearT(cal, t) ?? dataT(cal, t) : t, behind = cal ? t > lastDataT(cal) : false;
+  const ago = t - dt, agoText = ago <= 0 ? '' : ago === 1 ? ', about 10 days ago' : `, about ${Math.round((ago * 10) / 7)} weeks ago`;
+  const pend = (s: LoadState) => (s === 'timeout' ? <b className="na">Not available right now</b> : <Skel />);
   const fs = cal ? fieldState(cal, dt, 'rule') : null;
   const st = cal ? stage(cal, dt) : null;
   const yr = yearOf(t), crop = loc.crop_history[yr];
@@ -85,13 +108,47 @@ export function FieldNow(p: FieldNowProps) {
   const cw = p.daily && base ? cropWaterSoFar(p.daily, base, t) : null;
   const sm = p.regional ? latestAt(p.regional.smap_rootzone_pct.values, t) : null, smap = sm?.v ?? null;
   const gr = p.regional ? latestAt(p.regional.grace_gw_pct.values, t) : null, grace = gr?.v ?? null;
-  const behindNote = behind ? ` Latest clear view ${whenT(dt)}${yearOf(dt) < yr ? `; ${yr} imagery not processed yet` : ''}.` : '';
+  const behindNote = dt < t ? ` Latest clear view ${whenT(dt)}${agoText}${yearOf(dt) < yr ? `; ${yr} imagery not processed yet` : ''}.` : '';
+  const limit = p.allocation ?? null, needAf = need ? mmToAfac(need.value) : null;
+  const y26 = cal?.years.find((y) => y.year === yr);
   return (
+    <>
+    <div className="glance" data-testid="glance">
+      <div className="gl-top">
+        <span className="gl-thumb">
+          <img src={`${import.meta.env.BASE_URL}thumbs/${loc.id}.jpg`} alt="" />
+          {p.thumb && <svg viewBox="0 0 360 240" preserveAspectRatio="none" aria-hidden="true"><polygon points={loc.geometry.coordinates[0].map(([x, y]) => `${(((x - p.thumb!.bbox[0]) / (p.thumb!.bbox[2] - p.thumb!.bbox[0])) * 360).toFixed(1)},${(((p.thumb!.bbox[3] - y) / (p.thumb!.bbox[3] - p.thumb!.bbox[1])) * 240).toFixed(1)}`).join(' ')} /></svg>}
+        </span>
+        <span className="gl-season">
+          <small>{yr} so far</small>
+          <span className="gl-strip">
+            {(y26?.rule ?? 'u'.repeat(36)).split('').map((c, k) => <em key={k} className={`c-${c}`} />)}
+            <i className="gl-today" style={{ left: `${((dekadOf(t) + 0.5) / 36) * 100}%` }} title={whenT(t)} />
+          </span>
+          <span className="gl-months"><span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span></span>
+          <b>{st ? st.text : '…'}</b>
+        </span>
+      </div>
+      <div className="gl-grid">
+        <Meter label="Rain since 1 Oct" value={rain ? `${fmtIn(rain.inches)} in` : null} state={p.dailyState} pct={rain && rain.normal ? Math.min(1, rain.inches / (Math.max(rain.inches, rain.normal) * 1.25)) : null} mark={rain && rain.normal ? rain.normal / (Math.max(rain.inches, rain.normal) * 1.25) : null} markLabel="normal" note={rain?.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} />
+        <Meter label="Water need, a year" value={needAf != null ? `${needAf.toFixed(1)} acre-ft/acre` : null} state={p.dataState} pct={needAf != null && limit ? Math.min(1, needAf / (Math.max(needAf, limit) * 1.2)) : null} mark={needAf != null && limit ? limit / (Math.max(needAf, limit) * 1.2) : null} markLabel="limit" warn={needAf != null && limit != null && needAf > limit} note={limit != null ? `limit ${limit.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}` : ''} />
+        <Meter label="Greenness" value={fs && fs.cls !== 'u' ? fs.ndvi.toFixed(2) : null} state={p.dataState} pct={fs && fs.cls !== 'u' ? Math.max(0, Math.min(1, fs.ndvi)) : null} mark={0.6} markLabel="full canopy" note={fs && fs.cls !== 'u' ? `0 to 1, ${whenT(dt)}` : ''} />
+        <div className="meter">
+          <span className="m-label">Soil and groundwater</span>
+          {!p.regional ? (p.dataState === 'timeout' ? <span className="m-val na">Not available</span> : <span className="skel" />) : <>
+            <span className="m-dots">
+              <i className="m-track"><em className="m-mid" />{smap != null && <b className="dot soil" style={{ left: `${smap}%` }} title={`Soil moisture ${ordinal(Math.round(smap))} percentile`} />}{grace != null && <b className="dot gw" style={{ left: `${grace}%` }} title={`Groundwater ${ordinal(Math.round(grace))} percentile`} />}</i>
+            </span>
+            <span className="m-note"><i className="k soil" />soil {smap != null ? ordinal(Math.round(smap)) : '–'} <i className="k gw" />groundwater {grace != null ? ordinal(Math.round(grace)) : '–'}; 50 is normal</span>
+          </>}
+        </div>
+      </div>
+    </div>
     <dl className="answers">
       <div className="ans">
         <dt>What is growing, and how far along?</dt>
         <dd>
-          <b><i className={`sw-${st?.sw ?? 'none'}`} />{st?.text ?? 'Loading…'}</b>
+          {st ? <b><i className={`sw-${st.sw}`} />{st.text}</b> : pend(p.dataState)}
           <span>{crop ? `${cropName(crop)} on record for ${yr}.` : `${yr} crop map not published yet (USDA, early ${yr + 1}). ${lastRec}: ${cropName(loc.crop_history[lastRec]).toLowerCase()}.`} {st?.sub}</span>
           <cite>{calSource(p.prov.calendar)}, 100 ft squares; crop from the USDA Cropland Data Layer.{behindNote} <Src p={p.prov.calendar} /></cite>
         </dd>
@@ -102,8 +159,8 @@ export function FieldNow(p: FieldNowProps) {
           {fs && fs.cls !== 'u' && fs.cls !== 'w' ? <>
             <b>{fs.ndvi >= 0.6 ? 'Full green canopy' : fs.ndvi >= 0.35 ? 'Partly green' : fs.ndvi >= 0.2 ? 'Thin green cover' : 'Little or no green cover'}</b>
             <span>Greenness {fs.ndvi.toFixed(2)} on a 0 to 1 scale; above 0.6 is a full canopy.</span>
-          </> : <b>{fs?.cls === 'w' ? 'Under water, so no green reading' : 'No reading for this date'}</b>}
-          <cite>Greenness from {calSource(p.prov.calendar).replace(' satellites', '')}, field average, {whenT(dt)}. <Src p={p.prov.calendar} /></cite>
+          </> : !cal ? pend(p.dataState) : <b>{fs?.cls === 'w' ? 'Under water, so no green reading' : 'No clear view in the last 6 weeks'}</b>}
+          <cite>Greenness from {calSource(p.prov.calendar).replace(' satellites', '')}, field average, {whenT(dt)}{agoText}. <Src p={p.prov.calendar} /></cite>
         </dd>
       </div>
       <div className="ans">
@@ -113,7 +170,7 @@ export function FieldNow(p: FieldNowProps) {
             <b>{rain.period.current ? '' : 'No readings for this winter yet. '}{rain.pct != null ? `${rain.period.current ? 'So far' : 'Last season was'} ${vsNormal(rain.pct, 'wetter than normal', 'drier than normal')}` : ''}</b>
             <span>{fmtIn(rain.inches)} inches {rain.period.label}; normal is {rain.normal != null ? `${fmtIn(rain.normal)} inches` : 'not known'}{rain.pct != null ? ` (${Math.round(rain.pct)}% of normal)` : ''}.</span>
             <cite>{rain.source === 'imerg' ? 'NASA GPM IMERG satellite rain over the field (one reading for a 6-mile square)' : 'NOAA weather stations near the field, averaged'}; normal = the same dates in the {rain.nSeasons} seasons before. <Src p={p.prov.daily} /></cite>
-          </> : <b>Loading…</b>}
+          </> : pend(p.dailyState)}
         </dd>
       </div>
       <div className="ans">
@@ -127,7 +184,7 @@ export function FieldNow(p: FieldNowProps) {
             <b>{cw.period.current ? 'So far this year' : 'Last year'}: {vsNormal(cw.pct, 'more than normal', 'less than normal')}</b>
             <span>About {fmtIn(cw.inches)} in of water {cw.period.label}, estimated; normal is {fmtIn(cw.normal)} in. That is {mmToAfac(cw.inches * 25.4).toFixed(1)} acre-feet per acre.{ms ? ` Measured on this field by OpenET for ${ms.label}: ${fmtIn(ms.inches)} in (our model for those months: ${fmtIn(ms.model)} in).` : ''}</span>
             <cite>Estimate: rotation model driven by NASA POWER sun, wind and humidity{ms ? '; measured: OpenET satellite data, which ends a few months behind' : ''}. {openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
-          </> : <b>{base ? 'Loading…' : 'No rotation model for this field'}</b>}
+          </> : !p.strategies || !p.daily ? pend(p.daily ? p.dataState : p.dailyState) : <b>No rotation model for this field</b>}
         </dd>
       </div>
       {need && (
@@ -143,7 +200,7 @@ export function FieldNow(p: FieldNowProps) {
       <div className="ans">
         <dt>Is the soil wetter or drier than usual? And the groundwater? <What k="soilAnomaly" /></dt>
         <dd>
-          <b>{smap == null ? 'No soil reading' : band(smap, 'Soil wetter than usual', 'Soil about normal', 'Soil drier than usual')}; {grace == null ? 'no groundwater reading' : band(grace, 'more groundwater than usual', 'groundwater about normal', 'less groundwater than usual').toLowerCase()}</b>
+          {!p.regional ? pend(p.dataState) : <b>{smap == null ? 'No soil reading' : band(smap, 'Soil wetter than usual', 'Soil about normal', 'Soil drier than usual')}; {grace == null ? 'no groundwater reading' : band(grace, 'more groundwater than usual', 'groundwater about normal', 'less groundwater than usual').toLowerCase()}</b>}
           <span>{smap != null && `Soil moisture ${ordinal(Math.round(smap))} percentile for the date${sm && sm.t < t - 1 ? ` (latest, ${whenT(sm.t)})` : ''}; 50 is normal. `}{grace != null && `Groundwater ${ordinal(Math.round(grace))} percentile${gr && gr.t < t - 1 ? ` (latest, ${whenT(gr.t)})` : ''}, whole basin, not your own well.`}</span>
           <cite>{p.regionalLive.soilSource === 'grace_da' ? 'Soil: NASA GRACE-FO with a land model, root zone, one reading for a 17-mile square (NASA SMAP readings still downloading).' : `Soil: NASA SMAP satellite, one reading for a 6-mile square${p.regionalLive.smap ? '' : ' (example numbers)'}.`} Groundwater: NASA GRACE-FO satellites{p.regionalLive.grace ? '' : ' (example numbers)'}, weekly. <Src p={p.prov.regional} /></cite>
         </dd>
@@ -151,8 +208,8 @@ export function FieldNow(p: FieldNowProps) {
       <div className="ans">
         <dt>Has the crop been stressed, or the field under water? <What k="stress" /></dt>
         <dd>
-          <b>{stressLine(p.extras, t)}</b>
-          <span>{waterLine(p.extras, t)}</span>
+          {p.dataState !== 'ready' ? pend(p.dataState) : <><b>{stressLine(p.extras, t)}</b>
+          <span>{waterLine(p.extras, t)}</span></>}
           <cite>Crop stress: two statistical methods on satellite greenness and NASA POWER heat and dryness, growing season only. Standing water: NASA OPERA, 100 ft squares, clear images only. <Src p={p.prov.stress ?? p.prov.water_seen} /></cite>
         </dd>
       </div>
@@ -163,10 +220,11 @@ export function FieldNow(p: FieldNowProps) {
             <b>{hf.hot} day{hf.hot === 1 ? '' : 's'} at or above {HOT_F} °F {hf.period.current ? 'so far this year' : `in ${hf.period.label.replace('last year, ', '')}`}</b>
             <span>Normal for the same dates: {hf.hotNormal != null ? Math.round(hf.hotNormal) : '?'}. Frost nights (32 °F or lower), {hf.frostPeriod.label}: {hf.frost}; normal {hf.frostNormal != null ? Math.round(hf.frostNormal) : '?'}.</span>
             <cite>NOAA weather stations near the field. NASA POWER is not used for heat here: it runs about 6 °F hot in summer against the stations. <Src p={p.prov.daily} /></cite>
-          </> : <b>Loading…</b>}
+          </> : pend(p.dailyState)}
         </dd>
       </div>
     </dl>
+    </>
   );
 }
 
