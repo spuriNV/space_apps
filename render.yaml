@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: croplytics
+    name: croplytics-app
     runtime: docker
     plan: free   # free plans sleep after idle (slow first load); use starter to stay awake
     dockerfilePath: ./Dockerfile
