@@ -1,5 +1,5 @@
 // Captures the main app (frontend/app, port 5170) at 1440x900 into design/screenshots/app/.
-// Usage: node design/tools/shoot-app.mjs [name-filter...]   (starts the dev server if needed; start the API on :8000 for live data)
+// Usage: node design/tools/shoot-app.mjs [name-filter...]   e.g. theme2, drilldown, brief   (starts the dev server if needed; start the API on :8000 for live data)
 import { chromium } from 'playwright-core';
 import { spawn } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
@@ -33,23 +33,25 @@ async function idle(extra = 900) {
   await page.waitForTimeout(extra);
 }
 async function shot(name) { await idle(); await page.screenshot({ path: join(OUT, name) }); console.log('wrote', name); }
-async function open(ui) {
-  await page.goto(`${BASE}?ui=${ui}`, { waitUntil: 'domcontentloaded' });
+async function open(theme) {
+  await page.goto(`${BASE}?theme=${theme}`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__map && window.__map.loaded() && document.querySelector('[data-testid="data-indicator"]'), null, { timeout: 90000 });
 }
 async function pickField() {
-  await page.click(`.pin[data-id="${FIELD}"]`);
+  await page.click(`[data-testid="row-${FIELD}"]`);
   await page.waitForFunction(() => window.__app?.ready, null, { timeout: 30000 });
   await page.evaluate((t) => window.__app.setT(t), T_JUL_2023);
   await idle(600);
 }
 
-for (const ui of [1, 2, 3]) {
-  if (!want(`ui${ui}`)) continue;
-  await open(ui);
-  await shot(`ui${ui}-overview.png`);
+// ?theme=1|2|3: survey sheet (default), extension bulletin, field desk. Same farmer-first panel in each.
+for (const th of [1, 2, 3]) {
+  if (!want(`theme${th}`)) continue;
+  await open(th);
+  await page.evaluate(() => document.fonts.ready);
+  await shot(`theme${th}-overview.png`);
   await pickField();
-  await shot(`ui${ui}-field.png`);
+  await shot(`theme${th}-field.png`);
 }
 if (want('drilldown') || want('brief')) {
   await open(1);

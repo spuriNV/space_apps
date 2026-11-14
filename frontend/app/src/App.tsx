@@ -9,21 +9,21 @@ import ComparePanel from './components/compare/ComparePanel';
 import StoryPanel from './components/Story';
 import RotationBrief from './components/brief/RotationBrief';
 import { BCCard, LayersDrawer, TrendsPanel } from './components/Panels';
-import { AnalysisRail, Dossier, FieldsSheet, MissionStrip } from './components/ui/Options';
-import { ProvList, type Step } from './components/ui/shared';
+import { FieldPanel, FieldPicker } from './components/ui/Options';
+import { ProvList, acres, county, fieldName, type Step } from './components/ui/shared';
 
-/** ?ui=1 field dossier (left sheet) · ?ui=2 mission strip (bottom console) · ?ui=3 split analysis (right data rail) */
-const UI = (() => { const v = Number(new URLSearchParams(window.location.search).get('ui')); return v === 2 || v === 3 ? v : 1; })();
-const RAIL_W = 440;
+/** ?theme=1 survey sheet (default) · 2 extension bulletin · 3 field desk. One field panel for all three; see .claude/skills/fieldshift-visual-design. */
+export const THEME = (() => { const v = Number(new URLSearchParams(window.location.search).get('theme')); return v === 2 || v === 3 ? v : 1; })();
+document.documentElement.dataset.theme = String(THEME);
 
 type Panel = 'none' | 'fields' | 'trends' | 'compare' | 'story';
 const RAIL: { id: Panel | 'search' | 'layers' | 'brief'; icon: string; label: string }[] = [
   { id: 'search', icon: 'search', label: 'Find' },
   { id: 'fields', icon: 'fields', label: 'Fields' },
-  { id: 'layers', icon: 'layers', label: 'Layers' },
-  { id: 'trends', icon: 'trends', label: 'Trends' },
-  { id: 'compare', icon: 'compare', label: 'Compare' },
-  { id: 'brief', icon: 'brief', label: 'Brief' },
+  { id: 'layers', icon: 'layers', label: 'Map layers' },
+  { id: 'trends', icon: 'trends', label: 'Water trends' },
+  { id: 'compare', icon: 'compare', label: 'Rotations' },
+  { id: 'brief', icon: 'brief', label: 'Print' },
   { id: 'story', icon: 'story', label: 'Story' },
 ];
 
@@ -95,7 +95,7 @@ export default function App() {
   }, [locations]);
 
   const openPanel = (id: Panel) => {
-    if (id !== 'fields' && id !== 'none' && !selected) { setPanel(UI === 1 ? 'fields' : 'none'); return; }
+    if (id !== 'fields' && id !== 'none' && !selected) { setPanel('fields'); return; }
     setPanel((p) => (p === id ? 'none' : id));
     setYearOpen(false);
     if (id === 'story' && selected && d) goChapter(storyIdx);
@@ -117,13 +117,12 @@ export default function App() {
   };
 
   const yearExpanded = yearOpen && !!selected && panel !== 'compare';
-  // which left-column panel shows (UI 1 uses the left column for the dossier; 2 and 3 keep it for tools only)
-  const toolPanel = panel === 'trends' || panel === 'story' || (panel === 'fields' && UI === 1) ? panel : null;
-  const leftPanel = yearExpanded ? null : toolPanel ?? (UI === 1 && panel === 'none' && selected && cardOpen ? 'card' : null);
-  const stripH = UI === 2 && !yearExpanded ? (selected ? 236 : 50) : 0;
+  // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
+  const toolPanel = panel === 'trends' || panel === 'story' || panel === 'fields' ? panel : null;
+  const leftPanel = yearExpanded ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
   const leftInset = 64 + (leftPanel ? 396 : 0);
-  const rightInset = (layersOpen ? 344 : 0) + (UI === 3 ? RAIL_W : 0);
-  const bottomInset = (yearExpanded ? 500 : 110) + stripH;
+  const rightInset = layersOpen ? 344 : 0;
+  const bottomInset = yearExpanded ? 500 : 110;
   const drilled = !!selected && view.zoom > 13.4;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;
@@ -137,8 +136,8 @@ export default function App() {
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     const items = [
-      ...locations.map((l) => ({ key: l.id, title: `${l.dwr_id ? 'DWR ' + l.dwr_id : l.id} · ${l.short_name}`, sub: `${l.county ?? ''} County · ${l.valley} · ${l.area_ha.value.toFixed(1)} ha`, icon: 'fields', go: () => select(l.id) })),
-      { key: 'bc', title: 'British Columbia: Salmon River, Sumas Prairie', sub: 'Not modelled yet: why', icon: 'info', go: goBC },
+      ...locations.map((l) => ({ key: l.id, title: fieldName(l), sub: `${county(l)} County · ${acres(l)} acres${l.dwr_id ? ' · state field no. ' + l.dwr_id : ''}`, icon: 'fields', go: () => select(l.id) })),
+      { key: 'bc', title: 'Sumas Prairie, British Columbia', sub: 'Not set up yet: why', icon: 'info', go: goBC },
       { key: 'ca', title: 'California', sub: 'Back to the whole state', icon: 'home', go: goHome },
     ];
     return q ? items.filter((i) => (i.title + i.sub).toLowerCase().includes(q)) : items;
@@ -146,16 +145,15 @@ export default function App() {
   }, [query, locations, select]);
 
   const mockParts = Object.values(prov).filter((p) => p.origin === 'mock').length;
-  const panelProps = { locations, loc: selected, selectedId, prov, cal: d?.cal ?? null, regional: d?.regional ?? null, t, setT, detector, events, onSelect: select, onBC: goBC, onStep, onClose: goHome };
 
   return (
-    <div className={`app ui-${UI}`} style={{ ['--rail-w' as string]: `${UI === 3 ? RAIL_W : 0}px`, ['--strip-h' as string]: `${stripH}px` }}>
+    <div className="app">
       <MapView ref={map} locations={locations} bc={bc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={d?.regional ?? null}
         t={t} detector={detector} metric={metric} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
         onSelect={select} onBC={goBC} onView={setView} />
 
       <nav className="rail glass">
-        <button className="rail-logo" onClick={goHome} title="Field Shift: back to California"><span>FS</span></button>
+        <button className="rail-logo" onClick={goHome} title="Field Shift: back to all of California"><span>Field<br />Shift</span></button>
         {RAIL.map((r) => {
           const on = r.id === 'layers' ? layersOpen : r.id === 'search' ? searchFocus : r.id === 'brief' ? briefOpen : panel === r.id;
           return (
@@ -169,7 +167,7 @@ export default function App() {
 
       <div className={`search glass ${searchFocus ? 'open' : ''}`}>
         <Icon name="search" size={18} />
-        <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onFocus={() => setSearchFocus(true)} onBlur={() => setTimeout(() => setSearchFocus(false), 150)} placeholder="Find a field: DWR ID, county, place" data-testid="search" />
+        <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onFocus={() => setSearchFocus(true)} onBlur={() => setTimeout(() => setSearchFocus(false), 150)} placeholder="Find a field by town, county or crop" data-testid="search" />
         {searchFocus && (
           <div className="search-results">
             {results.map((r) => (
@@ -177,7 +175,7 @@ export default function App() {
                 <span className="sr-ico"><Icon name={r.icon} size={16} /></span><span><b>{r.title}</b><small>{r.sub}</small></span>
               </button>
             ))}
-            {results.length === 0 && <p className="muted pad">Only the two California example fields are modelled.</p>}
+            {results.length === 0 && <p className="muted pad">Only the two California fields are set up so far.</p>}
           </div>
         )}
       </div>
@@ -185,26 +183,25 @@ export default function App() {
       <div className="top-right" style={{ right: 16 + rightInset }}>
         {live != null && (
           <button className={`data-ind ${live ? 'live' : 'example'}`} onClick={() => setProvOpen(!provOpen)} data-testid="data-indicator"
-            title={live ? 'Real outputs from the Field Shift API and backend files; parts marked "Mock data" are still illustrative' : 'API not reachable: showing the bundled example data'}>
-            <i />{live ? 'Live data' : 'Example data'}{selected && mockParts > 0 && <em>{mockParts} mock</em>}
+            title={live ? 'Real outputs from the Field Shift API and backend files; parts marked "example numbers" are still illustrative' : 'API not reachable: showing the bundled example data'}>
+            <i />{live ? 'Live data' : 'Example data only'}{selected && mockParts > 0 && <em>{mockParts} parts are examples</em>}
           </button>
         )}
-        <button className={`pill glass ${layersOpen ? 'on' : ''}`} onClick={() => setLayersOpen(!layersOpen)} data-testid="layers-btn"><Icon name="layers" size={16} />Layers</button>
+        <button className={`pill glass ${layersOpen ? 'on' : ''}`} onClick={() => setLayersOpen(!layersOpen)} data-testid="layers-btn"><Icon name="layers" size={16} />Map layers</button>
         {provOpen && (
           <div className="prov-pop glass">
-            <h4>{live ? 'Live data: Field Shift API on :8000' : 'Example data: API not reachable'}</h4>
+            <h4>{live ? 'Where each part of this view comes from' : 'Example data: the Field Shift API is not reachable'}</h4>
             {selected ? <ProvList prov={prov} /> : <p className="muted">Pick a field to see where each part of the view comes from.</p>}
           </div>
         )}
       </div>
 
-      {UI === 1 && leftPanel === 'card' && selected && <Dossier {...panelProps} loc={selected} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldsSheet locations={locations} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={() => setPanel('none')} />}
+      {leftPanel === 'card' && selected && <FieldPanel loc={selected} prov={prov} cal={d?.cal ?? null} regional={d?.regional ?? null} strategies={d?.strategies ?? null} allocation={allocation[selected.id]}
+        t={t} setT={setT} detector={detector} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
+      {leftPanel === 'fields' && <FieldPicker locations={locations} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {leftPanel === 'trends' && selected && d && <TrendsPanel loc={selected} regional={d.regional} onClose={() => setPanel('none')} />}
       {leftPanel === 'story' && selected && d && <StoryPanel loc={selected} story={d.story} idx={storyIdx} setIdx={goChapter} cal={d.cal} regional={d.regional} news={d.news} t={t} detector={detector} onClose={() => setPanel('none')} />}
-      {UI === 1 && selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen pill glass" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />Dossier · {selected.short_name}</button>}
-      {UI === 2 && !yearExpanded && <MissionStrip {...panelProps} />}
-      {UI === 3 && <AnalysisRail {...panelProps} />}
+      {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen pill glass" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
       {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} allocation={allocation[selected.id]} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
         onBrief={(id) => { setBriefPick(id); setBriefOpen(true); }} onClose={() => setPanel('none')} />}
@@ -213,9 +210,9 @@ export default function App() {
 
       {drilled && panel !== 'compare' && (
         <div className="hud glass" data-testid="hud">
-          <span className="hud-title"><Icon name="cube" size={16} />Layer stack</span>
+          <span className="hud-title"><Icon name="cube" size={16} />Under the field</span>
           <div className="seg small">
-            <button className={metric === 'cover' ? 'on' : ''} onClick={() => setMetric('cover')}>Cover</button>
+            <button className={metric === 'cover' ? 'on' : ''} onClick={() => setMetric('cover')}>Ground cover</button>
             <button className={metric === 'et' ? 'on' : ''} onClick={() => setMetric('et')}>Water use</button>
           </div>
           <div className="hud-legend">
@@ -226,8 +223,7 @@ export default function App() {
           </div>
         </div>
       )}
-      {!selected && !bcOpen && !nearBC && panel === 'none' && UI !== 2 && <div className="hint glass">Select a field outline, then scroll in to separate surface, soil and groundwater</div>}
-      {bc && (bcOpen || nearBC) && panel === 'none' && <div className="bc-float" style={{ left: `calc(${leftInset}px + 24px)` }}><BCCard bc={bc} floating onClose={bcOpen ? () => setBcOpen(false) : undefined} /></div>}
+            {bc && (bcOpen || nearBC) && panel === 'none' && <div className="bc-float" style={{ left: `calc(${leftInset}px + 24px)` }}><BCCard bc={bc} floating onClose={bcOpen ? () => setBcOpen(false) : undefined} /></div>}
 
       <div className="controls" style={{ right: 16 + rightInset, bottom: bottomInset + 14 }}>
         <button className="ctl glass" onClick={goHome} title="Whole of California"><Icon name="home" size={18} /></button>

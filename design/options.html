@@ -118,14 +118,14 @@
   const r2 = document.getElementById("round2");
   r2.style.cssText = "display:flex;flex-direction:column;gap:44px";
   const round2 = [
-    ["Main app: three ways to pick and read a field", "Built from B, restyled away from the Google Maps place card. Real field outlines, soil, crop history, satellite calendar, 30 m grid and engine scores from the API; the soil-moisture and groundwater layers are still mock. Switch with ?ui=1, 2 or 3.", [
-      ["../app/ui1-field", "1 · Field dossier", "Left sheet that reads like an instrument readout and soil-survey report; actions are a numbered planning sequence, not buttons."],
-      ["../app/ui2-field", "2 · Mission strip", "Bottom console with one tab per field, like mission control; the map keeps the full height."],
-      ["../app/ui3-field", "3 · Split analysis", "Fixed right data rail like a GIS attribute table; picking a field means picking a row."]]],
-    ["Main app: overviews, 3D and brief", "The overview for each selection style, the 3D stack on the real 30 m grid, and the printable brief on real engine numbers.", [
-      ["../app/ui1-overview", "Overview · option 1", "Survey-style target markers labelled with the state field ID, county and area."],
+    ["Main app: one farmer-first field panel, three looks", "Rebuilt after \"I don't even understand what is going on here\". The panel says what the field is, then answers four plain questions about it, then offers next steps in a farmer's words. Satellite names and percentiles sit in a small source line. Switch looks with ?theme=1, 2 or 3.", [
+      ["../app/theme1-field", "1 · Survey sheet (default)", "USGS topo-map inks on paper: black names, blue water and actions, green vegetation, brown for example data. Serif headings, highway-sign UI type."],
+      ["../app/theme2-field", "2 · Extension bulletin", "Two-colour USDA farmers' bulletin: slab headings, heavy rules, one spot green."],
+      ["../app/theme3-field", "3 · Field desk", "Quiet dark GIS desk on warm graphite with survey-yellow actions; type modelled on California licence plates."]]],
+    ["Main app: pick your field, 3D and brief", "Fields are listed the way a farmer would name them; the state field number is small print.", [
+      ["../app/theme1-overview", "Pick your field", "\"Alfalfa field 6 miles south of Hanford, Kings County, 73 acres.\""],
       ["../app/drilldown-3d", "3D drill-down on real data", "348 real 30 m cells from the 15 Jul 2023 Sentinel-2 scene, above soil-moisture and groundwater slabs (mock until the Earthdata login)."],
-      ["../app/brief", "Printable brief", "Kings field, alfalfa with a winter cereal break: real engine scores and ranges; the explanation sentences are templates until an LLM key is added."]]],
+      ["../app/brief", "Printable brief", "Real engine scores and ranges. Restyled, but the wording is still adviser-level jargon and is next to rewrite for farmers."]]],
     ["Your field's year: three new options", "Redesigned after \"I'm confused on what this is\". Real Sentinel-2/Landsat calendar for the Colusa field, 2016–2025. Each option asks one plain question and gives one headline sentence.", [
       ["year-1", "1 · One year, round the clock", "When is your field bare, and what hit it then? One year as a clock face; dots show whether heavy rain hit bare ground."],
       ["year-2", "2 · Ten years, one pattern (recommended)", "Is your field bare at the same time every year? A typical-year row on top, so fallow years stand out; one risk at a time."],

@@ -36,7 +36,7 @@ export default function Timeline(p: Props) {
         </button>
         <div className="tl-date">
           <b data-testid="tl-date">{tLabel(p.t)}</b>
-          <span>10-day steps · 2016–2025</span>
+          <span>2016 to 2025, in 10-day steps</span>
         </div>
         <div className="tl-track-wrap">
           <div className="tl-events">

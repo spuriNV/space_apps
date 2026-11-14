@@ -4,7 +4,7 @@ import type { CoverClass, Location, RotationStrategy, ScoreKey, SourcedNumber, S
 import type { ProvMap } from '../../api';
 import { CLASS_COLOR, MONTHS, afacToMm, haToAc, mmToAfac } from '../../lib';
 import Icon from '../Icons';
-import { Src, fieldCode, county } from '../ui/shared';
+import { Src, fieldCode, fieldName, acres, county } from '../ui/shared';
 
 const ROWS: [ScoreKey, string][] = [['water_use', 'Water use'], ['forage_value', 'Forage value'], ['n_fixation', 'Nitrogen fixing'], ['erosion', 'Erosion reduction'], ['organic_matter', 'Organic matter'], ['market', 'Market fit'], ['pest_break', 'Pest-cycle break'], ['infiltration', 'Infiltration'], ['n_scavenging', 'N scavenging']];
 const SECTIONS = [['calendar', 'Cycle calendar'], ['why', 'Why / what the numbers say'], ['benefits', 'Benefits by priority'], ['funding', 'Funding and insurance'], ['checks', 'Fit checks'], ['review', 'Needs local review'], ['gaps', 'Gaps in the data']] as const;
@@ -52,7 +52,7 @@ export default function RotationBrief({ loc, strategies, pick, setPick, allocati
         <article className="paper">
           <header className="p-head">
             <div>
-              <div className="p-kicker">Rotation brief · {fieldCode(loc)} · {loc.short_name}, {county(loc)} County, CA</div>
+              <div className="p-kicker">Rotation summary for {fieldName(loc)}, {county(loc)} County, California · {acres(loc)} acres · {fieldCode(loc).replace('DWR ', 'state field no. ')}</div>
               <h1>{s.name}</h1>
               <div className="p-sub">{loc.area_ha.value.toFixed(1)} ha ({haToAc(loc.area_ha.value).toFixed(0)} ac) · {loc.soil.muname}, hydrologic group {loc.soil.hydrologic_group} · prepared 14 Nov 2026</div>
             </div>

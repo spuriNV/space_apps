@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import maplibregl, { type GeoJSONSource, type StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { acres, fieldName, latestCrop } from './components/ui/shared';
 import type { BCInfo, Calendar, CellGrid, Dataset, Location, Regional } from './types';
 import { CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
 
@@ -135,14 +136,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const d = document.createElement('button');
       d.className = 'pin site';
       d.dataset.id = loc.id;
-      d.innerHTML = `<span class="pin-dot"></span><span class="pin-text"><b>${loc.dwr_id ? 'DWR ' + loc.dwr_id : loc.id}</b><i>${loc.county ?? ''}${loc.county ? ' Co. · ' : ''}${loc.area_ha.value.toFixed(1)} ha · ${loc.short_name}</i></span>`;
+      d.innerHTML = `<span class="pin-dot"></span><span class="pin-text"><b>${fieldName(loc)}</b><i>${acres(loc)} acres · ${latestCrop(loc).crop} in ${latestCrop(loc).year}</i></span>`;
       d.onclick = (ev) => { ev.stopPropagation(); live.current.onSelect(loc.id); };
       ms.push(new maplibregl.Marker({ element: d, anchor: 'left', offset: [-9, 0] }).setLngLat([loc.centroid.lon, loc.centroid.lat]).addTo(map));
     }
     for (const pl of p.bc?.places ?? []) {
       const d = document.createElement('button');
       d.className = 'pin pin-bc';
-      d.innerHTML = `<span class="pin-dot"></span><span class="pin-text"><b>${pl.name}</b><i>BC · not modelled yet</i></span>`;
+      d.innerHTML = `<span class="pin-dot"></span><span class="pin-text"><b>${pl.name}</b><i>British Columbia · not set up yet</i></span>`;
       d.onclick = (ev) => { ev.stopPropagation(); live.current.onBC(); };
       ms.push(new maplibregl.Marker({ element: d, anchor: 'left', offset: [-9, 0] }).setLngLat([pl.lon, pl.lat]).addTo(map));
     }
@@ -164,7 +165,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
           const w = loc.centroid.lon - (ds.footprint_m * ox) / m.lon, s = loc.centroid.lat - (ds.footprint_m * oy) / m.lat;
           const e = w + ds.footprint_m / m.lon, n = s + ds.footprint_m / m.lat;
           fps.push(rect(w, s, e, n, { color: ds.color }));
-          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${ds.name} · one ${ds.native_scale} pixel` }, geometry: { type: 'Point', coordinates: [e, n] } });
+          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${({ smap: 'Soil moisture', grace: 'Groundwater', imerg: 'Rainfall', modis: 'Greenness' } as Record<string, string>)[ds.id] ?? ds.name}: one reading covers this square` }, geometry: { type: 'Point', coordinates: [e, n] } });
         } else if (ds.id !== 'hls') {
           const pad = ds.footprint_m * 2, lines: number[][][] = [];
           const w = b.w - pad / m.lon, e = b.e + pad / m.lon, s = b.s - pad / m.lat, n = b.n + pad / m.lat;
@@ -207,21 +208,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       }));
       const mean = n ? sum / n : 0;
       const real = !!cells.layers;
-      info.push({ key: 'hls', alt: cellBase + 60 * S, pad: 0, color: '#7ee081', tag: real ? `Sentinel-2 · 30 m cells${p.metric === 'et' ? ' · ET mock' : ''}` : 'HLS · 30 m cells · mock', title: p.metric === 'et' ? 'Surface: crop water use' : `Surface: ${CLASS_LABEL[fs.cls].toLowerCase()}`,
-        value: (real ? !n : fs.cls === 'u') ? 'No clear view (cloud)' : p.metric === 'et' ? `${mean.toFixed(1)} mm/day (${(mean / 25.4).toFixed(2)} in/day)` : `Field mean NDVI ${mean.toFixed(2)}`,
+      info.push({ key: 'hls', alt: cellBase + 60 * S, pad: 0, color: '#7ee081', tag: real ? `Sentinel-2 satellite, 30 m squares${p.metric === 'et' ? ' · water use is example numbers' : ''}` : 'Landsat and Sentinel-2, 30 m squares · example numbers', title: p.metric === 'et' ? 'The crop: water it is using' : `The crop: ${CLASS_LABEL[fs.cls].toLowerCase()}`,
+        value: (real ? !n : fs.cls === 'u') ? 'No clear view (cloud)' : p.metric === 'et' ? `${mean.toFixed(1)} mm/day (${(mean / 25.4).toFixed(2)} in/day)` : `Greenness ${mean.toFixed(2)} on a 0 to 1 scale`,
         note: real ? `${cells.features.length} cells · ${gridLayerLabel(layer)}` : `${cells.features.length} cells inside your field · ${p.detector === 'rule' ? 'rule' : 'ML'} detector${fs.disagree ? ' · detectors disagree' : ''}` });
     } else set('cells', []);
     if (p.layersOn.smap) {
       const b = 235 * S, col = smap == null ? '#737a86' : ramp(SMAP_RAMP, smap);
       set('slab-smap', [padded(loc, 110 * S, { b, h: b + (14 + (smap ?? 10) * 0.42) * S, col })]);
-      info.push({ key: 'smap', alt: b + 20 * S, pad: 110 * S, color: '#5ab0ff', tag: 'SMAP · 9 km pixel · mock', title: 'Soil: root-zone moisture', value: smap == null ? 'No data' : `${ordinal(smap)} percentile for this time of year`,
-        note: fs.cls === 'w' ? 'Reading is unreliable over standing water' : `One pixel covers about ${Math.round(81 / (loc.area_ha.value / 100))} fields this size` });
+      info.push({ key: 'smap', alt: b + 20 * S, pad: 110 * S, color: '#5ab0ff', tag: 'SMAP satellite · example numbers', title: 'Soil moisture in the root zone', value: smap == null ? 'No reading' : `${smap >= 67 ? 'Wetter than usual' : smap > 33 ? 'About normal' : 'Drier than usual'} (${ordinal(smap)} percentile)`,
+        note: fs.cls === 'w' ? 'Reading is unreliable over standing water' : `One reading covers about ${Math.round(81 / (loc.area_ha.value / 100))} fields this size` });
     } else set('slab-smap', []);
     if (p.layersOn.grace) {
       const b = 45 * S, col = grace == null ? '#5d636e' : ramp(GRACE_RAMP, grace);
       set('slab-grace', [padded(loc, 230 * S, { b, h: b + (14 + (grace ?? 4) * 0.42) * S, col })]);
-      info.push({ key: 'grace', alt: b + 16 * S, pad: 230 * S, color: '#ff7eb6', tag: 'GRACE-FO · 0.25° cell · mock', title: 'Groundwater storage', value: grace == null ? 'No data: gap between GRACE and GRACE-FO' : `${ordinal(grace)} percentile`,
-        note: 'Signal is ~300 km wide: basin context, not your field' });
+      info.push({ key: 'grace', alt: b + 16 * S, pad: 230 * S, color: '#ff7eb6', tag: 'GRACE-FO satellites · example numbers', title: 'Groundwater in the basin', value: grace == null ? 'No reading: gap between satellite missions' : `${grace >= 67 ? 'More than usual' : grace > 33 ? 'About normal' : 'Less than usual'} (${ordinal(grace)} percentile)`,
+        note: 'Basin-wide signal, not your own well' });
     } else set('slab-grace', []);
     // corner posts tie the slabs together
     const bb = bbox(loc), m = mPerDeg(loc.centroid.lat), w = 5 * S;

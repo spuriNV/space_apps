@@ -11,13 +11,15 @@ npm run typecheck
 node ../../design/tools/shoot-app.mjs                         # screenshots -> design/screenshots/app/
 ```
 
-`?ui=1|2|3` switches the field-panel option (default 1):
+One farmer-first field panel (the old `?ui=1|2|3` dossier / mission strip / analysis rail options were removed). With no field picked, the left column shows **Pick your field** ("Alfalfa field 6 miles south of Hanford, Kings County, 73 acres"). A picked field shows what it is, then plain answers for the timeline date (ground cover, soil moisture vs usual, basin groundwater vs usual, water the current rotation needs vs your limit), then the next actions, soil and water facts, crop record, events and sources.
 
-| `ui` | Option | What it is |
-|---|---|---|
-| 1 | Field dossier | Left instrument sheet: field ID, readouts at the timeline date, numbered planning steps, site, soil, crop record, event log, provenance |
-| 2 | Mission strip | Bottom console with one tab per field, five readout columns; the map stays full height |
-| 3 | Split analysis | Fixed right data rail (sections A–G) with an attribute-table field picker; map on the left |
+`?theme=1|2|3` switches the visual theme (tokens in `src/themes.css`; rules in `.claude/skills/fieldshift-visual-design/SKILL.md`):
+
+| `theme` | Name | Fonts | Idea |
+|---|---|---|---|
+| 1 (default) | Survey sheet | Source Serif 4 + Overpass | USGS quad / soil-survey print: paper panels, black ink, map inks |
+| 2 | Extension bulletin | Zilla Slab + Libre Franklin | Two-colour farm bulletin: spot-green header band, black text |
+| 3 | Field desk | Barlow Semi Condensed + Barlow | Quiet GIS workstation: solid warm graphite, survey-yellow actions |
 
 `window.__map` (MapLibre) and `window.__app.setT(t)` are exposed for scripted screenshots.
 
@@ -26,7 +28,8 @@ node ../../design/tools/shoot-app.mjs                         # screenshots -> d
 ```
 src/api.ts                    only data seam: API -> repo file bridge -> bundled mock, with per-part provenance
 vite.config.ts                dev-only /repo/ bridge (allow-listed backend output files the API had no route for)
-src/components/ui/            the three field-panel options (Options.tsx) + shared readouts/soil/record/table (shared.tsx)
+src/components/ui/            field panel + pick list (Options.tsx); farmer wording helpers, answers, soil, record (shared.tsx)
+src/themes.css                theme tokens (?theme=1|2|3)
 src/components/brief/         printable rotation brief (from variant C), fed from the strategies
 src/components/year/          "Your field's year" (B's version, isolated: swap this folder for the redesign)
 src/components/compare/       "Compare rotations" (B's version, isolated: swap this folder for the redesign)
@@ -36,7 +39,7 @@ src/MapView.tsx, lib.ts       map + 3D stack; the top layer uses the real 30 m g
 
 ## Data: live vs mock
 
-The top-right indicator says **Live data** when `GET /api/health` answers, otherwise **Example data**, meaning everything comes from `src/mock`. Click it to see where each part comes from. Parts that are still illustrative carry a **Mock data** tag where they appear.
+The top-right indicator says **Live data** when `GET /api/health` answers, otherwise **Example data**, meaning everything comes from `src/mock`. Click it to see where each part comes from. Parts that are still illustrative say **Example numbers, not live yet.** in their source line.
 
 | Part | Source when live |
 |---|---|
