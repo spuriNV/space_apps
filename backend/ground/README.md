@@ -22,4 +22,4 @@ Run from `backend/ground/` (uv, Python 3.12). `uv sync` first.
 
 ## Caveats
 - RMA alfalfa/forage: CA alfalfa is insured as "Forage Production"/"Pasture,Rangeland,Forage" (index plans); ~100% of Kings/Tulare forage indemnity has no peril attribution (`share_peril_unattributed`), so the cause split is not meaningful there. Corn (Kings) and rice (Colusa) are informative.
-- Validation (checks): OpenET vs the engine's monthly ETc climatology (engine only stores a 2015-2025 mean per month, so OpenET is averaged 2019-2024 per month); CIMIS ETo vs POWER Hargreaves from `backend/regional/out/<id>/daily_derived.parquet`. Numbers are reported, never tuned.
+- Validation (checks): OpenET vs the engine's monthly ETc climatology, using only CDL-matched years (CDL majority crop in `backend/field/out/<id>/crop_history.json` equals the baseline crop, 2016-2025; same rule as `backend/engine/checks/validate_et.py`). The engine stores one 2015-2025 mean per month, so this is an approximation of that script's matched-year engine run; CIMIS ETo vs POWER Hargreaves from `backend/regional/out/<id>/daily_derived.parquet`. Numbers are reported, never tuned.

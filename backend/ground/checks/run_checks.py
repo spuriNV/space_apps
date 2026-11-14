@@ -44,12 +44,17 @@ for preset in ["car_colusa_rice", "caf_tulare_forage"]:
         # vs engine ETc, monthly climatology 2019-2024
         sj = json.load(open(ROOT / "backend/engine/out" / preset / "strategies.json")); b = [x for x in sj if x["is_baseline"]][0]
         eng = np.array([m["value"] for m in b["water"]["etc_by_month_mm"]])
-        e = e.assign(date=pd.to_datetime(e["date"])); e = e[(e.date.dt.year >= 2019) & (e.date.dt.year <= 2024)]
+        # CDL-matched years only (same rule as backend/engine/checks/validate_et.py): years whose CDL majority crop is the baseline crop
+        BASE_CDL = {"car_colusa_rice": "Rice", "caf_tulare_forage": "Alfalfa"}
+        hist = json.load(open(ROOT / "backend/field/out" / preset / "crop_history.json"))["by_year"]
+        matched = [y for y in range(2016, 2026) if hist.get(str(y)) == BASE_CDL[preset]]
+        e = e.assign(date=pd.to_datetime(e["date"])); e = e[e.date.dt.year.isin(matched)]
+        info(f"{preset} CDL-matched years ({BASE_CDL[preset]}): {matched}")
         clim = e.groupby(e.date.dt.month)["et_mm"].mean().reindex(range(1, 13)).values
         ok = ~np.isnan(clim); diff = eng[ok] - clim[ok]
         bias = diff.sum() / clim[ok].sum() * 100; rmse = math.sqrt((diff ** 2).mean())
         lo = sum(m["low"] for m in b["water"]["etc_by_month_mm"]); hi = sum(m["high"] for m in b["water"]["etc_by_month_mm"])
-        line(abs(bias) <= 25, f"{preset} engine ETc vs OpenET Ensemble 2019-2024 monthly: annual bias {bias:+.1f}% (target |bias|<=25%), monthly RMSE {rmse:.1f} mm; engine {eng.sum():.0f} (range {lo:.0f}-{hi:.0f}) vs OpenET {clim[ok].sum():.0f} mm")
+        line(abs(bias) <= 25, f"{preset} engine ETc vs OpenET Ensemble CDL-matched years monthly: annual bias {bias:+.1f}% (target |bias|<=25%), monthly RMSE {rmse:.1f} mm; engine {eng.sum():.0f} (range {lo:.0f}-{hi:.0f}) vs OpenET {clim[ok].sum():.0f} mm")
         info(f"{preset} per-month engine-OpenET (mm): " + ", ".join(f"{i+1}:{x:+.0f}" for i, x in zip(np.where(ok)[0], diff)))
     if ci is None: skip(f"{preset} CIMIS not fetched (BLOCKED: no CIMIS_APP_KEY)")
     else:
