@@ -1,11 +1,11 @@
-// Records the laptop shots (7-11 in docs/video-30s.md) from the live app at 1600x900 CSS px (1920x1080 device px)
+// Records the laptop shots (v2 shots: this week, nation tools, 3D, compare, brief, draw a field; see docs/video-30s.md §0b) from the live app at 1600x900 CSS px (1920x1080 device px)
 // with Chrome's screencast (JPEG frames + timestamps), then builds one constant-24-fps MP4 per take in video/raw/rec/.
 // Usage: node video/scripts/record-laptop.mjs [take-filter...]   (APP_URL=... to point elsewhere)
 import { chromium } from '../../design/tools/node_modules/playwright-core/index.mjs';
 import { mkdirSync, writeFileSync, rmSync, symlinkSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
-const BASE = process.env.APP_URL ?? 'https://croplytics-app.onrender.com/';
+const BASE = process.env.APP_URL ?? 'https://croplytics.xyz/';
 const OUT = new URL('../raw/rec/', import.meta.url).pathname;
 mkdirSync(OUT, { recursive: true });
 const only = process.argv.slice(2);
@@ -63,49 +63,49 @@ for (let attempt = 1; ; attempt++) {
   await idle(1500);
 }
 
+const moreDetail = '[data-testid="field-panel"] [data-testid="more-detail"]';
+// This week card (top of Field now): irrigation and field access
 if (want('s07')) {
-  await page.click('[data-testid="field-panel"] [data-testid="more-detail"]'); await page.waitForTimeout(600);
+  await start();
+  await page.waitForTimeout(3600);
+  await stop('s07_week');
+}
+
+// Nation tools: open the tools, glide down to the drought rotation bars
+if (want('s09')) {
+  await page.click(moreDetail); await page.waitForTimeout(800);
+  await page.locator('[data-testid="nation-toggle"]').scrollIntoViewIfNeeded(); await page.waitForTimeout(600);
+  await start();
+  await page.waitForTimeout(500);
+  await page.click('[data-testid="nation-toggle"]');
+  await page.waitForTimeout(1500);
+  await page.evaluate(async () => {
+    const h = document.querySelector('[data-testid="nt-drought"]');
+    let el = h; while (el && !(el.scrollHeight > el.clientHeight + 4 && /(auto|scroll)/.test(getComputedStyle(el).overflowY))) el = el.parentElement;
+    if (!h || !el) return;
+    const target = el.scrollTop + h.getBoundingClientRect().top - el.getBoundingClientRect().top - 12;
+    const from = el.scrollTop, t0 = performance.now(), dur = 1100;
+    await new Promise((res) => { const step = (now) => { const k = Math.min(1, (now - t0) / dur); const e = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2; el.scrollTop = from + (target - from) * e; k < 1 ? requestAnimationFrame(step) : res(); }; requestAnimationFrame(step); });
+  });
+  await page.waitForTimeout(2400);
+  await stop('s09_nation');
+  await page.click('[data-testid="nation-toggle"]').catch(() => {}); await page.waitForTimeout(500);
+  await page.click(moreDetail).catch(() => {}); await page.waitForTimeout(500);
+}
+
+if (want('s08')) {
+  await page.click(moreDetail); await page.waitForTimeout(600);
   await start();
   await page.waitForTimeout(500);
   await page.click('[data-testid="step-drill"]');
   await page.waitForTimeout(3500);
   await page.evaluate(() => { const m = window.__map; m.easeTo({ bearing: m.getBearing() + 22, duration: 4000, easing: (t) => t }); });
   await page.waitForTimeout(4300);
-  await stop('s07_3d');
-  await page.click('[data-testid="field-panel"] [data-testid="more-detail"]').catch(() => {});
+  await stop('s08_3d');
+  await page.click(moreDetail).catch(() => {});
 } else {
-  await page.click('[data-testid="field-panel"] [data-testid="more-detail"]'); await page.click('[data-testid="step-drill"]'); await idle(1000);
-  await page.click('[data-testid="field-panel"] [data-testid="more-detail"]').catch(() => {});
-}
-
-if (want('s08')) {
-  await page.click('[data-testid="tab-year"]'); await page.waitForSelector('[data-testid="year-sheet"]'); await page.waitForTimeout(1500);
-  await page.click('[data-testid="year-sheet"] .ys-md button'); await page.waitForTimeout(500);
-  // record the earlier years opening (the sheet grows to show 2016-2022), then mark the 2022 row
-  await start();
-  await page.waitForTimeout(500);
-  await page.click('[data-testid="earlier"]');
-  await page.waitForTimeout(1300);
-  await page.evaluate(() => {
-    const row = [...document.querySelectorAll('.yr-row')].find((r) => r.querySelector('b')?.textContent === '2022');
-    if (row) { row.style.outline = '3px solid #ffd166'; row.style.outlineOffset = '2px'; }
-  });
-  await page.waitForTimeout(2600);
-  await stop('s08_year');
-  await page.evaluate(() => { const row = [...document.querySelectorAll('.yr-row')].find((r) => r.querySelector('b')?.textContent === '2022'); if (row) row.style.outline = ''; });
-  await page.click('[data-testid="earlier"]').catch(() => {});
-  await page.click('[data-testid="year-sheet"] .ys-md button').catch(() => {});
-  await page.click('[data-testid="year-close"]').catch(() => {});
-  await page.waitForTimeout(800);
-}
-
-if (want('s09')) {
-  await page.click('[data-testid="tab-now"]'); await page.waitForTimeout(1200);
-  await start();
-  await page.waitForTimeout(500);
-  await page.click('[data-testid="tab-season"]'); await page.waitForSelector('[data-testid="coming-season"]');
-  await page.waitForTimeout(3500);
-  await stop('s09_season');
+  await page.click(moreDetail); await page.click('[data-testid="step-drill"]'); await idle(1000);
+  await page.click(moreDetail).catch(() => {});
 }
 
 if (want('s10')) {
@@ -123,7 +123,8 @@ if (want('s11')) {
   await page.click('[data-alt="car2_dryyear_safflower"]').catch(() => {}); await page.waitForTimeout(600);
   await start();
   await page.waitForTimeout(400);
-  await page.click('[data-testid="to-brief"]'); await page.waitForSelector('[data-testid="brief"]');
+  await page.click('[data-testid="to-brief"]'); await page.waitForSelector('[data-testid="brief-preview"]'); await page.waitForTimeout(900);
+  await page.click('[data-testid="brief-preview"]'); await page.waitForSelector('[data-testid="brief"]', { state: 'visible' });
   await page.waitForTimeout(1200);
   const sc = await page.evaluate(async () => {
     const h = [...document.querySelectorAll('[data-testid="brief"] h2')].find((e) => /Check locally/.test(e.textContent));
@@ -139,5 +140,25 @@ if (want('s11')) {
   console.log('  brief', sc);
   await page.waitForTimeout(1500);
   await stop('s11_brief');
+}
+
+// Draw a field: overview with the farm catalog pins, then draw a rectangle, acres, name it, the panel fills in
+if (want('s12')) {
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => window.__map && window.__map.loaded() && document.querySelector('[data-testid="fields-panel"]'), null, { timeout: 120000 });
+  await page.evaluate(() => document.fonts.ready); await idle(2000);
+  await start();
+  await page.waitForTimeout(900);
+  await page.evaluate(() => window.__map.easeTo({ center: [-122.0866, 39.1379], zoom: 15.3, duration: 1600 }));
+  await page.waitForTimeout(1800); await idle(600);
+  await page.click('[data-testid="draw-btn"]'); await page.waitForTimeout(500);
+  const box = { x: 860, y: 300, w: 280, h: 190 };
+  await page.mouse.move(box.x, box.y); await page.mouse.down();
+  await page.mouse.move(box.x + box.w, box.y + box.h, { steps: 20 }); await page.mouse.up();
+  await page.waitForSelector('[data-testid="draw-acres"]', { timeout: 8000 }).catch(() => console.log('  no acres'));
+  await page.waitForTimeout(2200);
+  console.log('  draw bar', (await page.innerText('[data-testid="draw-bar"]').catch(() => '')).replace(/\s+/g, ' '));
+  // not saved: saving on the live app currently crashes the page ("reading 'years'"), so the shot ends on the acres
+  await stop('s12_draw');
 }
 await browser.close();

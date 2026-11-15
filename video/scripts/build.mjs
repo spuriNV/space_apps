@@ -1,5 +1,5 @@
 // Builds the 30-second CropLytics commercial from stock clips, screen recordings, the voice-over lines and the music.
-//   node video/scripts/build.mjs            -> video/croplytics-30s-v1.mp4 + .srt (and stems in video/build/)
+//   node video/scripts/build.mjs            -> video/croplytics-30s-v2.mp4 + .srt (and stems in video/build/)
 //   VO_DIR=/path/to/lines node ...          -> use other voice-over lines (t1.wav ... t9.wav), e.g. ElevenLabs takes
 // Needs ffmpeg (no drawtext/libass needed: every super, caption and the end card is rendered to PNG with Chrome).
 import { chromium } from '../../design/tools/node_modules/playwright-core/index.mjs';
@@ -14,7 +14,7 @@ const ROOT = join(V, '..');
 const RAW = join(V, 'raw');
 const B = join(V, 'build');
 const VO_DIR = process.env.VO_DIR ?? join(RAW, 'vo');
-const OUT = join(V, process.env.OUT_NAME ?? 'croplytics-30s-v1');
+const OUT = join(V, process.env.OUT_NAME ?? 'croplytics-30s-v2');
 const FPS = 24;
 const TOTAL = 29.5; // seconds; 708 frames, under the 30 s limit with margin
 for (const d of [B, join(B, 'seg'), join(B, 'ov')]) mkdirSync(d, { recursive: true });
@@ -28,38 +28,39 @@ const rec = (f) => join(RAW, 'rec', f);
 // warm, low-saturation grade for the stock footage only (the app's recordings stay ungraded)
 const GRADE = "colortemperature=temperature=5400:mix=0.55,eq=contrast=1.05:saturation=0.86:gamma=1.02,curves=all='0/0.035 0.5/0.52 1/0.98'";
 const SHOTS = [
-  { id: '01_iss', len: 2.25, still: join(ROOT, 'data/cache/car_colusa_rice/iss/ISS062-E-81143.jpg'), crop: [5568, 3132, 0, 330],
+  { id: '01_iss', len: 1.75, still: join(ROOT, 'data/cache/car_colusa_rice/iss/ISS062-E-81143.jpg'), crop: [5568, 3132, 0, 330],
     zoom: [1.0, 1.07], c: [0.52, 0.48], grade: "colortemperature=temperature=4800:mix=0.7,eq=contrast=1.7:brightness=-0.05:saturation=1.5:gamma=0.9" },
   { id: '02_look', len: 2.0, src: stock('mixkit-521-1080.mp4'), in: 6.0, zoom: [1.0, 1.06], c: [0.4, 0.5], grade: GRADE },
   { id: '03_hat', len: 1.5, src: stock('mixkit-42382-1080.mp4'), in: 0.6, zoom: [1.0, 1.03], c: [0.5, 0.5], grade: GRADE },
-  { id: '04_phone_hand', len: 1.0, src: stock('mixkit-594-1080.mp4'), in: 2.0, zoom: [2.0, 2.06], c: [0.44, 0.62], grade: GRADE },
-  { id: '05_phone_app', len: 4.0, phone: rec('s05_phone_cfr.mp4') },
-  { id: '06_laptop', len: 0.75, src: stock('mixkit-32139-720.mp4'), in: 1.1, zoom: [1.0, 1.03], c: [0.5, 0.5], grade: GRADE },
-  { id: '07_3d', len: 2.5, src: rec('s07_3d.mp4'), in: 4.3, zoom: [1.0, 1.04], c: [0.62, 0.5] },
-  { id: '08_year', len: 2.25, src: rec('s08_year.mp4'), in: 0.4, zoom: [1.0, 1.08], c: [0.5, 0.64] },
-  { id: '09_season', len: 2.0, src: rec('s09_season.mp4'), in: 0.5, zoom: [1.3, 1.36], c: [0.35, 0.0] },
-  { id: '10_compare', len: 3.75, src: rec('s10_compare.mp4'), in: 0.2, zoom: [1.0, 1.3], c: [0.0, 0.12] },
-  { id: '11_brief', len: 3.5, src: rec('s11_brief.mp4'), in: 0.3, zoom: [1.45, 1.5], c: [0.4, 0.45] },
-  { id: '12_end', len: 4.0, card: true },
+  { id: '04_phone_hand', len: 0.5, src: stock('mixkit-594-1080.mp4'), in: 2.2, zoom: [2.0, 2.04], c: [0.44, 0.62], grade: GRADE },
+  { id: '05_phone_app', len: 3.5, phone: rec('s05_phone_cfr.mp4') },
+  { id: '06_laptop', len: 0.5, src: stock('mixkit-32139-720.mp4'), in: 1.2, zoom: [1.0, 1.03], c: [0.5, 0.5], grade: GRADE },
+  { id: '07_week', len: 2.5, src: rec('s07_week.mp4'), in: 0.5, zoom: [1.3, 1.36], c: [0.2, 0.55] },
+  { id: '08_3d', len: 2.5, src: rec('s08_3d.mp4'), in: 4.3, zoom: [1.0, 1.04], c: [0.62, 0.5] },
+  { id: '09_nation', len: 2.5, src: rec('s09_nation.mp4'), in: 2.6, zoom: [1.2, 1.26], c: [0.2, 0.5] },
+  { id: '10_compare', len: 4.0, src: rec('s10_compare.mp4'), in: 0.2, zoom: [1.0, 1.3], c: [0.0, 0.12] },
+  { id: '11_brief', len: 3.0, src: rec('s11_brief.mp4'), in: 2.2, zoom: [1.1, 1.15], c: [0.5, 0.5] },
+  { id: '12_draw', len: 2.0, src: rec('s12_draw.mp4'), pieces: [[0.3, 0.5], [4.8, 1.5]], zoom: [1.0, 1.0], c: [0.5, 0.5] },
+  { id: '13_end', len: 3.25, card: true },
 ];
 let t = 0; for (const s of SHOTS) { s.start = t; t += s.len; }
 if (Math.abs(t - TOTAL) > 1e-6) throw new Error(`shots sum to ${t}, not ${TOTAL}`);
 const at = (id) => SHOTS.find((s) => s.id === id).start;
 
 // phone shot: three pieces of the simulator recording (tap, flown in with data, sheet slides up); times in the recording
-const PHONE_PIECES = JSON.parse(process.env.PHONE_PIECES ?? '[[32.0,1.6],[39.0,0.6],[42.2,1.8]]');
+const PHONE_PIECES = JSON.parse(process.env.PHONE_PIECES ?? '[[32.0,1.4],[39.0,0.5],[42.2,1.6]]');
 
 // ---------------------------------------------------------------- voice-over (separate stem) and captions
 const VO = [
-  { at: 2.35, text: 'Every season, the same question.' },
-  { at: 4.40, text: 'What do I plant next?' },
-  { at: 6.85, text: 'CropLytics reads your field with NASA Earth data.' },
-  { at: 11.55, text: 'From the crop down to the groundwater.' },
-  { at: 14.20, text: 'What happened here.' },
-  { at: 16.35, text: 'What’s likely this winter.' },
-  { at: 18.35, text: 'What a switch costs: about two acre-feet, not five.' },
-  { at: 22.05, text: 'One page for your adviser, checked against OpenET.' },
-  { at: 25.95, text: 'CropLytics. Your field. Your call.', noBurn: true }, // the end card itself says it
+  { at: 1.90, text: 'Every season, the same question.' },
+  { at: 4.30, text: 'What do I plant next?' },
+  { at: 5.85, text: 'CropLytics reads your field with NASA Earth data.' },
+  { at: 9.80, text: 'This week, in your field.' },
+  { at: 12.30, text: 'From the crop down to the groundwater.' },
+  { at: 14.80, text: 'If the water stops, what holds?' },
+  { at: 17.35, text: 'What a switch costs: about two acre-feet, not five.' },
+  { at: 21.35, text: 'One page, checked against OpenET.' },
+  { at: 26.30, text: 'CropLytics. Your field. Your call.', noBurn: true }, // the end card itself says it
 ];
 VO.forEach((l, i) => { l.file = join(VO_DIR, `t${i + 1}.wav`); l.dur = probe(l.file); l.end = l.at + l.dur; });
 // a caption stays up 0.35 s after its line, but never past the next line's start
@@ -69,7 +70,7 @@ if (VO.at(-1).end > TOTAL - 0.3) throw new Error('last VO line runs past the end
 
 // ---------------------------------------------------------------- on-screen text (rendered to PNG)
 const FIELD = process.env.FIELD_NAME ?? 'Rice field 4 miles east of Williams';
-const N_CA = process.env.N_CA ?? '10'; // California fields in the live app's pick list (15 Nov 2026: 10 CA + 1 BC)
+const N_CA = process.env.N_CA ?? '14'; // California fields in the live app's pick list (15 Nov 2026: 14 CA + 1 BC)
 const OV = [
   // ISS opener
   { kind: 'super', text: 'The Sacramento Valley, seen from the International Space Station', t: [0.25, at('02_look') - 0.05] },
@@ -77,25 +78,26 @@ const OV = [
   // phone (source line sits left, clear of the phone)
   { kind: 'lower', hi: true, eyebrow: `A real field: one of ${N_CA} in California, plus one in British Columbia`, text: `${FIELD} · 149 acres · Colusa County`, t: [at('05_phone_app') + 0.6, at('06_laptop')] },
   { kind: 'source', left: true, text: 'NASA HLS (Landsat + ESA Sentinel-2) · NASA GPM IMERG rain', t: [at('05_phone_app') + 0.6, at('06_laptop')] },
+  // this week
+  { kind: 'lower', eyebrow: 'Plan the week', text: 'Irrigation and field access, day by day', t: [at('07_week') + 0.3, at('08_3d')] },
+  // nation tools
+  { kind: 'lower', eyebrow: 'Nation tools · drought rotation', text: 'Water stops Aug 15: share of crop water still needed', t: [at('09_nation') + 0.2, at('10_compare')] },
+  { kind: 'source', text: 'Estimates from the rotation model, not a guarantee', t: [at('09_nation') + 0.2, at('10_compare')] },
   // 3D
-  { kind: 'lower', eyebrow: 'Different observations, different scales', text: 'Crop · soil moisture · groundwater in the basin', t: [at('07_3d') + 0.3, at('08_year')] },
-  { kind: 'source', text: process.env.SRC_3D ?? 'ESA Sentinel-2 · NASA GRACE-FO', t: [at('07_3d') + 0.3, at('08_year')] },
-  // year
-  { kind: 'lower', eyebrow: 'Understand risk', text: '2022: left fallow in the drought', t: [at('08_year') + 0.4, at('09_season')] },
-  { kind: 'source', text: 'NASA HLS (Landsat + ESA Sentinel-2) · NASA GPM IMERG rain', t: [at('08_year') + 0.4, at('09_season')] },
-  // season
-  { kind: 'lower', eyebrow: 'Make uncertainty visible', text: 'An outlook, not a forecast', t: [at('09_season') + 0.3, at('10_compare')] },
-  { kind: 'source', text: 'NOAA CPC seasonal outlook · Shasta storage from CDEC', t: [at('09_season') + 0.3, at('10_compare')] },
+  { kind: 'lower', eyebrow: 'Different observations, different scales', text: 'Crop · soil moisture · groundwater in the basin', t: [at('08_3d') + 0.3, at('09_nation')] },
+  { kind: 'source', text: process.env.SRC_3D ?? 'ESA Sentinel-2 · NASA GRACE-FO', t: [at('08_3d') + 0.3, at('09_nation')] },
   // compare
   { kind: 'big', eyebrow: 'Compare rotations · reveal trade-offs', text: 'Dry-year safflower: about 2 acre-ft/acre, an upper bound.<br>Rice today: about 5.', t: [at('10_compare') + 0.9, at('11_brief')] },
   { kind: 'source', text: 'Rotation model driven by NASA POWER weather', t: [at('10_compare') + 0.9, at('11_brief')] },
   // brief + the check
-  { kind: 'big', eyebrow: 'One page for the grower and adviser', text: 'Water estimate checked against OpenET:<br>runs 16–21% high, nothing tuned.', t: [at('11_brief') + 0.5, at('12_end')] },
+  { kind: 'big', eyebrow: 'One page for the grower and adviser', text: 'Water estimate checked against OpenET:<br>runs 16–21% high, nothing tuned.', t: [at('11_brief') + 0.3, at('12_draw')] },
+  // draw a field
+  { kind: 'lower', eyebrow: 'Any field, not only ours', text: 'Draw a shape, see its acres', t: [at('12_draw') + 0.5, at('13_end')] },
   // end card layers (fade in one after another, then hold still)
-  { kind: 'endbg', t: [at('12_end'), TOTAL], fade: 0.4, fadeOut: 0 },
-  { kind: 'endmark', t: [at('12_end') + 0.3, TOTAL], fade: 0.5, rise: 12, fadeOut: 0 },
-  { kind: 'endline', t: [at('12_end') + 0.6, TOTAL], fade: 0.4, rise: 8, fadeOut: 0 },
-  { kind: 'endsmall', t: [at('12_end') + 0.9, TOTAL], fade: 0.4, fadeOut: 0 },
+  { kind: 'endbg', t: [at('13_end'), TOTAL], fade: 0.4, fadeOut: 0 },
+  { kind: 'endmark', t: [at('13_end') + 0.3, TOTAL], fade: 0.5, rise: 12, fadeOut: 0 },
+  { kind: 'endline', t: [at('13_end') + 0.6, TOTAL], fade: 0.4, rise: 8, fadeOut: 0 },
+  { kind: 'endsmall', t: [at('13_end') + 0.9, TOTAL], fade: 0.4, fadeOut: 0 },
 ];
 for (const l of VO) if (!l.noBurn) OV.push({ kind: 'caption', text: l.text, t: [l.at - 0.05, l.capEnd] });
 
@@ -208,6 +210,10 @@ function buildSegment(s, P) {
       '-map', '[v]', ...enc]);
   } else if (s.card) {
     ff(['-f', 'lavfi', '-i', `color=c=0xf7f6f0:s=1920x1080:r=${FPS}:d=${s.len}`, '-vf', 'format=yuv420p', ...enc]);
+  } else if (s.pieces) {
+    const parts = s.pieces.map(([a, d], i) => `[0:v]trim=start=${a}:duration=${d},setpts=PTS-STARTPTS,fps=${FPS},scale=1920:1080:flags=lanczos,setsar=1[p${i}]`).join(';');
+    const cat = s.pieces.map((_, i) => `[p${i}]`).join('') + `concat=n=${s.pieces.length}:v=1:a=0,format=yuv420p[v]`;
+    ff(['-i', s.src, '-filter_complex', `${parts};${cat}`, '-map', '[v]', ...enc]);
   } else {
     const pre = s.grade ? `,${s.grade}` : '';
     ff(['-ss', String(s.in), '-i', s.src, '-vf', `fps=${FPS},scale=3840:2160:flags=lanczos${pre},${zoomFilter(s, n)},format=yuv420p`, ...enc]);
@@ -261,5 +267,5 @@ loudnorm(A.premix, A.mix);
 writeFileSync(`${OUT}.srt`, srt());
 const comment = 'CropLytics, NASA Space Apps Challenge 2026, Field Shift. App footage: real screen recordings of croplytics-app.onrender.com. Farmer footage: Mixkit stock video (human-shot, Mixkit Free License). Music: Mixkit Stock Music Free License. Voice-over: synthetic speech (SI-generated) from Microsoft Edge text-to-speech, en-US-AndrewNeural, placeholder. No AI-generated images or video.';
 ff(['-i', join(B, 'picture.mp4'), '-i', A.mix, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-shortest',
-  '-metadata', 'title=CropLytics: 30-second commercial (v1)', '-metadata', `comment=${comment}`, '-metadata', `description=${comment}`, '-movflags', '+faststart', `${OUT}.mp4`]);
+  '-metadata', 'title=CropLytics: 30-second commercial (v2)', '-metadata', `comment=${comment}`, '-metadata', `description=${comment}`, '-movflags', '+faststart', `${OUT}.mp4`]);
 console.log('wrote', `${OUT}.mp4`, probe(`${OUT}.mp4`).toFixed(3), 's');

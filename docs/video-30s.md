@@ -38,6 +38,28 @@ Not on screen, on purpose: SMAP (the 3D view labels soil moisture as "NASA GRACE
 
 ---
 
+## 0b. As built: v2 (15 Nov 2026)
+
+`video/croplytics-30s-v2.mp4` (+ `.srt`), same pipeline (`video/scripts/record-laptop.mjs`, `build.mjs` with `VO_DIR`), **29.5 s (708 frames)**, -14.2 LUFS. Laptop shots re-recorded from croplytics.xyz; N_CA=14 (live `/api/locations`: 14 CA + 1 BC). Phone, stock, ISS, music reused from v1. Voice is synthetic (edge-tts), noted in metadata, CREDITS.md and the end card.
+
+| # | Time | Len | Picture | Voice-over |
+|---|---|---|---|---|
+| 1 | 0.00 | 1.75 | ISS photo | (music) |
+| 2-4 | 1.75 | 4.0 | Stock farmer: looking out, hand to hat, phone in hand | "Every season, the same question." / "What do I plant next?" |
+| 5 | 5.75 | 3.5 | Phone recording (v1 clip), Colusa field | "CropLytics reads your field with NASA Earth data." |
+| 6 | 9.25 | 0.5 | Stock: man at a laptop | |
+| 7 | 9.75 | 2.5 | "This week" card (irrigation, field access) | "This week, in your field." |
+| 8 | 12.25 | 2.5 | 3D view under the field | "From the crop down to the groundwater." |
+| 9 | 14.75 | 2.5 | Nation tools: drought rotation bars | "If the water stops, what holds?" |
+| 10 | 17.25 | 4.0 | Compare: dry-year safflower | "What a switch costs: about two acre-feet, not five." |
+| 11 | 21.25 | 3.0 | One-page brief, OpenET line ("runs 16-21% high, nothing tuned") | "One page, checked against OpenET." |
+| 12 | 24.25 | 2.0 | Overview with clustered farm pins, then Draw a field: 27 acres | |
+| 13 | 26.25 | 3.25 | End card, croplytics.xyz | "CropLytics. Your field. Your call." |
+
+Dropped from v1: "This field's year" and "Coming season". Weak spots: the phone clip is the v1 app UI; the draw shot stops at the acres because saving a drawn field on the live app crashed the page ("Cannot read properties of undefined (reading 'years')"); lower-third boxes sit over the left panel as in v1.
+
+---
+
 ## 1. Shot list (sums to 30.0 s)
 
 Sources: **AI** = generated video (section 7 prompts), **REC** = screen recording of the real app (section 4), **GFX** = motion graphics built in the edit, **STOCK** = free stock fallback.

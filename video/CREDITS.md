@@ -1,6 +1,8 @@
-# Credits: CropLytics 30-second commercial (v1)
+# Credits: CropLytics 30-second commercial (v2; v1 notes below still apply to the shared sources)
 
-File: `video/croplytics-30s-v1.mp4` (captions also in `video/croplytics-30s-v1.srt`). Built by `video/scripts/build.mjs` from the sources below. No AI-generated images or video are used anywhere in the spot.
+File: `video/croplytics-30s-v2.mp4` (captions in `video/croplytics-30s-v2.srt`; v1 is `video/croplytics-30s-v1.mp4`).
+
+v2 changes: laptop shots re-recorded from <https://croplytics.xyz> on 15 Nov 2026 (This week card, Nation tools drought rotation, 3D, Compare, the one-page brief, Draw a field); the phone shot is reused from v1; stock clips, ISS photo and music unchanged. v2 voice-over is synthetic too (edge-tts `en-US-AndrewNeural`, rate -4%; the last line sped up 5% with ffmpeg atempo). Script (v2): "Every season, the same question. What do I plant next? CropLytics reads your field with NASA Earth data. This week, in your field. From the crop down to the groundwater. If the water stops, what holds? What a switch costs: about two acre-feet, not five. One page, checked against OpenET. CropLytics. Your field. Your call." Original v1 note: `video/croplytics-30s-v1.mp4` (captions also in `video/croplytics-30s-v1.srt`). Built by `video/scripts/build.mjs` from the sources below. No AI-generated images or video are used anywhere in the spot.
 
 ## Synthetic audio disclosure (Space Apps 2026 "SI" rule)
 
