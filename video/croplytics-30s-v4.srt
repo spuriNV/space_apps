@@ -1,0 +1,35 @@
+1
+00:00:01,900 --> 00:00:04,200
+Every season, the same question.
+
+2
+00:00:04,300 --> 00:00:05,750
+What do I plant next?
+
+3
+00:00:05,850 --> 00:00:09,536
+CropLytics reads your field with NASA Earth data.
+
+4
+00:00:09,800 --> 00:00:12,022
+This week, in your field.
+
+5
+00:00:12,300 --> 00:00:14,700
+From the crop down to the groundwater.
+
+6
+00:00:14,800 --> 00:00:17,250
+If the water stops, what holds?
+
+7
+00:00:17,350 --> 00:00:21,014
+Pick a rotation that fits your water, before the water runs short.
+
+8
+00:00:21,350 --> 00:00:24,508
+One page, checked against OpenET.
+
+9
+00:00:26,300 --> 00:00:29,465
+CropLytics. Your field. Your call.

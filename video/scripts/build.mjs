@@ -40,12 +40,14 @@ const SHOTS = [
   { id: '09_nation', len: 2.5, src: rec('s09_nation.mp4'), in: 2.6, zoom: [1.2, 1.26], c: [0.2, 0.5] },
   { id: '10_compare', len: 4.0, src: rec('s10_compare.mp4'), in: 0.2, zoom: [1.0, 1.3], c: [0.0, 0.12] },
   { id: '11_brief', len: 3.0, src: rec('s11_brief.mp4'), in: 2.2, zoom: [1.1, 1.15], c: [0.5, 0.5] },
-  { id: '12_draw', len: 2.0, src: rec('s12_draw.mp4'), pieces: [[0.3, 0.5], [4.8, 1.5]], zoom: [1.0, 1.0], c: [0.5, 0.5] },
+  { id: '12_draw', len: 2.0, src: rec('s12_draw.mp4'), pieces: [[0.3, 0.5], [4.8, 1.75]], zoom: [1.0, 1.0], c: [0.5, 0.5] },
   { id: '13_end', len: 3.25, card: true },
 ];
 let t = 0; for (const s of SHOTS) { s.start = t; t += s.len; }
 if (Math.abs(t - TOTAL) > 1e-6) throw new Error(`shots sum to ${t}, not ${TOTAL}`);
 const at = (id) => SHOTS.find((s) => s.id === id).start;
+// crossfades: every shot but the last runs XF longer and overlaps the next
+const XF = 0.25; SHOTS.slice(0, -1).forEach((s) => { s.len += XF; });
 
 // phone shot: three pieces of the simulator recording (tap, flown in with data, sheet slides up); times in the recording
 const PHONE_PIECES = JSON.parse(process.env.PHONE_PIECES ?? '[[32.0,1.4],[39.0,0.5],[42.2,1.6]]');
@@ -58,7 +60,7 @@ const VO = [
   { at: 9.80, text: 'This week, in your field.' },
   { at: 12.30, text: 'From the crop down to the groundwater.' },
   { at: 14.80, text: 'If the water stops, what holds?' },
-  { at: 17.35, text: 'What a switch costs: about two acre-feet, not five.' },
+  { at: 17.35, text: 'Pick a rotation that fits your water, before the water runs short.' },
   { at: 21.35, text: 'One page, checked against OpenET.' },
   { at: 26.30, text: 'CropLytics. Your field. Your call.', noBurn: true }, // the end card itself says it
 ];
@@ -135,7 +137,7 @@ function html(o) {
   switch (o.kind) {
     case 'endbg': return '<div class="endbg"></div>';
     case 'endmark': return '<div class="endmark">CropLytics</div>';
-    case 'endline': return '<div class="endline"><div class="a">Your field. Your call.</div><div class="b">Plan next season’s rotation with NASA Earth data.</div></div>';
+    case 'endline': return '<div class="endline"><div class="a">Your field. Your call.</div><div class="b">Helping farmers choose crop rotations that save water, protect soil and ride out drought, with NASA data.</div></div>';
     case 'endsmall': return `<div class="endsmall"><div class="cov">${N_CA} real California fields and one in British Columbia. Next: co-design with First Nations farmers.</div>
       <div class="meta">NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data<br>croplytics.xyz</div>
       <div class="disc">Voice-over is synthetic (text-to-speech). Farmer footage: Mixkit stock. App: real screen recordings.</div></div>`;
@@ -256,7 +258,12 @@ console.log(`overlays: ${OV.length}`);
 const reuse = (process.env.REUSE ?? '').split(',');
 const segs = SHOTS.map((s) => { const f = reuse.includes(s.id) || reuse.includes('all') ? join(B, 'seg', `${s.id}.mp4`) : buildSegment(s, P); console.log('segment', s.id, s.start.toFixed(2), s.len); return f; });
 writeFileSync(join(B, 'concat.txt'), segs.map((f) => `file '${f}'`).join('\n') + '\n');
-ff(['-f', 'concat', '-safe', '0', '-i', join(B, 'concat.txt'), '-c', 'copy', join(B, 'base.mp4')]);
+{ // xfade chain: transition k starts where shot k+1 starts
+  const ins = segs.flatMap((f) => ['-i', f]);
+  let g = '', last = '[0:v]';
+  for (let k = 1; k < segs.length; k++) { const o = `[x${k}]`; g += `${last}[${k}:v]xfade=transition=fade:duration=${XF}:offset=${(SHOTS[k].start).toFixed(3)}${o};`; last = o; }
+  ff([...ins, '-filter_complex', g.slice(0, -1), '-map', last, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '16', '-pix_fmt', 'yuv420p', '-r', String(FPS), join(B, 'base.mp4')]);
+}
 
 // one overlay pass: the rendered RGBA track over the cut
 ff(['-i', join(B, 'base.mp4'), '-framerate', String(FPS), '-i', join(B, 'ov', 'frames', '%04d.png'), '-filter_complex', '[0:v][1:v]overlay=0:0:format=auto,format=yuv420p[v]',
