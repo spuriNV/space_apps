@@ -1,5 +1,6 @@
 // "Gain / give up vs today": pick one alternative and see two plain lists in acre-feet and days.
 // The full side-by-side table (ported from design/explorations Compare1) is one click away.
+import { Seg } from '../ui/Seg';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import type { Calendar, CoverClass, Location, RotationStrategy, ScoreKey, SourcedNumber } from '../../types';
 import { scoreStrategies, type Scenario } from '../../api';
@@ -140,7 +141,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
         <div>
           <h2>{alt.short_name} vs {today.short_name.split(' +')[0].replace(/\s*\(current\)$/i, '').toLowerCase()} today</h2>
         </div>
-        <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
+        <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button>
       </header>
       <div className="c2-bar">
         <div className="c2-tabs">
@@ -154,9 +155,9 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
           <button className={`see-all ${table ? 'on' : ''}`} onClick={() => setTable(!table)} data-testid="see-all"><b>{table ? 'Back to gain / give up' : 'See all options'}</b><small>Every rotation, every factor</small></button>
         </div>
         <div className="c2-ctl">
-          <label>Your water limit <b>{p.allocation.toFixed(1)} acre-ft/acre</b>{p.exampleLimit && <em className="ex-limit">example, change to yours</em>}
+          <label>Your water limit <b>{p.allocation.toFixed(1)} acre-ft/acre</b>{p.exampleLimit && <em className="status example ex-limit">example, change to yours</em>}
             <input type="range" min={0.5} max={6} step={0.1} value={p.allocation} onChange={(e) => p.setAllocation(+e.target.value)} data-testid="alloc" /></label>
-          <div className="seg small">{(Object.keys(WEATHER) as Weather[]).map((w) => <button key={w} className={weather === w ? 'on' : ''} onClick={() => setWeather(w)} data-testid={`replay-${w}`}>{WEATHER[w]}</button>)}</div>
+          <Seg className="small" label="Weather" value={weather} onChange={setWeather} options={(Object.keys(WEATHER) as Weather[]).map((w) => ({ v: w, label: WEATHER[w], testid: `replay-${w}` }))} />
           <button className={`link tune-btn d-only ${tune ? 'on' : ''}`} onClick={() => setTune(!tune)} data-testid="tune">{tune ? 'Hide priorities and what-ifs' : 'Your priorities, and what if it’s drier or hotter'}</button>
         </div>
       </div>
@@ -168,15 +169,15 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
               const v = weights[k] ?? (k === 'pest_break' ? 0 : 1);
               return (
                 <div key={k} className="pri-row"><span>{lab}</span>
-                  <div className="seg small">{LEVEL.map((l, i) => <button key={l} className={v === i ? 'on' : ''} onClick={() => setWeights({ ...weights, [k]: i })} disabled={!p.live}>{l}</button>)}</div>
+                  <Seg className="small" label={lab} value={v} onChange={(i) => setWeights({ ...weights, [k]: i })} options={LEVEL.map((l, i) => ({ v: i, label: l, disabled: !p.live }))} />
                 </div>
               );
             })}
           </div>
           <div className="tune-what">
             <h4>What if the year is</h4>
-            <div className="seg small">{RAIN.map(([v, l]) => <button key={v} className={scen.dP_pct === v ? 'on' : ''} onClick={() => setScen({ ...scen, dP_pct: v })} disabled={!p.live} data-testid={`rain-${v}`}>{l}</button>)}</div>
-            <div className="seg small">{HEAT.map(([v, l]) => <button key={v} className={scen.dT_c === v ? 'on' : ''} onClick={() => setScen({ ...scen, dT_c: v })} disabled={!p.live}>{l}</button>)}</div>
+            <Seg className="small" label="Rain" value={scen.dP_pct} onChange={(v) => setScen({ ...scen, dP_pct: v })} options={RAIN.map(([v, l]) => ({ v, label: l, disabled: !p.live, testid: `rain-${v}` }))} />
+            <Seg className="small" label="Heat" value={scen.dT_c} onChange={(v) => setScen({ ...scen, dT_c: v })} options={HEAT.map(([v, l]) => ({ v, label: l, disabled: !p.live }))} />
             <p className="how">{!p.live ? 'Needs the CropLytics server; showing the saved scores.' : busy ? 'Re-scoring…' : custom ? 'Water need and ranking below use your settings.' : 'Default: every priority counts the same, normal weather.'}</p>
             <h4>Best fit for what matters to you</h4>
             <ol className="rank">{ranked.map((s, i) => <li key={s.id} className={s.is_baseline ? 'base' : ''}>{s.short_name}{s.is_baseline ? ' (today)' : ''}{i === 0 && tie ? <small> too close to call with the next one</small> : null}</li>)}</ol>
@@ -211,7 +212,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
             <p className="how">Bars: the span of likely values; the tick is the best estimate. A gain counts only when the two spans don’t overlap.</p>
             </div>
             <MoreDetail what="All rotations and what-ifs" />
-            <button className="btn primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Print this comparison for your adviser<Icon name="right" size={16} /></button>
+            <button className="btn btn-primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Print this comparison for your adviser<Icon name="right" size={16} /></button>
           </aside>
         </div>
       ) : (

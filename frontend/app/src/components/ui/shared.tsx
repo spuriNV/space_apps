@@ -67,9 +67,9 @@ export const fieldName = (l: Location) => (l.region === 'bc' ? `${mainCrop(l).sp
 /** Data status as words in the source line, not a pill: measured / from a saved run / example numbers. */
 export function Src({ p }: { p?: Prov }) {
   // live parts carry no status words; only example data (API not answering) is flagged
-  if (p?.origin === 'estimate') return <span className="src-tag est" title={`${p.label}: estimated, not measured on this field`}>Estimated.</span>;
+  if (p?.origin === 'estimate') return <span className="src-tag est status estimate" title={`${p.label}: estimated, not measured on this field`}>Estimated.</span>;
   if (!p || p.origin !== 'mock') return null;
-  return <span className="src-tag mock" title={`${p.label}: ${p.detail}`}>Example numbers.</span>;
+  return <span className="src-tag mock status example" title={`${p.label}: ${p.detail}`}>Example numbers.</span>;
 }
 
 /** The satellites behind the field calendar, NASA first. */
@@ -92,12 +92,30 @@ export const ACTIONS: { id: Step; label: string; sub: string }[] = [
   { id: 'compare', label: 'Compare rotations', sub: 'What you gain and give up' },
   { id: 'brief', label: 'Print for your adviser', sub: 'One page, Letter size' },
 ];
-export function Actions({ onStep }: { onStep: (s: Step) => void }) {
+/** The one primary action of the field panel: a filled pill in the panel footer. */
+export function PrimaryAction({ onStep }: { onStep: (s: Step) => void }) {
+  return <button className="btn btn-primary btn-block" onClick={() => onStep('brief')} data-testid="step-brief"><Icon name="print" />{ACTIONS[3].label}</button>;
+}
+/** The other next steps as tappable rows with a chevron (they open a view), after the answers. */
+export function NextSteps({ onStep }: { onStep: (s: Step) => void }) {
   return (
-    <div className="actions">
-      {ACTIONS.map((a) => (
-        <button key={a.id} className={`action ${a.id === 'brief' ? 'primary' : ''}`} onClick={() => onStep(a.id)} data-testid={`step-${a.id}`}>
-          <span><b>{a.label}</b></span>
+    <nav className="next-steps" aria-label="Next steps">
+      {ACTIONS.filter((a) => a.id !== 'brief').map((a) => (
+        <button key={a.id} className="nav-row" onClick={() => onStep(a.id)} data-testid={`step-${a.id}`}>
+          <span>{a.label}</span><Icon name="right" size={20} />
+        </button>
+      ))}
+    </nav>
+  );
+}
+/** Phone: every next step as one sideways pill row under the sheet header, primary first. */
+export function Actions({ onStep }: { onStep: (s: Step) => void }) {
+  const order = [ACTIONS[3], ...ACTIONS.slice(0, 3)];
+  return (
+    <div className="sheet-actions" role="group" aria-label="Next steps">
+      {order.map((a) => (
+        <button key={a.id} className={`btn ${a.id === 'brief' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => onStep(a.id)} data-testid={`pill-${a.id}`}>
+          {a.id === 'brief' && <Icon name="print" />}{a.label}
         </button>
       ))}
     </div>

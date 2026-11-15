@@ -8,6 +8,7 @@ import { HOT_F, cropWaterSoFar, fmtIn, fmtShort, heatFrost, rainSoFar, type Rain
 import { MONTHS, atT, latestAt, dataT, dekadOf, fieldState, isRainFed, lastDataT, mmToAfac, ordinal, RAIN_FED, yearOf } from '../../lib';
 import { GapLine, SoilBar, Src, calSource, cropMapName, cropName, openetText, soilFacts, stationsName } from './shared';
 import { What } from './What';
+import { CountUp } from './motion';
 
 const PART = ['early', 'mid', 'late'];
 const dk = (d: number) => `${PART[d % 3]} ${MONTHS[Math.floor(d / 3)]}`;
@@ -78,14 +79,15 @@ function latestClearT(cal: Calendar, t: number, maxBack = 4): number | null {
   for (let k = t; k >= 0 && t - k <= maxBack; k--) { const y = cal.years[Math.floor(k / 36)]; const c = y?.rule[k % 36]; if (c && c !== 'u') return k; }
   return null;
 }
-/** One small reading: label, value, a bar with a reference mark. */
-function Meter(m: { label: string; value: string | null; state: LoadState; pct: number | null; mark: number | null; markLabel: string; note: string; warn?: boolean }) {
+/** One small reading: label, value, a bar with a reference mark. A number (`num`) counts up when it first appears and the
+ *  bar grows to it; both glide when the date changes. The fill moves by transform only (styles.css, .m-fill). */
+function Meter(m: { label: string; value: string | null; num?: { n: number; dec: number; unit: string }; state: LoadState; pct: number | null; mark: number | null; markLabel: string; note: string; warn?: boolean }) {
   return (
     <div className="meter">
       <span className="m-label">{m.label}</span>
-      {m.value == null ? (m.state === 'timeout' ? <span className="m-val na">Not available</span> : <span className="skel" />) : <>
-        <span className="m-val">{m.value}</span>
-        <i className="m-track">{m.pct != null && <em className={`m-fill ${m.warn ? 'warn' : ''}`} style={{ width: `${m.pct * 100}%` }} />}{m.mark != null && <b className="m-mark" style={{ left: `${Math.min(1, m.mark) * 100}%` }} title={m.markLabel} />}</i>
+      {m.value == null ? (m.state === 'timeout' ? <span className="m-val na">Not available</span> : <><span className="skel skel-val" /><span className="skel skel-bar" /></>) : <>
+        <span className="m-val" aria-label={m.value}>{m.num ? <><CountUp value={m.num.n} dec={m.num.dec} />{m.num.unit}</> : m.value}</span>
+        <i className="m-track"><span className="m-clip">{m.pct != null && <em className={`m-fill ${m.warn ? 'warn' : ''}`} style={{ '--p': Math.max(0, Math.min(1, m.pct)) } as React.CSSProperties} />}</span>{m.mark != null && <b className="m-mark" style={{ left: `${Math.min(1, m.mark) * 100}%` }} title={m.markLabel} />}</i>
         <span className="m-note">{m.note}</span>
       </>}
     </div>
@@ -135,14 +137,15 @@ export function FieldNow(p: FieldNowProps) {
         </span>
       </div>
       <div className="gl-grid">
-        <Meter label="Rain since 1 Oct" value={rain ? `${fmtIn(rain.inches)} in` : null} state={p.dailyState} pct={rain && rain.normal ? Math.min(1, rain.inches / (Math.max(rain.inches, rain.normal) * 1.25)) : null} mark={rain && rain.normal ? rain.normal / (Math.max(rain.inches, rain.normal) * 1.25) : null} markLabel="normal" note={rain?.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} />
-        <Meter label="Water need, a year" value={needAf != null ? (rainFed ? RAIN_FED : `${needAf.toFixed(1)} acre-ft/acre`) : null} state={p.dataState} pct={needAf != null && limit ? rainFed ? 0 : Math.min(1, needAf / (Math.max(needAf, limit) * 1.2)) : null} mark={needAf != null && limit ? limit / (Math.max(needAf, limit) * 1.2) : null} markLabel="limit" warn={needAf != null && limit != null && !rainFed && needAf > limit} note={limit != null ? `Limit ${limit.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}` : ''} />
-        <Meter label="Greenness" value={fs && fs.cls !== 'u' ? fs.ndvi.toFixed(2) : null} state={p.dataState} pct={fs && fs.cls !== 'u' ? Math.max(0, Math.min(1, fs.ndvi)) : null} mark={0.6} markLabel="full canopy" note={fs && fs.cls !== 'u' ? cap(whenT(dt)) : ''} />
+        <Meter label="Rain since 1 Oct" value={rain ? `${fmtIn(rain.inches)} in` : null} num={rain ? { n: +fmtIn(rain.inches), dec: (fmtIn(rain.inches).split('.')[1] ?? '').length, unit: ' in' } : undefined} state={p.dailyState} pct={rain && rain.normal ? Math.min(1, rain.inches / (Math.max(rain.inches, rain.normal) * 1.25)) : null} mark={rain && rain.normal ? rain.normal / (Math.max(rain.inches, rain.normal) * 1.25) : null} markLabel="normal" note={rain?.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} />
+        <Meter label="Water need, a year" value={needAf != null ? (rainFed ? RAIN_FED : `${needAf.toFixed(1)} acre-ft/acre`) : null} num={needAf != null && !rainFed ? { n: +needAf.toFixed(1), dec: 1, unit: ' acre-ft/acre' } : undefined} state={p.dataState} pct={needAf != null && limit ? rainFed ? 0 : Math.min(1, needAf / (Math.max(needAf, limit) * 1.2)) : null} mark={needAf != null && limit ? limit / (Math.max(needAf, limit) * 1.2) : null} markLabel="limit" warn={needAf != null && limit != null && !rainFed && needAf > limit} note={limit != null ? `Limit ${limit.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}` : ''} />
+        <Meter label="Greenness" value={fs && fs.cls !== 'u' ? fs.ndvi.toFixed(2) : null} num={fs && fs.cls !== 'u' ? { n: +fs.ndvi.toFixed(2), dec: 2, unit: '' } : undefined} state={p.dataState} pct={fs && fs.cls !== 'u' ? Math.max(0, Math.min(1, fs.ndvi)) : null} mark={0.6} markLabel="full canopy" note={fs && fs.cls !== 'u' ? cap(whenT(dt)) : ''} />
         <div className="meter">
           <span className="m-label">Soil and groundwater</span>
-          {!p.regional ? (p.dataState === 'timeout' ? <span className="m-val na">Not available</span> : <span className="skel" />) : <>
+          {!p.regional ? (p.dataState === 'timeout' ? <span className="m-val na">Not available</span> : <><span className="skel skel-bar" /><span className="skel" /></>) : <>
             <span className="m-dots">
-              <i className="m-track"><em className="m-mid" />{smap != null && <b className="dot soil" style={{ left: `${smap}%` }} title={`Soil moisture ${ordinal(Math.round(smap))} percentile`} />}{grace != null && <b className="dot gw" style={{ left: `${grace}%` }} title={`Groundwater ${ordinal(Math.round(grace))} percentile`} />}</i>
+              {/* each dot rides a full-width rail that slides out from the middle (normal) to its percentile, by transform */}
+              <i className="m-track"><em className="m-mid" />{smap != null && <span className="dot-rail" style={{ '--x': smap } as React.CSSProperties}><b className="dot soil" title={`Soil moisture ${ordinal(Math.round(smap))} percentile`} /></span>}{grace != null && <span className="dot-rail" style={{ '--x': grace } as React.CSSProperties}><b className="dot gw" title={`Groundwater ${ordinal(Math.round(grace))} percentile`} /></span>}</i>
             </span>
             <span className="m-note"><i className="k soil" />Soil {smap != null ? ordinal(Math.round(smap)) : '–'}, <i className="k gw" />groundwater {grace != null ? ordinal(Math.round(grace)) : '–'}</span>
           </>}
@@ -199,7 +202,7 @@ export function FieldNow(p: FieldNowProps) {
           <dt>Will the water limit cover irrigation? <What k="waterBalance" /></dt>
           <dd>
             <b>{rainFed ? 'Fits any limit' : p.allocation == null ? `About ${mmToAfac(need.value).toFixed(1)} acre-feet per acre a year` : mmToAfac(need.value) > p.allocation ? `Short by about ${(mmToAfac(need.value) - p.allocation).toFixed(1)} acre-feet per acre` : 'Fits your limit in a typical year'}</b>
-            <span>{rainFed ? `${RAIN_FED}.` : `Needs ${mmToAfac(need.value).toFixed(1)} acre-ft/acre a year.`}{p.allocation != null ? ` Limit: ${p.allocation.toFixed(1)}.` : ''}{p.exampleLimit && <em className="ex-limit">example, change it on Compare</em>}</span>
+            <span>{rainFed ? `${RAIN_FED}.` : `Needs ${mmToAfac(need.value).toFixed(1)} acre-ft/acre a year.`}{p.allocation != null ? ` Limit: ${p.allocation.toFixed(1)}.` : ''}{p.exampleLimit && <em className="status example ex-limit">example, change it on Compare</em>}</span>
             {!rainFed && <span className="d-only">Likely {mmToAfac(need.low ?? need.value).toFixed(1)}–{mmToAfac(need.high ?? need.value).toFixed(1)} acre-ft/acre.</span>}
             <cite>Rotation model with NASA POWER weather: crop water use minus rain, typical year 2015–2025. <Src p={p.prov.strategies} /></cite>
           </dd>

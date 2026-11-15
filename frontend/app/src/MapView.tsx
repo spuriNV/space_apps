@@ -315,17 +315,19 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   }
 
   // ---------- camera ----------
+  // camera moves: a smooth in-out so the flight neither lurches off nor stops dead (MapLibre jumps instead under reduced motion)
+  const fly = { curve: 1.3, easing: (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2) };
   const pad = () => ({ left: live.current.leftInset, right: live.current.rightInset, top: 70, bottom: live.current.bottomInset });
   useImperativeHandle(ref, () => ({
     flyToField(loc, mode) {
       const map = mapRef.current!;
       programmatic.current = true;
       const small = loc.area_ha.value < 45;
-      if (mode === 'card') map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat], zoom: 10.6, pitch: 0, bearing: 0, padding: pad(), speed: 1.4 });
-      else map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat - (small ? 0.0006 : 0.001)], zoom: (small ? 15.15 : 14.5) - (mode === 'story' ? 0.15 : mode === 'year' ? 0.75 : 0), pitch: mode === 'year' ? 52 : 60, bearing: -24, padding: { ...pad(), right: live.current.rightInset + 330 }, speed: 1.2 });
+      if (mode === 'card') map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat], zoom: 10.6, pitch: 0, bearing: 0, padding: pad(), speed: 1.3, ...fly });
+      else map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat - (small ? 0.0006 : 0.001)], zoom: (small ? 15.15 : 14.5) - (mode === 'story' ? 0.15 : mode === 'year' ? 0.75 : 0), pitch: mode === 'year' ? 52 : 60, bearing: -24, padding: { ...pad(), right: live.current.rightInset + 330 }, speed: 1.2, ...fly });
     },
-    flyHome() { programmatic.current = true; mapRef.current!.flyTo({ ...HOME, padding: { left: 0, right: 0, top: 0, bottom: 0 } }); },
-    flyTo(lat, lon, zoom) { programmatic.current = true; mapRef.current!.flyTo({ center: [lon, lat], zoom, pitch: 0, bearing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 } }); },
+    flyHome() { programmatic.current = true; mapRef.current!.flyTo({ ...HOME, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
+    flyTo(lat, lon, zoom) { programmatic.current = true; mapRef.current!.flyTo({ center: [lon, lat], zoom, pitch: 0, bearing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
     zoomBy(d) { mapRef.current!.easeTo({ zoom: mapRef.current!.getZoom() + d, duration: 250 }); },
     resetNorth() { mapRef.current!.easeTo({ bearing: 0, duration: 300 }); },
     toggle3D() { const m = mapRef.current!; m.easeTo({ pitch: m.getPitch() > 5 ? 0 : 58, duration: 400 }); },

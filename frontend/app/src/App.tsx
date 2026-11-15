@@ -79,6 +79,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [timedOut, setTimedOut] = useState<string | null>(null);
   const [strips, setStrips] = useState<Record<string, Record<number, string>>>({});
+  const [sheetPx, setSheetPx] = useState(() => (typeof window !== 'undefined' ? Math.round(window.innerHeight * 0.52) : 400)); // phone: visible sheet height
   useEffect(() => {
     if (!switchOpen && !dateOpen) return;
     const off = (e: MouseEvent) => { const el = e.target as HTMLElement; if (!el.closest('.tb-switch')) setSwitchOpen(false); if (!el.closest('.tb-date-wrap')) setDateOpen(false); };
@@ -177,7 +178,7 @@ export default function App() {
   const phone = usePhone();
   const leftInset = phone ? 0 : leftPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
   const rightInset = layersOpen ? 396 : 0;
-  const bottomInset = phone ? 64 + (leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
+  const bottomInset = phone ? 64 + (leftPanel === 'card' ? sheetPx : leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
   const drilled = !!selected && view.zoom > 13.4;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;
@@ -261,8 +262,8 @@ export default function App() {
                   ))}
                 </div>
                 <div className="dp-foot">
-                  <button className="link" onClick={() => setShowEarlier(!showEarlier)}>{showEarlier ? 'Hide earlier years' : 'Show earlier years (2016–2022)'}</button>
-                  {t !== TODAY_T && <button className="link" onClick={() => { setT(TODAY_T); setDateOpen(false); }}>Back to today</button>}
+                  <button className="btn btn-text btn-sm" onClick={() => setShowEarlier(!showEarlier)}>{showEarlier ? 'Hide earlier years' : 'Show earlier years (2016–2022)'}</button>
+                  {t !== TODAY_T && <button className="btn btn-outline btn-sm" onClick={() => { setT(TODAY_T); setDateOpen(false); }}>Back to today</button>}
                 </div>
               </div>
             )}
@@ -271,15 +272,15 @@ export default function App() {
         </div>
       </header>
       <nav className="mob-tabs" aria-label="Sections">
-        {TABS.map((tb) => <button key={tb.id} className={tabOn(tb.id) ? 'on' : ''} onClick={() => { setMenuOpen(false); onTab(tb.id); }} disabled={!selected && tb.id !== 'now'} data-testid={`mtab-${tb.id}`}>{tb.short ?? MOB[tb.id] ?? tb.label}</button>)}
+        {TABS.map((tb) => <button key={tb.id} className={tabOn(tb.id) ? 'on' : ''} aria-current={tabOn(tb.id) ? 'page' : undefined} onClick={() => { setMenuOpen(false); onTab(tb.id); }} disabled={!selected && tb.id !== 'now'} data-testid={`mtab-${tb.id}`}><span>{tb.short ?? MOB[tb.id] ?? tb.label}</span></button>)}
       </nav>
-      {t !== TODAY_T && <div className="date-banner" data-testid="date-banner">Showing {tLabel(t)}<button className="link" onClick={() => { setT(TODAY_T); setPlaying(false); }}>Back to today</button></div>}
+      {t !== TODAY_T && panel !== 'season' && panel !== 'compare' && !briefOpen && <div className="date-banner" data-testid="date-banner" role="status" style={phone ? undefined : { left: `calc(50% + ${(leftInset - rightInset) / 2}px)` }}><span>Showing <b>{tLabel(t)}</b></span><button className="btn btn-secondary btn-sm" onClick={() => { setT(TODAY_T); setPlaying(false); }}>Back to today</button></div>}
 
-      {leftPanel === 'card' && selected && <FieldPanel key={selected.id} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
+      {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
       {leftPanel === 'fields' && <FieldPicker locations={locations} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
-      {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen pill glass" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
+      {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
       {panel === 'season' && selected && d && <ComingSeason nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}
       {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} daily={dl?.daily ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} live={!!live} cal={d.cal} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}

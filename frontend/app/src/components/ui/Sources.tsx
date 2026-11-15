@@ -50,7 +50,7 @@ export function SourcesSheet({ onClose, bc = false }: { onClose: () => void; bc?
   return (
     <div className="src-wrap" role="dialog" aria-label="Sources" onClick={onClose} data-testid="sources">
       <div className="src-sheet" onClick={(e) => e.stopPropagation()}>
-        <header><h2>Sources</h2><button className="sq-btn" onClick={onClose} title="Close"><Icon name="close" size={16} /></button></header>
+        <header><h2>Sources</h2><button className="icon-btn" onClick={onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button></header>
         <div className="src-cols">
           {groups.map((g) => (
             <section key={g.title}>

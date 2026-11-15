@@ -1,6 +1,7 @@
 // Captures the main app (frontend/app, port 5170) at 1440x900 into design/screenshots/app/.
 // Usage: node design/tools/shoot-app.mjs [name-filter...]   e.g. overview, kings, season, compare, bc   (starts the dev server if needed; start the API on :8000 for live data)
-// APP_URL=http://localhost:5171/ to shoot a dev server that is already running elsewhere.
+// APP_URL=http://localhost:5171/ to shoot a dev server that is already running elsewhere; OUT_DIR=... to write somewhere else.
+// `motion` records panel-motion.webm: the field panel opening, switching fields, the header shrinking on scroll, More detail.
 import { chromium } from 'playwright-core';
 import { spawn } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
@@ -9,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(here, '..', '..');
-const OUT = join(ROOT, 'design', 'screenshots', 'app');
+const OUT = process.env.OUT_DIR ?? join(ROOT, 'design', 'screenshots', 'app');
 mkdirSync(OUT, { recursive: true });
 const BASE = process.env.APP_URL ?? 'http://localhost:5170/';
 const only = process.argv.slice(2);

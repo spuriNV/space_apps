@@ -53,7 +53,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
           <h2>Coming season: what’s likely this winter and next year</h2>
           <p className="sheet-lede">{headline}.{!notReady && <> <span className="outlook-tag">{o?.prov.cpc.origin === 'estimate' ? 'Past weather, not a forecast.' : 'An outlook, not a forecast.'}</span></>}</p>
         </div>
-        <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
+        <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button>
       </header>
       <div className="cs-sum" data-testid="season-summary">
         <div><h3>Winter rain</h3><p>{!o ? 'Loading…' : notReady && gOut ? <GapLine gap={gOut} missing /> : notReady ? 'Not ready for this field yet.' : wetLean > dryLean ? 'Leans wetter than normal this winter.' : dryLean > wetLean ? 'Leans drier than normal this winter.' : 'No clear lean either way this winter.'}</p></div>
@@ -177,7 +177,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
           </table>
           <p className="how">Acre-feet per acre a year. Your limit: {p.allocation.toFixed(1)}{p.exampleLimit ? ' (example, change to yours on Compare)' : ''}; brown means over it. {o?.irrigation ? (() => { const sp = Math.max(...Object.values(o.irrigation).map((x) => x.high - x.low)); return sp < 0.15 ? `In the model, this winter’s outlook moves irrigation need by ${sp < 0.1 ? 'less than 0.1' : 'about 0.1'} acre-foot per acre: rain falls mostly before the crop needs water.` : `Outlook range: up to ${sp.toFixed(1)} acre-feet per acre between scenarios.`; })() : ''}</p>
           <cite>Rotation model driven by NASA POWER sun, wind and humidity, weather 2015–2025. Safflower and wheat are upper bounds (stored soil water not counted). <Src p={p.prov.strategies} /></cite>
-          <button className="btn primary wide" onClick={p.onCompare}>Compare rotations<Icon name="right" size={16} /></button>
+          <button className="btn btn-secondary wide" onClick={p.onCompare}>Compare rotations<Icon name="right" size={16} /></button>
         </div>
       </div>
     </section>

@@ -1,3 +1,4 @@
+import { Seg } from '../ui/Seg';
 import type { CoverClass, FieldEvent, Location, Calendar, CalendarYear } from '../../types';
 import { useState } from 'react';
 import { rainOf, type Daily } from '../../season';
@@ -86,10 +87,8 @@ export default function YearSheet(p: YearSheetProps) {
           <h2>This field’s year</h2>
           <p>{diff}.{up != null ? ` Green from ${dk(up)}.` : ''}{last < 2026 ? ` ${last + 1} not processed yet.` : ''}</p>
         </div>
-        <div className="seg small ml-seg d-only" data-testid="ml-toggle">
-          <button className={!both ? 'on' : ''} onClick={() => setBoth(false)}>Satellite rule</button>
-          <button className={both ? 'on' : ''} onClick={() => setBoth(true)} data-testid="ml-on" disabled={!p.ml} title={p.ml ? 'Show the machine-learning calendar under the rule, season by season' : verdict.long}>Compare with machine learning</button>
-        </div>
+        <Seg className="small ml-seg d-only" testid="ml-toggle" label="Calendar" value={both} onChange={setBoth}
+          options={[{ v: false, label: 'Satellite rule' }, { v: true, label: 'Compare with machine learning', testid: 'ml-on', disabled: !p.ml, title: p.ml ? 'Show the machine-learning calendar under the rule, season by season' : verdict.long }]} />
         <div className="ys-legend">
           {(['c', 'p', 'b', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{LABEL[c]}</span>)}
           <span><i className="hatch-u" />No clear view or not processed</span>
@@ -99,7 +98,7 @@ export default function YearSheet(p: YearSheetProps) {
           {detail && p.extras?.water && <span><i className="opera-key" />Standing water seen by NASA OPERA</span>}
         </div>
         <button className="ys-play" onClick={() => p.setPlaying(!p.playing)} data-testid="play" title={p.playing ? 'Pause' : 'Replay the seasons on the map'}><Icon name={p.playing ? 'pause' : 'play'} size={18} />{p.playing ? 'Pause' : 'Replay on the map'}</button>
-        <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close" data-testid="year-close"><Icon name="down" /></button>
+        <button className="icon-btn" onClick={() => p.setExpanded(false)} title="Close" aria-label="Close" data-testid="year-close"><Icon name="down" /></button>
       </div>
       {gMl && <p className="ml-note d-only"><GapLine gap={gMl} missing={!p.ml} /></p>}
       {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget && !p.ml.estimate ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}

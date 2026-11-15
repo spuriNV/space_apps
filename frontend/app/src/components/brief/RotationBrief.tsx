@@ -128,13 +128,13 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
       </div>
 
       <aside className="brief-rail glass">
-        <div className="br-head"><h2>Summary for your adviser</h2><button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button></div>
+        <div className="br-head"><h2>Summary for your adviser</h2><button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button></div>
         <p className="muted">One page, Letter size. <Src p={p.prov.strategies} /></p>
         <label className="br-field"><span>Option to print</span>
           <select value={s.id} onChange={(e) => p.setPick(e.target.value)} data-testid="brief-pick">{strategies.map((x) => <option key={x.id} value={x.id}>{x.short_name}{x.is_baseline ? ' (today)' : ''}</option>)}</select>
         </label>
         <p className="muted">Sentences are fixed templates filled with the model’s numbers, each with a source.</p>
-        <button className="btn primary wide" onClick={() => window.print()}><Icon name="brief" size={16} />Print or save as PDF</button>
+        <button className="btn btn-primary wide" onClick={() => window.print()}><Icon name="brief" size={16} />Print or save as PDF</button>
       </aside>
     </div>
   );
