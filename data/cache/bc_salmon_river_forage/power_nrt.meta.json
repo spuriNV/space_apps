@@ -1,0 +1,46 @@
+{
+ "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-119.382594&latitude=50.643441&start=20260101&end=20261115&format=JSON",
+ "params": {
+  "parameters": "T2M,T2M_MAX,T2M_MIN,RH2M,WS2M,ALLSKY_SFC_SW_DWN,PRECTOTCORR",
+  "community": "AG",
+  "longitude": -119.382594,
+  "latitude": 50.643441,
+  "start": "20260101",
+  "end": "20261115",
+  "format": "JSON"
+ },
+ "fetched_at": "2026-11-15T07:33:48Z",
+ "timestep": "daily",
+ "units": {
+  "T2M": "C",
+  "T2M_MAX": "C",
+  "T2M_MIN": "C",
+  "RH2M": "%",
+  "WS2M": "m/s",
+  "ALLSKY_SFC_SW_DWN": "MJ/m^2/day",
+  "PRECTOTCORR": "mm/day"
+ },
+ "native_res_m": 50000,
+ "fill_value": -999.0,
+ "rows": 316,
+ "date_min": "2026-01-01",
+ "date_max": "2026-11-12",
+ "per_column_last_date": {
+  "T2M": "2026-11-12",
+  "T2M_MAX": "2026-11-12",
+  "T2M_MIN": "2026-11-12",
+  "RH2M": "2026-11-12",
+  "WS2M": "2026-11-12",
+  "ALLSKY_SFC_SW_DWN": "2026-11-10",
+  "PRECTOTCORR": "2026-11-12"
+ },
+ "auth": "none",
+ "sources": [
+  "MERRA2",
+  "GEOSIT",
+  "SYN1DEG",
+  "FLASHFLUX",
+  "POWER"
+ ],
+ "quality_handling": "fill -> NaN; trailing all-fill days dropped. Recent days are POWER's near-real-time (GEOS-IT / IMERG-based) values and can be revised; same caveats as power.parquet."
+}

@@ -22,7 +22,10 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[4]
 COVER_OF = {"bare": 0.10, "partial": 0.35, "covered": 0.80, "water": 0.0}
 ORDER = ["covered", "partial", "bare", "water"]  # tie-break order
-BASELINE_CDL = {"rice_medium_grain": {"Rice"}, "alfalfa_hay": {"Alfalfa"}}
+BASELINE_CDL = {"rice_medium_grain": {"Rice"}, "alfalfa_hay": {"Alfalfa"},
+                # BC: AAFC Annual Crop Inventory class 122 "Pasture / Forages" lumps alfalfa, clover, grass hay and
+                # pasture (ACI has no alfalfa class), so these years are forage years, not confirmed alfalfa years.
+                "alfalfa_hay_bc": {"Pasture / Forages"}}
 
 
 def _base_crop(strategy: dict) -> str | None:

@@ -31,7 +31,7 @@ PRESETS = {
         "dwr_unique_id": f["dwr_unique_id"],
         "original": f["original"],
     }
-    for f in fieldreg.fields() if f["id"] in fieldreg.selected()
+    for f in fieldreg.fields(region=None) if f["id"] in fieldreg.selected()   # BC only when FIELDSHIFT_FIELDS names it
 }
 
 

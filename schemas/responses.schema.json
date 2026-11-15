@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fieldshift.local/schemas/responses.schema.json",
   "title": "API response envelopes",
-  "description": "Response bodies for spec B3 routes. The spec only defines the 7 core types; these envelopes are the API owner's resolution. Every response object may carry _fixture:true (fixture files) and _source:'fixture'|'real' (added by the API). Collections are always objects with 'items' (or 'rows'), never bare arrays.",
+  "description": "Response bodies for spec B3 routes. The spec only defines the 7 core types; these envelopes are the API owner's resolution. Every response object may carry _fixture:true (fixture files) and _source:'fixture'|'real'|'estimate' (added by the API; 'estimate' for the BC field's stand-ins for California-only sources). Collections are always objects with 'items' (or 'rows'), never bare arrays.",
   "$defs": {
-    "meta": {"type": "object", "properties": {"_fixture": {"type": "boolean"}, "_source": {"enum": ["fixture", "real"]}}},
+    "meta": {"type": "object", "properties": {"_fixture": {"type": "boolean"}, "_source": {"enum": ["fixture", "real", "estimate"], "description": "estimate = a field outside California answered from an estimate in the California shape (values method assumed, with a note), not the US source"}}},
     "Locations": {
       "allOf": [{"$ref": "#/$defs/meta"}],
       "type": "object", "required": ["items"],
@@ -87,7 +87,7 @@
       "type": "object", "required": ["location_id", "checks"],
       "properties": {"location_id": {"type": "string"},
         "checks": {"type": "array", "items": {"type": "object", "required": ["id", "title", "status", "metrics"],
-          "properties": {"id": {"enum": ["openet_vs_etc", "cimis_vs_power", "station_vs_imerg", "imerg_vs_power_precip", "power_vs_ncei_precip", "power_vs_ncei_tmax", "power_vs_ncei_tmin", "power_vs_ncei_heat40"]}, "title": {"type": "string"},
+          "properties": {"id": {"enum": ["openet_vs_etc", "cimis_vs_power", "station_vs_imerg", "imerg_vs_power_precip", "power_vs_ncei_precip", "power_vs_ncei_tmax", "power_vs_ncei_tmin", "power_vs_ncei_heat40", "power_vs_eccc_precip", "power_vs_eccc_tmax", "power_vs_eccc_tmin"]}, "title": {"type": "string"},
             "status": {"enum": ["computed", "pending", "blocked"]},
             "metrics": {"type": "object", "additionalProperties": {"$ref": "sourced_number.schema.json"}}, "note": {"type": "string"}}}}}
     },

@@ -1,0 +1,171 @@
+{
+ "title": "AAFC Annual Crop Inventory (ACI), British Columbia GeoTIFFs, clipped to the lower Salmon River valley",
+ "url": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif",
+ "spec": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/supportdocument_documentdesupport/en/ISO%2019131_AAFC_Annual_Crop_Inventory_Data_Product_Specifications.pdf",
+ "box_lonlat": [
+  -119.52,
+  50.42,
+  -119.12,
+  50.75
+ ],
+ "crs": "EPSG:10820",
+ "fetched_at": "2026-11-15T07:20:05Z",
+ "auth": "none",
+ "licence": "Open Government Licence - Canada",
+ "years": {
+  "2009": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2009/aci_2009_bc_v1.zip",
+   "res_m": 56.0,
+   "shape": [
+    781,
+    681
+   ],
+   "forage_px": 0
+  },
+  "2010": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2010/aci_2010_bc_v1.zip",
+   "res_m": 56.0,
+   "shape": [
+    781,
+    681
+   ],
+   "forage_px": 0
+  },
+  "2011": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2011/aci_2011_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 7953
+  },
+  "2012": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2012/aci_2012_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 0
+  },
+  "2013": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2013/aci_2013_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 0
+  },
+  "2014": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2014/aci_2014_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 141426
+  },
+  "2015": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2015/aci_2015_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 47019
+  },
+  "2016": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2016/aci_2016_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 103074
+  },
+  "2017": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2017/aci_2017_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 119224
+  },
+  "2018": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2018/aci_2018_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 134030
+  },
+  "2019": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2019/aci_2019_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 117484
+  },
+  "2020": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2020/aci_2020_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 154215
+  },
+  "2021": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2021/aci_2021_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 0
+  },
+  "2022": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2022/aci_2022_bc_v3.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 119530
+  },
+  "2023": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2023/aci_2023_bc_v4.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 145735
+  },
+  "2024": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2024/aci_2024_bc_v2.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 137560
+  },
+  "2025": {
+   "zip": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2025/aci_2025_bc_v1.zip",
+   "res_m": 30.0,
+   "shape": [
+    1458,
+    1271
+   ],
+   "forage_px": 125740
+  }
+ },
+ "note": "30 m from 2011; 2009-2010 are 56 m and cover little of BC. Class 122 Pasture / Forages lumps alfalfa, tame grass hay and pasture (no alfalfa class)."
+}

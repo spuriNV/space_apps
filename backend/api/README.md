@@ -23,11 +23,11 @@ Fixture numbers are placeholders (`method: assumed`, `verified: false`, source `
 
 ## Routes
 
-Paths are relative to the repo root; first existing file wins. `{id}` is any field in `backend/fields/registry.json` (14 fields; else 404). Fixtures live in `fixtures/{id}/<name>.json` (or `fixtures/<name>.json` for global routes) and exist only for the original two; a registry field without a built output gets 404, never another field's fixture. `/news` for a registry field falls back to its family template's news (same valley).
+Paths are relative to the repo root; first existing file wins. `{id}` is any field in `backend/fields/registry.json` of any region (14 California fields plus `bc_salmon_river_forage`; else 404). The BC field's payloads are built by `backend/bc/build_api.py`. Its California-only routes (`openet`, `insurance`, `outlook`, `calendar_ml`, `stress`, `transitions`, `models`, `water_seen`, and the trends `usdm_d2_weeks` and `reservoir_storage`) return 404 with `detail` `"<kind> not available in BC: <registry not_available reason>"` (see `backend/bc/README.md`). Fixtures live in `fixtures/{id}/<name>.json` (or `fixtures/<name>.json` for global routes) and exist only for the original two; a registry field without a built output gets 404, never another field's fixture. `/news` for a registry field falls back to its family template's news (same valley).
 
 | Route | Fixture | Real lookup |
 |---|---|---|
-| `GET /api/locations?family=&county=` | `fixtures/locations.json` (static copy) | one location payload per registry field (originals first). `family=rice|forage`, `county=` name or FIPS (`Tulare`, `06107`, `107`). Response adds `count`, `filters` and `facets` (field counts by family and county over the whole registry) |
+| `GET /api/locations?family=&county=&region=` | `fixtures/locations.json` (static copy) | one location payload per registry field, every region (originals first). `family=rice|forage`, `county=` name or FIPS (`Tulare`, `06107`, `107`), `region=ca|bc`. Each item has `region`. Response adds `count`, `filters` and `facets` (field counts by family, county and region over the whole registry) |
 | `GET /api/locations/{id}` | `location.json` | `backend/api/out/{id}/location.json`, `data/cache/{id}/location.json`, `backend/field/out/{id}/location.json`, `backend/engine/out/{id}/location.json` |
 | `GET .../daily?from&to` | `daily.json` | `backend/api/out/{id}/daily.json`, `data/cache/{id}/daily.json`, `backend/regional/out/{id}/daily.json` |
 | `GET .../features/weekly` | `features_weekly.json` | `backend/api/out/{id}/features_weekly.json`, `data/cache/{id}/features_weekly.json`, `backend/field/out/{id}/features_weekly.json` |
@@ -51,6 +51,8 @@ Paths are relative to the repo root; first existing file wins. `{id}` is any fie
 | `GET .../stress` | none | `backend/ai/out/{id}/stress_weekly.json` + API-computed `summary.by_year`, + `stress_summary`/`stress_eval(uation)` if backend/ai writes them |
 | `GET .../grid?layer=` | none (404 if backend/field has not run) | `backend/field/out/{id}/grid.geojson` |
 | `GET .../transitions` | none (404 if not built) | `backend/ai/out/{id}/transitions.json`: green-up, harvest and alfalfa cutting dates per detector method |
+| `GET .../first_nations` | none | BC only: `backend/api/out/{id}/first_nations.json` (backend/bc/build_api.py). California fields: 404 "First Nations context is built for the BC example field only" |
+| `GET .../first_nations/reserves.geojson` | none | BC only: `data/cache/{id}/reserves_nearby.geojson` (backend/bc/fetch_reserves.py), reserve outlines as map context |
 | `GET /api/health` | | not in spec; shows root and presets |
 
 `trends` layers: `smap_anomaly|heatwave_days|grace_gw_pct|precip_anomaly|modis_ndvi_anomaly|usdm_d2_weeks|reservoir_storage`. `from`/`to` filter `rows`/`items` by their `date` string.
