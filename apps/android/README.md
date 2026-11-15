@@ -20,6 +20,8 @@ The satellite map fills the screen edge to edge under a transparent status bar. 
 | **Compare** | The two best options (all with More detail), water limit (saved per field), weather replays, priorities and what-ifs re-scored by POST /score, gain / give up with range bars, See all options. |
 | **Print** | One Letter page for the adviser; Share as PDF or Print (PdfDocument, Android print). |
 
+**1.3.0.** A "This week" card tops Field now (irrigation verdict, 7-day need strip, field-access chips with their why, forecast in inches and °F, alerts). A long-press on the map opens that spot (`GET /analyze`, `pt_` ids) in the same panels with a loading line. About 450 farm pins from `GET /catalog` show as a clustered source coloured by crop group; tap one to open its spot, and filter by crop in search. "Ask" (when the API's chat is on) takes typed questions about the open field. "Draw a field" turns tapped corners into one polygon (`POST /my-fields`) and opens the `my_` field. Drawn fields are not saved between launches yet.
+
 Every part has skeletons, an error panel with "Try again", and "Waking the server, up to a minute" for the sleeping free server. Everything fetched is saved on the phone ("Saved on <date>"). Deep link: `croplytics://field/<id>?tab=<0-4>`.
 
 ## Architecture

@@ -120,6 +120,61 @@ class DefaultFieldRepository(
     override fun route(id: String, path: String) = cached("route/$id/$path", kotlinx.serialization.json.JsonObject.serializer(), false) { api.file("locations/$id/$path") }
     override fun salmon(id: String) = cached("salmon/$id", kotlinx.serialization.json.JsonObject.serializer(), false) { app.croplytics.domain.NationLogic.trimSalmon(api.file("locations/$id/salmon")) }
     override fun reserves(id: String) = cached("reserves/$id", ListSerializer(app.croplytics.domain.Reserve.serializer()), false, blobs) { app.croplytics.domain.Parsers.reserveList(api.reserves(id)) }
+    override fun week(id: String) = route(id, "this_week")
+    override fun catalog() = cached("catalog", kotlinx.serialization.json.JsonObject.serializer(), false, blobs) { api.file("catalog") }
+
+    override suspend fun analyze(lat: Double, lon: Double): SpotResult = spotCall {
+        val j = api.file("analyze?lat=${String.format(Locale.US, "%.4f", lat)}&lon=${String.format(Locale.US, "%.4f", lon)}")
+        val preset = (j["analysis"] as? kotlinx.serialization.json.JsonObject)?.get("matches_preset")
+        if (preset is JsonPrimitive && preset.contentOrNull != null && preset.contentOrNull != "null") SpotResult.Preset(preset.content) else okSpot(j)
+    }
+
+    override suspend fun spot(id: String, lat: Double, lon: Double): SpotResult =
+        (spotCall { okSpot(api.file("locations/$id")) } as? SpotResult.Ok) ?: analyze(lat, lon)
+
+    override suspend fun createField(name: String, ring: List<Pair<Double, Double>>): SpotResult = spotCall {
+        val closed = ring + ring.first()
+        val body = kotlinx.serialization.json.buildJsonObject {
+            put("name", JsonPrimitive(name))
+            put("geometry", kotlinx.serialization.json.buildJsonObject {
+                put("type", JsonPrimitive("Polygon"))
+                put("coordinates", kotlinx.serialization.json.buildJsonArray { add(kotlinx.serialization.json.buildJsonArray { closed.forEach { (x, y) -> add(kotlinx.serialization.json.buildJsonArray { add(JsonPrimitive(x)); add(JsonPrimitive(y)) }) } }) })
+            })
+        }
+        okSpot(api.createField(body))
+    }
+
+    private fun okSpot(j: kotlinx.serialization.json.JsonObject): SpotResult {
+        val loc = json.decodeFromJsonElement(LocationDto.serializer(), j)
+        return if (loc.geometry == null) SpotResult.Error("The analysis came back empty. Try again.") else SpotResult.Ok(loc)
+    }
+
+    private suspend fun spotCall(block: suspend () -> SpotResult): SpotResult = try { block() } catch (e: CancellationException) { throw e } catch (e: HttpException) {
+        SpotResult.Error(when (e.code()) {
+            429 -> "Busy, try again in a moment."
+            422 -> "That spot cannot be analysed. Try another place."
+            504 -> "No answer after 45 seconds. Try again."
+            else -> "The analysis did not work this time. Try again."
+        })
+    } catch (e: Exception) { SpotResult.Error("Could not reach the CropLytics server, or it is busy. Try again in a moment.") }
+
+    override suspend fun chatEnabled(): Boolean = try { (api.file("chat/status")["enabled"] as? JsonPrimitive)?.contentOrNull == "true" } catch (e: CancellationException) { throw e } catch (e: Exception) { false }
+
+    override suspend fun ask(question: String, history: List<Pair<String, String>>, fieldId: String?, screen: String, date: String, waterLimit: Double?): AskResult = try {
+        val body = kotlinx.serialization.json.buildJsonObject {
+            put("question", JsonPrimitive(question))
+            put("history", kotlinx.serialization.json.buildJsonArray { history.forEach { (r, c) -> add(kotlinx.serialization.json.buildJsonObject { put("role", JsonPrimitive(r)); put("content", JsonPrimitive(c)) }) } })
+            put("field_id", fieldId?.let { JsonPrimitive(it) } ?: kotlinx.serialization.json.JsonNull)
+            put("screen", JsonPrimitive(screen)); put("date", JsonPrimitive(date))
+            put("water_limit", waterLimit?.let { JsonPrimitive(it) } ?: kotlinx.serialization.json.JsonNull)
+            put("lang", JsonPrimitive("en"))
+        }
+        AskResult.Answer((api.chat(body)["answer"] as? JsonPrimitive)?.contentOrNull.orEmpty())
+    } catch (e: CancellationException) { throw e } catch (e: HttpException) {
+        AskResult.Error("The assistant could not answer. Please try again.")
+    } catch (e: SocketTimeoutException) { AskResult.Error("The assistant took too long. Please try again.")
+    } catch (e: Exception) { AskResult.Error("Could not reach the CropLytics server. Try again in a moment.") }
+
     override fun glossary(force: Boolean) = cached("glossary", GlossaryDto.serializer(), force) { api.glossary() }
 
     override fun iss(id: String) = cached("iss/$id", IssPhoto.serializer().nullable, false) {

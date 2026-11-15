@@ -83,6 +83,14 @@ interface CropLyticsApi {
     @GET("locations/{id}/first_nations/reserves.geojson")
     suspend fun reserves(@Path("id") id: String): JsonObject
 
+    /** A drawn field: {name, geometry} in, the full location payload out (`my_` id). */
+    @POST("my-fields")
+    suspend fun createField(@Body body: JsonObject): JsonObject
+
+    /** Ask CropLytics: {question, history, field_id, screen, date, water_limit, lang} in, {answer} out. */
+    @POST("chat")
+    suspend fun chat(@Body body: JsonObject): JsonObject
+
     @GET("glossary")
     suspend fun glossary(): GlossaryDto
 

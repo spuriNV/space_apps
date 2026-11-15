@@ -80,6 +80,15 @@ data class CameraView(val zoom: Double = 5.75, val pitch: Double = 0.0, val bear
 /** Quick dates in the grower's words for the "Viewing" control (App.tsx QUICK). */
 data class QuickDate(val label: String, val sub: String, val t: Int)
 
+/** A line over the map about a tapped spot: the loading line, or why it did not work. */
+data class SpotMsg(val text: String, val isError: Boolean)
+
+/** Draw a field: the tapped corners (lon, lat), and the save in progress. */
+data class DrawState(val points: List<Pair<Double, Double>> = emptyList(), val saving: Boolean = false, val error: String? = null)
+
+/** Ask CropLytics: the conversation so far (role to text). */
+data class AskUi(val enabled: Boolean = false, val open: Boolean = false, val turns: List<Pair<String, String>> = emptyList(), val busy: Boolean = false, val error: String? = null, val fieldId: String? = null)
+
 data class MainUiState(
     val fields: LoadState<List<FieldItem>> = LoadState.Loading,
     val strips: Map<String, Map<Int, String>> = emptyMap(),
@@ -102,9 +111,25 @@ data class MainUiState(
     val drilledFlag: Boolean = false,
     /** Full-screen search over fields and places. */
     val searchOpen: Boolean = false,
+    /** Tapped spots, catalog spots and drawn fields opened this session (pt_ and my_ ids). */
+    val extras: List<FieldItem> = emptyList(),
+    val spotMsg: SpotMsg? = null,
+    val catalog: app.croplytics.domain.Catalog? = null,
+    /** Crop group filter for the catalog pins and the search list. */
+    val crop: String? = null,
+    val drawing: DrawState? = null,
 ) {
+    /** Catalog pins for the map: the crop filter only. */
+    val catalogPins: List<app.croplytics.domain.CatalogPin> get() = catalog?.pins.orEmpty().filter { crop == null || it.group == crop }
+    /** Catalog farms in the search list: shown once a crop or some words are chosen. */
+    val catalogShown: List<app.croplytics.domain.CatalogPin>
+        get() {
+            val words = query.lowercase().split(Regex("\\s+")).filter(String::isNotBlank)
+            if (crop == null && words.isEmpty()) return emptyList()
+            return catalogPins.filter { p -> words.all { w -> "${p.name} ${p.county} ${p.groupLabel}".lowercase().contains(w) } }.take(60)
+        }
     val isToday get() = t == todayT
-    val selected: FieldItem? get() = (fields as? LoadState.Ready)?.data?.firstOrNull { it.id.id == selectedId }
+    val selected: FieldItem? get() = (fields as? LoadState.Ready)?.data?.firstOrNull { it.id.id == selectedId } ?: extras.firstOrNull { it.id.id == selectedId }
     /** Zoomed in under the selected field: the 3D stack is up. */
     val drilled get() = selectedId != null && drilledFlag
     val families: List<Pair<String, Int>>
@@ -288,6 +313,7 @@ class MainViewModel @Inject constructor(
     private fun fly(id: String, mode: MapCommand.FlyToField.Mode) {
         val f = state.value.fields.dataOrNull?.firstOrNull { it.id.id == id }
             ?: (ui.value.fields.dataOrNull)?.firstOrNull { it.id.id == id }
+            ?: ui.value.extras.firstOrNull { it.id.id == id }
         commands.trySend(MapCommand.FlyToField(id, mode, f?.id?.lat ?: 0.0, f?.id?.lon ?: 0.0, (f?.loc?.areaHa?.value ?: 60.0) < 45))
     }
 
@@ -401,6 +427,87 @@ class MainViewModel @Inject constructor(
             select(id)
             Tab.entries.getOrNull(tab)?.let { openTab(it) }
         }
+    }
+
+    // ---------------- 1.3.0: this week, spots, catalog, draw, Ask ----------------
+
+    /** "This week" for the open field (hidden when the API has none for it). */
+    val week: StateFlow<LoadState<app.croplytics.domain.WeekView>> = state.map { it.selectedId }.distinctUntilChanged()
+        .flatMapLatest { id ->
+            if (id == null || id.startsWith("my_")) flowOf<LoadState<app.croplytics.domain.WeekView>>(LoadState.Failed(app.croplytics.data.repository.LoadError.NotAvailable))
+            else repository.week(id).map { s -> s.map { app.croplytics.domain.WeekLogic.parse(it) } }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LoadState.Loading)
+
+    private var spotJob: Job? = null
+
+    /** A long-press on the map, or a catalog pin (with its `pt_` id): analyse the spot and open it like a field. */
+    fun openSpot(lat: Double, lon: Double, id: String? = null) {
+        if (ui.value.drawing != null) return
+        spotJob?.cancel()
+        spotJob = viewModelScope.launch {
+            ui.update { it.copy(spotMsg = SpotMsg("Looking at this spot. This can take a few seconds.", false)) }
+            commands.trySend(MapCommand.FlyTo(lat, lon, maxOf(camera.value.zoom, 10.6)))
+            when (val r = if (id != null) repository.spot(id, lat, lon) else repository.analyze(lat, lon)) {
+                is app.croplytics.data.repository.SpotResult.Ok -> openExtra(r.loc)
+                is app.croplytics.data.repository.SpotResult.Preset -> { ui.update { it.copy(spotMsg = null) }; select(r.id) }
+                is app.croplytics.data.repository.SpotResult.Error -> ui.update { it.copy(spotMsg = SpotMsg(r.message, true)) }
+            }
+        }
+    }
+    fun openCatalog(p: app.croplytics.domain.CatalogPin) = openSpot(p.lat, p.lon, p.id)
+    fun dismissSpotMsg() { spotJob?.cancel(); ui.update { it.copy(spotMsg = null) } }
+
+    private fun openExtra(loc: LocationDto) {
+        val item = FieldItem(loc, FieldNames.identity(loc), loc.geometry?.rings().orEmpty())
+        ui.update { it.copy(extras = (it.extras.filter { e -> e.id.id != item.id.id } + item).takeLast(12), selectedId = item.id.id, panelOpen = true, bcOpen = false, searchOpen = false, spotMsg = null, drawing = null, tab = Tab.Now) }
+        commands.trySend(MapCommand.FlyToField(item.id.id, MapCommand.FlyToField.Mode.Card, item.id.lat, item.id.lon, true))
+    }
+
+    fun setCrop(key: String) = ui.update { it.copy(crop = if (it.crop == key) null else key) }
+
+    fun startDraw() { spotJob?.cancel(); ui.update { it.copy(drawing = DrawState(), spotMsg = null, searchOpen = false) } }
+    fun drawTap(lat: Double, lon: Double) = ui.update { s -> s.drawing?.takeIf { !it.saving }?.let { d -> s.copy(drawing = d.copy(points = d.points + (lon to lat), error = null)) } ?: s }
+    fun drawUndo() = ui.update { s -> s.drawing?.let { d -> s.copy(drawing = d.copy(points = d.points.dropLast(1), error = null)) } ?: s }
+    fun drawCancel() = ui.update { it.copy(drawing = null) }
+    fun drawSave(name: String) {
+        val d = ui.value.drawing ?: return
+        if (d.points.size < 3 || d.saving) return
+        ui.update { it.copy(drawing = d.copy(saving = true, error = null)) }
+        viewModelScope.launch {
+            when (val r = repository.createField(name.trim().ifBlank { "My field" }, d.points)) {
+                is app.croplytics.data.repository.SpotResult.Ok -> openExtra(r.loc)
+                is app.croplytics.data.repository.SpotResult.Preset -> { ui.update { it.copy(drawing = null) }; select(r.id) }
+                is app.croplytics.data.repository.SpotResult.Error -> ui.update { s -> s.copy(drawing = s.drawing?.copy(saving = false, error = r.message)) }
+            }
+        }
+    }
+
+    private val askUi = MutableStateFlow(AskUi())
+    val ask: StateFlow<AskUi> = askUi.asStateFlow()
+    fun setAskOpen(open: Boolean) = askUi.update { a ->
+        val sel = ui.value.selectedId
+        // a new field starts a new conversation (the old answers were about the old field)
+        if (open && a.fieldId != sel) a.copy(open = true, turns = emptyList(), error = null, fieldId = sel) else a.copy(open = open)
+    }
+    fun askQuestion(text: String) {
+        val q = text.trim().take(300)
+        val a = askUi.value
+        if (q.isEmpty() || a.busy) return
+        val history = a.turns.takeLast(6)
+        askUi.update { it.copy(turns = it.turns + ("user" to q), busy = true, error = null) }
+        viewModelScope.launch {
+            val limit = field.value?.limit
+            when (val r = repository.ask(q, history, ui.value.selectedId, ui.value.tab.name, LocalDate.now(clock).toString(), limit)) {
+                is app.croplytics.data.repository.AskResult.Answer -> askUi.update { it.copy(turns = it.turns + ("assistant" to r.text), busy = false) }
+                // give the question back so it can be sent again
+                is app.croplytics.data.repository.AskResult.Error -> askUi.update { it.copy(turns = it.turns.dropLast(1), busy = false, error = r.message) }
+            }
+        }
+    }
+
+    init {
+        viewModelScope.launch { repository.catalog().collect { s -> s.dataOrNull?.let { j -> ui.update { it.copy(catalog = app.croplytics.domain.CatalogLogic.parse(j)) } } } }
+        viewModelScope.launch { val on = repository.chatEnabled(); askUi.update { it.copy(enabled = on) } }
     }
 
     companion object {

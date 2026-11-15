@@ -29,6 +29,23 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression.eq
+import org.maplibre.android.style.expressions.Expression.has
+import org.maplibre.android.style.expressions.Expression.not
+import org.maplibre.android.style.expressions.Expression.step
+import org.maplibre.android.style.layers.CircleLayer
+import org.maplibre.android.style.layers.PropertyFactory.circleColor
+import org.maplibre.android.style.layers.PropertyFactory.circleOpacity
+import org.maplibre.android.style.layers.PropertyFactory.circleRadius
+import org.maplibre.android.style.layers.PropertyFactory.circleStrokeColor
+import org.maplibre.android.style.layers.PropertyFactory.circleStrokeWidth
+import org.maplibre.android.style.layers.PropertyFactory.textAllowOverlap
+import org.maplibre.android.style.layers.PropertyFactory.textColor
+import org.maplibre.android.style.layers.PropertyFactory.textField
+import org.maplibre.android.style.layers.PropertyFactory.textFont
+import org.maplibre.android.style.layers.PropertyFactory.textHaloColor
+import org.maplibre.android.style.layers.PropertyFactory.textHaloWidth
+import org.maplibre.android.style.layers.PropertyFactory.textSize
+import org.maplibre.android.style.sources.GeoJsonOptions
 import org.maplibre.android.style.expressions.Expression.get
 import org.maplibre.android.style.expressions.Expression.interpolate
 import org.maplibre.android.style.expressions.Expression.linear
@@ -73,6 +90,10 @@ data class MapContent(
     val footprints: List<Map3D.Footprint>,
     /** BC: reserve outlines near the field, context only (muted, dotted, never filled). */
     val reserves: List<app.croplytics.domain.Reserve> = emptyList(),
+    /** Farm catalog pins (already filtered by crop). */
+    val catalog: List<app.croplytics.domain.CatalogPin> = emptyList(),
+    /** The polygon being drawn (lon, lat); null when not drawing. */
+    val draw: List<Pair<Double, Double>>? = null,
 )
 
 /** Handle for the overlays (stack and footprint labels) to project points with altitude. */
@@ -115,6 +136,9 @@ fun CropMap(
     onBC: () -> Unit,
     onCamera: (CameraView) -> Unit,
     modifier: Modifier = Modifier,
+    onLongPress: (Double, Double) -> Unit = { _, _ -> },
+    onCatalog: (app.croplytics.domain.CatalogPin) -> Unit = {},
+    onDrawTap: (Double, Double) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -125,6 +149,9 @@ fun CropMap(
     val select by rememberUpdatedState(onSelect)
     val bc by rememberUpdatedState(onBC)
     val report by rememberUpdatedState(onCamera)
+    val longPress by rememberUpdatedState(onLongPress)
+    val pickCatalog by rememberUpdatedState(onCatalog)
+    val drawTap by rememberUpdatedState(onDrawTap)
     val insets = remember { intArrayOf(0, 0) }
     insets[0] = topInsetPx; insets[1] = bottomInsetPx
 
@@ -171,18 +198,29 @@ fun CropMap(
                 cameraTick.value++
                 gesture = false
             }
+            m.addOnMapLongClickListener { ll ->
+                if (latest.draw == null) { mapView.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS); longPress(ll.latitude, ll.longitude) }
+                true
+            }
             m.addOnMapClickListener { ll ->
+                if (latest.draw != null) { drawTap(ll.latitude, ll.longitude); return@addOnMapClickListener true }
                 val pt: PointF = m.projection.toScreenLocation(ll)
                 val hit = m.queryRenderedFeatures(pt, "pins-near", "pins-far", "field-hit")
                     .firstNotNullOfOrNull { f -> f.getStringProperty("id") }
+                val cat = if (hit == null) m.queryRenderedFeatures(pt, "cat-pt", "cat-cluster").firstOrNull() else null
                 when {
                     hit == "bc" -> { bc(); true }
                     hit != null -> { select(hit); true }
+                    cat != null && cat.hasProperty("point_count") -> {
+                        m.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, m.cameraPosition.zoom + 2.0), 450); true
+                    }
+                    cat != null -> { latest.catalog.firstOrNull { it.id == cat.getStringProperty("id") }?.let(pickCatalog); true }
                     else -> false
                 }
             }
             m.setStyle(Style.Builder().fromJson(STYLE)) { s ->
-                listOf("reserves", "fp", "fpgrid", "field", "shadow", "posts", "slab-grace", "slab-smap", "cells", "pins").forEach { s.addSource(GeoJsonSource(it)) }
+                s.addSource(GeoJsonSource("catalog", GeoJsonOptions().withCluster(true).withClusterRadius(40).withClusterMaxZoom(10)))
+                listOf("draw", "reserves", "fp", "fpgrid", "field", "shadow", "posts", "slab-grace", "slab-smap", "cells", "pins").forEach { s.addSource(GeoJsonSource(it)) }
                 s.addLayer(LineLayer("res-casing", "reserves").withProperties(lineColor("rgba(10,12,8,0.5)"), lineWidth(3.6f)))
                 s.addLayer(LineLayer("res-line", "reserves").withProperties(lineColor("#f1ecdd"), lineOpacity(0.95f), lineWidth(2f), lineDasharray(arrayOf(3f, 2f))))
                 s.addLayer(FillLayer("fp-fill", "fp").withProperties(fillColor(get("color")), fillOpacity(interpolate(linear(), zoom(), stop(8, 0.1f), stop(13, 0.03f)))))
@@ -201,8 +239,20 @@ fun CropMap(
                     ).apply { minZoom = minZ.toFloat() },
                 )
                 extrusion("posts", 0.55f, Map3D.Z0 + 0.4); extrusion("slab-grace", 0.86f, Map3D.Z0 + 0.1); extrusion("slab-smap", 0.84f, Map3D.Z0 + 0.1); extrusion("cells", 0.97f, 11.2)
+                s.addLayer(CircleLayer("cat-cluster", "catalog").withFilter(has("point_count")).withProperties(
+                    circleColor("#f7f6f0"), circleOpacity(0.92f), circleStrokeColor("#191c16"), circleStrokeWidth(1f),
+                    circleRadius(step(get("point_count"), literal(13), stop(10, 16), stop(30, 20)))))
+                s.addLayer(SymbolLayer("cat-count", "catalog").withFilter(has("point_count")).withProperties(
+                    textField(get("point_count_abbreviated")), textFont(arrayOf("Noto Sans Bold")), textSize(13f), textAllowOverlap(true), textColor("#191c16")))
+                s.addLayer(CircleLayer("cat-pt", "catalog").withFilter(not(has("point_count"))).withProperties(
+                    circleColor(get("color")), circleRadius(interpolate(linear(), zoom(), stop(5, 5f), stop(12, 8f))), circleStrokeColor("#f7f6f0"), circleStrokeWidth(1.75f), circleOpacity(0.95f)))
+                s.addLayer(SymbolLayer("cat-letter", "catalog").withFilter(not(has("point_count"))).withProperties(
+                    textField(get("letter")), textFont(arrayOf("Noto Sans Bold")), textSize(11f), textAllowOverlap(true), textColor("#191c16"), textHaloColor("#f7f6f0"), textHaloWidth(1.5f)).apply { minZoom = 9f })
                 s.addLayer(SymbolLayer("pins-far", "pins").withProperties(iconImage(get("far")), iconAnchor(Property.ICON_ANCHOR_BOTTOM), iconAllowOverlap(true), iconIgnorePlacement(true)).apply { maxZoom = 8.2f })
                 s.addLayer(SymbolLayer("pins-near", "pins").withProperties(iconImage(get("near")), iconAnchor(Property.ICON_ANCHOR_BOTTOM), iconAllowOverlap(true), iconIgnorePlacement(true)).apply { minZoom = 8.2f })
+                s.addLayer(FillLayer("draw-fill", "draw").withProperties(fillColor("#ffd166"), fillOpacity(0.25f)))
+                s.addLayer(LineLayer("draw-line", "draw").withProperties(lineColor("#ffd166"), lineWidth(3f)))
+                s.addLayer(CircleLayer("draw-pt", "draw").withProperties(circleColor("#ffffff"), circleRadius(6f), circleStrokeColor("#ffd166"), circleStrokeWidth(3f)))
                 style = s
             }
         }
@@ -237,6 +287,26 @@ fun CropMap(
         src("slab-grace")?.setGeoJson(fc(st?.grace?.map(::ext).orEmpty()))
         src("posts")?.setGeoJson(fc(st?.posts?.map(::ext).orEmpty()))
         src("shadow")?.setGeoJson(fc(st?.shadow?.map { Feature.fromGeometry(poly(it)) }.orEmpty()))
+    }
+
+    // ---------- farm catalog pins and the polygon being drawn ----------
+    LaunchedEffect(style, content.catalog) {
+        val s = style ?: return@LaunchedEffect
+        s.getSourceAs<GeoJsonSource>("catalog")?.setGeoJson(fc(content.catalog.map { p ->
+            Feature.fromGeometry(Point.fromLngLat(p.lon, p.lat)).apply {
+                addStringProperty("id", p.id); addStringProperty("color", app.croplytics.domain.CatalogLogic.color(p.group)); addStringProperty("letter", app.croplytics.domain.CatalogLogic.letter(p.group))
+            }
+        }))
+    }
+    LaunchedEffect(style, content.draw) {
+        val s = style ?: return@LaunchedEffect
+        val d = content.draw.orEmpty()
+        val feats = buildList {
+            d.forEach { (x, y) -> add(Feature.fromGeometry(Point.fromLngLat(x, y))) }
+            if (d.size >= 2) add(Feature.fromGeometry(LineString.fromLngLats((d + if (d.size >= 3) listOf(d.first()) else emptyList()).map { (x, y) -> Point.fromLngLat(x, y) })))
+            if (d.size >= 3) add(Feature.fromGeometry(poly(d + d.first())))
+        }
+        s.getSourceAs<GeoJsonSource>("draw")?.setGeoJson(fc(feats))
     }
 
     // ---------- camera commands (MapView.tsx flyToField / flyHome / zoomBy / resetNorth / toggle3D) ----------

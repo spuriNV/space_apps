@@ -42,6 +42,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -132,6 +133,8 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
     val field by vm.field.collectAsStateWithLifecycle()
     val compare by vm.compare.collectAsStateWithLifecycle()
     val briefPick by vm.briefPick.collectAsStateWithLifecycle()
+    val week by vm.week.collectAsStateWithLifecycle()
+    val ask by vm.ask.collectAsStateWithLifecycle()
     var dateOpen by remember { mutableStateOf(false) }
     var sourcesOpen by remember { mutableStateOf(false) }
     val handle = remember { MapHandle() }
@@ -177,7 +180,9 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
             )
         }
     }
-    val content = remember(state.fields, state.selectedId, data, state.t, state.layersOn) { mapContent(state, data) }
+    val content = remember(state.fields, state.extras, state.selectedId, data, state.t, state.layersOn, state.catalog, state.crop, state.drawing?.points) { mapContent(state, data) }
+    // drawing a field: the sheet steps down so the map is free to tap
+    LaunchedEffect(state.drawing != null) { if (state.drawing != null) { snap = Snap.Peek; settleNonce++ } }
 
     BoxWithConstraints(Modifier.fillMaxSize().background(c.paper)) {
         val h = constraints.maxHeight.toFloat()
@@ -241,7 +246,8 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
 
         // ---------- map, edge to edge ----------
         val sel = state.selected
-        CropMap(content, vm.mapCommands, (h - top).toInt(), (statusPx + with(density) { 72.dp.toPx() }).toInt(), handle, tick, vm::select, vm::goBC, vm::onCamera, Modifier.fillMaxSize().testTag("map"))
+        CropMap(content, vm.mapCommands, (h - top).toInt(), (statusPx + with(density) { 72.dp.toPx() }).toInt(), handle, tick, vm::select, vm::goBC, vm::onCamera, Modifier.fillMaxSize().testTag("map"),
+            onLongPress = { la, lo -> vm.openSpot(la, lo) }, onCatalog = vm::openCatalog, onDrawTap = vm::drawTap)
         if (sel != null) {
             FootprintLabels(handle, tick, content.footprints)
             StackLabels(handle, tick, content.stack, sel.rings, sel.id.lat, (statusPx + with(density) { 72.dp.toPx() }).toInt())
@@ -255,10 +261,27 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
             SearchBarPill(onClick = { vm.setSearchOpen(true) })
             if (!state.isToday) DateBanner(state.t, vm::backToToday, Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp))
             if (state.drilled && content.stack != null) UnderFieldHud(Modifier.padding(top = 8.dp))
+            state.spotMsg?.let { SpotLine(it, vm::dismissSpotMsg, Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp)) }
+        }
+        state.drawing?.let { d ->
+            DrawBar(d, vm::drawUndo, vm::drawCancel, vm::drawSave, Modifier.align(Alignment.BottomCenter).padding(bottom = with(density) { navPx.toDp() } + 140.dp))
         }
 
         // ---------- thumb-sized map buttons above the sheet ----------
         MapButtons(vm, onDate = { dateOpen = true }, modifier = Modifier.align(Alignment.TopEnd).offset { IntOffset(0, (top - with(density) { 248.dp.toPx() }).roundToInt().coerceAtLeast((statusPx + with(density) { 80.dp.toPx() }).roundToInt())) }.padding(end = 12.dp))
+
+        // Ask and Draw sit on the other side, so the right column stays short
+        Column(
+            Modifier.align(Alignment.TopStart).offset { IntOffset(0, (top - with(density) { 126.dp.toPx() }).roundToInt().coerceAtLeast((statusPx + with(density) { 80.dp.toPx() }).roundToInt())) }.padding(start = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            @Composable
+            fun Btn(desc: String, tag: String, onClick: () -> Unit, content: @Composable () -> Unit) = Surface(
+                onClick = onClick, modifier = Modifier.size(52.dp).semantics { contentDescription = desc }.testTag(tag), shape = CircleShape, color = c.raised, shadowElevation = 6.dp,
+            ) { Box(contentAlignment = Alignment.Center) { content() } }
+            if (ask.enabled) Btn("Ask CropLytics", "ask-btn", { vm.setAskOpen(true) }) { Text("Ask", style = MaterialTheme.typography.labelLarge, color = c.text) }
+            Btn("Draw a field", "draw-btn", vm::startDraw) { Icon(Icons.Filled.Edit, null, tint = c.text) }
+        }
 
         // ---------- the sheet ----------
         val sheetH = with(density) { (h - fullTop).toDp() }
@@ -291,7 +314,7 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
             val pad = with(density) { (max(top, settledTop) - fullTop + navPx).toDp() } + 24.dp
             val listAlpha = if (snap == Snap.Peek && abs(top - peekTop) < 2f) 0f else 1f
             LazyColumn(Modifier.fillMaxWidth().weight(1f).graphicsLayer { alpha = listAlpha }, state = listState, contentPadding = PaddingValues(bottom = pad)) {
-                sheetContent(state, data, nowView, compare, briefPick, glossary, vm, onSources = { sourcesOpen = true })
+                sheetContent(state, data, nowView, compare, briefPick, glossary, vm, week, onSources = { sourcesOpen = true })
             }
         }
 
@@ -304,6 +327,7 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
     if (dateOpen) DateSheet(state, vm.quickDates, vm.years, vm::setT, vm::toggleEarlier) { dateOpen = false }
     if (state.layersOpen) LayersSheet(state.layersOn, state.selected?.loc?.areaHa?.value, vm::toggleLayer, showReserves = state.selected?.loc?.isBC == true) { vm.setLayersOpen(false) }
     if (sourcesOpen) SourcesSheet { sourcesOpen = false }
+    if (ask.open) AskSheet(ask, state.selected?.id?.name, vm::askQuestion) { vm.setAskOpen(false) }
 }
 
 /** Material 3 style search bar floating over the map. */
@@ -334,6 +358,7 @@ private fun SearchScreen(state: MainUiState, vm: MainViewModel) {
             }
             val nav = WindowInsets.navigationBars.getBottom(LocalDensity.current)
             LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = with(LocalDensity.current) { nav.toDp() } + 24.dp)) {
+                catalogSearch(state, vm::setCrop, vm::openCatalog)
                 fieldPicker(state, vm::onQuery, vm::toggleFamily, vm::clearFilters, vm::select, { vm.setSearchOpen(false); vm.goBC() }, vm::retry, showTitle = false)
                 item(key = "search-ca") {
                     Row(Modifier.fillMaxWidth().clickable { vm.setSearchOpen(false); vm.goHome() }.padding(16.dp)) {
@@ -382,7 +407,7 @@ private fun MapButtons(vm: MainViewModel, onDate: () -> Unit, modifier: Modifier
 
 /** Fields, pins, footprints and the 3D stack for the viewing date. */
 private fun mapContent(state: MainUiState, data: FieldData?): MapContent {
-    val fields = state.fields.dataOrNull.orEmpty()
+    val fields = state.fields.dataOrNull.orEmpty() + state.extras
     val sel = state.selected
     val stack = if (sel != null && data != null && data.item.id.id == sel.id.id) {
         data.stack3d?.let { s ->
@@ -391,12 +416,12 @@ private fun mapContent(state: MainUiState, data: FieldData?): MapContent {
     } else null
     val fps = if (sel != null) Map3D.footprints(sel.rings, sel.id.lon, sel.id.lat, state.layersOn, data?.regional?.dataOrNull?.soilSource == "smap") else emptyList()
     val reserves = if (sel?.loc?.isBC == true && state.layersOn["reserves"] == true) data?.reserves?.dataOrNull.orEmpty() else emptyList()
-    return MapContent(fields, state.selectedId, stack, fps, reserves)
+    return MapContent(fields, state.selectedId, stack, fps, reserves, state.catalogPins, state.drawing?.points)
 }
 
 /** What the sheet shows: BC, the pick list, or the selected field's section. */
 private fun androidx.compose.foundation.lazy.LazyListScope.sheetContent(
-    state: MainUiState, data: FieldData?, nowView: FieldNowView?, compare: CompareUi, briefPick: String?, glossary: Map<String, Pair<String, String>>, vm: MainViewModel, onSources: () -> Unit,
+    state: MainUiState, data: FieldData?, nowView: FieldNowView?, compare: CompareUi, briefPick: String?, glossary: Map<String, Pair<String, String>>, vm: MainViewModel, week: LoadState<app.croplytics.domain.WeekView>, onSources: () -> Unit,
 ) {
     if (state.bcOpen) { item(key = "bc") { BCCard(vm::closeBC) }; return }
     if (state.selectedId == null || data == null) {
@@ -418,6 +443,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.sheetContent(
                 if (data.item.loc.terrain?.slopeMeanPct?.value != null) put("nasadem", NasaStatus.Live)
             }
             val nasa = Nasa.list(data.item.loc.nasaDatasets, data.item.loc.datasets.mapValues { it.value.status }, used)
+            thisWeekItem(week)
             if (nowView != null) fieldNowPanel(state, data, nowView, nasa, glossary, a)
         }
         Tab.Season -> seasonPanel(state, data, glossary, a)
