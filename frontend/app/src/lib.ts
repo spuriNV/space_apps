@@ -29,6 +29,8 @@ export const mmToAfac = (mm: number) => mm / 304.8;
 
 export const CLASS_LABEL: Record<CoverClass, string> = { b: 'Bare', p: 'Partial cover', c: 'Covered', w: 'Water', u: 'Unknown (cloud)' };
 export const CLASS_COLOR: Record<CoverClass, string> = { b: '#a8703f', p: '#b7d77a', c: '#2f9e4b', w: '#3d97e8', u: '#6b7280' };
+/** Soil texture (data colours; never used for chrome): sand tan, silt light, clay brown. */
+export const SOIL_COLOR = { sand: '#d9b46a', silt: '#e9e3d3', clay: '#7a4a2b' } as const;
 export const RISK_COLOR = { rain: '#6cb6ff', frost: '#b8f0ff', heat: '#ff6b5e', dry: '#ffb44a' } as const;
 export const RISK_LABEL = { rain: 'Heavy rain', frost: 'Frost', heat: 'Heat', dry: 'Dry spell' } as const;
 
