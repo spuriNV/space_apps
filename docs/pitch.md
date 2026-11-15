@@ -232,3 +232,6 @@ The critical review also mentions NASA reviewers (an ML judge and ISS-photo spec
 - The machine-learning strip is now in the app ("Compare with machine learning" on "This field's year", refreshed screenshots, 14 Nov evening). If a rehearsal has 5 seconds spare at 0:45, click it and say: "Machine learning gives a second opinion, not the answer." Otherwise leave it to slide 5.
 - The field picker already reads "Rice in 7 of the last 10 years; left fallow 2016, 2020 and 2022", matching the crop maps.
 - Field names changed to "4 miles east of Williams" and "6.5 miles south of Hanford" in the refreshed screenshots; the script and slides use the new names. If they change again, update the click target at 0:30 and slide 3.
+
+## Reach number (use on slide 7, the video end card and the project page)
+"California planted about 524,000 acres of rice in 2025; CropLytics covers every one of those fields with the same NASA data." Source: USDA NASS via `/api/reach` (2026 preliminary: 501,000 acres). Forage: Kings + Tulare grew about 99,932 acres of hay and 155,000 acres of silage corn.
