@@ -124,16 +124,18 @@ def _water_combos(rice_F: dict):
     return nominal, [nominal] + corners
 
 
-def _cover_combos():
-    nominal = (BARE_THR[0], RAIN_THR[0], "power")
-    corners = list(itertools.product(BARE_THR[1:], sorted(set(RAIN_THR[1:])), ("power", "noaa")))
+def _cover_combos(rain_thr=RAIN_THR):
+    nominal = (BARE_THR[0], rain_thr[0], "power")
+    corners = list(itertools.product(BARE_THR[1:], sorted(set(rain_thr[1:])), ("power", "noaa")))
     return nominal, [nominal] + corners
 
 
-def _evaluate(tl, wys, crops, cov_tl=None):
+def _evaluate(tl, wys, crops, cov_tl=None, rain_thr=RAIN_THR):
+    """rain_thr: (nominal, low, high) extreme-rain threshold, mm/day. California uses RAIN_THR; a BC field passes
+    bc.rain_thr() (station 99th percentile), because 25 mm almost never falls in a day at Salmon Arm."""
     rice_F = crops["rice_medium_grain"]["flood_percolation_mm"]
     wn, wcs = _water_combos(rice_F)
-    cn, ccs = _cover_combos()
+    cn, ccs = _cover_combos(rain_thr)
     water = {}
     for c in wcs:
         r = water_metrics(tl, list(wys), kc_var=c[0], eto_f=c[1], F=c[2], psrc=c[3])
@@ -286,8 +288,9 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
             ctl, info = observed_timeline(tls[s["id"]], preset_id, s)
             if ctl is not None:
                 ctls[s["id"]], obs_info[s["id"]] = ctl, info
-    evs = {sid: _evaluate(tl, wys, crops, ctls.get(sid)) for sid, tl in tls.items()}
-    revs = {y: {sid: _evaluate(tl, rw, crops, ctls.get(sid)) for sid, tl in tls.items()} for y, rw in replay_wys.items()}
+    rthr = bc.rain_thr(preset_id) if _region(preset_id) == "bc" else RAIN_THR
+    evs = {sid: _evaluate(tl, wys, crops, ctls.get(sid), rthr) for sid, tl in tls.items()}
+    revs = {y: {sid: _evaluate(tl, rw, crops, ctls.get(sid), rthr) for sid, tl in tls.items()} for y, rw in replay_wys.items()}
     base = next(s for s in strategies if s["is_baseline"])
     base_crops = {sp.crop["id"] for sp in tls[base["id"]].spans}
     host = _host_crop(tls[base["id"]])                       # pest-break host (today's main crop)

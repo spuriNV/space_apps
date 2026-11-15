@@ -11,9 +11,12 @@ first_nations.json (GET /first_nations; facts from docs/bc-first-nations.md, res
 and backend/news/out/bc_salmon_river_forage.json (the Salmon River items of bc_opener.json).
 
 Reuses backend/api/nasa_build.py (load, nasa_series, nasa_datasets, validation_checks, trends, Hargreaves) and the generic
-helpers of backend/api/build_real.py. The California-only pieces (NCEI, USDM, CDEC, SSURGO, CDL, OpenET, RMA, DSWx summary)
-are not built: the registry's `not_available` reasons go into location.json `data_gaps`, and the API answers those routes
-with 404 "not available in BC: <reason>".
+helpers of backend/api/build_real.py. The California-only sources (NCEI, USDM, CDEC, SSURGO, CDL, OpenET, RMA, DSWx, the
+backend/ai models) have no BC equivalent: the registry's `not_available` reasons go into location.json `data_gaps`, each with
+`filled_with`, and backend/bc/estimates.py writes an estimate in the California shape for every route they feed:
+  openet.json, insurance.json, outlook.json, calendar_ml.json, stress.json, transitions.json, models.json, water_seen.json,
+  trends_usdm_d2_weeks.json, trends_reservoir_storage.json.
+The API serves those with `_source: "estimate"`; every estimated value is a SourcedNumber with method "assumed" and a note.
 
 Every input is optional except the registry entry, the field polygon, POWER and ECCC. Anything missing is listed at the end
 under "skipped" so the script can simply be rerun once the downloads finish.
@@ -36,6 +39,9 @@ import build_real as BR  # noqa: E402  generic helpers: clean, r, sn, blocked_sn
 import fieldreg  # noqa: E402
 import nasa_build as NB  # noqa: E402
 
+sys.path.insert(0, str(HERE))
+import estimates as ES  # noqa: E402  the estimate payloads for the California-only routes
+
 FID = "bc_salmon_river_forage"
 CACHE = REPO / "data" / "cache" / FID
 FIELD_OUT = REPO / "backend" / "field" / "out" / FID
@@ -54,9 +60,20 @@ GAP_LABEL = {
     "outlook": "Coming-season outlooks (NOAA CPC, US Drought Monitor, CDEC)",
     "ml_calendar": "Machine-learning calendar and crop-stress flags",
 }
-# which API routes each gap closes (the API returns 404 "not available in BC: <reason>" for them)
+# which API routes each gap feeds (the API serves an estimate for them, `_source: "estimate"`; 404 only if not built)
 GAP_ROUTES = {"openet": ["/openet"], "insurance": ["/insurance"], "outlook": ["/outlook", "/trends?layer=usdm_d2_weeks"],
               "sgma": ["/trends?layer=reservoir_storage"], "ml_calendar": ["/calendar_ml", "/stress", "/transitions", "/models"]}
+# what each gap is filled with instead (location.json data_gaps[].filled_with)
+FILLED_WITH = {
+    "openet": "Estimated from the rotation engine's FAO-56 crop ET for today's rotation on Salmon Arm station weather (/openet).",
+    "cimis": "Estimated reference ET: FAO-56 Penman-Monteith on ECCC station temperatures in the engine; Hargreaves on POWER in daily.json.",
+    "insurance": "Estimated from Salmon Arm station history: summer drought, rain at haying, heat and frost years as peril shares (/insurance).",
+    "sgma": "BC water-order context (fish population protection orders, 2023 and 2026) as the reservoir_storage trend layer and the outlook's allocations_context.",
+    "cdl": "AAFC Annual Crop Inventory crop history (one Pasture / Forages class).",
+    "soil_survey": "ISRIC SoilGrids v2 (250 m model) for texture and organic matter; drainage and hydrologic group stay unknown.",
+    "outlook": "Estimated from ECCC 1991-2020 station climatology (equal chances) and a station rain-percentile drought index (/outlook, usdm_d2_weeks).",
+    "ml_calendar": "Estimated with rule-based detectors on the field's S2/Landsat series: two-class NDVI calendar, transitions and z-score stress weeks (/calendar_ml, /transitions, /stress, /models).",
+}
 
 
 def jload(p: Path):
@@ -287,7 +304,7 @@ def build_location(x: Ctx) -> dict:
     nds = NB.nasa_datasets(FID, x.nasa)
     for e in nds:   # nasa_datasets carries California-specific notes for DSWx
         if e["id"] == "dswx":
-            e["note"] = "Not fetched for this field; GET /water_seen is not available in BC."
+            e["note"] = "Not fetched for this field; GET /water_seen is estimated from the Sentinel-2/Landsat water masks instead."
     stations = []
     for st in x.emeta["selected_stations"]:
         last = st.get("last") or st["daily"][1]
@@ -318,8 +335,10 @@ def build_location(x: Ctx) -> dict:
         "observed_cover": observed_cover(x), "events": events,
         "first_nations": ({k: fn[k] for k in ("statement", "field_on_reserve", "nearest_km", "nearest_reserve", "nearest_nation")}
                           | {"lower_river_nation": "Splatsin", "route": f"/api/locations/{FID}/first_nations"}) if (fn := getattr(x, "fn", None)) else None,
-        "data_gaps": [{"id": k, "what": GAP_LABEL.get(k, k), "reason": v, "routes": GAP_ROUTES.get(k, [])} for k, v in gaps.items()],
-        "_notes": {"region": "British Columbia field: CA-only layers are listed in data_gaps; their API routes return 404 'not available in BC: <reason>'.",
+        "data_gaps": [{"id": k, "what": GAP_LABEL.get(k, k), "reason": v, "routes": GAP_ROUTES.get(k, []), "filled_with": FILLED_WITH.get(k)}
+                      for k, v in gaps.items()],
+        "_notes": {"region": "British Columbia field: CA-only layers are listed in data_gaps with what fills them; their API routes serve "
+                             "estimates in the California shape with _source 'estimate'.",
                    "water_and_market": "No water district or SGMA basin in BC; water_context holds the watershed and the 2023 orders. "
                                        "market_preference is not stated for this field (no_preference, U).",
                    "boundary": bs["title"], "crop_history": "AAFC Annual Crop Inventory majority class per year (no alfalfa class)",
@@ -438,6 +457,50 @@ def build_trends(x: Ctx, loc: dict):
         trend(layer, unit, grid, source, by, note, 2023, markers)
 
 
+# ------------------------------------------------------------------ estimates for the California-only routes
+def build_estimates(x: Ctx, loc: dict):
+    markers = [{k: e[k] for k in ("date", "title", "url", "verified")} for e in loc["events"]]
+    dpct = ES.drought_pct(ES.station(x).prcp_mm)
+    sf = REPO / "backend" / "engine" / "out" / FID / "strategies.json"
+    strategies = jload(sf) if sf.exists() else None
+    if isinstance(strategies, dict):
+        strategies = strategies.get("items")
+    try:
+        write("openet.json", ES.openet(x, FID))
+    except Exception as e:  # noqa: BLE001  engine not importable / weather missing: leave the route on its 404
+        skipped.append(f"/openet estimate (engine ETc: {e!r})")
+    write("insurance.json", ES.insurance(x, FID, x.src_eccc))
+    write("outlook.json", ES.outlook(x, FID, x.src_eccc, loc, strategies, dpct))
+    by = ES.usdm_d2_weeks(dpct)
+    trend("usdm_d2_weeks", "weeks/yr", "eccc_116FRMN_1167337", x.src_eccc, by,
+          "Estimate (U): weeks per year (Tuesdays) at or below the 10th percentile, a D2-like (severe drought) level, of a "
+          + ES.DROUGHT_RULE + " Station point, not a county map; `cells` has one value. Years with < 26 scored weeks are left out.",
+          2023, markers)
+    ob, om = ES.water_orders_by_year(x, loc)
+    trend("reservoir_storage", "water orders/yr", "salmon_river_watershed",
+          {"id": "bc_gov_news", "title": "BC Government news releases on Salmon River fish population protection orders",
+           "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305", "accessed": "2026-11-15", "verified": True}, ob,
+          "Estimate (U): no reservoir feeds the Salmon River, so this layer shows BC water-order context instead: the number of fish "
+          "population protection orders (or temporary orders) issued on the Salmon River that year, from docs/bc-first-nations.md. "
+          "Not storage; a rescinded order is not counted.", 2023, om)
+    scl = ES.scl_labels(CACHE)
+    cal_ml = ES.calendar_ml(x, FID, scl)
+    st = ES.stress(x, FID, x.hist)
+    if cal_ml:
+        write("calendar_ml.json", cal_ml)
+        write("transitions.json", ES.transitions(FID, cal_ml, x.cal, scl))
+    else:
+        skipped.append("/calendar_ml and /transitions estimates (S2/Landsat calendar not built)")
+    if st:
+        write("stress.json", st)
+    write("models.json", ES.models(FID, cal_ml, st, x.cal, scl))
+    ws = ES.water_seen(FID, CACHE)
+    if ws:
+        write("water_seen.json", ws)
+    else:
+        skipped.append("/water_seen estimate (no s2/landsat cache)")
+
+
 # ------------------------------------------------------------------ validation
 def build_validation(x: Ctx):
     mc = BR.monthly_compare(x)
@@ -504,6 +567,7 @@ def main():
     build_daily(x)
     build_weekly(x)
     build_trends(x, loc)
+    build_estimates(x, loc)
     build_validation(x)
     build_nasa_series(x)
     build_zones(x)

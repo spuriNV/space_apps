@@ -65,6 +65,7 @@ if (OUT / "location.json").exists():
     ok(bool(loc["stations"]) and all(s["network"] == "ECCC" for s in loc["stations"]), "location", f"{len(loc['stations'])} ECCC stations")
     ok({g["id"] for g in loc.get("data_gaps", [])} == set(reg["not_available"]) and all(g["reason"] for g in loc["data_gaps"]), "location",
        "data_gaps = registry not_available, each with its reason")
+    ok(all(g.get("filled_with") for g in loc["data_gaps"]), "location", "every data_gaps entry says what fills it (filled_with)")
     ok(loc.get("water_context") == reg["water_context"], "location", "water_context copied from the registry")
     lim = loc["water"].get("example_limit_af_ac") or {}
     ok(lim.get("value") == 3.0 and lim.get("method") == "assumed" and bool(lim.get("note")), "location", "water.example_limit_af_ac 3.0 (assumed, noted)")
@@ -109,9 +110,54 @@ else:
     ok(r.status_code == 200 and not list(vf.iter_errors(r.json())), "api", "/first_nations 200 and schema-valid")
     r = c.get("/api/locations/car_colusa_rice/first_nations")
     ok(r.status_code == 404 and "BC example field only" in r.json().get("detail", ""), "api", "CA /first_nations 404")
-    for route in ("/openet", "/insurance", "/outlook", "/calendar_ml", "/stress", "/water_seen"):
+    # California-only routes: an estimate in the California shape, _source "estimate", schema-valid where a schema exists
+    vm = Draft202012Validator({"$ref": "https://fieldshift.local/schemas/responses.schema.json#/$defs/Models"}, registry=sreg)
+    vt = Draft202012Validator({"$ref": "https://fieldshift.local/schemas/responses.schema.json#/$defs/Trends"}, registry=sreg)
+    any_ = Draft202012Validator({})
+    for route, val in (("/openet", any_), ("/insurance", any_), ("/outlook", any_), ("/calendar_ml", any_), ("/stress", any_),
+                       ("/water_seen", any_), ("/transitions", any_), ("/models", vm),
+                       ("/trends?layer=usdm_d2_weeks&year=2023", vt), ("/trends?layer=reservoir_storage&year=2023", vt)):
         r = c.get(f"/api/locations/{FID}{route}")
-        ok(r.status_code == 404 and "not available in BC" in r.json().get("detail", ""), "api", f"{route} 404 not available in BC")
+        j = r.json() if r.status_code == 200 else {}
+        errs = list(val.iter_errors(j)) if j else ["status"]
+        ok(r.status_code == 200 and not errs and j.get("_source") == "estimate" and r.headers.get("X-Data-Source") == "estimate",
+           "api", f"{route} 200, schema-valid, _source estimate" + (f": {str(errs[0])[:100]}" if errs else ""))
+
+    def assumed_sns(x, path=""):   # every SourcedNumber in an estimate payload is method assumed with a note
+        if isinstance(x, dict):
+            if "value" in x and "method" in x and "unit" in x:
+                yield path, x
+            for k, v in x.items():
+                yield from assumed_sns(v, f"{path}/{k}")
+        elif isinstance(x, list):
+            for i, v in enumerate(x[:50]):
+                yield from assumed_sns(v, f"{path}/{i}")
+    for route in ("/insurance", "/outlook"):
+        sns = list(assumed_sns(c.get(f"/api/locations/{FID}{route}").json()))
+        bad = [p_ for p_, v in sns if v["method"] != "assumed" or not v.get("note")]
+        ok(bool(sns) and not bad, "api", f"{route}: {len(sns)} SourcedNumbers, all method assumed with a note" + (f" (bad: {bad[:2]})" if bad else ""))
+    j = c.get(f"/api/locations/{FID}/openet").json()
+    ok("OpenET does not cover BC" in j.get("note", "") and len(j.get("rows", [])) >= 120, "api", f"/openet estimate: {len(j.get('rows', []))} monthly rows, note names the engine")
+    j = c.get(f"/api/locations/{FID}/outlook").json()
+    mk = {m["date"][:4] for m in j["drought"]["us_drought_monitor"].get("drought_markers", [])}
+    ok({"2023", "2026"} <= mk and all(s_["temperature"]["category"] == "equal chances" for s_ in j["cpc_seasonal_outlook"]["seasons"]),
+       "api", "/outlook: climatology (equal chances) with drought markers in 2023 and 2026")
+    for route in ("/openet", "/insurance", "/water_seen"):   # California unchanged
+        r = c.get(f"/api/locations/car_colusa_rice{route}")
+        ok(r.status_code == 200 and r.json().get("_source") == "real", "api", f"CA {route} still real")
+
+# ---- engine (backend/engine/out): BC erosion uses the station rain threshold, so the rotations differ
+sf = REPO / "backend/engine/out" / FID / "strategies.json"
+if sf.exists():
+    st = load(sf)
+    st = st.get("items", st) if isinstance(st, dict) else st
+    ero = [s_["scores"]["erosion"]["value"] for s_ in st]
+    ok(len(set(ero)) > 1, "engine", f"erosion differs across the BC rotations: {ero}")
+    note = st[0]["exposure"]["exposed_rain_days"]["note"]
+    ok("99th percentile" in note and "25 mm/day or" not in note, "engine", "exposed_rain_days note states the BC station threshold")
+    pr = st[0]["scores"]["income"]["components"]["price_range"]
+    ok(pr.get("value") is not None and pr["unit"] == "CAD/t" and pr["method"] == "assumed" and "CAD per USD" in pr.get("note", ""), "engine",
+       f"income price_range: California hay stand-in {pr.get('value')} CAD/t, assumed, rate stated")
 
 print(f"\n{counts['PASS']} PASS, {counts['FAIL']} FAIL, {counts['INFO']} INFO")
 sys.exit(1 if counts["FAIL"] else 0)

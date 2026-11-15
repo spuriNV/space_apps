@@ -76,7 +76,7 @@
      "verified": true,
      "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2022, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 37 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+    "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2022, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 37 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
    },
    "exposed_frost_days": {
     "value": 1.0,
@@ -172,7 +172,7 @@
        "verified": true,
        "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
       },
-      "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2022, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 37 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+      "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2022, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 37 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
      },
      "exposed_frost_days": {
       "value": 1.0,
@@ -300,7 +300,7 @@
        "verified": true,
        "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
       },
-      "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2022, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 37 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+      "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2022, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 37 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
      },
      "exposed_frost_days": {
       "value": 1.0,
@@ -389,10 +389,10 @@
     "dP_pct": 0.0
    },
    "erosion_index_E": {
-    "value": 0.0,
+    "value": 1.05,
     "unit": "rain-weighted bare days/yr",
-    "low": 0.0,
-    "high": 0.07,
+    "low": 0.41,
+    "high": 2.03,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -835,12 +835,12 @@
      "verified": true,
      "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
     },
-    "note": "Relative to today's rotation (fix of spec B4.4, see backend/engine/README.md): 100 x E_baseline / (E_baseline + E). Today's rotation = 50; less rain-weighted bare exposure scores above 50 (no exposure = 100), more scores below 50 (twice today's = 33). Not clamped. Change in E vs today: undefined (E_baseline = 0). The 30% residue-rating blend was dropped from the score (it made today's rotation score non-zero and mixed an absolute rating into a relative score); it is reported as residue_component. rule of thumb, not a model",
+    "note": "Relative to today's rotation (fix of spec B4.4, see backend/engine/README.md): 100 x E_baseline / (E_baseline + E). Today's rotation = 50; less rain-weighted bare exposure scores above 50 (no exposure = 100), more scores below 50 (twice today's = 33). Not clamped. Change in E vs today: +0.0%. The 30% residue-rating blend was dropped from the score (it made today's rotation score non-zero and mixed an absolute rating into a relative score); it is reported as residue_component. rule of thumb, not a model",
     "exposure_component": {
-     "value": null,
+     "value": 0.0,
      "unit": "% vs baseline",
-     "low": null,
-     "high": null,
+     "low": 0.0,
+     "high": 0.0,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -971,24 +971,23 @@
      "accessed": "2026-11-14",
      "verified": false
     },
-    "note": "BLOCKED: NASS/AMS prices not available in BC (USDA Quick Stats and My Market News cover the US). No BC hay or silage price series was read. Seed cost alone (assumed, U) would be ~300 USD/ha/yr.",
+    "note": "Income not computed (as for the California fields): NASS/AMS do not cover BC and no BC yield-price series is wired in. Hay price stand-in: about 336 CAD/t (211-476), from California AMS prices (estimate, see price_range). Seed cost alone (assumed, U) would be ~300 USD/ha/yr.",
     "blocked": true,
     "components": {
      "price_range": {
-      "value": null,
-      "unit": "USD/unit",
-      "low": null,
-      "high": null,
-      "method": "lookup",
+      "value": 336.0,
+      "unit": "CAD/t",
+      "low": 211.0,
+      "high": 476.0,
+      "method": "assumed",
       "source": {
        "id": "ams_mymarketnews",
-       "title": "USDA AMS My Market News California hay reports (API key required)",
+       "title": "USDA AMS My Market News California hay report (slug 2904), used as a stand-in for BC",
        "url": "https://marsapi.ams.usda.gov/services/v1.2/reports",
        "accessed": "2026-11-14",
        "verified": false
       },
-      "note": "BLOCKED: NASS/AMS prices not available in BC",
-      "blocked": true
+      "note": "ESTIMATE, California stand-in: USDA AMS California hay report (slug 2904), North Inter-Mountains region, F.O.B. weighted-average prices for Alfalfa, Alfalfa/Orchard Mix, Alfalfa/Grass Mix, 2021-2025 (362 quotes): median 222 USD/short ton (10th-90th percentile 140-315). Converted at an assumed 1.37 CAD per USD (about the Bank of Canada 2024 annual average, 1.3698; rate as of 2024, not checked for Nov 2026) and 0.907185 t per short ton. Not a BC price: no BC hay price series is wired in."
      },
      "seed_cost_per_ha": {
       "value": 300.0,
@@ -1180,7 +1179,7 @@
    },
    "agronomic_gap_count": 15,
    "detector_disagreement_pct": null,
-   "range_inputs": "Kc low/high, ETo +/-15%, precip sources, bare threshold 0.15-0.30, rain threshold 25-50 mm, rice F 300-600 mm (spec B4.12); rating, root-class and yield ranges (U) for the rating-based scores; 2-4 years for a full pest break."
+   "range_inputs": "Kc low/high, ETo +/-15%, precip sources, bare threshold 0.15-0.30, rain threshold 11.1-16 mm (BC: station 98th-99.5th percentile), rice F 300-600 mm (spec B4.12); rating, root-class and yield ranges (U) for the rating-based scores; 2-4 years for a full pest break."
   },
   "model_assumptions": {
    "effective_rain_fraction": {
@@ -1414,10 +1413,10 @@
     "note": "cover < 0.5 and not water"
    },
    "exposed_rain_days": {
-    "value": 0.0,
+    "value": 0.3,
     "unit": "days/yr",
-    "low": 0.0,
-    "high": 0.0,
+    "low": 0.1,
+    "high": 0.5,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -1427,7 +1426,7 @@
      "verified": true,
      "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+    "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
    },
    "exposed_frost_days": {
     "value": 4.3,
@@ -1510,10 +1509,10 @@
       "note": "cover < 0.5 and not water"
      },
      "exposed_rain_days": {
-      "value": 0.0,
+      "value": 0.2,
       "unit": "days/yr",
-      "low": 0.0,
-      "high": 0.0,
+      "low": 0.2,
+      "high": 0.4,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -1523,7 +1522,7 @@
        "verified": true,
        "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
       },
-      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
      },
      "exposed_frost_days": {
       "value": 4.0,
@@ -1641,7 +1640,7 @@
       "value": 0.0,
       "unit": "days/yr",
       "low": 0.0,
-      "high": 0.0,
+      "high": 0.4,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -1651,7 +1650,7 @@
        "verified": true,
        "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
       },
-      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
      },
      "exposed_frost_days": {
       "value": 1.8,
@@ -1740,10 +1739,10 @@
     "dP_pct": 0.0
    },
    "erosion_index_E": {
-    "value": 0.0,
+    "value": 1.42,
     "unit": "rain-weighted bare days/yr",
-    "low": 0.0,
-    "high": 0.06,
+    "low": 0.55,
+    "high": 2.8,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -2503,10 +2502,10 @@
     "note": "spec B4.3 100 x sum(rating_nfix/4 x months growing/12)/cycle_years, legumes only; ratings U, range = rating range. rule of thumb, not a model"
    },
    "erosion": {
-    "value": 50.0,
+    "value": 42.4,
     "unit": "score_0_100",
-    "low": 50.0,
-    "high": 53.6,
+    "low": 40.4,
+    "high": 44.1,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -2516,12 +2515,12 @@
      "verified": true,
      "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
     },
-    "note": "Relative to today's rotation (fix of spec B4.4, see backend/engine/README.md): 100 x E_baseline / (E_baseline + E). Today's rotation = 50; less rain-weighted bare exposure scores above 50 (no exposure = 100), more scores below 50 (twice today's = 33). Not clamped. Change in E vs today: undefined (E_baseline = 0). The 30% residue-rating blend was dropped from the score (it made today's rotation score non-zero and mixed an absolute rating into a relative score); it is reported as residue_component. rule of thumb, not a model",
+    "note": "Relative to today's rotation (fix of spec B4.4, see backend/engine/README.md): 100 x E_baseline / (E_baseline + E). Today's rotation = 50; less rain-weighted bare exposure scores above 50 (no exposure = 100), more scores below 50 (twice today's = 33). Not clamped. Change in E vs today: -36.0%. The 30% residue-rating blend was dropped from the score (it made today's rotation score non-zero and mixed an absolute rating into a relative score); it is reported as residue_component. rule of thumb, not a model",
     "exposure_component": {
-     "value": null,
+     "value": -36.0,
      "unit": "% vs baseline",
-     "low": null,
-     "high": null,
+     "low": -47.6,
+     "high": -26.5,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -2652,24 +2651,23 @@
      "accessed": "2026-11-14",
      "verified": false
     },
-    "note": "BLOCKED: NASS/AMS prices not available in BC (USDA Quick Stats and My Market News cover the US). No BC hay or silage price series was read. Seed cost alone (assumed, U) would be ~376 USD/ha/yr.",
+    "note": "Income not computed (as for the California fields): NASS/AMS do not cover BC and no BC yield-price series is wired in. Hay price stand-in: about 336 CAD/t (211-476), from California AMS prices (estimate, see price_range). Seed cost alone (assumed, U) would be ~376 USD/ha/yr.",
     "blocked": true,
     "components": {
      "price_range": {
-      "value": null,
-      "unit": "USD/unit",
-      "low": null,
-      "high": null,
-      "method": "lookup",
+      "value": 336.0,
+      "unit": "CAD/t",
+      "low": 211.0,
+      "high": 476.0,
+      "method": "assumed",
       "source": {
        "id": "ams_mymarketnews",
-       "title": "USDA AMS My Market News California hay reports (API key required)",
+       "title": "USDA AMS My Market News California hay report (slug 2904), used as a stand-in for BC",
        "url": "https://marsapi.ams.usda.gov/services/v1.2/reports",
        "accessed": "2026-11-14",
        "verified": false
       },
-      "note": "BLOCKED: NASS/AMS prices not available in BC",
-      "blocked": true
+      "note": "ESTIMATE, California stand-in: USDA AMS California hay report (slug 2904), North Inter-Mountains region, F.O.B. weighted-average prices for Alfalfa, Alfalfa/Orchard Mix, Alfalfa/Grass Mix, 2021-2025 (362 quotes): median 222 USD/short ton (10th-90th percentile 140-315). Converted at an assumed 1.37 CAD per USD (about the Bank of Canada 2024 annual average, 1.3698; rate as of 2024, not checked for Nov 2026) and 0.907185 t per short ton. Not a BC price: no BC hay price series is wired in."
      },
      "seed_cost_per_ha": {
       "value": 376.0,
@@ -2690,10 +2688,10 @@
    }
   },
   "composite": {
-   "value": 61.0,
+   "value": 59.7,
    "unit": "score_0_100",
-   "low": 44.5,
-   "high": 68.5,
+   "low": 42.9,
+   "high": 66.9,
    "method": "computed",
    "source": {
     "id": "field_shift_engine",
@@ -2872,7 +2870,7 @@
    },
    "agronomic_gap_count": 46,
    "detector_disagreement_pct": null,
-   "range_inputs": "Kc low/high, ETo +/-15%, precip sources, bare threshold 0.15-0.30, rain threshold 25-50 mm, rice F 300-600 mm (spec B4.12); rating, root-class and yield ranges (U) for the rating-based scores; 2-4 years for a full pest break."
+   "range_inputs": "Kc low/high, ETo +/-15%, precip sources, bare threshold 0.15-0.30, rain threshold 11.1-16 mm (BC: station 98th-99.5th percentile), rice F 300-600 mm (spec B4.12); rating, root-class and yield ranges (U) for the rating-based scores; 2-4 years for a full pest break."
   },
   "model_assumptions": {
    "effective_rain_fraction": {
@@ -3094,10 +3092,10 @@
     "note": "cover < 0.5 and not water"
    },
    "exposed_rain_days": {
-    "value": 0.0,
+    "value": 0.2,
     "unit": "days/yr",
     "low": 0.0,
-    "high": 0.0,
+    "high": 0.5,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -3107,7 +3105,7 @@
      "verified": true,
      "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+    "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
    },
    "exposed_frost_days": {
     "value": 0.0,
@@ -3190,10 +3188,10 @@
       "note": "cover < 0.5 and not water"
      },
      "exposed_rain_days": {
-      "value": 0.0,
+      "value": 0.2,
       "unit": "days/yr",
       "low": 0.0,
-      "high": 0.0,
+      "high": 0.6,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -3203,7 +3201,7 @@
        "verified": true,
        "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
       },
-      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
      },
      "exposed_frost_days": {
       "value": 0.0,
@@ -3321,7 +3319,7 @@
       "value": 0.0,
       "unit": "days/yr",
       "low": 0.0,
-      "high": 0.0,
+      "high": 0.2,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -3331,7 +3329,7 @@
        "verified": true,
        "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
       },
-      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
      },
      "exposed_frost_days": {
       "value": 0.0,
@@ -3420,10 +3418,10 @@
     "dP_pct": 0.0
    },
    "erosion_index_E": {
-    "value": 0.0,
+    "value": 1.52,
     "unit": "rain-weighted bare days/yr",
-    "low": 0.0,
-    "high": 0.08,
+    "low": 0.6,
+    "high": 2.95,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -4128,10 +4126,10 @@
     "note": "spec B4.3 100 x sum(rating_nfix/4 x months growing/12)/cycle_years, legumes only; ratings U, range = rating range. rule of thumb, not a model"
    },
    "erosion": {
-    "value": 50.0,
+    "value": 40.8,
     "unit": "score_0_100",
-    "low": 45.5,
-    "high": 50.0,
+    "low": 40.2,
+    "high": 42.3,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -4141,12 +4139,12 @@
      "verified": true,
      "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
     },
-    "note": "Relative to today's rotation (fix of spec B4.4, see backend/engine/README.md): 100 x E_baseline / (E_baseline + E). Today's rotation = 50; less rain-weighted bare exposure scores above 50 (no exposure = 100), more scores below 50 (twice today's = 33). Not clamped. Change in E vs today: undefined (E_baseline = 0). The 30% residue-rating blend was dropped from the score (it made today's rotation score non-zero and mixed an absolute rating into a relative score); it is reported as residue_component. rule of thumb, not a model",
+    "note": "Relative to today's rotation (fix of spec B4.4, see backend/engine/README.md): 100 x E_baseline / (E_baseline + E). Today's rotation = 50; less rain-weighted bare exposure scores above 50 (no exposure = 100), more scores below 50 (twice today's = 33). Not clamped. Change in E vs today: -45.2%. The 30% residue-rating blend was dropped from the score (it made today's rotation score non-zero and mixed an absolute rating into a relative score); it is reported as residue_component. rule of thumb, not a model",
     "exposure_component": {
-     "value": null,
+     "value": -45.2,
      "unit": "% vs baseline",
-     "low": null,
-     "high": null,
+     "low": -48.5,
+     "high": -36.6,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -4277,24 +4275,23 @@
      "accessed": "2026-11-14",
      "verified": false
     },
-    "note": "BLOCKED: NASS/AMS prices not available in BC (USDA Quick Stats and My Market News cover the US). No BC hay or silage price series was read. Seed cost alone (assumed, U) would be ~316 USD/ha/yr.",
+    "note": "Income not computed (as for the California fields): NASS/AMS do not cover BC and no BC yield-price series is wired in. Hay price stand-in: about 336 CAD/t (211-476), from California AMS prices (estimate, see price_range). Seed cost alone (assumed, U) would be ~316 USD/ha/yr.",
     "blocked": true,
     "components": {
      "price_range": {
-      "value": null,
-      "unit": "USD/unit",
-      "low": null,
-      "high": null,
-      "method": "lookup",
+      "value": 336.0,
+      "unit": "CAD/t",
+      "low": 211.0,
+      "high": 476.0,
+      "method": "assumed",
       "source": {
        "id": "ams_mymarketnews",
-       "title": "USDA AMS My Market News California hay reports (API key required)",
+       "title": "USDA AMS My Market News California hay report (slug 2904), used as a stand-in for BC",
        "url": "https://marsapi.ams.usda.gov/services/v1.2/reports",
        "accessed": "2026-11-14",
        "verified": false
       },
-      "note": "BLOCKED: NASS/AMS prices not available in BC",
-      "blocked": true
+      "note": "ESTIMATE, California stand-in: USDA AMS California hay report (slug 2904), North Inter-Mountains region, F.O.B. weighted-average prices for Alfalfa, Alfalfa/Orchard Mix, Alfalfa/Grass Mix, 2021-2025 (362 quotes): median 222 USD/short ton (10th-90th percentile 140-315). Converted at an assumed 1.37 CAD per USD (about the Bank of Canada 2024 annual average, 1.3698; rate as of 2024, not checked for Nov 2026) and 0.907185 t per short ton. Not a BC price: no BC hay price series is wired in."
      },
      "seed_cost_per_ha": {
       "value": 316.0,
@@ -4315,10 +4312,10 @@
    }
   },
   "composite": {
-   "value": 59.2,
+   "value": 57.6,
    "unit": "score_0_100",
-   "low": 42.1,
-   "high": 66.6,
+   "low": 41.2,
+   "high": 65.3,
    "method": "computed",
    "source": {
     "id": "field_shift_engine",
@@ -4506,7 +4503,7 @@
    },
    "agronomic_gap_count": 46,
    "detector_disagreement_pct": null,
-   "range_inputs": "Kc low/high, ETo +/-15%, precip sources, bare threshold 0.15-0.30, rain threshold 25-50 mm, rice F 300-600 mm (spec B4.12); rating, root-class and yield ranges (U) for the rating-based scores; 2-4 years for a full pest break."
+   "range_inputs": "Kc low/high, ETo +/-15%, precip sources, bare threshold 0.15-0.30, rain threshold 11.1-16 mm (BC: station 98th-99.5th percentile), rice F 300-600 mm (spec B4.12); rating, root-class and yield ranges (U) for the rating-based scores; 2-4 years for a full pest break."
   },
   "model_assumptions": {
    "effective_rain_fraction": {
@@ -4631,7 +4628,7 @@
      "verified": true,
      "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
     },
-    "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+    "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
    },
    "exposed_frost_days": {
     "value": 0.0,
@@ -4727,7 +4724,7 @@
        "verified": true,
        "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
       },
-      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
      },
      "exposed_frost_days": {
       "value": 0.0,
@@ -4855,7 +4852,7 @@
        "verified": true,
        "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
       },
-      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain: P >= 25 mm/day or 3-day >= 75 mm (U); range: threshold 25-50 mm (3-day = 3x) and precip sources."
+      "note": "mean of 2015-2025 weather years. Modelled cover from the calendar. Exposed = cover < 0.5 and not water. Extreme rain (BC): P >= 13.5 mm/day or 3-day >= 40.5 mm, where 13.5 mm is the 99th percentile of daily ECCC station precipitation (Salmon Arm CS + Silver Creek, 1991 on); range: 11.1-16 mm (98th-99.5th percentiles, assumed U) and precip sources. The California 25 mm threshold almost never triggers here."
      },
      "exposed_frost_days": {
       "value": 0.0,
@@ -4944,10 +4941,10 @@
     "dP_pct": 0.0
    },
    "erosion_index_E": {
-    "value": 0.0,
+    "value": 1.27,
     "unit": "rain-weighted bare days/yr",
-    "low": 0.0,
-    "high": 0.06,
+    "low": 0.48,
+    "high": 2.6,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -5377,10 +5374,10 @@
     "note": "spec B4.3 100 x sum(rating_nfix/4 x months growing/12)/cycle_years, legumes only; ratings U, range = rating range. rule of thumb, not a model"
    },
    "erosion": {
-    "value": 50.0,
+    "value": 45.2,
     "unit": "score_0_100",
-    "low": 50.0,
-    "high": 52.2,
+    "low": 42.8,
+    "high": 47.7,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -5390,12 +5387,12 @@
      "verified": true,
      "cache_path": "data/cache/bc_salmon_river_forage/power.parquet"
     },
-    "note": "Relative to today's rotation (fix of spec B4.4, see backend/engine/README.md): 100 x E_baseline / (E_baseline + E). Today's rotation = 50; less rain-weighted bare exposure scores above 50 (no exposure = 100), more scores below 50 (twice today's = 33). Not clamped. Change in E vs today: undefined (E_baseline = 0). The 30% residue-rating blend was dropped from the score (it made today's rotation score non-zero and mixed an absolute rating into a relative score); it is reported as residue_component. rule of thumb, not a model",
+    "note": "Relative to today's rotation (fix of spec B4.4, see backend/engine/README.md): 100 x E_baseline / (E_baseline + E). Today's rotation = 50; less rain-weighted bare exposure scores above 50 (no exposure = 100), more scores below 50 (twice today's = 33). Not clamped. Change in E vs today: -21.1%. The 30% residue-rating blend was dropped from the score (it made today's rotation score non-zero and mixed an absolute rating into a relative score); it is reported as residue_component. rule of thumb, not a model",
     "exposure_component": {
-     "value": null,
+     "value": -21.1,
      "unit": "% vs baseline",
-     "low": null,
-     "high": null,
+     "low": -33.6,
+     "high": -9.8,
      "method": "computed",
      "source": {
       "id": "nasa_power_daily",
@@ -5526,24 +5523,23 @@
      "accessed": "2026-11-14",
      "verified": false
     },
-    "note": "BLOCKED: NASS/AMS prices not available in BC (USDA Quick Stats and My Market News cover the US). No BC hay or silage price series was read. Seed cost alone (assumed, U) would be ~250 USD/ha/yr.",
+    "note": "Income not computed (as for the California fields): NASS/AMS do not cover BC and no BC yield-price series is wired in. Hay price stand-in: about 336 CAD/t (211-476), from California AMS prices (estimate, see price_range). Seed cost alone (assumed, U) would be ~250 USD/ha/yr.",
     "blocked": true,
     "components": {
      "price_range": {
-      "value": null,
-      "unit": "USD/unit",
-      "low": null,
-      "high": null,
-      "method": "lookup",
+      "value": 336.0,
+      "unit": "CAD/t",
+      "low": 211.0,
+      "high": 476.0,
+      "method": "assumed",
       "source": {
        "id": "ams_mymarketnews",
-       "title": "USDA AMS My Market News California hay reports (API key required)",
+       "title": "USDA AMS My Market News California hay report (slug 2904), used as a stand-in for BC",
        "url": "https://marsapi.ams.usda.gov/services/v1.2/reports",
        "accessed": "2026-11-14",
        "verified": false
       },
-      "note": "BLOCKED: NASS/AMS prices not available in BC",
-      "blocked": true
+      "note": "ESTIMATE, California stand-in: USDA AMS California hay report (slug 2904), North Inter-Mountains region, F.O.B. weighted-average prices for Alfalfa, Alfalfa/Orchard Mix, Alfalfa/Grass Mix, 2021-2025 (362 quotes): median 222 USD/short ton (10th-90th percentile 140-315). Converted at an assumed 1.37 CAD per USD (about the Bank of Canada 2024 annual average, 1.3698; rate as of 2024, not checked for Nov 2026) and 0.907185 t per short ton. Not a BC price: no BC hay price series is wired in."
      },
      "seed_cost_per_ha": {
       "value": 250.0,
@@ -5564,10 +5560,10 @@
    }
   },
   "composite": {
-   "value": 62.5,
+   "value": 61.7,
    "unit": "score_0_100",
-   "low": 54.4,
-   "high": 72.7,
+   "low": 53.2,
+   "high": 71.9,
    "method": "computed",
    "source": {
     "id": "field_shift_engine",
@@ -5743,7 +5739,7 @@
    },
    "agronomic_gap_count": 18,
    "detector_disagreement_pct": null,
-   "range_inputs": "Kc low/high, ETo +/-15%, precip sources, bare threshold 0.15-0.30, rain threshold 25-50 mm, rice F 300-600 mm (spec B4.12); rating, root-class and yield ranges (U) for the rating-based scores; 2-4 years for a full pest break."
+   "range_inputs": "Kc low/high, ETo +/-15%, precip sources, bare threshold 0.15-0.30, rain threshold 11.1-16 mm (BC: station 98th-99.5th percentile), rice F 300-600 mm (spec B4.12); rating, root-class and yield ranges (U) for the rating-based scores; 2-4 years for a full pest break."
   },
   "model_assumptions": {
    "effective_rain_fraction": {

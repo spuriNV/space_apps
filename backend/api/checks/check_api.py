@@ -33,6 +33,7 @@ def validator(file, defname=None):
 client = TestClient(app)
 fails = 0
 SOURCES = {}  # route label (preset id replaced by {id}) -> set of X-Data-Source values seen
+ESTIMATES = {}  # same, for responses served as estimates (BC stand-ins for California-only sources); kept out of SOURCES
 # Routes that must be served from real output (a regression to fixture is a FAIL). Everything else may be fixture.
 EXPECT_REAL = ["/api/locations", "/api/locations/{id}", "/daily", "/features/weekly", "/strategies", "/score", "/zones",
                "/trends?layer=heatwave_days", "/trends?layer=precip_anomaly", "/trends?layer=usdm_d2_weeks", "/trends?layer=reservoir_storage", "/trends?layer=grace_gw_pct", "/news", "/validation", "/calendar", "/grid", "/api/bc/news", "/api/crops/{cid}"]
@@ -60,7 +61,7 @@ def check(method, url, validator_, body=None, expect=200):
         elif expect == 200:
             data = r.json()
             src = r.headers.get("X-Data-Source")
-            if src not in ("fixture", "real") or data.get("_source") != src:
+            if src not in ("fixture", "real", "estimate") or data.get("_source") != src:
                 errs.append(f"missing/inconsistent source marker header={src} field={data.get('_source')}")
             key = url.split("?")[0]
             if key.endswith("/trends"):
@@ -71,7 +72,7 @@ def check(method, url, validator_, body=None, expect=200):
                 key = "/api/crops/{cid}"
             if "/api/locations/{id}/" in key:
                 key = "/" + key.split("/api/locations/{id}/")[1] if key.split("/api/locations/{id}/")[1] != "" else key
-            SOURCES.setdefault(key, set()).add(src)
+            (ESTIMATES if src == "estimate" else SOURCES).setdefault(key, set()).add(src)
             if src == "fixture" and data.get("_fixture") is not True:
                 errs.append("fixture response lacks _fixture:true")
             errs += [f"{'/'.join(map(str, e.absolute_path))}: {e.message[:100]}" for e in list(validator_.iter_errors(data))[:3]]
@@ -186,9 +187,12 @@ for p in BUILT:
                        ("/outlook", "backend/outlook/out/{p}/outlook.json")):
         check("GET", L + route, ANY, expect=200 if (ROOT / rel.format(p=p)).exists() else 404)
 
-# ---- British Columbia: core routes 200 + schema; California-only routes 404 "not available in BC: <registry reason>"
+# ---- British Columbia: core routes 200 + schema; California-only routes 200 with an estimate in the California shape
+# (_source "estimate", schema-valid where a schema exists)
 CA_ONLY = ["/openet", "/insurance", "/outlook", "/calendar_ml", "/stress", "/water_seen", "/transitions", "/models",
            "/trends?layer=usdm_d2_weeks&year=2023", "/trends?layer=reservoir_storage&year=2023"]
+EST_SCHEMA = {"/models": ("responses.schema.json", "Models"), "/trends?layer=usdm_d2_weeks&year=2023": ("responses.schema.json", "Trends"),
+              "/trends?layer=reservoir_storage&year=2023": ("responses.schema.json", "Trends")}
 for p in BC_FIELDS:
     if p not in BUILT:
         fails += 1; print(f"FAIL {p} payloads not built (cd backend/api && uv run python ../bc/build_api.py)"); continue
@@ -198,9 +202,10 @@ for p in BC_FIELDS:
     if loc is not None and loc.status_code == 200:
         j = loc.json()
         ok = (j["region_adapter"] == "bc" and j.get("region") == "bc" and {g["id"] for g in j.get("data_gaps", [])} == set(reasons)
+              and all(g.get("filled_with") for g in j["data_gaps"])
               and bool((j.get("water_context") or {}).get("orders")) and j["water"].get("example_limit_af_ac", {}).get("value") == 3.0
               and all(s_["network"] == "ECCC" for s_ in j["stations"]))
-        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} location: region bc, data_gaps = registry not_available, water_context, example limit 3.0, ECCC stations")
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} location: region bc, data_gaps = registry not_available (each with filled_with), water_context, example limit 3.0, ECCC stations")
     n = client.get(f"/api/locations?region=bc").json()
     ok = n["count"] == 1 and n["items"][0]["id"] == p and n["facets"]["region"].get("bc") == len(BC_FIELDS)
     fails += not ok; print(("PASS" if ok else "FAIL") + f" /api/locations?region=bc -> {n['count']} ({p}), region facet {n['facets'].get('region')}")
@@ -232,10 +237,21 @@ for p in BC_FIELDS:
                        ("/zones", "backend/api/out/{p}/zones.json"), ("/calendar?source=hls", "backend/nasa/out/{p}/calendar_hls.json")):
         check("GET", L + route, ANY, expect=200 if (ROOT / rel.format(p=p)).exists() else 404)
     for route in CA_ONLY:
-        r = check("GET", L + route, ANY, expect=404)
-        det = (r.json().get("detail", "") if r is not None and r.status_code == 404 else "")
-        ok = "not available in BC" in det and (det.split(": ", 1)[-1] in reasons.values() or route == "/water_seen")
-        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} {route} 404 says: {det[:90]}")
+        r = check("GET", L + route, validator(*EST_SCHEMA[route]) if route in EST_SCHEMA else ANY)
+        j = r.json() if r is not None and r.status_code == 200 else {}
+        ok = j.get("_source") == "estimate" and r.headers.get("X-Data-Source") == "estimate" and bool(j.get("estimate_note") or j.get("note"))
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} {route} is an estimate (_source {j.get('_source')})")
+    ro = client.get(L + "/openet?from=2023-01-01&to=2023-12-31").json()
+    ok = len(ro.get("rows", [])) == 12 and "OpenET does not cover BC" in ro.get("note", "")
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /openet estimate: 2023 has {len(ro.get('rows', []))} monthly rows, note says OpenET does not cover BC")
+    ri = client.get(L + "/insurance").json()
+    shares = next(iter(ri.get("profiles", {}).values()), {}).get("shares", {})
+    ok = set(shares) == {"share_drought", "share_excess_moisture", "share_heat", "share_other"} and all(v["method"] == "assumed" and v.get("note") for v in shares.values()) \
+        and abs(sum(v["value"] for v in shares.values()) - 1) < 0.01
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /insurance estimate: four RMA-style shares, method assumed with notes, summing to 1")
+    rw = client.get(L + "/water_seen").json()
+    ok = len(rw.get("scenes", [])) > 0 and bool(rw.get("summary")) and all(0 <= s_["water_frac"] <= 1 for s_ in rw["scenes"])
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /water_seen estimate has {len(rw.get('scenes', []))} scenes and a summary")
     rf = check("GET", L + "/first_nations", validator("first_nations.schema.json"))
     if rf is not None and rf.status_code == 200:
         j = rf.json(); lf = client.get(L).json().get("first_nations") or {}
@@ -272,6 +288,10 @@ for k in sorted(SOURCES):
     elif k in EXPECT_FIXTURE_OK and v != "real":
         flag = f"  (fixture: {EXPECT_FIXTURE_OK[k]})"
     print(f"  {v:8s} {k}{flag}")
+if ESTIMATES:
+    print("\nroutes served as estimates (BC stand-ins for California-only sources):")
+    for k in sorted(ESTIMATES):
+        print(f"  {'/'.join(sorted(ESTIMATES[k])):8s} {k}")
 # CORS
 r = client.options("/api/locations", headers={"Origin": "http://localhost:5171", "Access-Control-Request-Method": "GET"})
 ok = r.headers.get("access-control-allow-origin") == "http://localhost:5171"
