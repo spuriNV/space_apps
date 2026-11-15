@@ -4,7 +4,7 @@
 // `motion` records panel-motion.webm: the field panel opening, switching fields, the header shrinking on scroll, More detail.
 import { chromium } from 'playwright-core';
 import { spawn } from 'node:child_process';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, renameSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,7 +23,7 @@ if (!(await up())) {
   server = spawn('npm', ['run', 'dev'], { cwd: join(ROOT, 'frontend', 'app'), stdio: 'ignore' });
   for (let i = 0; i < 40 && !(await up()); i++) await new Promise((r) => setTimeout(r, 500));
 }
-const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--window-size=1440,900'] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 page.on('pageerror', (e) => console.log('PAGE ERROR', e.message));
 page.on('console', (m) => m.type() === 'error' && console.log('console.error', m.text().slice(0, 200)));
@@ -48,6 +48,33 @@ async function pickField(id = FIELD) {
   await idle(600);
 }
 
+if (only.includes('motion')) {
+  // a short screen video: the field panel sliding in, the readings counting up, a switch to another field (cross-fade and
+  // camera flight), the title collapsing on scroll, More detail opening
+  const dir = join(OUT, '.video');
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, recordVideo: { dir, size: { width: 1440, height: 900 } } });
+  const v = await ctx.newPage();
+  await v.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await v.waitForSelector(`[data-testid="row-${FIELD}"]`, { timeout: 90000 });
+  await v.evaluate(() => document.fonts.ready);
+  await v.waitForTimeout(1500);
+  await v.click(`[data-testid="row-${FIELD}"]`);
+  await v.waitForTimeout(3500);
+  await v.click('[data-testid="field-switch"]'); await v.waitForTimeout(600);
+  await v.click('[data-testid="switch-caf_tulare_forage"]');
+  await v.waitForTimeout(3500);
+  for (let y = 0; y <= 520; y += 40) { await v.evaluate((yy) => document.querySelector('.fpanel .panel-scroll').scrollTo(0, yy), y); await v.waitForTimeout(40); }
+  await v.waitForTimeout(800);
+  await v.click('[data-testid="field-panel"] [data-testid="more-detail"]');
+  await v.waitForTimeout(1500);
+  await v.evaluate(() => document.querySelector('.fpanel .panel-scroll').scrollTo({ top: 0, behavior: 'smooth' }));
+  await v.waitForTimeout(1200);
+  const path = await v.video().path();
+  await ctx.close();
+  renameSync(path, join(OUT, 'panel-motion.webm')); rmSync(dir, { recursive: true, force: true });
+  console.log('wrote panel-motion.webm');
+  await browser.close(); if (server) server.kill(); process.exit(0);
+}
 await open();
 if (want('overview')) await shot('overview.png');
 await pickField();
@@ -58,7 +85,7 @@ if (want('compare') || want('brief')) {
   await page.click('[data-testid="tab-compare"]');
   await page.waitForSelector('[data-testid="compare"]');
   if (want('compare')) await shot('compare.png', false);
-  if (want('brief')) { await page.click('[data-testid="to-brief"]'); await page.waitForSelector('[data-testid="brief"]'); await shot('brief.png', false); await page.click('.br-head .sq-btn'); }
+  if (want('brief')) { await page.click('[data-testid="to-brief"]'); await page.waitForSelector('[data-testid="brief"]'); await shot('brief.png', false); await page.click('.br-head .icon-btn'); }
   await page.click('[data-testid="tab-now"]');
 }
 if (want('drilldown')) {

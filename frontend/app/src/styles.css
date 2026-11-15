@@ -1527,3 +1527,7 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 .nasa-more summary { border-radius: var(--r-md); }
 .nasa-more[open] summary { border-bottom-color: var(--line); border-radius: var(--r-md) var(--r-md) 0 0; }
 .iss img { border: 0; border-radius: var(--r-sm); }
+/* the collapsed detail clips without becoming scrollable (a scrollIntoView must not shift it sideways) */
+.fp-more-in { overflow: clip; }
+.c2-ctl .seg button { white-space: normal; line-height: 1.15; min-width: 0; text-align: center; }
+.hud { top: calc(var(--bar-h) + 3px + 64px); }
