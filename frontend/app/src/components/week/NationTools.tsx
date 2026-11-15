@@ -87,9 +87,9 @@ export function ReservePill({ loc }: { loc: Location }) {
   return <p className="res-pill" data-testid="reserve-pill" role="status"><i />On reserve land{nation ? `: ${nation}` : ''}</p>;
 }
 
-export function NationTools({ loc }: { loc: Location }) {
+export function NationTools({ loc, defaultOpen = false }: { loc: Location; defaultOpen?: boolean }) {
   const sp = loc.spot;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const st = useRoute<Summary>(sp && sp.state !== 'ready' ? null : `/locations/${loc.id}/nation`, 40000);
   if (st.kind === 'missing') return null;
   const s = st.kind === 'ok' ? st.data : null;

@@ -1126,7 +1126,7 @@ details.prov summary { cursor: pointer; font-size: var(--fs-body); color: var(--
 .res-legend span { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 .res-legend i { width: 22px; height: 0; border-top: 2px dashed #8a8676; }
 .res-legend small { color: var(--muted); }
-.layer.on .sw.sw-reserve { background: #8a8676; }
+.layer.on .sw.sw-reserve { background: #b4521f; }
 
 /* =====================================================================
    Redesign, Nov 2026: rounded controls, tonal selection, paper headers, real motion.

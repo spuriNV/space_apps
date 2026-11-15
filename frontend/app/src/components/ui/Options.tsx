@@ -16,6 +16,8 @@ import { useDetail } from './Detail';
 import { FirstNationsCard } from './FirstNations';
 import { SalmonPanel } from '../salmon/SalmonPanel';
 import { NationChip, NationTools, ReservePill } from '../week/NationTools';
+import { LandsList } from '../lands/LandsList';
+import type { LandFeature } from '../lands/lands';
 import { CatalogGroup } from '../week/CatalogGroup';
 import type { Catalog, CatalogItem } from '../week/catalog';
 import { FieldNow, LastSeasons, latestClearT, rainNow, stage, whenT, type LoadState } from './FieldNow';
@@ -165,7 +167,7 @@ function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategi
  *  "British Columbia" heading (and chip); without one, BC is a quiet "not set up yet" row at the bottom. */
 /** Torres-Martinez Reservation farm field (check_api): opens Nation tools with tribal land status. */
 export const NATION_EXAMPLE = { lat: 33.51, lon: -116.12, label: 'Nation tools example', sub: 'Torres-Martinez Reservation farm field · tribal land · live tap' };
-export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onExample?: () => void; onNationsExample?: () => void; onNationExample?: () => void; onSheet?: (visiblePx: number) => void }) {
+export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onExample?: () => void; onNationsExample?: () => void; onNationExample?: () => void; onSheet?: (visiblePx: number) => void ; lands?: LandFeature[] | null; activeLandId?: string | null; onPickLand?: (id: string) => void; tab?: 'fields' | 'lands'; setTab?: (t: 'fields' | 'lands') => void }) {
   const sheet = useSheet(p.onSheet, { initial: 'peek', peek: () => Math.round(window.innerHeight * 0.35) });
   const thumbs = useThumbs();
   const [q, setQ] = useState('');
@@ -184,6 +186,14 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
         <h1>Pick your field</h1>
         {p.onClose && <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={20} /></button>}
       </header>
+      {p.onPickLand && p.setTab && (
+        <div className="pk-tabs" role="tablist" aria-label="What to pick">
+          {([['fields', 'Fields'], ['lands', 'First Nations lands']] as const).map(([k, label]) => (
+            <button key={k} role="tab" aria-selected={p.tab === k} className={p.tab === k ? 'on' : ''} onClick={() => p.setTab!(k)} data-testid={`pick-tab-${k}`}>{label}{k === 'lands' && p.lands ? <small>{p.lands.length.toLocaleString('en-US')}</small> : null}</button>
+          ))}
+        </div>
+      )}
+      {p.tab === 'lands' && p.onPickLand ? <LandsList lands={p.lands ?? null} activeId={p.activeLandId ?? null} onPick={p.onPickLand} /> : <>
       <StepLine id="pick" purpose="Tap a field below, or its pin on the map. Everything after this is about that field." />
       {p.onExample && p.locations.some((l) => l.id === 'car_colusa_rice') && (
         <div className="nx-card ex-card" data-testid="example-card">
@@ -258,6 +268,7 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
         <summary>How CropLytics works <small>optional reading</small></summary>
         <Workflow />
       </details>
+      </>}
       </div>
     </aside>
   );

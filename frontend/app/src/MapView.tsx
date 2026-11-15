@@ -8,6 +8,7 @@ import type { BCInfo, Calendar, CellGrid, Dataset, Location, Regional } from './
 import type { RegionalLive } from './api';
 import { reserveName } from './components/ui/FirstNations';
 import { getPrefs, motionOff } from './components/a11y/prefs';
+import { boundsOf, type LandFeature } from './components/lands/lands';
 import { atT, latestAt, dataT, tOf, TODAY_T, CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
 
 // Tile sources fixed by CONTRACT.md (no API keys).
@@ -34,6 +35,7 @@ const STYLE: StyleSpecification = {
 const PIN_SVG = `<svg class="pin-svg" width="28" height="36" viewBox="0 0 28 36" aria-hidden="true"><path class="pin-body" d="M14 1.2C7.2 1.2 2 6.3 2 12.9c0 8.4 10.2 20 11.1 21a1.2 1.2 0 0 0 1.8 0C15.8 32.9 26 21.3 26 12.9 26 6.3 20.8 1.2 14 1.2z"/><rect class="pin-field" x="8.5" y="7.5" width="11" height="11" rx="1.5"/><path class="pin-rows" d="M11 9.5v7M14 9.5v7M17 9.5v7"/></svg>`;
 
 export const HOME = { center: [-119.9, 37.35] as [number, number], zoom: 5.75, pitch: 0, bearing: 0 };
+const LAND_COLOR = '#b4521f'; // warm terracotta: First Nations lands (fill about 20%, solid 2 px outline)
 const RES_COLOR = '#b4521f'; // warm terracotta: reserve land, distinct from the yellow selection colour
 const EXPLODE_Z0 = 12.5, EXPLODE_Z1 = 14.2;
 const explodeExpr = (key: string) => ['interpolate', ['linear'], ['zoom'], EXPLODE_Z0, 0, EXPLODE_Z1, ['get', key]] as unknown as number;
@@ -51,6 +53,8 @@ export interface MapHandle {
   fitField: (loc: Location) => void;
   /** BC: fit the field and its nearest reserves in view */
   fitReserves: (loc: Location, fc: GeoJSON.FeatureCollection) => void;
+  /** fly to a First Nations land and fit it beside the panel */
+  flyToLand: (f: LandFeature) => void;
   getMap: () => maplibregl.Map | null;
   /** fly in from the California view, draw the outline, raise the squares and replay every quarter 2016-2026; false when the field has no grid */
   replay: (loc: Location) => boolean;
@@ -61,6 +65,8 @@ interface Props {
   /** BC: reserve outlines near the selected field, drawn muted for context only (not part of the analysis) */
   reserves?: GeoJSON.FeatureCollection | null;
   /** show the "Reserve land" legend chip (BC field or spot); clicking it toggles the layer */
+  /** First Nations lands (reserves and tribal lands): the whole map, clickable; `activeLandId` gets a stronger outline and a short pulse */
+  lands?: LandFeature[] | null; landsOn?: boolean; onToggleLands?: () => void; activeLandId?: string | null; onLandClick?: (id: string) => void;
   reservesChip?: boolean; reservesOn?: boolean; onToggleReserves?: () => void;
   selected: Location | null; cells: CellGrid | null; cal: Calendar | null; regional: Regional | null;
   t: number; detector: 'rule' | 'ml'; metric: 'cover' | 'et'; layersOn: Record<string, boolean>; regionalLive: RegionalLive;
@@ -120,9 +126,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: 'metric' }), 'bottom-right');
     map.on('load', () => {
       el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
-      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves', 'outline-draw']) map.addSource(id, id === 'cells' ? { type: 'geojson', data: fc(), promoteId: 'id' } : { type: 'geojson', data: fc() });
+      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves', 'lands', 'outline-draw']) map.addSource(id, id === 'cells' || id === 'lands' ? { type: 'geojson', data: fc(), promoteId: 'id' } : { type: 'geojson', data: fc() });
       addCatalogLayers(map, (it) => live.current.onCatalogPick?.(it));
       // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
+      map.addLayer({ id: 'lands-fill', type: 'fill', source: 'lands', paint: { 'fill-color': LAND_COLOR, 'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.42, 0.33] } });
+      map.addLayer({ id: 'lands-line', type: 'line', source: 'lands', layout: { 'line-join': 'round' }, paint: { 'line-color': LAND_COLOR, 'line-width': 2.5 } });
+      map.addLayer({ id: 'lands-active-casing', type: 'line', source: 'lands', filter: ['==', ['get', 'id'], ''], layout: { 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.85 } });
+      map.addLayer({ id: 'lands-active', type: 'line', source: 'lands', filter: ['==', ['get', 'id'], ''], layout: { 'line-join': 'round' }, paint: { 'line-color': '#8f3a0f', 'line-width': 4 } });
+      map.addLayer({ id: 'lands-pulse', type: 'line', source: 'lands', filter: ['==', ['get', 'id'], ''], paint: { 'line-color': '#b4521f', 'line-width': 4, 'line-opacity': 0 } });
+      map.addLayer({ id: 'lands-label', type: 'symbol', source: 'lands', minzoom: 9, layout: { 'text-field': ['get', 'name'], 'text-font': ['Noto Sans Bold'], 'text-size': ['interpolate', ['linear'], ['zoom'], 9, 11, 13, 14], 'text-max-width': 8, 'text-padding': 4, 'symbol-sort-key': ['*', -1, ['get', 'area_ha']] }, paint: { 'text-color': '#fff4ea', 'text-halo-color': 'rgba(92,36,8,0.92)', 'text-halo-width': 1.6 } });
       map.addLayer({ id: 'res-fill', type: 'fill', source: 'reserves', paint: { 'fill-color': RES_COLOR, 'fill-opacity': 0.25 } });
       map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(247,246,240,0.85)', 'line-width': 4.6 } });
       map.addLayer({ id: 'res-line', type: 'line', source: 'reserves', paint: { 'line-color': RES_COLOR, 'line-width': 2.5 } });
@@ -147,7 +159,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const tap = (e: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
         const tgt = (e.originalEvent?.target as Element | null);
         if (tgt?.closest?.('.maplibregl-marker, .maplibregl-ctrl')) return;
-        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit', 'cat-pt', 'cat-cluster'] }).length) return;
+        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit', 'cat-pt', 'cat-cluster', ...(map.getLayer('lands-fill') && live.current.landsOn ? ['lands-fill'] : [])] }).length) return;
         if (Date.now() - lastTap < 700) return;
         lastTap = Date.now();
         live.current.onTap?.(e.lngLat.lat, e.lngLat.lng);
@@ -157,6 +169,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       let press: ReturnType<typeof setTimeout> | null = null;
       map.on('touchstart', (e) => { if (press) clearTimeout(press); press = e.originalEvent.touches.length === 1 ? setTimeout(() => tap(e), 550) : null; });
       for (const ev of ['touchend', 'touchmove', 'touchcancel', 'movestart'] as const) map.on(ev, () => { if (press) { clearTimeout(press); press = null; } });
+      map.on('click', 'lands-fill', (e) => {
+        if (!live.current.landsOn) return;
+        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit', 'cat-pt', 'cat-cluster'] }).length) return; // a field or farm pin on top wins
+        const id = e.features?.[0]?.properties?.id;
+        if (id) live.current.onLandClick?.(id);
+      });
+      let hoverId: string | number | undefined;
+      map.on('mousemove', 'lands-fill', (e) => {
+        const f = e.features?.[0];
+        if (!live.current.landsOn || !f) return;
+        map.getCanvas().style.cursor = 'pointer';
+        if (hoverId !== f.id && hoverId !== undefined) map.setFeatureState({ source: 'lands', id: hoverId }, { hover: false });
+        hoverId = f.id; if (hoverId !== undefined) map.setFeatureState({ source: 'lands', id: hoverId }, { hover: true });
+      });
+      map.on('mouseleave', 'lands-fill', () => { map.getCanvas().style.cursor = ''; if (hoverId !== undefined) map.setFeatureState({ source: 'lands', id: hoverId }, { hover: false }); hoverId = undefined; });
       map.on('mouseenter', 'field-hit', () => (map.getCanvas().style.cursor = 'pointer'));
       map.on('mouseleave', 'field-hit', () => (map.getCanvas().style.cursor = ''));
       setReady(true);
@@ -240,6 +267,36 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   useEffect(() => { document.querySelectorAll<HTMLElement>('.pin.site').forEach((el) => el.classList.toggle('on', el.dataset.id === p.selected?.id)); }, [p.selected, p.locations]);
 
   useEffect(() => { const map = mapRef.current; if (map && ready && p.catalog) setCatalogData(map, p.catalog, p.catGroup ?? null); }, [ready, p.catalog, p.catGroup]);
+
+  // ---------- First Nations lands: whole map, clickable; the active land gets a stronger outline and a short pulse ----------
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    (map.getSource('lands') as GeoJSONSource).setData(fc(p.lands ?? []));
+  }, [ready, p.lands]);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const vis = p.landsOn ? 'visible' : 'none';
+    for (const id of ['lands-fill', 'lands-line', 'lands-label', 'lands-active-casing', 'lands-active', 'lands-pulse']) map.setLayoutProperty(id, 'visibility', vis);
+  }, [ready, p.landsOn]);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const f = ['==', ['get', 'id'], p.activeLandId ?? ''] as maplibregl.FilterSpecification;
+    for (const id of ['lands-active-casing', 'lands-active', 'lands-pulse']) map.setFilter(id, f);
+    map.setPaintProperty('lands-pulse', 'line-opacity', 0);
+    if (!p.activeLandId || reduceMotion.current) return;
+    let raf = 0; const t0 = performance.now();
+    const step = (now: number) => {
+      const k = Math.min(1, (now - t0) / 1500);
+      map.setPaintProperty('lands-pulse', 'line-width', 4 + 14 * k);
+      map.setPaintProperty('lands-pulse', 'line-opacity', 0.7 * (1 - k));
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [ready, p.activeLandId]);
 
   // ---------- reserve outlines (BC, context only) with paper label boxes ----------
   useEffect(() => {
@@ -539,6 +596,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       if (mode === 'card') map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat], zoom: 10.6, pitch: 0, bearing: 0, padding: pad(), speed: 1.3, ...fly });
       else map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat - (small ? 0.0006 : 0.001)], zoom: (small ? 15.15 : 14.5) - (mode === 'story' ? 0.15 : mode === 'year' ? 0.75 : 0), pitch: mode === 'year' ? 52 : 60, bearing: -24, padding: { ...pad(), right: live.current.rightInset + 330 }, speed: 1.2, ...fly });
     },
+    flyToLand(f) {
+      const map = mapRef.current; if (!map) return;
+      programmatic.current = true;
+      map.fitBounds(boundsOf(f), { padding: { ...pad(), top: 90 }, maxZoom: 12.5, pitch: 0, bearing: 0, duration: reduceMotion.current ? 0 : 1100 });
+    },
     fitReserves(loc, fc) {
       const map = mapRef.current; if (!map) return;
       const fs = [...fc.features].sort((a, b) => ((a.properties as { distance_to_field_km?: number })?.distance_to_field_km ?? 99) - ((b.properties as { distance_to_field_km?: number })?.distance_to_field_km ?? 99)).slice(0, 3);
@@ -600,7 +662,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     <div className={`map-wrap zoom-${zoomClass}`}>
       <div ref={el} className="map" />
       <RainLayer map={mapRef.current} ready={ready} on={!!p.layersOn.rain} leftInset={p.leftInset} bottomInset={p.bottomInset} />
-      {p.reservesChip && (
+      <button className={`lands-legend ${p.landsOn ? 'on' : ''}`} style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 + (p.reservesChip && !p.landsOn ? 62 : 0) }} onClick={p.onToggleLands} aria-pressed={!!p.landsOn} data-testid="lands-legend" title={p.landsOn ? 'Hide First Nations lands' : 'Show First Nations lands'}>
+        <i aria-hidden="true" /><span>First Nations lands</span><small>{p.landsOn ? 'Reserves and tribal lands. Click one.' : 'Hidden. Tap to show.'}</small>
+      </button>
+      {p.reservesChip && !p.landsOn && (
         <button className={`res-legend ${p.reservesOn ? 'on' : ''}`} style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 }} onClick={p.onToggleReserves} aria-pressed={!!p.reservesOn} data-testid="reserves-legend">
           <span><i />Reserve land</span>
           <small>{p.reservesOn ? 'Shown for context. Tap to hide.' : 'Tap to show on the map.'}</small>

@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from .myfields import router as myfields_router  # user-drawn fields (app/myfields); my_* ids only
+from .lands import router as lands_router  # /api/lands: reserves and tribal lands for the map
 from .nation import router as nation_router  # Nation tools (app/nation): /api/locations/{pid}/nation/*
 from .week import router as week_router  # this week + reach (app/week)
 from .anyloc import router as anyloc_router  # analyse any tapped point (app/anyloc); pt_* ids only
@@ -70,6 +71,7 @@ app = FastAPI(title="Field Shift API", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
                    allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Data-Source"])
 app.include_router(chat_router)
+app.include_router(lands_router)
 app.include_router(nation_router)  # before anyloc: its pt_* catch-all would 404 the /nation routes
 app.include_router(week_router)  # before anyloc: its pt_* catch-all would swallow /this_week
 app.include_router(anyloc_router)  # before the preset routes: /api/analyze and /api/locations/pt_* (other ids fall through)

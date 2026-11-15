@@ -2,6 +2,7 @@
 // Everything real comes from the CropLytics API at VITE_API_BASE: http://localhost:8000/api in dev, same-origin /api in a
 // production build (the backend serves the built app and the API from one origin). Anything the API does not answer falls
 // back to the bundled examples in src/mock, and the UI says so in the source line.
+import type { LandDetail, LandFeature } from './components/lands/lands';
 import type { BCInfo, Calendar, CalendarYear, CellGrid, CoverClass, DataGap, Dataset, FirstNations, GridLayer, Location, NewsItem, Regional, RotationStrategy, SourcedNumber, Source, ScoreKey } from './types';
 import mockLocations from './mock/locations.json';
 import mockCells from './mock/cells.json';
@@ -106,6 +107,15 @@ export async function getFirstNations(id: string): Promise<FirstNations | null> 
 export async function getReserves(id: string): Promise<GeoJSON.FeatureCollection | null> {
   const b = await apiReal(`/api/locations/${id}/first_nations/reserves.geojson`, undefined, 20000);
   return b?.features ? (b as GeoJSON.FeatureCollection) : null;
+}
+
+/** GET /api/lands: every BC reserve and California tribal land (one file, cached by the browser for a day). */
+let landsP: Promise<LandFeature[] | null> | null = null;
+export const getLands = (): Promise<LandFeature[] | null> => (landsP ??= apiReal('/api/lands', undefined, 30000).then((b) => (b?.features ? (b.features as LandFeature[]) : null)).catch(() => null)).then((r) => { if (!r) landsP = null; return r; });
+/** GET /api/lands/{id}: one land with its centroid, nearby fields and Nation-tool links. */
+export async function getLand(id: string): Promise<LandDetail | null> {
+  const b = await apiReal(`/api/lands/${encodeURIComponent(id)}`);
+  return b?.id ? (b as LandDetail) : null;
 }
 
 // ---------- locations: bundled card text + the API's outline, area, soil, crop history ----------

@@ -15,6 +15,8 @@ import { FieldTimeline, type SimMode } from './components/ui/FieldTimeline';
 import RotationBrief from './components/brief/RotationBrief';
 import BriefStep from './components/brief/BriefStep';
 import { BCCard, LayersDrawer } from './components/Panels';
+import { LandPanel } from './components/lands/LandPanel';
+import type { LandFeature } from './components/lands/lands';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
 import { setGlossary } from './components/ui/What';
 import { DrawLayer, type DrawHostHandle } from './components/draw/DrawLayer';
@@ -84,7 +86,12 @@ export default function App() {
   const [yearOpen, setYearOpen] = useState(false);
   const detector = 'rule' as const;
   const metric = 'cover' as const; // the 3D view shows ground cover; measured water use is on the panel (OpenET)
-  const [layersOn, setLayersOn] = useState<Record<string, boolean>>({ hls: true, smap: true, grace: true, imerg: false, modis: false, ecostress: false, reserves: true });
+  const [layersOn, setLayersOn] = useState<Record<string, boolean>>({ hls: true, smap: true, grace: true, imerg: false, modis: false, ecostress: false, reserves: true, lands: true });
+  // First Nations lands: every BC reserve and California tribal land, on the whole map; a click opens the Nation panel
+  const [lands, setLands] = useState<LandFeature[] | null>(null);
+  const [landId, setLandId] = useState<string | null>(null);
+  useEffect(() => { api.getLands().then(setLands); }, []);
+  const land = useMemo(() => lands?.find((f) => f.properties.id === landId) ?? null, [lands, landId]);
   const [reserves, setReserves] = useState<{ id: string; fc: GeoJSON.FeatureCollection | null } | null>(null);
   const [allocation, setAllocation] = useState<Record<string, number>>({});
   const [briefOpen, setBriefOpen] = useState(false);
@@ -117,7 +124,7 @@ export default function App() {
   // a real BC field replaces the old "Why not BC yet" row, pins and card
   const hasBC = locations.some(api.isBC);
   // reserve outlines near a BC field: context only, fetched when the layer is first switched on
-  const reservesAvail = !!selected && !selected.mine && (api.isBC(selected) || api.isSpot(selected.id));
+  const reservesAvail = !layersOn.lands && !!selected && !selected.mine && (api.isBC(selected) || api.isSpot(selected.id));
   const wantReserves = reservesAvail && !!layersOn.reserves;
   useEffect(() => {
     if (!wantReserves || !selected || reserves?.id === selected.id) return;
@@ -204,7 +211,7 @@ export default function App() {
     const loc = locations.find((l) => l.id === id);
     if (!loc) return;
     if (!api.isSpot(id)) dropSpot();
-    setSelectedId(id); setCardOpen(true); setBcOpen(false);
+    setSelectedId(id); setCardOpen(true); setBcOpen(false); setLandId(null);
     setPanel('none'); setYearOpen(false);
     if (loc.mine) map.current?.fitField(loc); else map.current?.flyToField(loc, 'card');
   }, [locations]);
@@ -219,6 +226,15 @@ export default function App() {
     setLocations((ls) => (ls.some((l) => api.isSpot(l.id)) ? ls.filter((l) => !api.isSpot(l.id)) : ls));
     if (location.hash.startsWith('#spot=')) history.replaceState(null, '', location.pathname + location.search);
   };
+  const [pickTab, setPickTab] = useState<'fields' | 'lands'>('fields');
+  const openLand = useCallback((id: string) => {
+    const f = lands?.find((x) => x.properties.id === id);
+    if (!f) return;
+    setSim(null); dropSpot();
+    setLandId(id); setSelectedId(null); setPanel('none'); setYearOpen(false); setBriefOpen(false); setBcOpen(false);
+    setTimeout(() => map.current?.flyToLand(f), 60); // after the panel is in, so the map fits the land beside it
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lands]);
   const tapSpot = useCallback(async (lat0: number, lon0: number) => {
     const lat = Math.round(lat0 * 1e4) / 1e4, lon = Math.round(lon0 * 1e4) / 1e4;
     const seq = ++tapSeq.current;
@@ -226,7 +242,7 @@ export default function App() {
     const caPresets = locsRef.current.filter((l) => !api.isLite(l.id) && l.region !== 'bc');
     api.prefetchFieldStack(ph, caPresets);
     setLocations((ls) => [...ls.filter((l) => !api.isSpot(l.id)), ph]);
-    setSelectedId(ph.id); setCardOpen(true); setBcOpen(false); setYearOpen(false); setBriefOpen(false);
+    setSelectedId(ph.id); setCardOpen(true); setBcOpen(false); setYearOpen(false); setBriefOpen(false); setLandId(null);
     setPanel((p) => (p === 'season' || p === 'compare' ? p : 'none'));
     history.replaceState(null, '', `#spot=${ph.id}`);
     map.current?.focusSpot(lat, lon);
@@ -332,7 +348,7 @@ export default function App() {
     else { setBriefOpen(true); setBriefPreview(false); setYearOpen(false); }
     setTour(i);
   };
-  const goHome = () => { setSim(null); setPlaying(false); dropSpot(); setSelectedId(null); setPanel('none'); setYearOpen(false); setBcOpen(false); setBriefOpen(false); map.current?.flyHome(); };
+  const goHome = () => { setLandId(null); setSim(null); setPlaying(false); dropSpot(); setSelectedId(null); setPanel('none'); setYearOpen(false); setBcOpen(false); setBriefOpen(false); map.current?.flyHome(); };
   const goBC = () => { setBcOpen(true); setPanel('none'); setYearOpen(false); map.current?.flyTo(49.9, -121.0, 6.4); };
   const onStep = (s: Step) => {
     if (!selected) return;
@@ -357,7 +373,7 @@ export default function App() {
   const yearExpanded = yearOpen && !!selected && panel !== 'compare' && panel !== 'season';
   // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
   const toolPanel = panel === 'fields' ? panel : null;
-  const leftPanel = yearExpanded || drawing ? null : toolPanel ?? (panel === 'none' && selected && cardOpen && !briefOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
+  const leftPanel = yearExpanded || drawing ? null : land ? 'land' : toolPanel ?? (panel === 'none' && selected && cardOpen && !briefOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
   const phone = usePhone();
   // steps 3 to 5 sit in the same left slot as step 2 (one frame for the whole flow)
   const stepPanel = !!selected && !!d && !yearExpanded && !drawing && (briefOpen || panel === 'season' || panel === 'compare');
@@ -398,7 +414,7 @@ export default function App() {
   const step: FlowId = !selected || panel === 'fields' ? 'pick' : briefOpen ? 'brief' : panel === 'compare' ? 'compare' : panel === 'season' ? 'season' : 'now';
   const goStep = (id: FlowId) => {
     setSwitchOpen(false); setMenuOpen(false);
-    if (id === 'pick' || !selected) { setBriefOpen(false); setYearOpen(false); setPanel('fields'); return; }
+    if (id === 'pick' || !selected) { setLandId(null); setBriefOpen(false); setYearOpen(false); setPanel('fields'); return; }
     setBriefOpen(id === 'brief'); setBriefPreview(false); setYearOpen(false);
     if (id === 'brief') { if (panel === 'fields') setPanel('none'); return; }
     if (id === 'now') { setPanel('none'); setCardOpen(true); return; }
@@ -411,7 +427,7 @@ export default function App() {
       <a className="skip-link" href="#field-panel" onClick={(e) => { e.preventDefault(); const el = document.getElementById('field-panel'); if (el) { el.focus(); el.scrollIntoView({ block: 'nearest' }); } else document.getElementById('main')?.focus(); }}>Skip to field panel</a>
       <div className="sr-only" role="status" aria-live="polite" data-testid="live">{selected ? (d ? `${fieldName(selected)} is ready.` : `Loading ${fieldName(selected)}.`) : ''}</div>
       <main id="main" tabIndex={-1} aria-label="Map" className="map-main">
-      <MapView ref={map} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} reservesChip={reservesAvail} reservesOn={!!layersOn.reserves} onToggleReserves={() => setLayersOn((l) => ({ ...l, reserves: !l.reserves }))} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
+      <MapView ref={map} lands={lands} landsOn={!!layersOn.lands} activeLandId={land ? landId : null} onLandClick={drawing ? undefined : openLand} onToggleLands={() => setLayersOn((l) => ({ ...l, lands: !l.lands }))} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} reservesChip={reservesAvail} reservesOn={!!layersOn.reserves} onToggleReserves={() => setLayersOn((l) => ({ ...l, reserves: !l.reserves }))} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
         onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onReplayT={setT} onReplayRunning={setReplaying} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} />
       </main>
@@ -490,7 +506,8 @@ export default function App() {
       {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.mine ? () => mf.retry(selected.id) : selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} onMine={(a) => draw.current?.[a === 'delete' ? 'del' : a](selected)} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={strats} onToday={(sid) => pickToday(selected.id, sid)} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onBack={() => goStep('pick')} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldPicker onSheet={setSheetPx} mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onExample={() => openExample()} onNationExample={() => tapSpot(33.51, -116.12)} onNationsExample={openNationsExample} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {leftPanel === 'fields' && <FieldPicker lands={lands} activeLandId={landId} onPickLand={openLand} tab={pickTab} setTab={setPickTab} onSheet={setSheetPx} mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onExample={() => openExample()} onNationExample={() => tapSpot(33.51, -116.12)} onNationsExample={openNationsExample} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {leftPanel === 'land' && land && <LandPanel land={land} presets={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} onSheet={setSheetPx} onClose={() => setLandId(null)} onOpenSpot={tapSpot} onOpenField={select} />}
       {selected && !leftPanel && !yearExpanded && !drawing && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
       {stepPanel && !briefOpen && panel === 'season' && selected && d && <ComingSeason onSheet={setSheetPx} onBack={() => goStep('now')} nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={strats!} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => { if (sim) stopSim(); setPanel('none'); setBriefOpen(false); setCardOpen(false); }} />}
@@ -508,7 +525,7 @@ export default function App() {
         onField={(id) => { setListOpen(false); select(id); }} onFarm={(it) => { setListOpen(false); pickCatalog(it); }}
         onReserve={(r) => { setListOpen(false); map.current?.flyTo(r.lat, r.lon, 11); }} onFind={(lat, lon) => { setListOpen(false); tapSpot(lat, lon); }} />}
       {aboutOpen && <AccessibilityPage onClose={() => setAboutOpen(false)} />}
-      {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} reserves={!!selected && api.isBC(selected)} onClose={() => setLayersOpen(false)} />}
+      {layersOpen && <LayersDrawer landsCount={lands?.length ?? null} datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} reserves={!!selected && api.isBC(selected)} onClose={() => setLayersOpen(false)} />}
 
       {stackField && !drilled && panel !== 'compare' && panel !== 'season' && view.zoom > 9.5 && view.zoom <= 13.4 && (
         <button className="hud glass drill-hint" data-testid="drill-hint" onClick={() => onStep('drill')}>

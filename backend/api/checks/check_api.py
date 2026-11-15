@@ -837,5 +837,22 @@ for label, lat, lon, ip, kind in _LIVE:
         _ok(r2.status_code == 200 and r2.json()["analysis"]["cache"] == "hit", f"{label}: cached like any other point (repeat tap is a hit)")
 _ok(client.get("/api/analyze?lat=50.6141&lon=-119.3634").json()["nation_tools"] is None, "BC farm off reserve: no nation_tools")
 # ---- end farm catalog ========================================================================================
+# ---- First Nations lands (app/lands.py) =======================================================================
+print("\nFirst Nations lands:")
+_lr = client.get("/api/lands")
+_lj = _lr.json() if _lr.status_code == 200 else {"features": [], "properties": {}}
+_lbc = [f for f in _lj["features"] if f["properties"].get("province") == "BC"]
+_lca = [f for f in _lj["features"] if f["properties"].get("state") == "CA"]
+_ok(_lr.status_code == 200 and "max-age=86400" in _lr.headers.get("cache-control", "") and len(_lbc) > 1500 and len(_lca) > 50, f"/api/lands: 200, cacheable 1 day, {len(_lbc)} BC reserves, {len(_lca)} CA lands")
+_ok(len(_lr.content) < 4_000_000 and _lj["properties"].get("fetched") and len(_lj["properties"].get("sources", [])) == 2, f"/api/lands: {len(_lr.content) / 1e6:.2f} MB, fetch date and sources recorded")
+_ok(all({"id", "name", "nation", "kind", "area_ha", "centroid"} <= set(f["properties"]) for f in _lj["features"]), "/api/lands: every land has id, name, nation, kind, area, centroid")
+_ok(any("Tule River" in f["properties"]["name"] for f in _lca) and any(f["properties"]["nation"] == "Splatsin" for f in _lbc), "/api/lands: Tule River (CA) and Splatsin (BC) present")
+for _lf, _jur in ((next((f for f in _lbc if f["properties"]["name"].startswith("Salmon River 1 (Splatsin")), None), "BC"), (next((f for f in _lca if f["properties"]["name"].startswith("Tule River Reservation")), None), "CA")):
+    _lid = _lf["properties"]["id"] if _lf else "missing"
+    _ld = client.get(f"/api/lands/{_lid}")
+    _lj2 = _ld.json() if _ld.status_code == 200 else {}
+    _ok(_ld.status_code == 200 and _lj2.get("jurisdiction") == _jur and _lj2["tools"]["funding"].startswith("/api/locations/pt_") and _lj2["area_acres"] > 0 and _lj2["centroid"]["lat"], f"/api/lands/{_lid}: {_lj2.get('name')} ({_jur}), tools link to its centroid, {len(_lj2.get('nearby', []))} nearby within 15 km")
+_ok(client.get("/api/lands/nope").status_code == 404, "/api/lands/nope -> 404")
+# ---- end lands ================================================================================================
 print(f"\n{'ALL PASS' if not fails else str(fails) + ' FAIL'}")
 sys.exit(1 if fails else 0)

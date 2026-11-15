@@ -21,7 +21,7 @@ export function BCCard({ bc, onClose, floating }: { bc: BCInfo; onClose?: () => 
 }
 
 // ---------- Layers drawer ----------
-export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolean>; toggle: (id: string) => void; loc: Location | null; reserves?: boolean; onClose: () => void }) {
+export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolean>; toggle: (id: string) => void; loc: Location | null; reserves?: boolean; landsCount?: number | null; onClose: () => void }) {
   const fieldKm2 = p.loc ? p.loc.area_ha.value / 100 : 0.6;
   const group = (g: 'field' | 'regional', title: string, sub: string) => (
     <div className="lg">
@@ -48,7 +48,19 @@ export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolea
     <aside className="drawer glass" data-testid="layers-drawer">
       <header className="panel-head"><h2>Layers <small>NASA Earth data</small></h2><button className="icon-btn" onClick={p.onClose} aria-label="Close" title="Close"><Icon name="close" size={18} /></button></header>
       <div className="panel-scroll">
-        {p.reserves && (
+        <div className="lg" data-testid="layer-group-lands">
+          <h3>First Nations<small>whole map, on by default</small></h3>
+          <label className={`layer ${p.on.lands ? 'on' : ''}`}>
+            <input type="checkbox" checked={!!p.on.lands} onChange={() => p.toggle('lands')} data-testid="layer-lands" />
+            <span className="sw sw-reserve" />
+            <span className="layer-body">
+              <span className="layer-top"><b>First Nations lands</b></span>
+              <span className="layer-sees">Indian reserves in British Columbia and tribal lands in California{p.landsCount ? ` (${p.landsCount.toLocaleString('en-US')})` : ''}. Click one for its Nation panel.</span>
+              <span className="layer-meta">Legal boundaries, not traditional territory · BC Data Catalogue, US Census</span>
+            </span>
+          </label>
+        </div>
+        {p.reserves && !p.on.lands && (
           <div className="lg" data-testid="layer-group-context">
             <h3>Context<small>BC only, off unless you turn it on</small></h3>
             <label className={`layer ${p.on.reserves ? 'on' : ''}`}>
