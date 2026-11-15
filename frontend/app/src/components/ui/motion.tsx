@@ -1,8 +1,9 @@
 // Small motion helpers. CSS does almost all of the motion (styles.css, "Motion"); these cover what CSS cannot:
 // a number counting up to a new reading, and a check for reduced motion.
 import { useEffect, useRef, useState } from 'react';
+import { motionOff } from '../a11y/prefs';
 
-export const reducedMotion = () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+export const reducedMotion = () => typeof window !== 'undefined' && motionOff();
 const easeOut = (k: number) => 1 - Math.pow(1 - k, 4);
 
 /** A reading that counts up from 0 when it first appears (and glides to a new value when the date changes).

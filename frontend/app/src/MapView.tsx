@@ -7,6 +7,7 @@ import { acres, fieldName, latestCrop } from './components/ui/shared';
 import type { BCInfo, Calendar, CellGrid, Dataset, Location, Regional } from './types';
 import type { RegionalLive } from './api';
 import { reserveName } from './components/ui/FirstNations';
+import { getPrefs, motionOff } from './components/a11y/prefs';
 import { atT, latestAt, dataT, tOf, TODAY_T, CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
 
 // Tile sources fixed by CONTRACT.md (no API keys).
@@ -106,12 +107,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   const [replayTick, setReplayTick] = useState(0);
   const [replayOn, setReplayOn] = useState(false);
   const [caption, setCaption] = useState<{ head: string; sub: string } | null>(null);
-  const reduceMotion = useRef(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const reduceMotion = { get current() { return motionOff(); } };
 
   // ---------- create map ----------
   useEffect(() => {
     const map = new maplibregl.Map({ container: el.current!, style: STYLE, ...HOME, maxPitch: 70, attributionControl: false, fadeDuration: 0, preserveDrawingBuffer: true } as maplibregl.MapOptions);
     mapRef.current = map;
+    // "Pause all motion": every camera move jumps
+    for (const k of ['flyTo', 'easeTo', 'fitBounds'] as const) { const orig = (map[k] as (...a: unknown[]) => unknown).bind(map); (map as unknown as Record<string, unknown>)[k] = (...a: unknown[]) => { const o = (k === 'fitBounds' ? a[1] : a[0]) as { duration?: number } | undefined; if (o && getPrefs().pause) o.duration = 0; return orig(...a); }; }
     (window as unknown as Record<string, unknown>).__map = map;
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: 'metric' }), 'bottom-right');
@@ -222,14 +225,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       d.classList.toggle('on', live.current.selected?.id === loc.id);
       // the pin tip (14, 36 inside the 28 x 36 pin) sits on the field centroid; the label hangs to its right
       // a tapped spot's pin sits where the grower tapped, not on the outline's centre
-      ms.push(new maplibregl.Marker({ element: d, anchor: 'bottom-left', offset: [-14, 0] }).setLngLat(loc.spot && !loc.mine ? [loc.spot.lon, loc.spot.lat] : [loc.centroid.lon, loc.centroid.lat]).addTo(map));
+      ms.push(new maplibregl.Marker({ element: d, anchor: 'bottom-left', offset: [-14, 0] }).setLngLat(loc.spot && !loc.mine ? [loc.spot.lon, loc.spot.lat] : [loc.centroid.lon, loc.centroid.lat]).addTo(map)); d.setAttribute('aria-label', [...d.querySelectorAll('b, i')].map((x) => x.textContent).filter(Boolean).join(', ')); // replaces MapLibre's generic "Map marker"; it contains the visible text
     }
     for (const pl of p.bc?.places ?? []) {
       const d = document.createElement('button');
       d.className = 'pin pin-bc';
       d.innerHTML = `<span class="pin-dot"></span><span class="pin-text"><b>${pl.name}</b><i>British Columbia · not set up yet</i></span>`;
       d.onclick = (ev) => { ev.stopPropagation(); live.current.onBC(); };
-      ms.push(new maplibregl.Marker({ element: d, anchor: 'left', offset: [-9, 0] }).setLngLat([pl.lon, pl.lat]).addTo(map));
+      ms.push(new maplibregl.Marker({ element: d, anchor: 'left', offset: [-9, 0] }).setLngLat([pl.lon, pl.lat]).addTo(map)); d.setAttribute('aria-label', [...d.querySelectorAll('b, i')].map((x) => x.textContent).filter(Boolean).join(', ')); // replaces MapLibre's generic "Map marker"; it contains the visible text
     }
     return () => ms.forEach((m) => m.remove());
   }, [p.locations, p.bc, ready]);

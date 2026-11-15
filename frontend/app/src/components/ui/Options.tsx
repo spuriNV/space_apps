@@ -127,7 +127,7 @@ function RotationPicker({ strategies, onPick }: { strategies: RotationStrategy[]
   );
 }
 
-const pend = (s: LoadState) => (s === 'timeout' ? <span className="na">Not available right now</span> : <span className="skel" aria-label="Loading" />);
+const pend = (s: LoadState) => (s === 'timeout' ? <span className="na">Not available right now</span> : <span className="skel" aria-hidden="true" />);
 const bandOf = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi : v > 33 ? mid : lo);
 /** Step 2's three facts in the grower's words, for the viewing date. */
 function nowFacts(p: FieldPanelProps) {
@@ -177,7 +177,7 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
   const shownCA = p.locations.filter((l) => !isBC(l) && hit(l)), shownBC = p.locations.filter((l) => isBC(l) && hit(l));
   const shown = [...shownCA, ...shownBC];
   return (
-    <section ref={sheet.ref} className={`picker2 pick-sheet sheet-${sheet.snap}`} data-testid="fields-panel" aria-label="Pick your field" {...sheet.handlers}>
+    <aside ref={sheet.ref} id="field-panel" tabIndex={-1} className={`picker2 pick-sheet sheet-${sheet.snap}`} data-testid="fields-panel" aria-label="Pick your field" {...sheet.handlers}>
       <button className="fp-grab" onClick={sheet.cycle} onKeyDown={sheet.onKey} aria-label="Resize the panel" data-testid="grab"><i /></button>
       <div className="pk-scroll">
       <header className="pk-head">
@@ -240,12 +240,13 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
           {NATION_EXAMPLE.label}: {NATION_EXAMPLE.sub}. <u>Open</u>
         </button>
       )}
+      <footer className="pk-foot"><button className="link" onClick={() => window.dispatchEvent(new CustomEvent('croplytics:about'))} data-testid="footer-a11y">Accessibility</button></footer>
       <details className="pk-more" data-testid="pk-more">
         <summary>How CropLytics works <small>optional reading</small></summary>
         <Workflow />
       </details>
       </div>
-    </section>
+    </aside>
   );
 }
 /** Crop family: from the API, else from the field id (car_ rice, caf_ forage). */

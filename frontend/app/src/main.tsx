@@ -1,6 +1,9 @@
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './styles.css';
+import { applyPrefs } from './components/a11y/prefs';
+
+applyPrefs();
 
 import { Component, type ReactNode } from 'react';
 

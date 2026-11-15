@@ -1,3 +1,4 @@
+import { motionOff, usePrefs } from './a11y/prefs';
 import { useEffect, useRef, useState } from 'react';
 import type maplibregl from 'maplibre-gl';
 
@@ -11,8 +12,10 @@ const LEGEND_LABELS = ['0.1', '0.5', '1', '2', '4', '8', '16+'];
 /** Last seven days of NASA GPM IMERG rain from GIBS: one raster source per day, opacity-cycled, under the field outline and 3D cells. */
 export default function RainLayer(p: { map: maplibregl.Map | null; ready: boolean; on: boolean; leftInset: number; bottomInset: number }) {
   const [idx, setIdx] = useState(DAYS - 1);
-  const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const paused = usePrefs().pause;
+  const reduced = paused || motionOff();
   const [playing, setPlaying] = useState(!reduced);
+  useEffect(() => { if (paused) setPlaying(false); }, [paused]);
   const days = useRef<string[]>([]);
   if (!days.current.length) { const now = Date.now(); days.current = Array.from({ length: DAYS }, (_, i) => iso(new Date(now - (DAYS - i + 1) * 864e5))); } // newest = 2 days back (IMERG latency)
 

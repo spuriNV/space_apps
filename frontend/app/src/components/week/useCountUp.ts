@@ -1,3 +1,4 @@
+import { motionOff } from '../a11y/prefs';
 // Count a number up or down to `target` over `ms`; jumps straight there under prefers-reduced-motion.
 import { useEffect, useRef, useState } from 'react';
 
@@ -5,7 +6,7 @@ export function useCountUp(target: number, ms = 600): number {
   const [v, setV] = useState(0);
   const from = useRef(0);
   useEffect(() => {
-    const still = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const still = motionOff();
     if (still) { from.current = target; setV(target); return; }
     const a = from.current, t0 = performance.now();
     let raf = 0;

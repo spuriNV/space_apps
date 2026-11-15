@@ -95,7 +95,7 @@ export function StepShell(p: StepShellProps) {
   useEffect(() => { if (sheet.snap !== 'full') scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); }, [sheet.snap]);
   const step = FLOW.find((f) => f.id === p.id)!;
   return (
-    <section ref={sheet.ref} className={`panel fpanel step-shell step-${p.id} sheet-${sheet.snap} ${p.className ?? ''}`} data-testid={p.testid} aria-label={`Step ${step.n} of ${FLOW.length}: ${step.label}`} {...sheet.handlers}>
+    <aside ref={sheet.ref} id="field-panel" tabIndex={-1} className={`panel fpanel step-shell step-${p.id} sheet-${sheet.snap} ${p.className ?? ''}`} data-testid={p.testid} aria-label={`Step ${step.n} of ${FLOW.length}: ${step.label}`} {...sheet.handlers}>
       <button className="fp-grab" onClick={sheet.cycle} onKeyDown={sheet.onKey} aria-label="Resize the panel" data-testid="grab"><i /></button>
       <div className="fp-body">
         <button className="icon-btn fp-close" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={20} /></button>
@@ -124,7 +124,7 @@ export function StepShell(p: StepShellProps) {
           <span><b>{p.next.label}</b>{p.next.sub && <small>{p.next.sub}</small>}</span>{!p.next.icon && <Icon name="right" size={20} />}
         </button>}
       </footer>
-    </section>
+    </aside>
   );
 }
 

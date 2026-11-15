@@ -1,3 +1,4 @@
+import { motionOff } from '../a11y/prefs';
 // "Nation tools" (field panel): land status and nearby Nations, drought rotation, groundwater, land and season, funding.
 // Routes: GET /api/locations/{id}/nation and /nation/{drought_rotation,groundwater,land_season,funding}, report.pdf.
 // Neutral and factual: Nations are named only as sourced facts, never as partners or endorsers. Cards load when opened.
@@ -59,7 +60,7 @@ export function focusNationTools(tries = 0) {
   if ((!sec || !tg) && tries < 60) { setTimeout(() => focusNationTools(tries + 1), 200); return; }
   if (!sec) return;
   if (tg && tg.getAttribute('aria-expanded') !== 'true') tg.click();
-  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const calm = motionOff();
   sec.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
   if (!calm) { sec.classList.remove('nt-pulse'); void sec.offsetWidth; sec.classList.add('nt-pulse'); setTimeout(() => sec.classList.remove('nt-pulse'), 1300); }
 }

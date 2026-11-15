@@ -65,4 +65,4 @@ export function RouteProblem({ st, what, reload }: { st: RouteState<unknown>; wh
   return null;
 }
 
-export const SKEL = (n = 3) => <div className="wk-skel" aria-label="Loading">{Array.from({ length: n }, (_, i) => <span key={i} className="skel" style={{ width: `${88 - i * 18}%` }} />)}</div>;
+export const SKEL = (n = 3) => <div className="wk-skel" aria-hidden="true">{Array.from({ length: n }, (_, i) => <span key={i} className="skel" style={{ width: `${88 - i * 18}%` }} />)}</div>;

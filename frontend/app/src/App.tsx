@@ -23,6 +23,10 @@ import { focusNationTools } from './components/week/NationTools';
 import { DetailCtx, useDetailState } from './components/ui/Detail';
 import { FLOW, ProvList, acres, fieldName, place, type FlowId, type Step } from './components/ui/shared';
 import { announce, onOtherOpen } from './overlays';
+import { MenuItems } from './components/a11y/MenuItems';
+import { AccessibilityPage } from './components/a11y/AccessibilityPage';
+import { MapList, type ReserveRow } from './components/a11y/MapList';
+import { usePrefs } from './components/a11y/prefs';
 import AskChat from './components/chat/AskChat';
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
@@ -52,6 +56,9 @@ export default function App() {
   const [plainLocations, setLocations] = useState<Location[]>([]);
   const [drawing, setDrawing] = useState<{ hideId: string | null } | null>(null); // a drawing session is open (taps and picks are off)
   useEffect(() => onOtherOpen('layers', () => setLayersOpen(false)), []);
+  const [listOpen, setListOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  useEffect(() => { const f = () => setAboutOpen(true); window.addEventListener('croplytics:about', f); return () => window.removeEventListener('croplytics:about', f); }, []);
   const draw = useRef<DrawHostHandle>(null);
   const [locProv, setLocProv] = useState<Record<string, api.ProvMap>>({});
   const [live, setLive] = useState<boolean | null>(null);
@@ -311,6 +318,17 @@ export default function App() {
     else { setBriefPick(null); setBriefOpen(true); }
   };
 
+  const reserveRows = useMemo<ReserveRow[]>(() => (reservesFc?.features ?? []).map((f) => {
+    const pr = (f.properties ?? {}) as { name?: string; distance_to_field_km?: number };
+    const xs: number[] = [], ys: number[] = [];
+    const walk = (c: unknown): void => { if (Array.isArray(c) && typeof c[0] === 'number') { xs.push(c[0]); ys.push(c[1] as number); } else if (Array.isArray(c)) c.forEach(walk); };
+    walk((f.geometry as GeoJSON.Polygon).coordinates);
+    return { name: pr.name ?? 'Reserve', km: pr.distance_to_field_km, lon: (Math.min(...xs) + Math.max(...xs)) / 2, lat: (Math.min(...ys) + Math.max(...ys)) / 2 };
+  }), [reservesFc]);
+  // "Pause all motion": stop the replay and any playing timeline
+  const pausedMotion = usePrefs().pause;
+  useEffect(() => { if (pausedMotion) { map.current?.cancelReplay(); setPlaying(false); } }, [pausedMotion]);
+
   const yearExpanded = yearOpen && !!selected && panel !== 'compare' && panel !== 'season';
   // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
   const toolPanel = panel === 'fields' ? panel : null;
@@ -365,9 +383,13 @@ export default function App() {
   return (
     <DetailCtx.Provider value={{ on: detail, set: setDetail }}>
     <div className={`app ${detail ? 'detail-on' : 'detail-off'}`}>
+      <a className="skip-link" href="#field-panel" onClick={(e) => { e.preventDefault(); const el = document.getElementById('field-panel'); if (el) { el.focus(); el.scrollIntoView({ block: 'nearest' }); } else document.getElementById('main')?.focus(); }}>Skip to field panel</a>
+      <div className="sr-only" role="status" aria-live="polite" data-testid="live">{selected ? (d ? `${fieldName(selected)} is ready.` : `Loading ${fieldName(selected)}.`) : ''}</div>
+      <main id="main" tabIndex={-1} aria-label="Map" className="map-main">
       <MapView ref={map} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} reservesChip={reservesAvail} reservesOn={!!layersOn.reserves} onToggleReserves={() => setLayersOn((l) => ({ ...l, reserves: !l.reserves }))} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
         onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onReplayT={setT} onReplayRunning={setReplaying} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} />
+      </main>
 
       <header className="topbar" data-testid="topbar">
         <button className="tb-brand" onClick={goHome} title="Back to all of California">CropLytics</button>
@@ -403,7 +425,7 @@ export default function App() {
         <AskChat fieldId={selected && selected.id !== DRAFT_ID && selected.spot?.state !== 'loading' ? selected.id : null} fieldName={selected ? fieldName(selected) : null}
           screen={!selected ? 'pick a field' : briefOpen ? 'print for your adviser' : panel === 'compare' ? 'compare' : panel === 'season' ? 'coming season' : yearExpanded ? "this field's year" : 'field now'}
           date={t === TODAY_T ? `Today, ${tLabel(t)}` : tLabel(t)} waterLimit={selected ? allocation[selected.id] : null} />
-        <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
+        <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} aria-haspopup="true" data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
         <div className={`tb-right ${menuOpen ? 'open' : ''}`}>
           <div className="tb-date-wrap">
             <button className={`tb-date ${dateOpen ? 'open' : ''}`} onClick={() => setDateOpen(!dateOpen)} data-testid="date-control" aria-expanded={dateOpen}>
@@ -429,6 +451,7 @@ export default function App() {
             )}
           </div>
           <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} data-testid="layers-btn" aria-expanded={layersOpen}><Icon name="layers" size={16} />Map layers</button>
+          {menuOpen && <MenuItems onList={() => { announce('draw'); setListOpen(true); }} onAbout={() => setAboutOpen(true)} onDone={() => setMenuOpen(false)} />}
         </div>
       </header>
       <nav className="mob-tabs" aria-label="Steps">
@@ -452,6 +475,11 @@ export default function App() {
         </div>
       )}
 
+      {!drawing && !listOpen && <button className="list-btn btn btn-secondary" onClick={() => { announce('draw'); setListOpen(true); }} data-testid="list-btn" style={{ right: 16 + rightInset + 176 }}><Icon name="fields" size={18} />List</button>}
+      {listOpen && <MapList locations={locations} catalog={catalog?.items ?? []} reserves={reserveRows} onClose={() => setListOpen(false)}
+        onField={(id) => { setListOpen(false); select(id); }} onFarm={(it) => { setListOpen(false); pickCatalog(it); }}
+        onReserve={(r) => { setListOpen(false); map.current?.flyTo(r.lat, r.lon, 11); }} onFind={(lat, lon) => { setListOpen(false); tapSpot(lat, lon); }} />}
+      {aboutOpen && <AccessibilityPage onClose={() => setAboutOpen(false)} />}
       {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} reserves={!!selected && api.isBC(selected)} onClose={() => setLayersOpen(false)} />}
 
       {stackField && !drilled && panel !== 'compare' && panel !== 'season' && view.zoom > 9.5 && view.zoom <= 13.4 && (
@@ -473,12 +501,14 @@ export default function App() {
             {bc && !hasBC && (bcOpen || nearBC) && panel === 'none' && <div className="bc-float" style={{ left: `calc(${leftInset}px + 24px)` }}><BCCard bc={bc} floating onClose={bcOpen ? () => setBcOpen(false) : undefined} /></div>}
 
       <div className="controls" style={{ right: 16 + rightInset, bottom: bottomInset + 14 }}>
-        <button className="ctl glass" onClick={goHome} title="Whole of California"><Icon name="home" size={18} /></button>
-        <button className="ctl glass" onClick={() => map.current?.resetNorth()} title="Reset north"><span style={{ transform: `rotate(${-view.bearing - 45}deg)`, display: 'flex' }}><Icon name="compass" size={20} /></span></button>
-        <button className="ctl glass text" onClick={() => map.current?.toggle3D()} title="Tilt" data-testid="tilt">{view.pitch > 5 ? '2D' : '3D'}</button>
+        <button className="ctl ctl-desk glass" onClick={goHome} title="Whole of California" aria-label="Show all of California"><Icon name="home" size={18} /></button>
+        <button className="ctl ctl-desk glass" onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} title="Map layers" aria-label="Map layers" aria-expanded={layersOpen} data-testid="layers-ctl"><Icon name="layers" size={18} /></button>
+        {selected && d?.cal && <button className="ctl glass" onClick={() => { if (canReplay) startReplay(); else setPlaying(!playing); }} title={playing || replaying ? 'Pause' : 'Play the seasons'} aria-label={playing || replaying ? 'Pause the replay' : 'Play the seasons on the map'} aria-pressed={playing || replaying} data-testid="play-ctl"><Icon name={playing || replaying ? 'pause' : 'play'} size={18} /></button>}
+        <button className="ctl glass" onClick={() => map.current?.resetNorth()} title="Reset north" aria-label="Reset north to the top"><span style={{ transform: `rotate(${-view.bearing - 45}deg)`, display: 'flex' }}><Icon name="compass" size={20} /></span></button>
+        <button className="ctl glass text" onClick={() => map.current?.toggle3D()} title="Tilt" aria-label={view.pitch > 5 ? 'Flat map view' : 'Tilt the map to 3D'} data-testid="tilt">{view.pitch > 5 ? '2D' : '3D'}</button>
         <div className="ctl-group glass">
-          <button onClick={() => map.current?.zoomBy(1)} title="Zoom in"><Icon name="plus" size={18} /></button>
-          <button onClick={() => map.current?.zoomBy(-1)} title="Zoom out"><Icon name="minus" size={18} /></button>
+          <button onClick={() => map.current?.zoomBy(1)} title="Zoom in" aria-label="Zoom in"><Icon name="plus" size={18} /></button>
+          <button onClick={() => map.current?.zoomBy(-1)} title="Zoom out" aria-label="Zoom out"><Icon name="minus" size={18} /></button>
         </div>
       </div>
 

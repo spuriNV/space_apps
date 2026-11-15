@@ -74,7 +74,7 @@ export function rainNow(nasaNow: NasaNow | null, daily: Daily | null, t: number)
 }
 export type LoadState = 'loading' | 'ready' | 'timeout';
 /** Thin loading line for one answer. */
-const Skel = () => <span className="skel" aria-label="Loading" />;
+const Skel = () => <span className="skel" aria-hidden="true" />;
 /** The latest 10-day step with a clear satellite reading at or before t, at most 6 weeks back. */
 export function latestClearT(cal: Calendar, t: number, maxBack = 4): number | null {
   for (let k = t; k >= 0 && t - k <= maxBack; k--) { const y = cal?.years?.[Math.floor(k / 36)]; const c = y?.rule?.[k % 36]; if (c && c !== 'u') return k; }
@@ -285,7 +285,7 @@ function SpotCrop({ loc }: { loc: Location }) {
     <div className="ans" data-testid="spot-crop">
       <dt>What has been grown here?</dt>
       <dd>
-        {sp.state === 'loading' ? <span className="skel" aria-label="Loading" /> : now ? <>
+        {sp.state === 'loading' ? <span className="skel" aria-hidden="true" /> : now ? <>
           <b>{now} in {last}</b>
           <span>{now === 'Left fallow' ? `Left fallow in ${last}.` : `${now} in ${same} of the last ${ten.length} years.`}</span>
         </> : <span className="gap-line">{sec?.reason ?? 'No crop record for this spot.'}</span>}
