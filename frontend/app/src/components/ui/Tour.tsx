@@ -14,15 +14,24 @@ const KEY = 'croplytics.tour.done';
 export const tourDismissed = () => { try { return localStorage.getItem(KEY) === '1'; } catch { return false; } };
 const remember = () => { try { localStorage.setItem(KEY, '1'); } catch { /* private mode: fine */ } };
 
-export const TOUR_STOPS: { step: 'now' | 'compare' | 'brief'; sel: string; title: string; text: string }[] = [
+export type TourStop = { step: 'now' | 'compare' | 'brief'; sel: string; title: string; text: string; replay?: boolean; /** lives under More detail: open it */ detail?: boolean };
+export const TOUR_STOPS: TourStop[] = [
   { step: 'now', sel: '[data-testid="this-week"]', title: t('tour.0.title'), text: t('tour.0.text') },
-  { step: 'now', sel: '[data-testid="step-year"]', title: t('tour.1.title'), text: t('tour.1.text') },
+  { step: 'now', sel: '[data-testid="step-year"]', title: t('tour.1.title'), text: t('tour.1.text'), replay: true, detail: true },
   { step: 'compare', sel: '[data-testid="water-bars"]', title: t('tour.2.title'), text: t('tour.2.text') },
   { step: 'brief', sel: '[data-testid="print"]', title: t('tour.3.title'), text: t('tour.3.text') },
 ];
 
-export default function Tour(p: { idx: number; go: (i: number) => void; canReplay: boolean; onReplay: () => void; onClose: () => void }) {
-  const stop = TOUR_STOPS[p.idx], last = p.idx === TOUR_STOPS.length - 1;
+/** Salmon River hay, BC: this week, the 3D drill-down and replay, the salmon panel, then the rotations. */
+export const TOUR_STOPS_BC: TourStop[] = [
+  { step: 'now', sel: '[data-testid="this-week"]', title: t('tour.0.title'), text: t('tour.0.text') },
+  { step: 'now', sel: '[data-testid="step-year"]', title: t('tour.1.title'), text: t('bcex.tour.1.text'), replay: true, detail: true },
+  { step: 'now', sel: '[data-testid="salmon"]', title: t('bcex.tour.2.title'), text: t('bcex.tour.2.text'), detail: true },
+  { step: 'compare', sel: '[data-testid="water-bars"]', title: t('tour.2.title'), text: t('bcex.tour.3.text') },
+];
+
+export default function Tour(p: { stops?: TourStop[]; idx: number; go: (i: number) => void; canReplay: boolean; onReplay: () => void; onClose: () => void }) {
+  const STOPS = p.stops ?? TOUR_STOPS, stop = STOPS[p.idx], last = p.idx === STOPS.length - 1;
   const phone = usePhone();
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
@@ -62,13 +71,13 @@ export default function Tour(p: { idx: number; go: (i: number) => void; canRepla
   });
 
   return (
-    <div ref={ref} className={`tour-card ${pos ? 'anch' : ''}`} role="dialog" aria-label={t('tour.aria', { n: p.idx + 1, total: TOUR_STOPS.length })} data-testid="tour" style={pos ? { top: pos.top, left: pos.left } : phone && bottom != null ? { bottom } : undefined}>
+    <div ref={ref} className={`tour-card ${pos ? 'anch' : ''}`} role="dialog" aria-label={t('tour.aria', { n: p.idx + 1, total: STOPS.length })} data-testid="tour" style={pos ? { top: pos.top, left: pos.left } : phone && bottom != null ? { bottom } : undefined}>
       <b className="tour-h">{stop.title}</b>
       <p>{stop.text}</p>
       <div className="tour-row">
-        <span className="tour-dots" aria-hidden="true">{TOUR_STOPS.map((_, i) => <i key={i} className={i === p.idx ? 'on' : ''} />)}</span>
+        <span className="tour-dots" aria-hidden="true">{STOPS.map((_, i) => <i key={i} className={i === p.idx ? 'on' : ''} />)}</span>
         <span className="tour-act">
-          {p.idx === 1 && p.canReplay && <button className="btn btn-outline btn-sm" onClick={() => { p.onReplay(); }} data-testid="tour-replay">{t('tour.replay')}</button>}
+          {stop.replay && p.canReplay && <button className="btn btn-outline btn-sm" onClick={() => { p.onReplay(); }} data-testid="tour-replay">{t('tour.replay')}</button>}
           <button className="btn btn-text btn-sm" onClick={done} data-testid="tour-skip">{last ? t('tour.close') : t('tour.skip')}</button>
           {!last && <button className="btn btn-primary btn-sm" data-tour-next onClick={() => p.go(p.idx + 1)} data-testid="tour-next">{t('tour.next')}</button>}
           {last && <button className="btn btn-primary btn-sm" data-tour-next onClick={done} data-testid="tour-done">{t('tour.done')}</button>}

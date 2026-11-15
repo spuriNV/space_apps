@@ -1,0 +1,20 @@
+{
+ "bcex.card.h": "Parcela de ejemplo: heno del río Salmon, Columbia Británica (53 acres)",
+ "bcex.card.p": "Parcela de heno en el Shuswap: órdenes de riego en 2023 y 2026, caudales para el salmón y tierras de las Primeras Naciones cerca.",
+ "bcex.tourSub": "Un recorrido de 4 paradas por el ejemplo del heno del río Salmon",
+ "bcex.tour.1.text": "Vuele desde el Shuswap, mire bajo la parcela y repase diez años, con las órdenes de riego de 2023 y 2026.",
+ "bcex.tour.2.title": "Salmón",
+ "bcex.tour.2.text": "El caudal del río frente a los niveles de las órdenes, y lo que necesitan los peces en agosto.",
+ "bcex.tour.3.text": "Cuatro rotaciones, con el agua que necesita cada una frente a la que usted puede conseguir.",
+ "bcex.cap.order": "{month} {year}: se ordenó suspender el riego para proteger al salmón",
+ "bcex.cap.orders2": "Órdenes de BC del {a} (levantada el {b}) y del {c}",
+ "bcex.cap.order1": "Orden de BC de protección de peces, {d}",
+ "bcex.cap.aafc": "Registro de cultivos de AAFC, tal como lo vieron los satélites",
+ "bcex.layer.top": "Arriba: qué tan verde está el cultivo",
+ "bcex.layer.topSub": "Satélite Sentinel-2, un cuadro por cada 100 pies",
+ "bcex.layer.soil": "Debajo: humedad del suelo en la zona de raíces",
+ "bcex.layer.soilSmap": "Satélite NASA SMAP",
+ "bcex.layer.soilGrace": "NASA GRACE-FO con un modelo de tierra",
+ "bcex.layer.gw": "Más hondo: agua subterránea de la cuenca",
+ "bcex.layer.gwSub": "Satélites NASA GRACE-FO. Una señal de toda la cuenca, no de su propio pozo"
+}

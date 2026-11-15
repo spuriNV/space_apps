@@ -1,5 +1,5 @@
 import RainLayer from './components/RainLayer';
-import { t, isEs } from './i18n';
+import { t, isEs, locale } from './i18n';
 import GlobalRain from './components/rain/GlobalRain';
 import { addCatalogLayers, setCatalogData, type CatalogItem } from './components/week/catalog';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
@@ -587,23 +587,41 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const dryYear = dry2022.length >= 3 && dry2022.every((x) => x < 0.2);
     const hist = (loc.crop_history ?? {}) as Record<string, string>;
     const QN = ['Jan to Mar', 'Apr to Jun', 'Jul to Sep', 'Oct to Dec'];
-    const captionFor = (year: number) => {
+    const isBC = loc.region === 'bc';
+    const monOf = (d: string) => new Date(`${d.slice(0, 7)}-15T12:00:00Z`).toLocaleDateString(locale, { month: 'short', timeZone: 'UTC' });
+    const orders = isBC ? (loc.water_context?.orders ?? []).filter((o) => o.kind === 'order') : [];
+    const orderYear = (year: number) => orders.filter((o) => o.date.startsWith(String(year)));
+    const fmtD = (d: string) => new Date(`${d}T12:00:00Z`).toLocaleDateString(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' });
+    const captionFor = (year: number, quarter: number) => {
       if (year === 2022 && dryYear) return { head: t('map.cap2022'), sub: t('map.cap2022s') };
+      const oy = orderYear(year);
+      if (oy.length && quarter === 3) {
+        const last = oy[oy.length - 1], resc = (loc.water_context?.orders ?? []).find((o) => o.kind === 'rescission' && o.date.startsWith(String(year)));
+        return { head: t('bcex.cap.order', { month: monOf(last.date), year }), sub: oy.length > 1 && resc ? t('bcex.cap.orders2', { a: fmtD(oy[0].date), b: fmtD(resc.date), c: fmtD(last.date) }) : t('bcex.cap.order1', { d: fmtD(last.date) }) };
+      }
       const crop = hist[String(year)];
-      return { head: crop ? `${year}: ${crop.replace('Fallow/Idle Cropland', t('map.fallow'))}` : `${year}`, sub: crop ? t('map.capUsda') : t('map.capNone') };
+      return { head: crop ? `${year}: ${crop.replace('Fallow/Idle Cropland', t('map.fallow'))}` : `${year}`, sub: crop ? (isBC ? t('bcex.cap.aafc') : t('map.capUsda')) : t('map.capNone') };
     };
-    // timeline (s): fly, draw, rise, then the quarters; 2022 plays slowly where the data is dry
+    // timeline (s): fly, draw, rise, a tilt-and-orbit reveal of the stack, then the quarters; 2022 and the order summers play slowly
     const T = RM ? { fly: [0, 0], line: [0, 0], rise: [0, 0] } : { fly: [0, 5.2], line: [3.8, 5.8], rise: [5.4, 6.6] };
-    const lapse = T.rise[1] + 1.0;
+    const hasSoil = !!live.current.layersOn.smap, hasGw = !!live.current.layersOn.grace;
+    const R0 = T.rise[1] + 0.5, ROT = 8.4, R1 = R0 + ROT, RET = 1.8;
+    const FADE = { soil: [R0 + 2.2, R0 + 3.6], gw: [R0 + 4.8, R0 + 6.2] };
+    const lapse = RM ? 1.0 : R1 + RET + 0.2;
+    const isOrderQ = (fr: { year?: number; quarter?: number }) => orders.length > 0 && fr.quarter === 3 && orderYear(fr.year!).length > 0;
     const keys: number[] = [lapse];
-    for (let i = 1; i < N; i++) keys.push(keys[i - 1] + (RM ? 0.9 : dryYear && (frames[i].year === 2022 || (frames[i].year === 2023 && frames[i].quarter === 1)) ? 0.8 : 0.28));
+    for (let i = 1; i < N; i++) keys.push(keys[i - 1] + (RM ? 0.9 : isOrderQ(frames[i - 1]) ? 1.7 : dryYear && (frames[i].year === 2022 || (frames[i].year === 2023 && frames[i].quarter === 1)) ? 0.8 : 0.28));
     const END = keys[N - 1] + (RM ? 0.9 : 2.2);
     const frameAtT = (t: number) => { let i = 0; while (i + 1 < N && keys[i + 1] <= t) i++; return i; };
+    const soilSrc = live.current.regionalLive.soilSource === 'grace_da' ? t('bcex.layer.soilGrace') : t('bcex.layer.soilSmap');
+    const revealCap = (tm: number) => (tm < R0 ? null : tm < FADE.soil[0] || !hasSoil ? { head: t('bcex.layer.top'), sub: t('bcex.layer.topSub') }
+      : tm < FADE.gw[0] || !hasGw ? { head: t('bcex.layer.soil'), sub: soilSrc }
+      : { head: t('bcex.layer.gw'), sub: t('bcex.layer.gwSub') });
     // cameras: from the California view to the same camera as flyToField(loc, 'year')
-    const ex = live.current.rightInset + 330;
-    const pd = { ...pad(), right: ex };
+    const padNow = () => ({ ...pad(), right: live.current.rightInset + 330 }); // read every frame: the year sheet may resize as the replay starts
     const end = { center: [c.lon, c.lat - (small ? 0.0006 : 0.001)] as [number, number], zoom: (small ? 15.15 : 14.5) - 0.75, pitch: 52, bearing: -24 };
-    const start = { center: HOME.center, zoom: HOME.zoom };
+    // the Shuswap (BC) or California overview the flight starts from
+    const start = isBC ? { center: [c.lon + 0.22, c.lat + 0.1] as [number, number], zoom: 8.4 } : { center: HOME.center, zoom: HOME.zoom };
     const merc = (ll: [number, number]) => maplibregl.MercatorCoordinate.fromLngLat(ll);
     const camAt = (t: number) => {
       if (RM) return end;
@@ -612,8 +630,18 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const a = merc(start.center), b = merc(end.center);
       const m = new maplibregl.MercatorCoordinate(lerp(a.x, b.x, k), lerp(a.y, b.y, k));
       const ll = m.toLngLat();
-      return { center: [ll.lng, ll.lat] as [number, number], zoom: z, pitch: end.pitch * c01((s - 0.35) / 0.65), bearing: end.bearing * c01((s - 0.25) / 0.75) };
+      // after landing: tilt up and orbit to show the layers under the field, then settle back to the replay view
+      const w = ease(c01((t - R0) / ROT)) * (1 - ease(c01((t - R1) / RET)));
+      return { center: [ll.lng, ll.lat] as [number, number], zoom: z, pitch: end.pitch * c01((s - 0.35) / 0.65) + 12 * w, bearing: end.bearing * c01((s - 0.25) / 0.75) + 62 * w };
     };
+    // the lower layers ease in one after the other; set only when the value moves
+    const slabOp: Record<string, number> = { 'slab-smap': -1, 'slab-grace': -1, posts: -1 };
+    const slabs = (t: number) => {
+      const f = (r: number[], on: boolean) => (RM || !on ? 1 : ease(c01((t - r[0]) / (r[1] - r[0]))));
+      const v: Record<string, number> = { 'slab-smap': 0.84 * f(FADE.soil, hasSoil), 'slab-grace': 0.86 * f(FADE.gw, hasGw), posts: 0.55 * f(FADE.soil, true) };
+      for (const id in v) if (Math.abs(v[id] - slabOp[id]) > 0.008 && map.getLayer(id)) { slabOp[id] = v[id]; map.setPaintProperty(id, 'fill-extrusion-opacity', v[id]); }
+    };
+    const slabsReset = () => { for (const [id, o] of [['slab-smap', 0.84], ['slab-grace', 0.86], ['posts', 0.55]] as const) if (map.getLayer(id)) map.setPaintProperty(id, 'fill-extrusion-opacity', o); };
     const hide = (v: 'none' | 'visible') => { for (const id of ['field-casing', 'field-line']) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v); };
     const src = (id: string) => map.getSource(id) as GeoJSONSource;
     replaying.current = true; programmatic.current = true;
@@ -626,7 +654,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       if (done) return;
       done = true; cancelAnimationFrame(raf); replayStop.current = null;
       try { map.removeFeatureState({ source: 'cells' }); } catch { /* source may be gone */ }
-      src('outline-draw')?.setData(fc()); hide('visible');
+      src('outline-draw')?.setData(fc()); hide('visible'); slabsReset();
       replaying.current = false; programmatic.current = false;
       setCaption(null); setReplayOn(false); live.current.onReplayRunning?.(false);
       if (toToday) live.current.onReplayT?.(TODAY_T);
@@ -634,12 +662,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     };
     replayStop.current = () => finish(false);
     const frame = (t: number) => {
-      map.jumpTo({ ...camAt(t), padding: pd });
+      map.jumpTo({ ...camAt(t), padding: padNow() }); slabs(t);
       const lp = RM ? 1 : ease(c01((t - T.line[0]) / (T.line[1] - T.line[0]))), upto = lp * total, pts: number[][] = [];
       if (lp < 1) { for (let i = 0; i < ring.length; i++) { if (len[i] <= upto) pts.push(ring[i]); else { const f = (upto - len[i - 1]) / ((len[i] - len[i - 1]) || 1); pts.push([lerp(ring[i - 1][0], ring[i][0], f), lerp(ring[i - 1][1], ring[i][1], f)]); break; } } }
       else pts.push(...ring);
       src('outline-draw').setData(fc(pts.length > 1 ? [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: pts } }] : []));
-      const fi = t < lapse && !RM ? 0 : frameAtT(t), st = frameStates[fi];
+      const fi = t < lapse && !RM ? N - 1 : frameAtT(t), st = frameStates[fi]; // the drill-down shows the latest view; the ten years then rewind to 2016
       const rise = (x: { d: number }) => (RM ? 1 : (() => { const k = c01((t - T.rise[0] - x.d * 0.9) / 0.7); return 1 + 2.2 * Math.pow(k - 1, 3) + 1.2 * Math.pow(k - 1, 2); })());
       const startedN = feats.filter((x) => RM || t - T.rise[0] - x.d * 0.9 > 0).length;
       const riseDone = RM || t > T.rise[1] + 0.2;
@@ -658,8 +686,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
         if (tq !== lastT) { lastT = tq; live.current.onReplayT?.(tq); }
         void QN;
       }
-      const showCap = t >= lapse - 0.2;
-      setCaption((cur) => { const nx = showCap ? captionFor(frames[fi].year!) : null; return (cur?.head ?? '') === (nx?.head ?? '') ? cur : nx; });
+      const showCap = t >= lapse;
+      setCaption((cur) => { const nx = showCap ? captionFor(frames[fi].year!, frames[fi].quarter!) : RM ? null : revealCap(t); return (cur?.head ?? '') === (nx?.head ?? '') ? cur : nx; });
       return t >= END;
     };
     if (RM) {

@@ -2138,8 +2138,7 @@ html[data-outdoor="1"] .btn small, html[data-outdoor="1"] .btn-primary small { c
 @media (max-width: 760px) { .tb-right .lang-toggle { margin: 8px 16px; font-size: 15px; } }
 /* Spanish labels are longer: keep the top bar from squeezing the steps */
 @media (max-width: 1500px) and (min-width: 761px) { html[lang="es"] .tb-date small { display: none; } html[lang="es"] .tb-field { min-width: 220px; max-width: 260px; } html[lang="es"] .tb-right { gap: 6px; padding: 0 8px; } html[lang="es"] .tb-layers { padding: 0 8px; } }
-/* =====================================================================
-   a11y2: dark theme, easy-to-read type, Simple mode, glossary popovers, visual alerts, shortcuts, large print, Lite mode
+/* ==============================================================   a11y2: dark theme, easy-to-read type, Simple mode, glossary popovers, visual alerts, shortcuts, large print, Lite mode
    ===================================================================== */
 .sr-only-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -2332,3 +2331,9 @@ html[data-bigtext="1"] .step-foot .btn { border-radius: var(--r-lg); }
   .rain-card .rain-layers { width: calc(100% - 40px); }
   .drought-legend { grid-template-columns: 1fr 1fr; }
 }
+=======
+
+/* Year sheet header: the title keeps a readable width when the legend and toggles are long (More detail on) */
+.ys-head { flex-wrap: wrap; }
+.ys-title { flex: 0 1 260px; min-width: 200px; }
+.ys-legend { flex: 1 1 340px; }

@@ -36,7 +36,7 @@ import { ShortcutsDialog } from './components/a11y/ShortcutsDialog';
 import { useShortcuts } from './components/a11y/keys';
 import { ax, say, setLiveRegion, type Command } from './components/a11y/ax';
 import AskChat from './components/chat/AskChat';
-import Tour, { tourDismissed, TOUR_STOPS } from './components/ui/Tour';
+import Tour, { tourDismissed, TOUR_STOPS, TOUR_STOPS_BC } from './components/ui/Tour';
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
 type Panel = 'none' | 'fields' | 'season' | 'compare';
@@ -375,23 +375,27 @@ export default function App() {
     openNationsExample();
   });
   // Example field (#example): Colusa rice, then a short skippable tour
-  const EX_ID = 'car_colusa_rice';
+  const EX_COLUSA = 'car_colusa_rice';
   const [tour, setTour] = useState<number | null>(null);
-  const openExample = (force = false) => {
-    if (!locations.some((l) => l.id === EX_ID)) return;
-    setSwitchOpen(false); setMenuOpen(false); setBriefOpen(false);
-    select(EX_ID);
+  const [exId, setExId] = useState(EX_COLUSA);
+  const exStops = exId === NATION_ID ? TOUR_STOPS_BC : TOUR_STOPS;
+  const openExample = (force = false, id = EX_COLUSA) => {
+    if (!locations.some((l) => l.id === id)) return;
+    setSwitchOpen(false); setMenuOpen(false); setBriefOpen(false); setExId(id);
+    select(id);
     if (force || !tourDismissed()) setTour(0); else setTour(null);
   };
-  const exHash = useRef(location.hash === '#example');
+  // #example (Colusa rice) and #example-bc (Salmon River hay, BC)
+  const exHash = useRef(location.hash === '#example' ? EX_COLUSA : location.hash === '#example-bc' ? NATION_ID : null);
   useEffect(() => {
-    if (!exHash.current || !locations.some((l) => l.id === EX_ID)) return;
-    exHash.current = false;
-    openExample();
+    if (!exHash.current || !locations.some((l) => l.id === exHash.current)) return;
+    const id = exHash.current; exHash.current = null;
+    openExample(false, id);
   });
   const tourGo = (i: number) => {
     if (replaying) map.current?.cancelReplay();
-    const id = TOUR_STOPS[i].step;
+    const id = exStops[i].step;
+    if (exStops[i].detail) setDetail(true);
     setSwitchOpen(false); setMenuOpen(false);
     if (id === 'now') { setBriefOpen(false); setPanel('none'); setCardOpen(true); setYearOpen(false); }
     else if (id === 'compare') { setBriefOpen(false); setYearOpen(false); setPanel('compare'); }
@@ -435,7 +439,7 @@ export default function App() {
   const startReplay = () => {
     if (!selected) return;
     if (replaying) { map.current?.cancelReplay(); return; }
-    setPlaying(false); setYearOpen(true);
+    setPlaying(false); setYearOpen(true); setDetail(false); // the map needs the room while it flies
     map.current?.replay(selected);
   };
   const stackField = !lite && !!selected && !!d?.cells && !!d.cal;
@@ -531,7 +535,7 @@ export default function App() {
                   <b>{r.title}</b><small>{r.sub}</small>
                 </button>
               ))}
-              <button onClick={() => openExample(true)} data-testid="menu-tour"><b>{tr('app.tour')}</b><small>{tr('app.tourSub')}</small></button>
+              <button onClick={() => openExample(true, selectedId === NATION_ID ? NATION_ID : EX_COLUSA)} data-testid="menu-tour"><b>{tr('app.tour')}</b><small>{tr(selectedId === NATION_ID ? 'bcex.tourSub' : 'app.tourSub')}</small></button>
               {results.length === 0 && <p className="muted pad">{tr('app.noMatch')}</p>}
             </div>
           )}
@@ -552,7 +556,7 @@ export default function App() {
         <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label={tr('app.menu')} aria-expanded={menuOpen} aria-haspopup="true" data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
         <div className={`tb-right ${menuOpen ? 'open' : ''}`}>
           <LangToggle />
-          <button className="btn btn-text btn-sm tb-tour" onClick={() => openExample(true)} data-testid="take-tour">{tr('app.tour')}</button>
+          <button className="btn btn-text btn-sm tb-tour" onClick={() => openExample(true, selectedId === NATION_ID ? NATION_ID : EX_COLUSA)} data-testid="take-tour">{tr('app.tour')}</button>
           <div className="tb-date-wrap">
             <button className={`tb-date ${dateOpen ? 'open' : ''}`} onClick={() => setDateOpen(!dateOpen)} data-testid="date-control" aria-expanded={dateOpen}>
               <small>{tr('app.viewing')}</small><b>{t === TODAY_T ? tr('app.todayD', { d: `${tLabel(t).charAt(0).toLowerCase()}${tLabel(t).slice(1)}` }) : tLabel(t)}</b><Icon name="down" size={16} />
@@ -580,7 +584,7 @@ export default function App() {
           {menuOpen && <MenuItems onShortcuts={() => setKeysOpen(true)} onList={() => { announce('draw'); setListOpen(true); }} onAbout={() => setAboutOpen(true)} onDone={() => setMenuOpen(false)} />}
         </div>
       </header>
-      {tour != null && selected?.id === EX_ID && <Tour idx={tour} go={tourGo} canReplay={canReplay} onReplay={startReplay} onClose={() => setTour(null)} />}
+      {tour != null && selected?.id === exId && <Tour stops={exStops} idx={tour} go={tourGo} canReplay={canReplay} onReplay={startReplay} onClose={() => setTour(null)} />}
       <nav className="mob-tabs" aria-label={tr('app.steps')}>
         {FLOW.map((f) => <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} disabled={f.id !== 'pick' && !selected} data-testid={`mtab-${f.id}`}><span>{f.n} {tr(`flow.${f.id}.short`)}</span></button>)}
       </nav>
@@ -589,7 +593,7 @@ export default function App() {
       {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.mine ? () => mf.retry(selected.id) : selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} onMine={(a) => draw.current?.[a === 'delete' ? 'del' : a](selected)} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={strats} onToday={(sid) => pickToday(selected.id, sid)} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onBack={() => goStep('pick')} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldPicker lands={lands} activeLandId={landId} onPickLand={openLand} tab={pickTab} setTab={setPickTab} onSheet={setSheetPx} mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onExample={() => openExample()} onNationExample={() => tapSpot(33.51, -116.12)} onNationsExample={openNationsExample} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {leftPanel === 'fields' && <FieldPicker lands={lands} activeLandId={landId} onPickLand={openLand} tab={pickTab} setTab={setPickTab} onSheet={setSheetPx} mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onExample={() => openExample()} onExampleBC={() => openExample(false, NATION_ID)} onNationExample={() => tapSpot(33.51, -116.12)} onNationsExample={openNationsExample} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {leftPanel === 'land' && land && <LandPanel land={land} presets={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} onSheet={setSheetPx} onClose={() => setLandId(null)} onOpenSpot={tapSpot} onOpenField={select} onOpenFarm={mf.openShared} />}
       {selected && !leftPanel && !yearExpanded && !drawing && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 

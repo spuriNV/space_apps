@@ -171,7 +171,7 @@ function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategi
  *  "British Columbia" heading (and chip); without one, BC is a quiet "not set up yet" row at the bottom. */
 /** Torres-Martinez Reservation farm field (check_api): opens Nation tools with tribal land status. */
 export const NATION_EXAMPLE = { lat: 33.51, lon: -116.12, label: t('ui.nx.label'), sub: t('ui.nx.sub') };
-export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onExample?: () => void; onNationsExample?: () => void; onNationExample?: () => void; onSheet?: (visiblePx: number) => void ; lands?: LandFeature[] | null; activeLandId?: string | null; onPickLand?: (id: string) => void; tab?: 'fields' | 'lands'; setTab?: (t: 'fields' | 'lands') => void }) {
+export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onExample?: () => void; onExampleBC?: () => void; onNationsExample?: () => void; onNationExample?: () => void; onSheet?: (visiblePx: number) => void ; lands?: LandFeature[] | null; activeLandId?: string | null; onPickLand?: (id: string) => void; tab?: 'fields' | 'lands'; setTab?: (t: 'fields' | 'lands') => void }) {
   const sheet = useSheet(p.onSheet, { initial: 'peek', peek: () => Math.round(window.innerHeight * 0.35) });
   const thumbs = useThumbs();
   const [q, setQ] = useState('');
@@ -206,6 +206,16 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
             <h2>{t('ui.pk.ex_h')}</h2>
             <p>{t('ui.pk.ex_p')}</p>
             <button className="btn btn-primary" onClick={p.onExample} data-testid="example-open">{t('ui.pk.open')}</button>
+          </div>
+        </div>
+      )}
+      {p.onExampleBC && p.locations.some((l) => l.id === 'bc_salmon_river_forage') && (
+        <div className="nx-card ex-card" data-testid="example-card-bc">
+          <img className="ex-thumb" src={`${import.meta.env.BASE_URL}thumbs/bc_salmon_river_forage.jpg`} alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <div className="ex-body">
+            <h2>{t('bcex.card.h')}</h2>
+            <p>{t('bcex.card.p')}</p>
+            <button className="btn btn-primary" onClick={p.onExampleBC} data-testid="example-open-bc">{t('ui.pk.open')}</button>
           </div>
         </div>
       )}

@@ -1,0 +1,20 @@
+{
+ "bcex.card.h": "Example field: Salmon River hay, BC (53 acres)",
+ "bcex.card.p": "Hay field in the Shuswap: irrigation orders in 2023 and 2026, salmon flows, and First Nations land nearby.",
+ "bcex.tourSub": "A 4-stop walk through the Salmon River hay example",
+ "bcex.tour.1.text": "Fly in from the Shuswap, look under the field, then replay ten years, including the 2023 and 2026 irrigation orders.",
+ "bcex.tour.2.title": "Salmon",
+ "bcex.tour.2.text": "River flow against the order levels, and what the fish need in August.",
+ "bcex.tour.3.text": "Four rotations, with the water each one needs against what you can get.",
+ "bcex.cap.order": "{month} {year}: irrigation ordered off to protect salmon",
+ "bcex.cap.orders2": "BC orders {a} (lifted {b}) and {c}",
+ "bcex.cap.order1": "BC fish-protection order, {d}",
+ "bcex.cap.aafc": "AAFC crop record, as the satellites saw it",
+ "bcex.layer.top": "On top: how green the crop is",
+ "bcex.layer.topSub": "Sentinel-2 satellite, one square for every 100 ft",
+ "bcex.layer.soil": "Below it: soil moisture in the root zone",
+ "bcex.layer.soilSmap": "NASA SMAP satellite",
+ "bcex.layer.soilGrace": "NASA GRACE-FO with a land model",
+ "bcex.layer.gw": "Deepest: groundwater in the basin",
+ "bcex.layer.gwSub": "NASA GRACE-FO satellites. A basin-wide signal, not your own well"
+}
