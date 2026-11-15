@@ -650,9 +650,9 @@ function fromOutlookFile(j: any, exAlloc: any, origin: Origin): Outlook {
 
 // ---------- Ask CropLytics chat (backend app/chat) ----------
 export interface ChatTurn { role: 'user' | 'assistant'; content: string }
-let chatOn: Promise<boolean> | null = null;
-/** true when the API has a chat key; the Ask button hides otherwise. Cached for the session. */
-export const chatEnabled = () => (chatOn ??= get('/api/chat/status', undefined, 8000).then((b) => !!b?.enabled).catch(() => false));
+let chatOn: Promise<{ enabled: boolean; tts: boolean }> | null = null;
+/** enabled: the API has a chat key (the Ask button hides otherwise); tts: the server voice is set up. Cached for the session. */
+export const chatStatus = () => (chatOn ??= get('/api/chat/status', undefined, 8000).then((b) => ({ enabled: !!b?.enabled, tts: !!b?.tts })).catch(() => ({ enabled: false, tts: false })));
 /** One question. Returns the answer, or throws an Error whose message is safe to show (the API's own wording). */
 export async function askChat(body: { question: string; history: ChatTurn[]; field_id: string | null; screen: string; date: string; water_limit?: number | null }): Promise<string> {
   const ctl = new AbortController();

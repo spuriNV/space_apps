@@ -25,8 +25,10 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from .facts import build_facts
+from . import tts as _tts
 
 router = APIRouter()
+router.include_router(_tts.router)  # POST /api/tts (spoken answers)
 ROOT = Path(os.environ.get("FIELDSHIFT_ROOT", Path(__file__).resolve().parents[4]))
 
 DEEPSEEK_URL = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/") + "/chat/completions"
@@ -154,7 +156,7 @@ class ChatRequest(BaseModel):
 
 @router.get("/api/chat/status")
 def chat_status():
-    return {"enabled": _key() is not None}
+    return {"enabled": _key() is not None, "tts": _tts.available()}
 
 
 @router.post("/api/chat")

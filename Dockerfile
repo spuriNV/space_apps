@@ -31,6 +31,8 @@ COPY fixtures/ fixtures/
 COPY --from=web /src/frontend/app/dist /app/frontend/app/dist
 WORKDIR /app/backend/api
 RUN uv sync --frozen --no-dev
+# Ask CropLytics spoken answers: Kokoro voice model (~120 MB, Apache-2.0) into backend/api/models; app/chat/tts.py
+RUN uv run --frozen --no-dev python -m app.chat.tts --download
 ENV FRONTEND_DIST=/app/frontend/app/dist FIELDSHIFT_ROOT=/app PORT=8000
 EXPOSE 8000
 CMD ["sh", "-c", "exec uv run --frozen --no-dev uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]

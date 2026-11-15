@@ -1,9 +1,10 @@
 // Ask CropLytics: a small chat popover from the top bar (backend app/chat). Built for screen readers first: the question box is
 // labelled, each new answer is announced once through a polite live region, Escape closes and returns focus to the Ask
 // button. Spoken input uses the browser's speech recognition where it exists; "Read answers aloud" (off by default, for people
-// without a screen reader) uses the browser's speech. The phone keyboard's own mic works in the box as well.
+// without a screen reader) and spoken questions use the server voice (speech.ts), else the device's voice. The phone keyboard's own mic works in the box as well.
 import { useEffect, useRef, useState } from 'react';
-import { askChat, chatEnabled, type ChatTurn } from '../../api';
+import { askChat, chatStatus, type ChatTurn } from '../../api';
+import { Speaker } from './speech';
 import Icon from '../Icons';
 
 interface Props { fieldId: string | null; fieldName: string | null; screen: string; date: string; waterLimit?: number | null }
@@ -14,17 +15,6 @@ const SPEAK_KEY = 'croplytics.ask.speak';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SR: any = typeof window !== 'undefined' ? (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition : undefined;
-
-const TTS: SpeechSynthesis | undefined = typeof window !== 'undefined' ? window.speechSynthesis : undefined;
-/** A clear English voice: the OS's enhanced/natural voices first, else the default. Voices load late on some browsers, so ask each time. */
-function pickVoice(): SpeechSynthesisVoice | undefined {
-  const vs = TTS?.getVoices() ?? [];
-  const en = vs.filter((v) => /^en[-_]US/i.test(v.lang));
-  const pool = en.length ? en : vs.filter((v) => /^en/i.test(v.lang));
-  return pool.find((v) => /natural|enhanced|premium|neural/i.test(v.name)) ?? pool.find((v) => /Google US English|Samantha|Aria|Jenny/i.test(v.name)) ?? pool.find((v) => v.default) ?? pool[0];
-}
-/** iOS and some browsers only allow speech that starts from a tap: speak nothing during the tap, then later speech is allowed. */
-function primeSpeech() { try { if (TTS && !TTS.speaking) TTS.speak(new SpeechSynthesisUtterance('')); } catch { /* no speech */ } }
 
 function loadSpeak() { try { return localStorage.getItem(SPEAK_KEY) === '1'; } catch { return false; } }
 function saveSpeak(on: boolean) { try { localStorage.setItem(SPEAK_KEY, on ? '1' : '0'); } catch { /* private mode */ } }
@@ -44,10 +34,14 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
   const input = useRef<HTMLInputElement>(null);
   const log = useRef<HTMLDivElement>(null);
   const rec = useRef<{ stop: () => void } | null>(null);
+  const serverVoice = useRef(false);
+  const speaker = useRef<Speaker | null>(null);
+  speaker.current ??= new Speaker(() => serverVoice.current, () => setSpeaking(null));
+  const sp = speaker.current;
 
-  const stopSpeech = () => { TTS?.cancel(); setSpeaking(null); };
+  const stopSpeech = () => { sp.stop(); setSpeaking(null); };
   const close = () => { setOpen(false); rec.current?.stop(); stopSpeech(); btn.current?.focus(); };
-  useEffect(() => { chatEnabled().then(setEnabled); }, []);
+  useEffect(() => { chatStatus().then((s) => { serverVoice.current = s.tts; setEnabled(s.enabled); }); }, []);
   useEffect(() => { if (open) input.current?.focus(); }, [open]);
   // Escape closes from anywhere while open (focus may be on a chip or the switch, not only the box)
   useEffect(() => {
@@ -59,19 +53,12 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
   useEffect(() => { log.current?.scrollTo({ top: log.current.scrollHeight, behavior: 'smooth' }); }, [turns, busy]);
   // a new field starts a new conversation (the old answers were about the old field)
   useEffect(() => { setTurns([]); setErr(null); }, [fieldId]);
-  useEffect(() => () => { rec.current?.stop(); TTS?.cancel(); }, []);
+  useEffect(() => () => { rec.current?.stop(); sp.stop(); }, [sp]);
 
   if (!enabled) return null;
 
 
-  const say = (text: string, idx: number) => {
-    if (!TTS) return;
-    TTS.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    const v = pickVoice(); if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-US';
-    u.rate = 1; u.onend = u.onerror = () => setSpeaking((cur) => (cur === idx ? null : cur));
-    setSpeaking(idx); TTS.speak(u);
-  };
+  const say = (text: string, idx: number) => { setSpeaking(idx); void sp.say(text); };
 
   /** byVoice: the question was spoken, so the answer is spoken back even with "Read answers aloud" off. */
   const send = async (text: string, byVoice = false) => {
@@ -80,14 +67,14 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
     setQ(''); setErr(null); setBusy(true);
     setLive('Thinking.');
     stopSpeech();
-    if (!byVoice) primeSpeech();
+    if (!byVoice) sp.prime();
     const history = turns.slice(-6);
     setTurns((t) => [...t, { role: 'user', content: question }]);
     try {
       const a = await askChat({ question, history, field_id: fieldId, screen, date, water_limit: waterLimit ?? null });
       const idx = turns.length + 1; // after the question just added
       setTurns((t) => [...t, { role: 'assistant', content: a }]);
-      if ((speak || byVoice) && TTS) { setLive('Answer ready.'); say(a, idx); } // spoken here: don't make a screen reader read it a second time
+      if ((speak || byVoice) && sp.canSpeak) { setLive('Answer ready.'); say(a, idx); } // spoken here: don't make a screen reader read it a second time
       else setLive(`CropLytics says: ${a}`);
     } catch (e) {
       const m = e instanceof Error ? e.message : 'The assistant could not answer. Please try again.';
@@ -101,7 +88,7 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
   const listen = () => {
     if (!SR) return;
     if (listening) { rec.current?.stop(); return; }
-    stopSpeech(); primeSpeech();
+    stopSpeech(); sp.prime();
     const r = new SR();
     r.lang = 'en-US'; r.interimResults = true; r.maxAlternatives = 1;
     let final = '';
@@ -117,7 +104,7 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
     r.start();
   };
 
-  const toggleSpeak = () => { const v = !speak; setSpeak(v); saveSpeak(v); if (!v) stopSpeech(); else primeSpeech(); };
+  const toggleSpeak = () => { const v = !speak; setSpeak(v); saveSpeak(v); if (!v) stopSpeech(); else sp.prime(); };
   const suggestions = fieldId ? SUGGEST_FIELD : SUGGEST_NONE;
 
   return (
@@ -143,7 +130,7 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
               t.role === 'user'
                 ? <p key={i} className="ask-msg user"><span className="sr-only">You asked: </span>{t.content}</p>
                 : <div key={i} className="ask-msg assistant"><p><span className="sr-only">CropLytics: </span>{t.content}</p>
-                    {TTS && <button type="button" className="ask-play" onClick={() => (speaking === i ? stopSpeech() : say(t.content, i))} aria-label={speaking === i ? 'Stop reading this answer' : 'Read this answer aloud'}>
+                    {sp.canSpeak && <button type="button" className="ask-play" onClick={() => { if (speaking === i) stopSpeech(); else { sp.prime(); say(t.content, i); } }} aria-label={speaking === i ? 'Stop reading this answer' : 'Read this answer aloud'}>
                       <Icon name={speaking === i ? 'pause' : 'play'} size={16} />{speaking === i ? 'Stop' : 'Listen'}</button>}
                   </div>
             ))}
@@ -160,7 +147,7 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
             <button type="submit" className="icon-btn send" aria-label="Send question" disabled={busy || !q.trim()}><Icon name="send" size={20} /></button>
           </form>
           <div className="ask-foot">
-            {TTS && <button type="button" className="ask-speak" role="switch" aria-checked={speak} onClick={toggleSpeak}>
+            {sp.canSpeak && <button type="button" className="ask-speak" role="switch" aria-checked={speak} onClick={toggleSpeak}>
               <span className="ask-switch" aria-hidden="true" />Read every answer aloud
             </button>}
             <p className="ask-hint">{SR ? 'Ask by voice with the microphone and the answer is spoken back.' : 'Use your keyboard\'s microphone to ask by voice.'}</p>
