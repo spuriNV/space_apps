@@ -180,14 +180,16 @@ export function useMyFields(selectedId: string | null) {
   const retry = useCallback((id: string) => { if (id === DRAFT_ID) return retryDraft(); setFails((f) => { const { [id]: _, ...rest } = f; return rest; }); return load(id); }, [load, retryDraft]);
 
   // a shared link (#field=my_...): fetch it, then ask before adding it to this person's list
-  useEffect(() => {
-    const id = parseFieldHash();
-    if (!id) return;
+  const openShared = useCallback((id: string) => {
     getField(id).then((r) => {
       if (r.ok) { const x = fromPayload(r.body); setShared({ id, ...x, known: refsRef.current.some((q) => q.id === id) }); }
       else setShared({ id, loc: null, prov: {}, known: false, error: r.err });
     });
   }, []);
+  useEffect(() => {
+    const id = parseFieldHash();
+    if (id) openShared(id);
+  }, [openShared]);
   const acceptShared = useCallback(() => {
     if (!shared?.loc) { setShared(null); return null; }
     const { id, loc, prov } = shared;
@@ -209,7 +211,7 @@ export function useMyFields(selectedId: string | null) {
     return out;
   }, [draft, refs, full, items, fails]);
   const prov = useMemo(() => Object.fromEntries(Object.entries(full).map(([id, x]) => [id, x.prov])), [full]);
-  return { locs, prov, refs, listed, draft, shared, submit, retry, dropDraft, remove, acceptShared, declineShared: () => setShared(null), refresh: (id: string) => load(id, true) };
+  return { locs, prov, refs, listed, draft, shared, submit, retry, dropDraft, remove, acceptShared, openShared, declineShared: () => setShared(null), refresh: (id: string) => load(id, true) };
 }
 export type MyFields = ReturnType<typeof useMyFields>;
 

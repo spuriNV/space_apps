@@ -13,8 +13,13 @@ import './lands.css';
 
 type Spot = { state: 'loading' } | { state: 'ok'; loc: Location } | { state: 'error'; message: string };
 
-export function LandPanel({ land, presets, onClose, onOpenSpot, onOpenField, onSheet }: {
-  land: LandFeature; presets: Location[]; onClose: () => void; onOpenSpot: (lat: number, lon: number) => void; onOpenField: (id: string) => void; onSheet?: (px: number) => void;
+/** Farmed blocks on these lands, outlined from public crop maps (DWR 2023 field outline) and saved as drawn fields. */
+const FARMS: Record<string, { id: string; name: string; note: string }> = {
+  'ca-r3265R': { id: 'my_eNpNVduKFFEM_JVhnhTScHJufXqf_QDxTZZ9GNaRFXSVFQUR_91UVXaVGbrPNalUKunf55_nm2rnx_PN-e3Tj8fr6fL44XT5_BH_08dP188f7PTux5fv11-nd5fH-4fr06fL6dX7r_cPl9Ob68P19dnO3843t7e3m9fqbXi1tvbex25bK7ZN26pbs-2oMcIM79jYY82H5h7zHhfctbabT86w2awui2GxYb6HKT9sWusxqsN2q81W-LRufcYjrhzx84Y1Qgivu3zDXQwPrWM2rAgOILSdiz32HagOTAH5gIFYcu30RL0CEZ460g5OwvHWHDFsgVshFauKLPYBpL2sM9wwy2G8wvQy4nFxIIMR3aC92hnCQdC04QaqeyNXCwwB-86TA4jDwwJJm-NZcM4BJG62zuxsDrDxmmkY4AEF63ExTNFVE0wHAXHWRRu3QLrMdNARl4l-J_pwOxV-ZYQRQBVzTFHYA2fMH3JAVMUSwCLZMAP_zpxhiCymTpTCFFFrYpInlAg8KykY4hYsxW5FtNrtXOqMohsTN2XKlTt_jh00TyFw3YqoKkQAxhtXhoAW6mM3IcpL8e8VUXlLW40qjj8ePC_U6cERS9wfWCHcgisFI9ho3F8kRGJi-palhgFowTQPUkkh1RGIpZNCzYS5CTxhtFIwMTRUCQwhsEzdAbPjX06qlJOC2bNyHC65OslkIno5F04XfEqeCLFbxuq4U0XfZJacIoVSWI3x7NRUUTVP1TbQoIc0z-Ka2qaMpN6U7VLKCoxzUhJ1E8AlErOOB4Penms-mxgaTbHsVQTHDKvQR-oLRrv6E7xV6tzZz0C8QFKQnaYEZ0lUA9pGwZTUckJ00U1WlOOwQPOHZWTKS-BM7QycdhWUrEHHK8QOC2wSBz2Eze4YMQNRh7LsxTJxIgSFiwPFOqsJHZO12551n1U-ScueTUZlphwcKilX7I08sRorpVNVHy7ZIBmBiPdlSlgrvgGU1iR_jHNrWVzM-vFfatWuyWjSqWZALdOwPjo4wnKPAfoPk1nYgefka0WTQ7cJJR7P3QZ1wnyw41WbjagbuGqKgxFmEwW_lWWlT0_Nb4nvd3d3f_4CplJ31g', name: 'Prune and alfalfa field', note: '53 ha, alfalfa 2019 to 2024 (public crop maps)' },
+};
+
+export function LandPanel({ land, presets, onClose, onOpenSpot, onOpenField, onOpenFarm, onSheet }: {
+  land: LandFeature; presets: Location[]; onClose: () => void; onOpenSpot: (lat: number, lon: number) => void; onOpenField: (id: string) => void; onOpenFarm?: (id: string) => void; onSheet?: (px: number) => void;
 }) {
   const p = land.properties;
   const [detail, setDetail] = useState<LandDetail | null>(null);
@@ -59,6 +64,15 @@ export function LandPanel({ land, presets, onClose, onOpenSpot, onOpenField, onS
         </section>
 
         <NationTools loc={loc} defaultOpen />
+
+        {FARMS[p.id] && onOpenFarm && (
+          <section className="lp-sec" aria-labelledby="lp-farm">
+            <h2 id="lp-farm" className="fp-h">Farm on this land</h2>
+            <ul className="lp-near" data-testid="land-farm">
+              <li><button onClick={() => onOpenFarm(FARMS[p.id].id)}><span><b>{FARMS[p.id].name}</b><small>{FARMS[p.id].note}</small></span></button></li>
+            </ul>
+          </section>
+        )}
 
         <section className="lp-sec" aria-labelledby="lp-near">
           <h2 id="lp-near" className="fp-h">Nearby fields</h2>
