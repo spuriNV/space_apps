@@ -12,11 +12,11 @@ Screenshots: `design/screenshots/android/`.
 | **Field now** | Still satellite map with the outline ("Open map" for a full map), then a visual summary (this year's bare/green/flooded strip, rain vs normal, water need vs limit, greenness, soil and groundwater percentiles), then at most 4 one-sentence answers, each with a source line | About this field, crops grown, how to read the strip, events, NASA data behind the field, crop-stress weeks, standing water, measured water use (OpenET), machine-learning check, crop insurance, every source |
 | **Coming season** | 3 items: rain outlook (with drought), water in storage and allocations, next season's water need | Every 3-month outlook, the longest bare stretch and heavy-rain odds, the full outlook paragraph, what isn't published yet |
 | **Compare** | Your water limit (editable, saved per field, "example, change to yours" until you change it), today's rotation, then the top 2 options as "You gain / You give up" in acre-feet and days; "See all options" | How the options are ranked (rule-of-thumb scores), how good the water estimate is (OpenET), what better/worse means |
-| **For your adviser** | Pick the option, then "Share as PDF": a one-page US Letter summary drawn with `PdfDocument` and sent through the Android share sheet | – |
+| **Summary** (for your adviser) | Pick the option, then "Share as PDF": a one-page US Letter summary drawn with `PdfDocument` and sent through the Android share sheet | – |
 
 Every screen has loading skeletons, an error panel with "Try again", pull to refresh, and a "Waking the server, up to a minute" panel when the free Render server is asleep. Everything the app has fetched is saved on the phone, so a field opens offline with "Saved on <date>. Can't reach the server right now."
 
-A deep link opens any field section directly: `croplytics://field/<id>?tab=<0-3>` (0 field now, 1 coming season, 2 compare, 3 for your adviser).
+A deep link opens any field section directly: `croplytics://field/<id>?tab=<0-3>` (0 field now, 1 coming season, 2 compare, 3 summary for your adviser).
 
 ## Architecture
 

@@ -98,7 +98,7 @@ fun FieldNowContent(
     }
     val summary = state.summary!!
     PullToRefreshBox(isRefreshing = false, onRefresh = onRetry, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(Modifier.fillMaxSize().testTag("field-now"), contentPadding = PaddingValues(bottom = 32.dp)) {
+        LazyColumn(Modifier.fillMaxSize().testTag("field-now"), contentPadding = app.croplytics.ui.components.pageContentPadding()) {
             state.offlineSavedAt?.let { item { OfflineNote(it) } }
             if (state.waking) item { WakingPanel() }
             if (showMap && state.rings.isNotEmpty()) item {

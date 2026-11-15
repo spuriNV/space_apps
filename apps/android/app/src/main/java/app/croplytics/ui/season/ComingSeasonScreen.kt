@@ -48,7 +48,7 @@ fun ComingSeasonContent(state: ComingSeasonUiState, onRetry: () -> Unit, onCompa
     }
     val summary = s!!
     PullToRefreshBox(isRefreshing = false, onRefresh = onRetry, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(Modifier.fillMaxSize().testTag("coming-season"), contentPadding = PaddingValues(bottom = 32.dp)) {
+        LazyColumn(Modifier.fillMaxSize().testTag("coming-season"), contentPadding = app.croplytics.ui.components.pageContentPadding()) {
             state.offlineSavedAt?.let { item { OfflineNote(it) } }
             item { HeadBand("What's likely this winter and next year", summary.lede) }
             summary.items.forEachIndexed { i, a ->

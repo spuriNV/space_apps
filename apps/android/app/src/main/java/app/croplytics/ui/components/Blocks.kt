@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -184,3 +188,8 @@ fun ExampleNote(text: String = "example, change to yours") {
 /** Part of a "More detail" section that could not load. */
 @Composable
 fun DetailUnavailable(text: String) = Text(text, style = MaterialTheme.typography.bodySmall, color = CropLyticsTheme.colors.muted)
+
+/** Bottom padding for a scrolling page: room above the gesture bar (edge-to-edge) plus a margin. */
+@Composable
+fun pageContentPadding(): PaddingValues =
+    PaddingValues(bottom = 32.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())

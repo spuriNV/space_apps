@@ -93,7 +93,7 @@ fun CompareContent(
         val give = o.giveUps.firstOrNull()?.let { "${it.title.lowercase()}, ${it.amount}" } ?: "nothing clear"
         "${o.name} against what you do now (${summary.today.name.lowercase()}): you'd gain $gain. You'd give up $give."
     }
-    LazyColumn(Modifier.fillMaxSize().testTag("compare"), contentPadding = PaddingValues(bottom = 32.dp)) {
+    LazyColumn(Modifier.fillMaxSize().testTag("compare"), contentPadding = app.croplytics.ui.components.pageContentPadding()) {
         state.offlineSavedAt?.let { item { OfflineNote(it) } }
         item { HeadBand("If you switched, what would you gain and give up?", lede) }
         item { LimitControl(state, onLimitChange) }

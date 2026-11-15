@@ -34,7 +34,7 @@ val CropLyticsTypography = Typography(
     titleMedium = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 18.sp, lineHeight = 23.sp),
     titleSmall = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.Medium, fontSize = 17.sp, lineHeight = 22.sp),
     bodyLarge = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 23.sp),
-    bodyMedium = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 15.sp, lineHeight = 21.sp),
+    bodyMedium = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp),
     bodySmall = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 13.sp, lineHeight = 18.sp, lineHeightStyle = tight),
     labelLarge = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, lineHeight = 20.sp),
     labelMedium = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, lineHeight = 17.sp),

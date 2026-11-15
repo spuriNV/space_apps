@@ -100,7 +100,7 @@ fun SummaryContent(
         s == null -> { PageSkeleton(); return }
     }
     val summary = s!!
-    LazyColumn(Modifier.fillMaxSize().testTag("summary"), contentPadding = PaddingValues(bottom = 32.dp)) {
+    LazyColumn(Modifier.fillMaxSize().testTag("summary"), contentPadding = app.croplytics.ui.components.pageContentPadding()) {
         state.offlineSavedAt?.let { item { OfflineNote(it) } }
         item { HeadBand("Summary for your adviser", "One page: what the field is, what's likely, the option to talk through and what to check locally.") }
         if (state.choices.size > 1) item {

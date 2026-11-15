@@ -46,7 +46,7 @@ enum class FieldTab(val label: String) {
     Now("Field now"),
     Season("Coming season"),
     Compare("Compare"),
-    Summary("For your adviser"),
+    Summary("Summary"),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

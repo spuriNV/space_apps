@@ -164,13 +164,8 @@ object ComingSeasonBuilder {
                 (chance?.let { "A day with 1 inch of rain or more landed in that window in $it% of past winters" } ?: "") +
                 (chanceOutlook?.let { "; about $it% with this winter's outlook." } ?: ".") + " $BARE_DEFINITION"
         }
-        val leanWords = when {
-            wetLeans > dryLeans -> "NOAA's outlook leans wetter than normal this winter."
-            dryLeans > wetLeans -> "NOAA's outlook leans drier than normal this winter."
-            else -> "NOAA's outlook shows no clear lean this winter."
-        }
         return ComingSeasonSummary(
-            lede = "$leanWords Outlooks, not forecasts: they tilt the odds, they don't say what will happen.",
+            lede = "Outlooks, not forecasts: they tilt the odds, they don't say what will happen.",
             items = listOf(rainItem, supplyItem, needItem),
             outlookRows = rows,
             bareWindow = bareWindow,

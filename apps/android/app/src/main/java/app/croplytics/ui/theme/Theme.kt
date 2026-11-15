@@ -18,6 +18,8 @@ private fun scheme(t: CropLyticsColors) = if (t.isDark) {
         surfaceVariant = t.panel2, onSurfaceVariant = t.muted, surfaceContainer = t.panel2, surfaceContainerLow = t.paper,
         surfaceContainerHigh = t.panel2, surfaceContainerHighest = t.panel2, outline = t.line, outlineVariant = t.lineSoft,
         error = t.bad, onError = t.paper,
+        primaryContainer = t.panel2, onPrimaryContainer = t.text, secondaryContainer = t.panel2, onSecondaryContainer = t.text,
+        tertiaryContainer = t.panel2, onTertiaryContainer = t.warn, surfaceTint = t.paper,
     )
 } else {
     lightColorScheme(
@@ -26,6 +28,8 @@ private fun scheme(t: CropLyticsColors) = if (t.isDark) {
         surfaceVariant = t.panel2, onSurfaceVariant = t.muted, surfaceContainer = t.panel2, surfaceContainerLow = t.paper,
         surfaceContainerHigh = t.panel2, surfaceContainerHighest = t.panel2, outline = t.line, outlineVariant = t.lineSoft,
         error = t.bad, onError = t.paper,
+        primaryContainer = t.panel2, onPrimaryContainer = t.text, secondaryContainer = t.panel2, onSecondaryContainer = t.text,
+        tertiaryContainer = t.panel2, onTertiaryContainer = t.warn, surfaceTint = t.paper,
     )
 }
 
