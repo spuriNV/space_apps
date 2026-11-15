@@ -96,6 +96,14 @@ enum ComingSeasonBuilder {
 
     static func waterAnswer(outlook: Outlook, field: FieldLocation, nasaNow: NasaNow?, storage: [ComingSeasonPresentation.StorageBar]) -> Answer {
         let county = FieldNaming.county(field)
+        if field.isBC, let ctx = field.waterContext, let latest = ctx.orders.max(by: { $0.date < $1.date }) {
+            let when = GrowerDate.short(latest.date) ?? latest.date
+            let head = latest.kind == "rescission" ? "The latest order to stop irrigating was lifted on \(when)" : "An order to stop irrigating was issued on \(when)"
+            var detail = ctx.orders.sorted { $0.date > $1.date }.prefix(3).map { "\(GrowerDate.short($0.date) ?? $0.date): \($0.title)." }
+            if let w = ctx.watershed { detail.insert("Watershed: \(w).", at: 0) }
+            return Answer(id: "water-supply", question: "Will there be water for irrigation?", headline: head, detail: detail.joined(separator: " "),
+                          cite: "BC Gov News, Water Sustainability Act fish-flow orders.")
+        }
         let surface = field.water?.isSurface ?? true
         var head: String
         var detail: [String] = []
@@ -143,6 +151,10 @@ enum ComingSeasonBuilder {
             return .init(id: i.id, name: names[i.id] ?? i.name ?? i.id, isToday: i.isBaseline ?? false, range: r)
         }
         let cite = "Rotation model driven by NASA POWER weather, shifted by NOAA's outlook. An estimate, not a forecast."
+        if let base = strategies?.first(where: \.isBaseline), base.isRainFed {
+            return (Answer(id: "need", question: "How much water will next season need?", headline: "None: today's rotation is rain-fed",
+                           detail: "\(FieldNowBuilder.rainFedText). It fits any water limit.", cite: cite), bars.filter { !$0.isToday })
+        }
         guard let today = bars.first(where: \.isToday) ?? bars.first else {
             return (Answer(id: "need", question: "How much water will next season need?", headline: "Next season's estimate hasn't loaded",
                            detail: "", cite: cite), bars)

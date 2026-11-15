@@ -8,7 +8,13 @@ struct APIClientTests {
     func decodesLocations() async throws {
         let (api, _) = TestAPI.client(handler: TestAPI.fixtures)
         let list = try await api.send(.locations, as: LocationList.self)
-        #expect(list.items.map(\.id) == ["car_colusa_rice", "caf_tulare_forage"])
+        #expect(list.items.count == 11)
+        #expect(list.items.first?.id == "car_colusa_rice")
+        let bc = try #require(list.items.first { $0.isBC })
+        #expect(bc.id == "bc_salmon_river_forage")
+        #expect(bc.waterContext?.orders.isEmpty == false)
+        #expect(bc.firstNations?.lowerRiverNation == "Splatsin")
+        #expect(bc.dataGaps.contains { $0.id == "openet" })
         let colusa = try #require(list.items.first)
         #expect(colusa.geometry?.rings.first?.count ?? 0 > 10)
         #expect(colusa.cropHistory["2025"] == "Rice")
@@ -21,6 +27,22 @@ struct APIClientTests {
         let req = api.request(for: .calendar("car_colusa_rice"))
         #expect(req.url?.absoluteString == "https://croplytics-app.onrender.com/api/locations/car_colusa_rice/calendar?source=hls")
         #expect(req.httpMethod == "GET")
+        #expect(api.request(for: .iss("car_colusa_rice")).url?.absoluteString == "https://croplytics-app.onrender.com/iss/car_colusa_rice/iss.json")
+    }
+
+    @Test("POST score carries the grower's priorities and what-if")
+    func scoreSendsPriorities() async throws {
+        let (api, _) = TestAPI.client { req in
+            let body = try JSONSerialization.jsonObject(with: req.httpBody ?? Data()) as? [String: Any]
+            #expect(body?["allocation"] as? Double == 4.0)
+            #expect((body?["weights"] as? [String: Int])?["water_use"] == 4)
+            #expect((body?["scenario"] as? [String: Double])?["dP_pct"] == -20)
+            return try TestAPI.fixtures(req)
+        }
+        let request = ScoreRequest(allocation: 4.0, weights: ["water_use": 4, "erosion": 1], scenario: .init(dT_c: 0, dP_pct: -20))
+        let result = try await api.send(.score("car_colusa_rice", request: request), as: StrategyList.self)
+        #expect(result.items.count == 4)
+        #expect(Endpoint.score("x", request: request).cacheKey == "locations/x/score?allocation=4.0&w=erosion:1,water_use:4&dT=0.0&dP=-20.0")
     }
 
     @Test("POST score sends the water limit as JSON")
@@ -48,7 +70,7 @@ struct APIClientTests {
             return try TestAPI.fixtures(req)
         }
         let list = try await api.send(.locations, as: LocationList.self)
-        #expect(list.items.count == 2)
+        #expect(list.items.count == 11)
         #expect(StubURLProtocol.requestCount(host) == 4)
         #expect(log.slowCount == 1)
         #expect(log.finishedCount == 1)

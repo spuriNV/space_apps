@@ -3,111 +3,185 @@ import CoreGraphics
 import Testing
 @testable import CropLytics
 
-@Suite("View models")
+@Suite("App model, field session and screens")
 @MainActor
 struct ViewModelTests {
-    private func fields() async -> (AppModel, [FieldLocation]) {
-        let app = AppModel(repository: TestAPI.fixtureRepository(), defaults: UserDefaults(suiteName: UUID().uuidString)!)
-        await app.loadFields()
-        return (app, app.fields.value ?? [])
+    private func app(limits: WaterLimitStore? = nil) async -> AppModel {
+        let m = AppModel(repository: TestAPI.fixtureRepository(), defaults: UserDefaults(suiteName: UUID().uuidString)!,
+                         today: TestAPI.today, limits: limits)
+        await m.loadFields()
+        return m
     }
 
-    @Test("Field list: farmer names, search by town, county or crop, open goes to Field now")
-    func fieldsList() async throws {
-        let (app, all) = await fields()
-        #expect(all.count == 2)
-        let model = FieldsViewModel(app: app)
-        #expect(model.rows.map(\.name).contains("Rice field 3.5 miles east of Williams"))
-        model.searchText = "kings"
-        #expect(model.rows.map(\.id) == ["caf_tulare_forage"])
-        model.searchText = "rice WILLIAMS"
-        #expect(model.rows.map(\.id) == ["car_colusa_rice"])
-        model.searchText = "almonds"
-        #expect(model.rows.isEmpty)
-        model.open("car_colusa_rice")
-        #expect(app.tab == .now)
-        #expect(app.selectedField?.id == "car_colusa_rice")
+    private func session(_ id: String) async throws -> (AppModel, FieldSession) {
+        let a = await app()
+        a.open(id)
+        let s = try #require(a.session)
+        await s.load()
+        return (a, s)
     }
 
-    @Test("Field now: a summary and at most 4 answers, with the example limit flagged")
-    func fieldNow() async throws {
-        let (_, all) = await fields()
-        let colusa = try #require(all.first { $0.id == "car_colusa_rice" })
-        let model = FieldNowViewModel(field: colusa, repository: TestAPI.fixtureRepository(), limits: TestAPI.limits(), today: TestAPI.today)
-        await model.load()
-        #expect(!model.isLoading)
-        let p = model.presentation
-        #expect(p.answers.count == 4)
-        #expect(p.answers.map(\.id) == ["growing", "rain", "water", "soil"])
+    @Test("Fields load; opening one shares its data across tabs; home closes it")
+    func appModel() async throws {
+        let limits = TestAPI.limits()
+        let a = await app(limits: limits)
+        #expect(a.fields.value?.count == 11)
+        #expect(a.pickerOpen)
+        #expect(limits.limit(for: "car_glenn_rice") == .init(value: 5.0, isExample: true))
+        a.open("car_colusa_rice")
+        #expect(a.selectedField?.id == "car_colusa_rice")
+        #expect(!a.pickerOpen && a.detent == .half && a.tab == .now)
+        let first = a.session
+        a.select(tab: .compare)
+        #expect(a.tab == .compare && a.session === first)
+        a.showPicker()
+        #expect(a.pickerOpen && a.selectedField != nil)
+        a.goHome()
+        #expect(a.session == nil && a.pickerOpen)
+        a.select(tab: .year)
+        #expect(a.pickerOpen, "No field yet: the tabs send the grower to the pick list")
+    }
+
+    @Test("Date control and replay stay within today")
+    func dateAndReplay() async throws {
+        let a = await app()
+        a.setDate(TimePoint(year: 2023, dekad: 7))
+        #expect(!a.isToday && a.t.label == "mid Mar 2023")
+        a.setDate(a.today.advanced(by: 10))
+        #expect(a.t == a.today)
+        a.toggleReplay()
+        #expect(a.playing && a.t == TimePoint(year: 2023, dekad: 0))
+        try await Task.sleep(for: .milliseconds(500))
+        #expect(a.t > TimePoint(year: 2023, dekad: 0))
+        a.backToToday()
+        #expect(!a.playing && a.isToday)
+    }
+
+    @Test("Pick list search and Rice / Forage / BC chips")
+    func picker() async throws {
+        let loaded = await app()
+        let fields = try #require(loaded.fields.value)
+        #expect(PickerPanel.filter(fields, query: "", family: "rice").count == 6)
+        #expect(PickerPanel.filter(fields, query: "", family: "bc").map(\.id) == ["bc_salmon_river_forage"])
+        #expect(PickerPanel.filter(fields, query: "", family: "forage").allSatisfy { !$0.isBC && $0.family == "forage" })
+        #expect(PickerPanel.filter(fields, query: "williams", family: nil).map(\.id) == ["car_colusa_rice"])
+        #expect(PickerPanel.filter(fields, query: "british columbia", family: nil).count == 1)
+        #expect(PickerPanel.filter(fields, query: "almonds", family: nil).isEmpty)
+        let bc = fields.first(where: \.isBC)!
+        #expect(FieldNaming.place(bc) == "Columbia-Shuswap, BC")
+        #expect(FieldNaming.notable(bc).hasPrefix("Irrigation stopped by a fish-flow order in Aug 2023"))
+        #expect(FieldNaming.notable(fields[0]).hasPrefix("Left fallow in the 2022 drought"))
+    }
+
+    @Test("Field now today: summary, farmer answers, soil answer, example limit; detail answers flagged")
+    func fieldNowToday() async throws {
+        let (a, s) = try await session("car_colusa_rice")
+        let p = FieldNowBuilder.build(.init(field: s.field, nasaNow: s.nasaNow.value, calendar: s.calendar.value, strategies: s.currentStrategies,
+                                            limit: TestAPI.limits().limit(for: s.field.id), t: a.t, today: a.today, daily: s.daily.value,
+                                            stress: s.stress.value, waterSeen: s.waterSeen.value))
+        #expect(p.heading == "Your field now")
+        let farmer = p.answers.filter { !$0.detailOnly }.map(\.id)
+        #expect(farmer == ["growing", "rain", "water", "soil", "soil-kind"])
+        #expect(p.answers.filter(\.detailOnly).map(\.id).contains("heat"))
         let rain = try #require(p.answers.first { $0.id == "rain" })
         #expect(rain.headline == "So far drier than normal")
-        #expect(rain.detail.hasPrefix("1.9 inches since 1 Oct"))
         let water = try #require(p.answers.first { $0.id == "water" })
         #expect(water.headline == "Short by about 0.2 acre-feet per acre")
-        #expect(water.detail.contains("example"))
-        #expect(p.summary.rain?.note.hasPrefix("62% of normal") == true)
-        #expect(p.summary.water?.warn == true)
+        #expect(water.status?.kind == .example)
+        #expect(p.answers.first { $0.id == "soil-kind" }?.headline == "Clay loam")
         #expect(p.summary.groundwaterPercentile == 52.7)
-        #expect(p.summary.strip.count == 36)
-        #expect(model.freshness == nil)
+        #expect(p.summary.strip.count == 36 && p.summary.marker == 31)
     }
 
-    @Test("Coming season: three items; rain outlook, water supply and next season's need")
-    func comingSeason() async throws {
-        let (_, all) = await fields()
-        let kings = try #require(all.first { $0.id == "caf_tulare_forage" })
-        let model = ComingSeasonViewModel(field: kings, repository: TestAPI.fixtureRepository(), limits: TestAPI.limits())
-        await model.load()
-        let p = try #require(model.presentation)
-        #expect(p.rain.headline == "NOAA's outlook leans wetter than normal this winter")
-        #expect(p.water.headline.hasPrefix("Groundwater under this basin is far below usual"))
-        #expect(p.need.headline.contains("over your limit"))
-        #expect(p.needBars.count == 4)
+    @Test("Field now on a past date reads the daily record")
+    func fieldNowPast() async throws {
+        let (_, s) = try await session("car_colusa_rice")
+        let t = TimePoint(year: 2023, dekad: 7)
+        let p = FieldNowBuilder.build(.init(field: s.field, nasaNow: s.nasaNow.value, calendar: s.calendar.value, strategies: s.currentStrategies,
+                                            limit: .init(value: 5, isExample: true), t: t, today: TestAPI.todayPoint, daily: s.daily.value))
+        #expect(p.heading == "Your field in mid Mar 2023")
+        let rain = try #require(p.answers.first { $0.id == "rain" })
+        #expect(rain.headline.hasPrefix("So far"))
+        #expect(rain.detail.contains("since 1 Oct"))
+        #expect(p.summary.stripYear == 2023)
     }
 
-    @Test("Compare: today vs top 2; the water limit is saved per field and re-scored")
+    @Test("BC field: water orders, rain-fed option, First Nations")
+    func bcField() async throws {
+        let (_, s) = try await session("bc_salmon_river_forage")
+        #expect(s.firstNations.value?.lowerRiver?.nation == "Splatsin")
+        #expect(s.salmon.error == .notFound, "The salmon route isn't published, so the panel stays hidden")
+        let o = try #require(s.outlook.value)
+        let season = ComingSeasonBuilder.build(outlook: o, field: s.field, nasaNow: s.nasaNow.value, strategies: s.currentStrategies,
+                                               limit: .init(value: 3, isExample: true))
+        #expect(season.water.headline.contains("order to stop irrigating"))
+        let compare = try #require(CompareBuilder.build(strategies: s.currentStrategies ?? [], calendar: s.calendar.value, limit: 3, count: 10))
+        let sainfoin = try #require(compare.all.first { $0.id == "bc3_sainfoin_grass" })
+        #expect(sainfoin.rainFed && sainfoin.fit == .fits && sainfoin.waterText == "Rain-fed (no irrigation)")
+        #expect(FieldNowBuilder.cropMapName(s.field) == "AAFC Annual Crop Inventory")
+    }
+
+    @Test("Year: typical year, the last 4 seasons, rain marks and the ML verdict")
+    func year() async throws {
+        let (a, s) = try await session("car_colusa_rice")
+        let p = YearBuilder.build(field: s.field, calendar: try #require(s.calendar.value), ml: s.calendarML.value, models: s.models.value,
+                                  daily: s.daily.value, stress: s.stress.value, waterSeen: s.waterSeen.value, today: a.today, earlier: false, detail: true)
+        #expect(p.rows.map(\.year) == [2026, 2025, 2024, 2023])
+        #expect(p.typical.count == 36)
+        #expect(p.mlVerdict.available)
+        #expect(p.rows.contains { $0.ticks.contains { if case .rain = $0.kind { true } else { false } } })
+        let cal = try #require(s.calendar.value)
+        let earlier = YearBuilder.build(field: s.field, calendar: cal, ml: nil, models: nil, daily: nil, stress: nil, waterSeen: nil,
+                                        today: a.today, earlier: true, detail: false)
+        #expect(earlier.rows.last?.year == 2016)
+        #expect(!earlier.mlVerdict.available)
+    }
+
+    @Test("Compare: top 2, weather replays, and priorities re-scored through POST /score")
     func compare() async throws {
-        let (_, all) = await fields()
-        let colusa = try #require(all.first { $0.id == "car_colusa_rice" })
-        let limits = TestAPI.limits()
-        let model = CompareViewModel(field: colusa, repository: TestAPI.fixtureRepository(), limits: limits, debounce: .milliseconds(10))
-        await model.load()
-        let p = try #require(model.presentation)
-        #expect(p.today.id == "car0_rice_winterflood")
-        #expect(p.top.count == 2)
-        #expect(p.top.first?.id == "car2_dryyear_safflower")
-        let safflower = try #require(p.top.first)
-        #expect(safflower.gains.first?.title == "Needs less irrigation water")
-        #expect(safflower.gains.first?.delta.hasPrefix("about 3.3 acre-ft/acre less a year") == true)
-        #expect(safflower.losses.contains { $0.id == "bare" })
-        #expect(p.all.count == 4)
+        let (_, s) = try await session("car_colusa_rice")
+        let p = try #require(CompareBuilder.build(strategies: s.currentStrategies ?? [], calendar: s.calendar.value, limit: 5))
+        #expect(p.today.name == "Rice + winter flood")
+        #expect(p.top.map(\.id) == ["car2_dryyear_safflower", "car1_rice_wintercover"])
+        #expect(p.top[0].gains.first?.title == "Needs less irrigation water")
+        let dry = try #require(CompareBuilder.build(strategies: s.currentStrategies ?? [], calendar: s.calendar.value, limit: 5, weather: .dry))
+        let base = try #require(s.currentStrategies?.first { $0.isBaseline })
+        #expect(dry.today.water == CompareBuilder.waterNeed(base, .dry))
 
-        #expect(model.limit == .init(value: 5.0, isExample: true))
-        model.setLimit(3.04)
-        #expect(limits.limit(for: "car_colusa_rice") == .init(value: 3.0, isExample: false))
-        #expect(limits.limit(for: "caf_tulare_forage").isExample)
-        await model.pendingRescore?.value
-        #expect(model.scoredLimit == 3.0)
-        #expect(model.presentation?.today.fit == .over)
-        model.resetLimit()
-        #expect(model.limit.isExample)
+        s.rescoreDebounce = .milliseconds(5)
+        #expect(s.scoreRequest(limit: 4).weights == nil)
+        s.weights["water_use"] = 4
+        s.scenario.dP_pct = -20
+        let req = s.scoreRequest(limit: 4)
+        #expect(req.weights?["water_use"] == 4 && req.weights?["pest_break"] == 0 && req.weights?["market"] == 0)
+        #expect(req.scenario?.dP_pct == -20)
+        s.scheduleRescore(limit: 4)
+        await s.pendingRescore?.value
+        #expect(s.rescoreError == nil)
+        #expect(s.currentStrategies?.count == 4)
     }
 
-    @Test("Summary: renders a one-page US Letter PDF")
-    func summaryPDF() async throws {
-        let (_, all) = await fields()
-        let colusa = try #require(all.first { $0.id == "car_colusa_rice" })
-        let model = SummaryViewModel(field: colusa, repository: TestAPI.fixtureRepository(), limits: TestAPI.limits(), today: TestAPI.today)
-        await model.load()
-        let content = model.content
-        #expect(content.now.count == 4)
-        #expect(content.season.count == 3)
-        #expect(content.alternative != nil)
-        model.render(thumbnail: nil)
-        let url = try #require(model.pdfURL)
+    @Test("Print: one-page US Letter PDF with the chosen option")
+    func printPDF() async throws {
+        let (a, s) = try await session("car_colusa_rice")
+        let content = SummaryBuilder.content(session: s, limit: .init(value: 5, isExample: true), today: a.today, pick: "car3_rice_wheat")
+        #expect(content.alternative?.id == "car3_rice_wheat")
+        #expect(content.now.count == 4 && content.season.count == 3)
+        #expect(content.stateFieldNumber == "0605542")
+        let url = try #require(PDFRenderer.pdf(SummaryPage(content: content, thumbnail: nil), name: content.fieldName))
         let pdf = try #require(CGPDFDocument(url as CFURL))
         #expect(pdf.numberOfPages == 1)
-        let box = try #require(pdf.page(at: 1)?.getBoxRect(.mediaBox))
-        #expect(box.size == CGSize(width: 612, height: 792))
+        #expect(pdf.page(at: 1)?.getBoxRect(.mediaBox).size == CGSize(width: 612, height: 792))
+    }
+
+    @Test("Water limit: example from the API until the grower sets one, saved per field")
+    func limits() async throws {
+        let limits = TestAPI.limits()
+        _ = await app(limits: limits)
+        #expect(limits.limit(for: "caf_tipton_forage") == .init(value: 3.0, isExample: true))
+        limits.set(3.04, for: "car_colusa_rice")
+        #expect(limits.limit(for: "car_colusa_rice") == .init(value: 3.0, isExample: false))
+        limits.reset("car_colusa_rice")
+        #expect(limits.limit(for: "car_colusa_rice").isExample)
     }
 }

@@ -15,6 +15,29 @@ Written 15 Nov 2026. It replaces the slide-based plan in `docs/pitch.md` §3 whe
 
 ---
 
+## 0. As built: v1 ($0, 15 Nov 2026)
+
+`video/croplytics-30s-v1.mp4` (+ `.srt`), built by `video/scripts/build.mjs`; sources and licences in `video/CREDITS.md`. It differs from the plan below in four ways: no AI footage (Mixkit stock, all Free-licence, replaces the AI farmer), it opens on the ISS photo, the farmer part is short (about 4.5 s, after `docs/past-winners/REPORT.md`), and it runs **29.5 s (708 frames)**. The voice is a text-to-speech placeholder (edge-tts, `en-US-AndrewNeural`), kept as its own stem so a better read can replace it (`VO_DIR=... node video/scripts/build.mjs`).
+
+| # | Time | Len | Source | Picture | On screen (eyebrow / text / source line) | Voice-over |
+|---|---|---|---|---|---|---|
+| 1 | 0:00.00–0:02.25 | 2.25 | NASA | ISS photo ISS062-E-81143 (Sacramento Valley, Sutter Buttes), slow push-in | "The Sacramento Valley, seen from the International Space Station"; credit line, NASA JSC | (music) |
+| 2 | 0:02.25–0:04.25 | 2.0 | STOCK | Mixkit #521, man in a hat at sunset looking out | | "Every season, the same question." |
+| 3 | 0:04.25–0:05.75 | 1.5 | STOCK | Mixkit #42382, hand to the hat, sunset | | "What do I plant next?" |
+| 4 | 0:05.75–0:06.75 | 1.0 | STOCK | Mixkit #594, hands with a phone in dry grass (cropped) | | |
+| 5 | 0:06.75–0:10.75 | 4.0 | REC phone | iPhone 15 simulator, Safari: pick list, tap the Colusa card, fly in, sheet up to rain 1.9 in and water need 5.2 acre-ft/acre | A real field: one of 10 in California, plus one in British Columbia / Rice field 4 miles east of Williams · 149 acres · Colusa County / NASA HLS (Landsat + ESA Sentinel-2) · NASA GPM IMERG rain | "CropLytics reads your field with NASA Earth data." |
+| 6 | 0:10.75–0:11.50 | 0.75 | STOCK | Mixkit #32139, older man at a laptop | | |
+| 7 | 0:11.50–0:14.00 | 2.5 | REC laptop | 3D view under the field, slow orbit | Different observations, different scales / Crop · soil moisture · groundwater in the basin / ESA Sentinel-2 · NASA GRACE-FO | "From the crop down to the groundwater." |
+| 8 | 0:14.00–0:16.25 | 2.25 | REC laptop | This field's year, earlier years open, 2022 row outlined | Understand risk / 2022: left fallow in the drought / NASA HLS · GPM IMERG | "What happened here." |
+| 9 | 0:16.25–0:18.25 | 2.0 | REC laptop | Coming season, "Wetter than normal this winter. An outlook, not a forecast." | Make uncertainty visible / An outlook, not a forecast / NOAA CPC · CDEC | "What's likely this winter." |
+| 10 | 0:18.25–0:22.00 | 3.75 | REC laptop | Compare: click Dry-year safflower, zoom to You gain | Compare rotations · reveal trade-offs / Dry-year safflower: about 2 acre-ft/acre, an upper bound. Rice today: about 5. / NASA POWER | "What a switch costs: about two acre-feet, not five." |
+| 11 | 0:22.00–0:25.50 | 3.5 | REC laptop | Print for your adviser: the brief drops in and scrolls to "Check locally" | One page for the grower and adviser / Water estimate checked against OpenET: runs 16–21% high, nothing tuned. | "One page for your adviser, checked against OpenET." |
+| 12 | 0:25.50–0:29.50 | 4.0 | GFX | End card: CropLytics, "Your field. Your call.", "Plan next season's rotation with NASA Earth data.", "10 real California fields and one in British Columbia. Next: co-design with First Nations farmers.", "NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data", URL, synthetic-voice note | | "CropLytics. Your field. Your call." |
+
+Not on screen, on purpose: SMAP (the 3D view labels soil moisture as "NASA GRACE-FO with a land model", so the video doesn't name SMAP), MODIS, ECOSTRESS, the 14-field registry (the live pick list shows 10 California fields plus BC; set `N_CA` in the build if that changes), and any First Nations co-development claim.
+
+---
+
 ## 1. Shot list (sums to 30.0 s)
 
 Sources: **AI** = generated video (section 7 prompts), **REC** = screen recording of the real app (section 4), **GFX** = motion graphics built in the edit, **STOCK** = free stock fallback.

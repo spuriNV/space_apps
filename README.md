@@ -18,6 +18,8 @@ It ends with a one-page brief for the adviser.
 
 **https://croplytics-app.onrender.com**: the full app and API, redeployed automatically on every push to `main` (Render, free plan; the first visit after it has been idle takes a moment to wake up).
 
+**Reach:** California planted about 524,000 acres of rice in 2025; CropLytics covers every one of those fields with the same NASA data (USDA NASS, served at `/api/reach`).
+
 ## Run it locally
 
 You need **Node 20+** and **[uv](https://docs.astral.sh/uv/)** (it installs Python 3.12 for you). Cached data is committed, so the app runs without any API keys.

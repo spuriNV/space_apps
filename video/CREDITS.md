@@ -33,11 +33,11 @@ The photo is cropped to 16:9 and its contrast and saturation are raised to cut t
 
 ## App footage
 
-Real screen recordings of the live app <https://croplytics-app.onrender.com>, recorded on 15 Nov 2026:
+Real screen recordings of the live app <https://croplytics-app.onrender.com>, recorded on 15 Nov 2026 after the frontend redesign (commits 40fcbed and 885f57d) was live, with live API data (the recorder refuses the app's example-data fallback):
 - Shot 5 (phone): Safari on an iPhone 15 simulator (iOS 17.5), driven by `video/scripts/record-phone.sh`; the device frame is drawn in the edit.
 - Shots 7–11 (laptop): Chrome at 1600×900 CSS px (1920×1080 device px), recorded with Chrome's screencast by `video/scripts/record-laptop.mjs`.
 
-The 2022 row in shot 8 has a thin yellow outline added in the page for the recording. Everything else is the app as served. The satellite basemap in the recordings is Esri World Imagery: "Basemap imagery: Esri, Maxar and contributors". Data named on screen: NASA HLS (Landsat and ESA Sentinel-2), NASA GPM IMERG, NASA GRACE-FO, NASA POWER, and OpenET (the comparison).
+The 2022 row in shot 8 has a thin yellow outline added in the page for the recording. Everything else is the app as served. The satellite basemap in the recordings is Esri World Imagery: "Basemap imagery: Esri, Maxar and contributors". Data named on screen: NASA HLS (Landsat and ESA Sentinel-2), NASA GPM IMERG, NASA GRACE-FO, NASA POWER, NOAA CPC outlooks, CDEC reservoir storage, and OpenET (the comparison).
 
 ## Music
 

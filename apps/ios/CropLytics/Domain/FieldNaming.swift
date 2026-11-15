@@ -8,6 +8,8 @@ enum FieldNaming {
         guard var c = raw, !c.isEmpty else { return "Not recorded" }
         c = c.replacingOccurrences(of: " (CDL pending)", with: "")
         if c.hasPrefix("Fallow") { return "Left fallow" }
+        if c.hasPrefix("Not mapped") { return "Not recorded" }
+        if c == "Pasture / Forages" { return "Hay and pasture" }
         if c.hasPrefix("Dbl Crop WinWht/Corn") { return "Wheat, then corn" }
         if c.hasPrefix("Dbl Crop ") { return c.replacingOccurrences(of: "Dbl Crop ", with: "").replacingOccurrences(of: "/", with: ", then ") }
         return c
@@ -73,9 +75,19 @@ enum FieldNaming {
     ]
 
     static func county(_ f: FieldLocation) -> String {
-        if let n = f.countyName, !n.isEmpty { return n.replacingOccurrences(of: " County", with: "") }
+        if let n = f.countyName, !n.isEmpty { return n.replacingOccurrences(of: " County", with: "").replacingOccurrences(of: " regional district", with: "") }
         if let fips = f.countyFips, let n = countyByFips[String(fips.suffix(3))] { return n }
         return "California"
+    }
+
+    /// "Colusa County" in California; "Columbia-Shuswap, BC" (a regional district) in British Columbia.
+    static func place(_ f: FieldLocation) -> String { f.isBC ? "\(county(f)), BC" : "\(county(f)) County" }
+
+    /// "State field no. 0605542, 39.1414° N, 122.0833° W"
+    static func idLine(_ f: FieldLocation) -> String {
+        let c = String(format: "%.4f° N, %.4f° W", f.centroid.lat, abs(f.centroid.lon))
+        if f.isBC { return "British Columbia, \(c)" }
+        return f.dwrUniqueId.map { "State field no. \($0), \(c)" } ?? c
     }
 
     static func acres(_ f: FieldLocation) -> Int {
@@ -103,8 +115,28 @@ enum FieldNaming {
         if let latest = latestCrop(f.cropHistory) {
             parts.append(latest.crop == "Left fallow" ? "left fallow in \(latest.year)" : "\(latest.crop.lowercased()) in \(latest.year)")
         }
-        parts.append("\(county(f)) County")
+        parts.append(place(f))
         return parts.joined(separator: ", ")
+    }
+
+    /// One line of what is notable about a field, from its record (the pick list).
+    static func notable(_ f: FieldLocation) -> String {
+        if f.isBC {
+            guard let o = f.waterContext?.orders.filter({ $0.kind != "rescission" }).sorted(by: { $0.date < $1.date }).first,
+                  let d = GrowerDate.parse(o.date) else { return "" }
+            let c = GrowerDate.calendar.dateComponents([.year, .month], from: d)
+            return "Irrigation stopped by a fish-flow order in \(GrowerDate.months[(c.month ?? 1) - 1]) \(c.year ?? 2023)."
+        }
+        var notes: [String] = []
+        let fallow = sortedYears(f.cropHistory).filter { $0 >= 2016 && cropName(f.cropHistory[String($0)]) == "Left fallow" }
+        if fallow.contains(2022) { notes.append("Left fallow in the 2022 drought") } else if let l = fallow.last { notes.append("Left fallow in \(l)") }
+        if f.water?.isSurface == true {
+            notes.append(f.water?.district.map { "surface water, \($0.replacingOccurrences(of: " (U)", with: ""))" } ?? "surface water")
+        } else if f.water?.source != nil {
+            notes.append((f.water?.sgmaStatus ?? "").lowercased().contains("probation") ? "wells; basin on state probation" : "wells")
+        }
+        let s = notes.joined(separator: "; ")
+        return s.isEmpty ? "" : s.prefix(1).uppercased() + s.dropFirst() + "."
     }
 
     /// "Rice in 8 of the last 10 years; left fallow 2016, 2020 and 2022."
@@ -126,6 +158,7 @@ enum FieldNaming {
 
     /// Engine rotation ids -> short names a grower would use.
     static func shortRotationName(_ s: Strategy) -> String {
+        if let n = s.shortName, !n.isEmpty { return n.replacingOccurrences(of: " (current)", with: "") }
         let known: [String: String] = [
             "car0_rice_winterflood": "Rice + winter flood", "car1_rice_wintercover": "Rice + winter cover",
             "car2_dryyear_safflower": "Dry-year safflower", "car3_rice_wheat": "Rice, then wheat",

@@ -12,26 +12,16 @@ struct SourceLine: View {
     }
 }
 
-/// Slab section heading; sentence case, no eyebrow.
-struct SectionHeading: View {
-    let text: String
-    var body: some View {
-        Text(text)
-            .font(.clHeading)
-            .foregroundStyle(Palette.text)
-            .accessibilityAddTraits(.isHeader)
-    }
-}
-
-/// A question, its plain answer, one line of numbers, and the source line.
+/// A question, its plain answer, the numbers, and the source line. Rows are separated by hairlines, not cards.
 struct AnswerView: View {
     let answer: Answer
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(answer.question)
-                .font(.clLabel)
+                .font(.clSecondary)
                 .foregroundStyle(Palette.muted)
+                .fixedSize(horizontal: false, vertical: true)
             Text(answer.headline)
                 .font(.clAnswer)
                 .foregroundStyle(answer.tone == .warn ? Palette.warn : Palette.text)
@@ -42,31 +32,35 @@ struct AnswerView: View {
                     .foregroundStyle(Palette.text2)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            SourceLine(text: answer.cite)
-                .padding(.top, 2)
+            if let status = answer.status {
+                StatusWord(kind: status.kind, text: status.text)
+            }
+            if !answer.cite.isEmpty {
+                SourceLine(text: answer.cite).padding(.top, 2)
+            }
         }
+        .padding(.vertical, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("answer-\(answer.id)")
     }
 }
 
-/// A plain panel: paper-2 fill, 1px rule, 4pt radius. No glass, no big shadow.
-struct Panel<Content: View>: View {
-    var padding: CGFloat = 14
-    @ViewBuilder let content: Content
+/// Answers with hairlines between rows.
+struct AnswerList: View {
+    let answers: [Answer]
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) { content }
-            .padding(padding)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Palette.panel2, in: RoundedRectangle(cornerRadius: Metrics.radius))
-            .overlay(RoundedRectangle(cornerRadius: Metrics.radius).strokeBorder(Palette.lineSoft))
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(answers.enumerated()), id: \.element.id) { i, a in
+                if i > 0 { Hairline() }
+                AnswerView(answer: a)
+            }
+        }
     }
 }
 
-/// Hairline between rows.
 struct Hairline: View {
-    var body: some View { Rectangle().fill(Palette.line).frame(height: 1 / UIScreen.main.scale).accessibilityHidden(true) }
+    var body: some View { Rectangle().fill(Palette.line).frame(height: 1).accessibilityHidden(true) }
 }
 
 /// "Saved on 14 Nov 2026": shown when the screen is showing the copy saved on the phone.
@@ -93,85 +87,72 @@ struct ErrorStateView: View {
     let error: AppError
     let retry: () -> Void
     var body: some View {
-        ContentUnavailableView {
-            Label(error.title, systemImage: error == .offline ? "wifi.slash" : "exclamationmark.triangle")
-        } description: {
-            Text(error.message)
-        } actions: {
-            Button("Try again", action: retry)
-                .buttonStyle(.borderedProminent)
-                .accessibilityIdentifier("retry")
+        VStack(spacing: 10) {
+            Image(systemName: error == .offline ? "wifi.slash" : "exclamationmark.triangle")
+                .font(.system(size: 28)).foregroundStyle(Palette.muted)
+            Text(error.title).font(.clAnswer).foregroundStyle(Palette.text)
+            Text(error.message).font(.clBody).foregroundStyle(Palette.text2).multilineTextAlignment(.center)
+            Button("Try again", action: retry).buttonStyle(.tonalPill).accessibilityIdentifier("retry")
         }
-        .frame(maxWidth: .infinity, minHeight: 320)
+        .padding(24)
+        .frame(maxWidth: .infinity)
     }
 }
 
 /// "Waking the server, up to a minute": the free Render server sleeps when idle.
-struct WakingBannerModifier: ViewModifier {
-    @Environment(AppEnvironment.self) private var env
-
-    func body(content: Content) -> some View {
-        content.safeAreaInset(edge: .top, spacing: 0) {
-            if env.serverStatus.isWaking {
-                HStack(spacing: 10) {
-                    ProgressView().tint(Palette.accentInk)
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text("Waking the server, up to a minute")
-                            .font(.clLabel)
-                        Text("The free server sleeps when nobody has used it for a while.")
-                            .font(.clCite)
-                            .opacity(0.9)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .foregroundStyle(Palette.accentInk)
-                .padding(.horizontal, Metrics.gutter)
-                .padding(.vertical, 10)
-                .background(Palette.accent)
-                .transition(.move(edge: .top).combined(with: .opacity))
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("waking-banner")
+struct WakingBanner: View {
+    var body: some View {
+        HStack(spacing: 10) {
+            ProgressView().tint(Palette.onAccentContainer)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Waking the server, up to a minute").font(.clLabel)
+                Text("The free server sleeps when nobody has used it for a while.").font(.clCite).opacity(0.9)
             }
+            Spacer(minLength: 0)
         }
-        .animation(.easeInOut(duration: 0.25), value: env.serverStatus.isWaking)
+        .foregroundStyle(Palette.onAccentContainer)
+        .padding(.horizontal, 16).padding(.vertical, 10)
+        .background(RoundedRectangle(cornerRadius: Radius.md, style: .continuous).fill(Palette.accentContainer))
+        .elevation2()
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("waking-banner")
     }
 }
 
 extension View {
-    func wakingBanner() -> some View { modifier(WakingBannerModifier()) }
-
-    /// Loading placeholder: the layout with grey bars, while the real data loads.
+    /// Loading placeholder: the real layout with grey bars while the data loads.
     func placeholder(_ active: Bool) -> some View {
         redacted(reason: active ? .placeholder : [])
+            .shimmer(active)
             .disabled(active)
-            .accessibilityLabel(active ? Text("Loading") : Text(""))
+    }
+
+    @ViewBuilder func shimmer(_ active: Bool) -> some View {
+        if active { modifier(Shimmer()) } else { self }
     }
 }
 
-/// "More detail": everything a farmer doesn't need to decide, collapsed (PLAN.md, farmer-first default).
-struct MoreDetail<Content: View>: View {
-    @State private var expanded = false
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Hairline()
-            DisclosureGroup(isExpanded: $expanded) {
-                VStack(alignment: .leading, spacing: 22) { content }
-                    .padding(.top, 12)
-            } label: {
-                Text("More detail")
-                    .font(.clHeading)
-                    .foregroundStyle(Palette.text)
-                    .padding(.vertical, 10)
+/// A soft moving highlight over placeholders; still with Reduce Motion.
+struct Shimmer: ViewModifier {
+    @State private var phase: CGFloat = -1
+    @Environment(\.accessibilityReduceMotion) private var reduce
+    func body(content: Content) -> some View {
+        content.overlay {
+            if !reduce {
+                GeometryReader { g in
+                    LinearGradient(colors: [.clear, Palette.raised.opacity(0.45), .clear], startPoint: .leading, endPoint: .trailing)
+                        .frame(width: g.size.width * 0.6)
+                        .offset(x: phase * g.size.width)
+                }
+                .mask(content)
+                .allowsHitTesting(false)
+                .onAppear { withAnimation(.linear(duration: 1.3).repeatForever(autoreverses: false)) { phase = 1.4 } }
             }
-            .accessibilityIdentifier("more-detail")
-            .accessibilityHint("Data sources, satellite details and checks")
         }
     }
 }
 
-/// A label / value row: label muted at the left, value in ink.
+/// A label / value row: label muted at the left, value in ink, rows separated by hairlines.
 struct FactRow: View {
     let label: String
     let value: String
@@ -180,7 +161,7 @@ struct FactRow: View {
     var body: some View {
         ViewThatFits(in: .horizontal) {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
-                Text(label).font(.clSecondary).foregroundStyle(Palette.muted).frame(width: 110, alignment: .leading)
+                Text(label).font(.clSecondary).foregroundStyle(Palette.muted).frame(width: 112, alignment: .leading)
                 valueStack
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -188,6 +169,7 @@ struct FactRow: View {
                 valueStack
             }
         }
+        .padding(.vertical, 10)
         .accessibilityElement(children: .combine)
     }
 
@@ -198,5 +180,29 @@ struct FactRow: View {
             if let note { SourceLine(text: note) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// A simple wrapping row layout.
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let width = proposal.width ?? .infinity
+        var x: CGFloat = 0, y: CGFloat = 0, row: CGFloat = 0, maxX: CGFloat = 0
+        for s in subviews {
+            let size = s.sizeThatFits(.unspecified)
+            if x + size.width > width, x > 0 { x = 0; y += row + spacing; row = 0 }
+            x += size.width + spacing; row = max(row, size.height); maxX = max(maxX, x)
+        }
+        return CGSize(width: min(maxX, width), height: y + row)
+    }
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var x = bounds.minX, y = bounds.minY, row: CGFloat = 0
+        for s in subviews {
+            let size = s.sizeThatFits(.unspecified)
+            if x + size.width > bounds.maxX, x > bounds.minX { x = bounds.minX; y += row + spacing; row = 0 }
+            s.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
+            x += size.width + spacing; row = max(row, size.height)
+        }
     }
 }

@@ -15,6 +15,8 @@ final class WaterLimitStore {
     static let range: ClosedRange<Double> = 0.5...8.0
     private let defaults: UserDefaults
     private var stored: [String: Double]
+    /// Example limits the API suggests per field (`water.example_limit_af_ac`).
+    private var examples: [String: Double] = [:]
     private static let key = "waterLimits.v1"
 
     init(defaults: UserDefaults = .standard) {
@@ -24,7 +26,11 @@ final class WaterLimitStore {
 
     func limit(for fieldID: String) -> Limit {
         if let v = stored[fieldID] { return Limit(value: v, isExample: false) }
-        return Limit(value: Self.example(for: fieldID), isExample: true)
+        return Limit(value: examples[fieldID] ?? Self.example(for: fieldID), isExample: true)
+    }
+
+    func registerExamples(_ fields: [FieldLocation]) {
+        for f in fields { if let e = f.exampleLimit { examples[f.id] = e } }
     }
 
     func set(_ value: Double, for fieldID: String) {

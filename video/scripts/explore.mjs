@@ -2,7 +2,7 @@
 import { chromium } from '../../design/tools/node_modules/playwright-core/index.mjs';
 const BASE = process.env.APP_URL ?? 'https://croplytics-app.onrender.com/';
 const OUT = new URL('../raw/explore/', import.meta.url).pathname;
-const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=metal', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 1 });
 page.on('pageerror', (e) => console.log('PAGE ERROR', e.message));
 const idle = async (extra = 800) => { await page.waitForFunction(() => { const m = window.__map; return m && m.loaded() && !m.isMoving() && m.areTilesLoaded(); }, null, { timeout: 90000, polling: 250 }).catch(() => console.log('idle timeout')); await page.waitForTimeout(extra); };

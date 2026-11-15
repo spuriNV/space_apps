@@ -4,7 +4,7 @@
 // Needs ffmpeg (no drawtext/libass needed: every super, caption and the end card is rendered to PNG with Chrome).
 import { chromium } from '../../design/tools/node_modules/playwright-core/index.mjs';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, existsSync, rmSync, symlinkSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -29,16 +29,16 @@ const rec = (f) => join(RAW, 'rec', f);
 const GRADE = "colortemperature=temperature=5400:mix=0.55,eq=contrast=1.05:saturation=0.86:gamma=1.02,curves=all='0/0.035 0.5/0.52 1/0.98'";
 const SHOTS = [
   { id: '01_iss', len: 2.25, still: join(ROOT, 'data/cache/car_colusa_rice/iss/ISS062-E-81143.jpg'), crop: [5568, 3132, 0, 330],
-    zoom: [1.0, 1.07], c: [0.52, 0.48], grade: "eq=contrast=1.45:brightness=-0.02:saturation=1.35:gamma=0.92,colortemperature=temperature=5600:mix=0.5" },
+    zoom: [1.0, 1.07], c: [0.52, 0.48], grade: "colortemperature=temperature=4800:mix=0.7,eq=contrast=1.7:brightness=-0.05:saturation=1.5:gamma=0.9" },
   { id: '02_look', len: 2.0, src: stock('mixkit-521-1080.mp4'), in: 6.0, zoom: [1.0, 1.06], c: [0.4, 0.5], grade: GRADE },
   { id: '03_hat', len: 1.5, src: stock('mixkit-42382-1080.mp4'), in: 0.6, zoom: [1.0, 1.03], c: [0.5, 0.5], grade: GRADE },
   { id: '04_phone_hand', len: 1.0, src: stock('mixkit-594-1080.mp4'), in: 2.0, zoom: [2.0, 2.06], c: [0.44, 0.62], grade: GRADE },
-  { id: '05_phone_app', len: 4.0, phone: rec('s05_phone.mp4') },
+  { id: '05_phone_app', len: 4.0, phone: rec('s05_phone_cfr.mp4') },
   { id: '06_laptop', len: 0.75, src: stock('mixkit-32139-720.mp4'), in: 1.1, zoom: [1.0, 1.03], c: [0.5, 0.5], grade: GRADE },
   { id: '07_3d', len: 2.5, src: rec('s07_3d.mp4'), in: 4.3, zoom: [1.0, 1.04], c: [0.62, 0.5] },
   { id: '08_year', len: 2.25, src: rec('s08_year.mp4'), in: 0.4, zoom: [1.0, 1.08], c: [0.5, 0.64] },
-  { id: '09_season', len: 2.0, src: rec('s09_season.mp4'), in: 0.3, zoom: [1.3, 1.36], c: [0.35, 0.0] },
-  { id: '10_compare', len: 3.75, src: rec('s10_compare.mp4'), in: 0.2, zoom: [1.0, 1.32], c: [0.22, 0.12] },
+  { id: '09_season', len: 2.0, src: rec('s09_season.mp4'), in: 0.5, zoom: [1.3, 1.36], c: [0.35, 0.0] },
+  { id: '10_compare', len: 3.75, src: rec('s10_compare.mp4'), in: 0.2, zoom: [1.0, 1.3], c: [0.0, 0.12] },
   { id: '11_brief', len: 3.5, src: rec('s11_brief.mp4'), in: 0.3, zoom: [1.45, 1.5], c: [0.4, 0.45] },
   { id: '12_end', len: 4.0, card: true },
 ];
@@ -47,7 +47,7 @@ if (Math.abs(t - TOTAL) > 1e-6) throw new Error(`shots sum to ${t}, not ${TOTAL}
 const at = (id) => SHOTS.find((s) => s.id === id).start;
 
 // phone shot: three pieces of the simulator recording (tap, flown in with data, sheet slides up); times in the recording
-const PHONE_PIECES = JSON.parse(process.env.PHONE_PIECES ?? '[[13.4,1.2],[19.6,1.0],[21.3,1.8]]');
+const PHONE_PIECES = JSON.parse(process.env.PHONE_PIECES ?? '[[32.0,1.6],[39.0,0.6],[42.2,1.8]]');
 
 // ---------------------------------------------------------------- voice-over (separate stem) and captions
 const VO = [
@@ -62,45 +62,42 @@ const VO = [
   { at: 25.95, text: 'CropLytics. Your field. Your call.', noBurn: true }, // the end card itself says it
 ];
 VO.forEach((l, i) => { l.file = join(VO_DIR, `t${i + 1}.wav`); l.dur = probe(l.file); l.end = l.at + l.dur; });
+// a caption stays up 0.35 s after its line, but never past the next line's start
+VO.forEach((l, i) => { l.capEnd = Math.min(l.end + 0.35, i + 1 < VO.length ? VO[i + 1].at - 0.1 : TOTAL); });
 VO.forEach((l, i) => { if (i + 1 < VO.length && l.end > VO[i + 1].at - 0.05) throw new Error(`VO line ${i + 1} runs into the next (${l.end.toFixed(2)} > ${VO[i + 1].at})`); });
 if (VO.at(-1).end > TOTAL - 0.3) throw new Error('last VO line runs past the end');
 
 // ---------------------------------------------------------------- on-screen text (rendered to PNG)
 const FIELD = process.env.FIELD_NAME ?? 'Rice field 4 miles east of Williams';
-const N_CA = process.env.N_CA ?? '14';
+const N_CA = process.env.N_CA ?? '10'; // California fields in the live app's pick list (15 Nov 2026: 10 CA + 1 BC)
 const OV = [
   // ISS opener
   { kind: 'super', text: 'The Sacramento Valley, seen from the International Space Station', t: [0.25, at('02_look') - 0.05] },
   { kind: 'credit', text: 'ISS astronaut photo ISS062-E-81143, 4 March 2020. Image courtesy of the Earth Science and Remote Sensing Unit, NASA Johnson Space Center.', t: [0.25, at('02_look') - 0.05] },
-  // phone
-  { kind: 'label', text: `A real field: one of ${N_CA} in California, plus one in British Columbia`, t: [at('05_phone_app') + 0.1, at('06_laptop')] },
-  { kind: 'lower', text: `${FIELD} · 149 acres · Colusa County`, t: [at('05_phone_app') + 1.3, at('06_laptop')] },
-  { kind: 'source', text: 'NASA HLS (Landsat + ESA Sentinel-2) · NASA GPM IMERG rain', t: [at('05_phone_app') + 1.3, at('06_laptop')] },
+  // phone (source line sits left, clear of the phone)
+  { kind: 'lower', hi: true, eyebrow: `A real field: one of ${N_CA} in California, plus one in British Columbia`, text: `${FIELD} · 149 acres · Colusa County`, t: [at('05_phone_app') + 0.6, at('06_laptop')] },
+  { kind: 'source', left: true, text: 'NASA HLS (Landsat + ESA Sentinel-2) · NASA GPM IMERG rain', t: [at('05_phone_app') + 0.6, at('06_laptop')] },
   // 3D
-  { kind: 'label', text: 'Different observations, different scales', t: [at('07_3d') + 0.1, at('08_year')] },
-  { kind: 'lower', text: 'Crop · soil moisture · groundwater in the basin', t: [at('07_3d') + 0.4, at('08_year')] },
-  { kind: 'source', text: process.env.SRC_3D ?? 'ESA Sentinel-2 · NASA GRACE-FO', t: [at('07_3d') + 0.4, at('08_year')] },
+  { kind: 'lower', eyebrow: 'Different observations, different scales', text: 'Crop · soil moisture · groundwater in the basin', t: [at('07_3d') + 0.3, at('08_year')] },
+  { kind: 'source', text: process.env.SRC_3D ?? 'ESA Sentinel-2 · NASA GRACE-FO', t: [at('07_3d') + 0.3, at('08_year')] },
   // year
-  { kind: 'label', text: 'Understand risk', t: [at('08_year') + 0.1, at('09_season')] },
-  { kind: 'lower', text: '2022: left fallow in the drought', t: [at('08_year') + 0.5, at('09_season')] },
-  { kind: 'source', text: 'NASA HLS (Landsat + ESA Sentinel-2) · NASA GPM IMERG rain', t: [at('08_year') + 0.5, at('09_season')] },
+  { kind: 'lower', eyebrow: 'Understand risk', text: '2022: left fallow in the drought', t: [at('08_year') + 0.4, at('09_season')] },
+  { kind: 'source', text: 'NASA HLS (Landsat + ESA Sentinel-2) · NASA GPM IMERG rain', t: [at('08_year') + 0.4, at('09_season')] },
   // season
-  { kind: 'label', text: 'Make uncertainty visible', t: [at('09_season') + 0.1, at('10_compare')] },
-  { kind: 'lower', text: 'An outlook, not a forecast', t: [at('09_season') + 0.4, at('10_compare')] },
+  { kind: 'lower', eyebrow: 'Make uncertainty visible', text: 'An outlook, not a forecast', t: [at('09_season') + 0.3, at('10_compare')] },
+  { kind: 'source', text: 'NOAA CPC seasonal outlook · Shasta storage from CDEC', t: [at('09_season') + 0.3, at('10_compare')] },
   // compare
-  { kind: 'label', text: 'Compare rotations · reveal trade-offs', t: [at('10_compare') + 0.1, at('11_brief')] },
-  { kind: 'big', text: 'Dry-year safflower: about 2 acre-ft/acre, an upper bound.<br>Rice today: about 5.', t: [at('10_compare') + 1.2, at('11_brief')] },
-  { kind: 'source', text: 'Rotation model driven by NASA POWER weather', t: [at('10_compare') + 1.2, at('11_brief')] },
+  { kind: 'big', eyebrow: 'Compare rotations · reveal trade-offs', text: 'Dry-year safflower: about 2 acre-ft/acre, an upper bound.<br>Rice today: about 5.', t: [at('10_compare') + 0.9, at('11_brief')] },
+  { kind: 'source', text: 'Rotation model driven by NASA POWER weather', t: [at('10_compare') + 0.9, at('11_brief')] },
   // brief + the check
-  { kind: 'label', text: 'One page for the grower and adviser', t: [at('11_brief') + 0.1, at('12_end')] },
-  { kind: 'big', text: 'Water estimate checked against OpenET:<br>runs 16–21% high, nothing tuned.', t: [at('11_brief') + 0.6, at('12_end')] },
+  { kind: 'big', eyebrow: 'One page for the grower and adviser', text: 'Water estimate checked against OpenET:<br>runs 16–21% high, nothing tuned.', t: [at('11_brief') + 0.5, at('12_end')] },
   // end card layers (fade in one after another, then hold still)
   { kind: 'endbg', t: [at('12_end'), TOTAL], fade: 0.4, fadeOut: 0 },
   { kind: 'endmark', t: [at('12_end') + 0.3, TOTAL], fade: 0.5, rise: 12, fadeOut: 0 },
   { kind: 'endline', t: [at('12_end') + 0.6, TOTAL], fade: 0.4, rise: 8, fadeOut: 0 },
   { kind: 'endsmall', t: [at('12_end') + 0.9, TOTAL], fade: 0.4, fadeOut: 0 },
 ];
-for (const l of VO) if (!l.noBurn) OV.push({ kind: 'caption', text: l.text, t: [l.at - 0.05, l.end + 0.35] });
+for (const l of VO) if (!l.noBurn) OV.push({ kind: 'caption', text: l.text, t: [l.at - 0.05, l.capEnd] });
 
 const font = (f) => readFileSync(join(V, 'fonts', f)).toString('base64');
 const CSS = `
@@ -114,7 +111,10 @@ body { position: relative; font-family: 'Libre Franklin', sans-serif; color: var
 .caption { left: 50%; transform: translateX(-50%); bottom: 44px; font-weight: 600; font-size: 40px; line-height: 1.2; padding: 10px 22px; white-space: nowrap; }
 .lower { left: 64px; bottom: 132px; font-weight: 600; font-size: 32px; padding: 12px 20px; }
 .big { left: 64px; bottom: 132px; font-family: 'Zilla Slab'; font-weight: 600; font-size: 46px; line-height: 1.15; padding: 16px 24px; border-left: 8px solid var(--green); }
-.label { left: 64px; top: 108px; font-family: 'Zilla Slab'; font-weight: 600; font-size: 34px; color: var(--green); padding: 8px 18px 9px; border-left: 8px solid var(--green); }
+.eyebrow { display: block; font-family: 'Zilla Slab'; font-weight: 600; font-size: 28px; color: var(--green); margin-bottom: 4px; }
+.big .eyebrow { font-size: 30px; }
+.source.left { right: auto; left: 64px; bottom: 286px; }
+.lower.hi { bottom: 330px; }
 .source { right: 64px; bottom: 132px; font-size: 21px; color: var(--muted); padding: 7px 14px; background: rgba(247, 246, 240, .94); border-color: rgba(25, 28, 22, .35); box-shadow: none; }
 .super { left: 64px; top: 64px; font-family: 'Zilla Slab'; font-weight: 600; font-size: 40px; padding: 10px 20px; }
 .credit { left: 64px; right: 64px; bottom: 40px; font-size: 20px; color: var(--muted); padding: 7px 14px; background: rgba(247, 246, 240, .94); border-color: rgba(25, 28, 22, .35); box-shadow: none; }
@@ -137,20 +137,38 @@ function html(o) {
     case 'endsmall': return `<div class="endsmall"><div class="cov">${N_CA} real California fields and one in British Columbia. Next: co-design with First Nations farmers.</div>
       <div class="meta">NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data<br>croplytics-app.onrender.com</div>
       <div class="disc">Voice-over is synthetic (text-to-speech). Farmer footage: Mixkit stock. App: real screen recordings.</div></div>`;
-    default: return `<div class="box ${o.kind}">${o.text}</div>`;
+    default: return `<div class="box ${o.kind}${o.left ? ' left' : ''}${o.hi ? ' hi' : ''}">${o.eyebrow ? `<span class="eyebrow">${o.eyebrow}</span>` : ''}${o.text}</div>`;
   }
 }
 
 async function renderOverlays() {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
-  for (const [i, o] of OV.entries()) {
-    if (/—/.test(o.text ?? '')) throw new Error(`em dash in: ${o.text}`);
-    o.png = join(B, 'ov', `${String(i).padStart(2, '0')}_${o.kind}.png`);
-    await page.setContent(`<!doctype html><html><head><style>${CSS}</style></head><body>${html(o)}</body></html>`);
-    await page.evaluate(() => document.fonts.ready);
-    await page.screenshot({ path: o.png, omitBackground: true });
+  // every element on one page; each output frame sets opacities and offsets, and a screenshot is taken only when
+  // that state changes (the rest of the 708 frames are links to the same PNG)
+  for (const o of OV) if (/—/.test(o.text ?? '')) throw new Error(`em dash in: ${o.text}`);
+  await page.setContent(`<!doctype html><html><head><style>${CSS}</style></head><body>${OV.map((o, i) => `<div class="el" id="e${i}" style="position:absolute;inset:0;opacity:0">${html(o)}</div>`).join('')}</body></html>`);
+  await page.evaluate(() => document.fonts.ready);
+  const dir = join(B, 'ov', 'frames'); rmSync(dir, { recursive: true, force: true }); mkdirSync(dir, { recursive: true });
+  const N = Math.round(TOTAL * FPS); let prevKey = null, prevFile = null, shots = 0;
+  for (let k = 0; k < N; k++) {
+    const t = k / FPS;
+    const st = OV.map((o) => {
+      const [a, b] = o.t, f = o.fade ?? 0.18, fo = o.fadeOut ?? 0.12;
+      if (t < a || t >= b) return [0, 0];
+      let op = Math.min(1, (t - a) / f); if (fo) op = Math.min(op, (b - t) / fo);
+      const dy = o.rise ? o.rise * (1 - Math.min(1, (t - a) / f)) : 0;
+      return [Math.round(Math.max(0, op) * 100) / 100, Math.round(dy * 10) / 10];
+    });
+    const key = JSON.stringify(st);
+    const file = join(dir, `${String(k).padStart(4, '0')}.png`);
+    if (key !== prevKey) {
+      await page.evaluate((st) => st.forEach(([op, dy], i) => { const e = document.getElementById(`e${i}`); e.style.opacity = op; e.style.transform = dy ? `translateY(${dy}px)` : ''; }), st);
+      await page.screenshot({ path: file, omitBackground: true }); shots++;
+      prevKey = key; prevFile = file;
+    } else symlinkSync(prevFile, file);
   }
+  console.log(`overlay track: ${N} frames, ${shots} rendered`);
   // phone bezel: paper outside, dark rounded bezel, transparent screen; screen 600 px wide at (1180, 64)
   const P = { x: 1160, y: 60, w: 600, r: 64, bez: 18 };
   P.h = Math.round(P.w * 2556 / 1178);
@@ -223,7 +241,7 @@ function loudnorm(src, dst) {
 // ---------------------------------------------------------------- captions file
 function srt() {
   const ts = (x) => { const ms = Math.round(x * 1000); const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60; return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')},${String(ms % 1000).padStart(3, '0')}`; };
-  return VO.map((l, i) => `${i + 1}\n${ts(l.at)} --> ${ts(Math.min(l.end + 0.35, TOTAL))}\n${l.text}\n`).join('\n');
+  return VO.map((l, i) => `${i + 1}\n${ts(l.at)} --> ${ts(l.capEnd)}\n${l.text}\n`).join('\n');
 }
 
 // ---------------------------------------------------------------- go
@@ -234,19 +252,9 @@ const segs = SHOTS.map((s) => { const f = reuse.includes(s.id) || reuse.includes
 writeFileSync(join(B, 'concat.txt'), segs.map((f) => `file '${f}'`).join('\n') + '\n');
 ff(['-f', 'concat', '-safe', '0', '-i', join(B, 'concat.txt'), '-c', 'copy', join(B, 'base.mp4')]);
 
-// overlays: each PNG is shown between its times with short fades (end-card layers fade in and stay)
-const ovIn = OV.flatMap((o) => ['-loop', '1', '-framerate', String(FPS), '-t', String(TOTAL), '-i', o.png]);
-let g = '', last = '0:v';
-OV.forEach((o, i) => {
-  const k = i + 1, [a, b] = o.t, f = o.fade ?? 0.18, fo = o.fadeOut ?? 0.12;
-  g += `[${k}:v]format=rgba,fade=t=in:st=${a}:d=${f}:alpha=1${fo ? `,fade=t=out:st=${(b - fo).toFixed(3)}:d=${fo}:alpha=1` : ''}[o${k}];`;
-  const y = o.rise ? `'if(lt(t,${a}),${o.rise},if(lt(t,${a + f}),${o.rise}*(1-(t-${a})/${f}),0))'` : '0';
-  g += `[${last}][o${k}]overlay=x=0:y=${y}:enable='between(t,${a},${b})'[x${k}];`;
-  last = `x${k}`;
-});
-g += `[${last}]format=yuv420p[v]`;
-writeFileSync(join(B, 'overlay-graph.txt'), g);
-ff(['-i', join(B, 'base.mp4'), ...ovIn, '-/filter_complex', join(B, 'overlay-graph.txt'), '-map', '[v]', '-frames:v', String(Math.round(TOTAL * FPS)), '-c:v', 'libx264', '-preset', 'slow', '-crf', '19', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-r', String(FPS), join(B, 'picture.mp4')]);
+// one overlay pass: the rendered RGBA track over the cut
+ff(['-i', join(B, 'base.mp4'), '-framerate', String(FPS), '-i', join(B, 'ov', 'frames', '%04d.png'), '-filter_complex', '[0:v][1:v]overlay=0:0:format=auto,format=yuv420p[v]',
+  '-map', '[v]', '-frames:v', String(Math.round(TOTAL * FPS)), '-c:v', 'libx264', '-preset', 'slow', '-crf', '19', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-r', String(FPS), join(B, 'picture.mp4')]);
 
 const A = buildAudio();
 loudnorm(A.premix, A.mix);

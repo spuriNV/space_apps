@@ -24,6 +24,12 @@ struct RotationSummary: Identifiable, Sendable {
     let fit: Fit
     let rank: Int?
     let scores: [ScoreLine]
+    var rainFed = false
+    /// "1.9 acre-ft/acre" or "Rain-fed (no irrigation)".
+    var waterText: String {
+        if rainFed { return FieldNowBuilder.rainFedText }
+        return water.map { "\(Units.oneDecimal($0.value)) acre-ft/acre" } ?? "not scored yet"
+    }
 
     enum Fit: Sendable, Equatable {
         case fits, mayExceed, over, unknown
@@ -66,9 +72,22 @@ struct ComparePresentation: Sendable {
 }
 
 enum CompareBuilder {
+    /// Weather to score in: a typical year, or the engine's replay of 2022 (dry) or 2023 (wet).
+    enum Weather: String, CaseIterable, Sendable, Hashable {
+        case typical, dry = "2022", wet = "2023"
+        var title: String { self == .typical ? "Typical year" : self == .dry ? "Dry, like 2022" : "Wet, like 2023" }
+        var short: String { self == .typical ? "Typical" : self == .dry ? "Dry 2022" : "Wet 2023" }
+    }
+
     struct Context: Sendable {
         /// Satellite-seen bare days for today's rotation (the others are modelled).
         var todayBare: (days: Int, years: [Int])?
+        var weather: Weather = .typical
+    }
+
+    static func waterNeed(_ s: Strategy, _ w: Weather) -> NumRange? {
+        let n = w == .typical ? s.water.irrigationNeedMm : (s.exposure.replay[w.rawValue]?.irrigationNeedMm ?? s.water.irrigationNeedMm)
+        return NumRange(n)?.map(Units.acreFeetPerAcre(fromMM:))
     }
 
     private struct Metric: Sendable {
@@ -81,15 +100,15 @@ enum CompareBuilder {
     }
 
     private static let metrics: [Metric] = [
-        Metric(key: "water", label: "Irrigation water needed", isAcreFeet: true, gain: "Needs less irrigation water", loss: "Needs more irrigation water") { s, _ in
-            NumRange(s.water.irrigationNeedMm)?.map(Units.acreFeetPerAcre(fromMM:))
+        Metric(key: "water", label: "Irrigation water needed", isAcreFeet: true, gain: "Needs less irrigation water", loss: "Needs more irrigation water") { s, ctx in
+            s.isRainFed ? NumRange(0) : waterNeed(s, ctx.weather)
         },
         Metric(key: "bare", label: "Days the field sits bare", isAcreFeet: false, gain: "Field bare fewer days", loss: "Field bare more days") { s, ctx in
             if s.isBaseline, let seen = ctx.todayBare { return NumRange(Double(seen.days)) }
             return NumRange(s.exposure.bareDaysPerYear)
         },
-        Metric(key: "rain", label: "Heavy rain on bare soil", isAcreFeet: false, gain: "Less heavy rain on bare soil", loss: "More heavy rain on bare soil") { s, _ in
-            NumRange(s.exposure.exposedRainDays)
+        Metric(key: "rain", label: "Heavy rain on bare soil", isAcreFeet: false, gain: "Less heavy rain on bare soil", loss: "More heavy rain on bare soil") { s, ctx in
+            NumRange(ctx.weather == .typical ? s.exposure.exposedRainDays : (s.exposure.replay[ctx.weather.rawValue]?.exposedRainDays ?? s.exposure.exposedRainDays))
         },
     ]
 
@@ -133,7 +152,7 @@ enum CompareBuilder {
             id: s.id, name: FieldNaming.shortRotationName(s), fullName: s.name, isToday: s.isBaseline,
             months: RotationStrip.months(for: s), water: water, bareDays: metrics[1].get(s, ctx),
             bareDaysSeen: s.isBaseline && ctx.todayBare != nil, rainOnBareDays: metrics[2].get(s, ctx),
-            fit: fit(water, limit: limit), rank: s.composite?.rank, scores: scores
+            fit: s.isRainFed ? .fits : fit(water, limit: limit), rank: s.composite?.rank, scores: scores, rainFed: s.isRainFed
         )
     }
 
@@ -151,9 +170,9 @@ enum CompareBuilder {
         return AlternativeComparison(option: summary(alt, ctx: ctx, limit: limit), gains: gains, losses: losses, unclear: unclear)
     }
 
-    static func build(strategies: [Strategy], calendar: FieldCalendar?, limit: Double, count: Int = 2) -> ComparePresentation? {
+    static func build(strategies: [Strategy], calendar: FieldCalendar?, limit: Double, count: Int = 2, weather: Weather = .typical) -> ComparePresentation? {
         guard let today = strategies.first(where: \.isBaseline) ?? strategies.first else { return nil }
-        let ctx = Context(todayBare: calendar?.observedBareDays())
+        let ctx = Context(todayBare: calendar?.observedBareDays(), weather: weather)
         // Best overall score first; on a tie, the one that needs less water.
         func key(_ s: Strategy) -> (Double, Double) {
             let score: Double = s.composite?.value ?? 0
@@ -168,7 +187,7 @@ enum CompareBuilder {
 
     /// Honest line on how the water model compares with OpenET measured water use on this field.
     static func openETLine(_ today: Strategy) -> String {
-        guard let v = today.water.etcVsOpenetPct?.value else { return "Not yet checked against measured water use (OpenET)." }
+        guard let v = today.water.etcVsOpenetPct?.value else { return "Not yet checked against measured water use (OpenET) on this field." }
         let r = Int(abs(v).rounded())
         return "Checked against OpenET satellite measurements of this field: our estimate runs about \(r)% \(v >= 0 ? "high, as expected for a fully watered crop" : "low")."
     }

@@ -675,5 +675,40 @@ _r = client.get(f"/api/locations/{_lem}/nation/drought_rotation", headers={"X-Fo
 _bad = _errs(_NV["DroughtRotation"], _r.json()) if _r.status_code == 200 else _r.text[:150]
 _nok(_r.status_code == 200 and not _bad and _r.json()["series_status"]["grace"]["status"] == "not_computed" and _r.json()["drought_history"], f"pt near Lemoore: drought_rotation (POWER only, others not_computed) {_bad or ''}")
 # ---- end nation tools =========================================================================================
+# ======================================================================================================
+# ---- this week + reach (app/week): live Open-Meteo / NWS / NASA POWER reads, cached 3 h. Self-contained block.
+# ======================================================================================================
+_TW_V, _RC_V = validator("this_week.schema.json"), validator("reach.schema.json")
+
+
+def _tw(cond, label):
+    global fails
+    fails += not cond
+    print(("PASS" if cond else "FAIL") + " this_week " + label)
+    return cond
+
+
+print("\nthis week and reach:")
+_tw_ids = ["car_colusa_rice", "caf_tulare_forage", "bc_salmon_river_forage", _al.B.point_id(_PTS[0][1], _PTS[0][2])]
+for _id in _tw_ids:
+    _r = client.get(f"/api/locations/{_id}/this_week")
+    if not _tw(_r.status_code == 200, f"{_id}: 200 {'' if _r.status_code == 200 else _r.text[:150]}"):
+        continue
+    _d = _r.json()
+    _e = _errs(_TW_V, _d)
+    _tw(not _e, f"{_id}: schema-valid {_e}")
+    _tw(len(_d["forecast"]) == 7 and bool(_d["irrigation"]["verdict"]) and len(_d["field_access"]["days"]) == 7
+        and all(x["status"] in ("ok", "marginal", "too_wet") for x in _d["field_access"]["days"]) and bool(_d["field_access"]["line"]),
+        f"{_id}: 7 forecast days, verdict '{_d['irrigation']['verdict']}', 7 field-access values, line '{_d['field_access']['line']}'")
+    _tw(_d["label"] == "Forecast, not a guarantee" and _d["ttl_s"] == 10800, f"{_id}: label and ttl")
+_r = client.get("/api/locations/car_colusa_rice/this_week")
+_tw(_r.headers.get("X-Cache") == "hit", "second call is served from the 3 h cache")
+_tw(client.get("/api/locations/nope_field/this_week").status_code == 404, "unknown id -> 404")
+_r = client.get("/api/reach")
+_e = _errs(_RC_V, _r.json()) if _r.status_code == 200 else [_r.text[:100]]
+_tw(_r.status_code == 200 and not _e, f"reach: 200, schema-valid {_e}")
+_tw(_r.status_code == 200 and _r.json()["rice"]["california_planted_acres"]["value"] > 100000 and "rice" in _r.json()["pitch_line"],
+    f"reach: rice acres > 100,000 ({_r.json()['rice']['california_planted_acres']['value']:,.0f}) and pitch line")
+# ---- end this week + reach ====================================================================================
 print(f"\n{'ALL PASS' if not fails else str(fails) + ' FAIL'}")
 sys.exit(1 if fails else 0)

@@ -1,0 +1,35 @@
+1
+00:00:02,350 --> 00:00:04,300
+Every season, the same question.
+
+2
+00:00:04,400 --> 00:00:05,830
+What do I plant next?
+
+3
+00:00:06,850 --> 00:00:10,183
+CropLytics reads your field with NASA Earth data.
+
+4
+00:00:11,550 --> 00:00:13,867
+From the crop down to the groundwater.
+
+5
+00:00:14,200 --> 00:00:15,299
+What happened here.
+
+6
+00:00:16,350 --> 00:00:17,857
+What’s likely this winter.
+
+7
+00:00:18,350 --> 00:00:21,950
+What a switch costs: about two acre-feet, not five.
+
+8
+00:00:22,050 --> 00:00:25,508
+One page for your adviser, checked against OpenET.
+
+9
+00:00:25,950 --> 00:00:28,885
+CropLytics. Your field. Your call.

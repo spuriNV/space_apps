@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldshift.local/schemas/this_week.schema.json",
+  "title": "ThisWeek",
+  "description": "GET /api/locations/{id}/this_week (backend/api/app/week). Seven-day forecast, NWS alerts, the week's irrigation call from the baseline rotation's Kc and the forecast ET0 and rain, and a field-access (too wet to work) call per day. Rule of thumb on a forecast, not a guarantee. Every number is a SourcedNumber.",
+  "type": "object",
+  "required": ["location_id", "generated_at", "ttl_s", "label", "forecast", "alerts", "irrigation", "field_access", "sections"],
+  "$defs": {
+    "SN": {"$ref": "sourced_number.schema.json"},
+    "SNs": {"allOf": [{"$ref": "sourced_number.schema.json"}], "required": ["value", "unit", "method", "source"]},
+    "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "section": {"type": "object", "required": ["status"], "properties": {"status": {"enum": ["ready", "fallback", "partial", "unavailable", "not_applicable"]}, "reason": {"type": ["string", "null"]}}},
+    "forecast_day": {"type": "object", "required": ["date", "weekday", "rain_mm", "tmax_c", "tmin_c", "et0_mm"],
+      "properties": {"date": {"$ref": "#/$defs/date"}, "weekday": {"type": "string"}, "rain_mm": {"$ref": "#/$defs/SNs"}, "tmax_c": {"$ref": "#/$defs/SNs"},
+                     "tmin_c": {"$ref": "#/$defs/SNs"}, "et0_mm": {"$ref": "#/$defs/SNs"}}},
+    "access_day": {"type": "object", "required": ["date", "status"],
+      "properties": {"date": {"$ref": "#/$defs/date"}, "status": {"enum": ["ok", "marginal", "too_wet", "unknown"]},
+                     "rain_48h_mm": {"$ref": "#/$defs/SNs"}, "why": {"type": "array", "items": {"type": "string"}}}}
+  },
+  "properties": {
+    "location_id": {"type": "string"},
+    "name": {"type": ["string", "null"]},
+    "point": {"type": "object", "required": ["lat", "lon"], "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}}},
+    "family": {"type": ["string", "null"]},
+    "generated_at": {"type": "string"},
+    "ttl_s": {"const": 10800},
+    "label": {"const": "Forecast, not a guarantee"},
+    "_source": {"type": "string"},
+    "forecast_source": {"type": "object", "required": ["provider", "et0_method", "fallback"],
+      "properties": {"provider": {"enum": ["open_meteo", "nws"]}, "et0_method": {"type": "string"}, "fallback": {"type": "boolean"}, "timezone": {"type": "string"}}},
+    "forecast": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/forecast_day"}},
+    "alerts": {"type": "array", "items": {"type": "object", "required": ["event"],
+      "properties": {"event": {"type": ["string", "null"]}, "severity": {"type": ["string", "null"]}, "urgency": {"type": ["string", "null"]}, "headline": {"type": ["string", "null"]},
+                     "onset": {"type": ["string", "null"]}, "ends": {"type": ["string", "null"]}, "area": {"type": ["string", "null"]}, "url": {"type": ["string", "null"]}}}},
+    "irrigation": {"type": "object", "required": ["verdict", "kind"],
+      "properties": {
+        "verdict": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["irrigate", "rain_covers", "fallow", "rainfed", "flooded", "unavailable"]},
+        "note": {"type": "string"}, "note_crop": {"type": "string"},
+        "baseline": {"type": "object", "required": ["strategy_id", "crops_this_week"], "properties": {"strategy_id": {"type": "string"}, "name": {"type": ["string", "null"]}, "crops_this_week": {"type": "array", "items": {"type": "string"}}}},
+        "observed_cover": {"type": ["object", "null"], "properties": {"class": {"type": "string"}, "as_of": {"$ref": "#/$defs/date"}, "stale": {"type": "boolean"}, "source": {"$ref": "sourced_number.schema.json#/$defs/Source"}}},
+        "effective_rain_fraction": {"$ref": "#/$defs/SNs"},
+        "need_mm": {"$ref": "#/$defs/SNs"}, "need_in": {"$ref": "#/$defs/SNs"}, "acre_in_per_acre": {"$ref": "#/$defs/SNs"},
+        "field_acre_in": {"$ref": "#/$defs/SNs"}, "etc_mm": {"$ref": "#/$defs/SNs"},
+        "days": {"type": "array", "maxItems": 7, "items": {"type": "object", "required": ["date", "crop", "kc", "need_mm"],
+          "properties": {"date": {"$ref": "#/$defs/date"}, "crop": {"type": "string"}, "kc": {"$ref": "#/$defs/SNs"}, "need_mm": {"$ref": "#/$defs/SNs"}, "flag": {"type": ["string", "null"]}}}}
+      }},
+    "field_access": {"type": "object", "required": ["line", "rule", "days"],
+      "properties": {
+        "line": {"type": "string", "minLength": 1}, "rule": {"type": "string", "minLength": 20},
+        "wetness": {"type": "object", "required": ["kind"], "properties": {"percentile": {"oneOf": [{"$ref": "#/$defs/SNs"}, {"type": "null"}]},
+          "kind": {"enum": ["smap_l4", "grace", "power", "unknown"]}, "obs_date": {"$ref": "#/$defs/date"}, "age_days": {"type": "integer"}, "skipped": {"type": "array", "items": {"type": "string"}}}},
+        "days": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/access_day"}}
+      }},
+    "sections": {"type": "object", "required": ["forecast", "alerts", "irrigation", "field_access"],
+      "properties": {"forecast": {"$ref": "#/$defs/section"}, "alerts": {"$ref": "#/$defs/section"}, "irrigation": {"$ref": "#/$defs/section"}, "field_access": {"$ref": "#/$defs/section"}}}
+  }
+}

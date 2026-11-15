@@ -9,6 +9,17 @@ struct Answer: Identifiable, Sendable, Equatable {
     let detail: String
     let cite: String
     var tone: Tone = .normal
+    /// "Estimated." or "example, change it on Compare" as status words under the answer.
+    var status: AnswerStatus?
+    /// Adviser detail: shown only with "More detail" on.
+    var detailOnly = false
+}
+
+/// Data status as words (redesign §4.9).
+struct AnswerStatus: Sendable, Equatable {
+    enum Kind: Sendable { case estimate, example }
+    let kind: Kind
+    var text: String?
 }
 
 /// A single reading with a reference mark (normal, limit, full canopy).
