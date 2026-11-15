@@ -12,7 +12,6 @@ import Icon from '../Icons';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent, type KeyboardEvent as RKeyboardEvent } from 'react';
 import { AboutField, Actions, StepLine, Workflow, CROP_COL, EventLog, NextSteps, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
 import { FirstNationsCard } from './FirstNations';
-import { CedarChat } from './Cedar';
 import { SalmonPanel } from '../salmon/SalmonPanel';
 import { NationTools } from '../week/NationTools';
 import { CatalogGroup } from '../week/CatalogGroup';
@@ -85,7 +84,6 @@ export function FieldPanel(p: FieldPanelProps) {
             {isToday && <WaterAnswer strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} state={p.dataState} />}
             <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}</h2>
             <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
-            {!loc.mine && !loc.spot && <CedarChat ctx={{ loc, regional: p.regional, strategies: p.strategies, allocation: p.allocation }} />}
             {loc.mine && <MineFacts loc={loc} />}
             {isBC(loc) && !loc.mine && <FirstNationsCard loc={loc} />}
             {isBC(loc) && !loc.mine && <SalmonPanel locId={loc.id} />}

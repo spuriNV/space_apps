@@ -12,6 +12,7 @@ from .myfields import router as myfields_router  # user-drawn fields (app/myfiel
 from .nation import router as nation_router  # Nation tools (app/nation): /api/locations/{pid}/nation/*
 from .week import router as week_router  # this week + reach (app/week)
 from .anyloc import router as anyloc_router  # analyse any tapped point (app/anyloc); pt_* ids only
+from .chat import router as chat_router  # Ask CropLytics chat (app/chat): /api/chat, /api/chat/status
 
 ROOT = Path(os.environ.get("FIELDSHIFT_ROOT", Path(__file__).resolve().parents[3]))
 FIX = ROOT / "fixtures"
@@ -68,6 +69,7 @@ except Exception:  # noqa: BLE001
 app = FastAPI(title="Field Shift API", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
                    allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Data-Source"])
+app.include_router(chat_router)
 app.include_router(nation_router)  # before anyloc: its pt_* catch-all would 404 the /nation routes
 app.include_router(week_router)  # before anyloc: its pt_* catch-all would swallow /this_week
 app.include_router(anyloc_router)  # before the preset routes: /api/analyze and /api/locations/pt_* (other ids fall through)

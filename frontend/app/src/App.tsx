@@ -20,6 +20,7 @@ import { DrawLayer, type DrawHostHandle } from './components/draw/DrawLayer';
 import { DRAFT_ID, parseFieldHash, useMyFields } from './myFields';
 import { DetailCtx, useDetailState } from './components/ui/Detail';
 import { FLOW, ProvList, acres, fieldName, place, type FlowId, type Step } from './components/ui/shared';
+import AskChat from './components/chat/AskChat';
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
 type Panel = 'none' | 'fields' | 'season' | 'compare';
@@ -332,6 +333,9 @@ export default function App() {
             );
           })}
         </nav>
+        <AskChat fieldId={selected && selected.id !== DRAFT_ID && selected.spot?.state !== 'loading' ? selected.id : null} fieldName={selected ? fieldName(selected) : null}
+          screen={!selected ? 'pick a field' : briefOpen ? 'print for your adviser' : panel === 'compare' ? 'compare' : panel === 'season' ? 'coming season' : yearExpanded ? "this field's year" : 'field now'}
+          date={t === TODAY_T ? `Today, ${tLabel(t)}` : tLabel(t)} waterLimit={selected ? allocation[selected.id] : null} />
         <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
         <div className={`tb-right ${menuOpen ? 'open' : ''}`}>
           <div className="tb-date-wrap">

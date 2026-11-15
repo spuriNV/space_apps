@@ -8,6 +8,8 @@ const P: Record<string, string> = {
   brief: 'M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 11v2h8v-2H8zm0 4v2h8v-2H8zm0-8v2h4V7H8z',
   story: 'M4 5h16v11H7l-3 3V5zm2 2v7h12V7H6zm2 2h8v1.6H8V9zm0 3h5v1.6H8V12z',
   play: 'M8 5v14l11-7L8 5z',
+  mic: 'M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z',
+  send: 'M3 20.5 21 12 3 3.5v6.6L15 12 3 13.9v6.6z',
   menu: 'M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z',
   pause: 'M6 5h4v14H6V5zm8 0h4v14h-4V5z',
   up: 'm7 14 5-5 5 5H7z',
