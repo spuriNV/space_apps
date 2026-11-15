@@ -21,6 +21,17 @@ Any session can pick this up. Use the `subagent-models` skill: Sonnet for builds
   3. Gate, then push.
   4. Tell spuriNV what was ported.
 
+## 1b. Port sp's numbered step flow (user priority)
+- In sp, `FLOW` in components/ui/shared.tsx and the `tb-tabs` nav in App.tsx: 1 Pick your field → 2 Your field now → 3 Coming season → 4 Compare rotations → 5 Print for your adviser. Each tab has a one-line "does" hint, and the tabs are locked until a field is picked.
+- Also sp's `Workflow` component (problem → what this tool does → goal), shown on Pick.
+- Implement on main in the redesign style: a pill segmented control in the top bar, numbered, with the tonal selected state. On phone, use the bottom tab bar with the same 5 steps.
+- Map main's existing panels into the steps; nothing is lost:
+  - Now = This week + Field now + Nation tools (if any);
+  - Season = Coming season + salmon (BC);
+  - Compare = Compare + sim;
+  - Print = brief.
+- Preview sp: tailnet https://beelink.tail7cbcab.ts.net:8444 (worktree /home/caiden/nasa/space_apps-sp, static build).
+
 ## 2. Cleanup: cut the UI to the key functionality
 The user finds it busy: "a lot of things going on… see what is for what and cut it to the key functionality".
 - **Keep, front and centre:**
