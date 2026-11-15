@@ -96,13 +96,15 @@ data class MainUiState(
     val layersOn: Map<String, Boolean> = MapDatasets.DEFAULT_ON,
     val layersOpen: Boolean = false,
     val bcOpen: Boolean = false,
-    val camera: CameraView = CameraView(),
+    /** Zoomed in under the selected field (the 3D stack is up); updated only when it flips, not on every camera move. */
+    val drilledFlag: Boolean = false,
+    /** Full-screen search over fields and places. */
+    val searchOpen: Boolean = false,
 ) {
     val isToday get() = t == todayT
     val selected: FieldItem? get() = (fields as? LoadState.Ready)?.data?.firstOrNull { it.id.id == selectedId }
     /** Zoomed in under the selected field: the 3D stack is up. */
-    val drilled get() = selectedId != null && camera.zoom > 13.4
-    val nearBC get() = camera.lat > 46.2 && camera.zoom > 4.5
+    val drilled get() = selectedId != null && drilledFlag
     val families: List<Pair<String, Int>>
         get() = (fields.dataOrNull.orEmpty()).groupingBy { it.id.region.takeIf { r -> r == "bc" } ?: it.id.family }.eachCount()
             .filterKeys { it in setOf("rice", "forage", "bc") }.toList().sortedBy { listOf("rice", "forage", "bc").indexOf(it.first) }
@@ -253,7 +255,7 @@ class MainViewModel @Inject constructor(
     // ---------------- events ----------------
 
     fun select(id: String) {
-        ui.update { it.copy(selectedId = id, panelOpen = true, bcOpen = false, tab = if (it.selectedId == null) Tab.Now else it.tab) }
+        ui.update { it.copy(selectedId = id, panelOpen = true, bcOpen = false, searchOpen = false, tab = if (it.selectedId == null) Tab.Now else it.tab) }
         fly(id, MapCommand.FlyToField.Mode.Card)
     }
 
@@ -279,7 +281,7 @@ class MainViewModel @Inject constructor(
         if (ui.value.selectedId == null) return
         ui.update { it.copy(tab = tab, panelOpen = true) }
         val id = ui.value.selectedId!!
-        if (tab == Tab.Year && ui.value.camera.zoom > 13.2) fly(id, MapCommand.FlyToField.Mode.Year)
+        if (tab == Tab.Year && cameraState.value.zoom > 13.2) fly(id, MapCommand.FlyToField.Mode.Year)
     }
 
     fun closePanel() = ui.update { it.copy(panelOpen = false) }
@@ -316,7 +318,15 @@ class MainViewModel @Inject constructor(
     fun toggleLayer(id: String) = ui.update { it.copy(layersOn = it.layersOn + (id to !(it.layersOn[id] ?: false))) }
     fun setLayersOpen(open: Boolean) = ui.update { it.copy(layersOpen = open) }
 
-    fun onCamera(v: CameraView) = ui.update { it.copy(camera = v) }
+    private val cameraState = MutableStateFlow(CameraView())
+    /** The camera, kept apart from the screen state so map moves never recompose the panels. */
+    val camera: StateFlow<CameraView> = cameraState.asStateFlow()
+    fun onCamera(v: CameraView) {
+        cameraState.value = v
+        val d = v.zoom > 13.4
+        if (ui.value.drilledFlag != d) ui.update { it.copy(drilledFlag = d) }
+    }
+    fun setSearchOpen(open: Boolean) = ui.update { it.copy(searchOpen = open, query = if (open) it.query else it.query) }
     fun map(cmd: MapCommand) { commands.trySend(cmd) }
 
     fun setLimit(acreFeetPerAcre: Double) {

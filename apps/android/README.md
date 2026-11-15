@@ -7,7 +7,7 @@ Screenshots: `design/screenshots/android/`.
 ## What it does
 
 A native port of the web app (`frontend/app`), screen for screen, in its phone layout and to `docs/ui-redesign-spec.md`.
-The satellite map fills the screen, the field panel is a draggable bottom sheet (128 dp, 52%, full), and the sections are bottom tabs.
+The satellite map fills the screen edge to edge under a transparent status bar. A floating search bar ("Search fields or places") opens a full-screen search with the field list and crop filters. Thumb-sized map buttons sit above the sheet: viewing date, layers, 3D, north and home. The field lives in a draggable bottom sheet (128 dp peek with the field name and one key line, 48%, full) with a grabber and a collapse chevron, and its sections are scrollable pills inside the sheet. Back closes search, then collapses the sheet, then leaves the field. Since 1.1.1 the sheet is a custom anchored sheet (not `BottomSheetScaffold`), so touches outside it always reach MapLibre, and the camera is kept out of the screen state so map moves never recompose the panels.
 
 | Part | What it shows |
 |---|---|
@@ -28,7 +28,7 @@ Single activity, Compose and Material 3, MVVM with unidirectional data flow.
 
 ```
 ui/app/        MainScreen (map + sheet + tabs), MainViewModel (selection, date, tabs, layers, compare tuning,
-               map commands as a channel), chrome (top bar, sheets), the pick list
+               map commands as a channel), chrome (search bar, map buttons, sheets), the pick list
 ui/panels/     Field now, Coming season, This field's year, Compare, Print (LazyListScope builders)
 ui/map/        CropMap (MapLibre), pin bitmaps, overlays (stack and footprint labels, controls, legend)
 ui/components/ Redesign controls (pills, chips, segmented, disclosure, focus ring, count-up), charts, status

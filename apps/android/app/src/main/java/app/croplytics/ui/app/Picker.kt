@@ -61,8 +61,8 @@ import app.croplytics.ui.theme.CropLyticsTheme
  * field's name, one line of facts, one line of what is notable and its 2023 to now season strips. BC is a quiet row at the end.
  */
 @OptIn(ExperimentalLayoutApi::class)
-fun LazyListScope.fieldPicker(state: MainUiState, onQuery: (String) -> Unit, onFamily: (String) -> Unit, onClear: () -> Unit, onSelect: (String) -> Unit, onBC: () -> Unit, onRetry: () -> Unit) {
-    item(key = "pk-head") {
+fun LazyListScope.fieldPicker(state: MainUiState, onQuery: (String) -> Unit, onFamily: (String) -> Unit, onClear: () -> Unit, onSelect: (String) -> Unit, onBC: () -> Unit, onRetry: () -> Unit, showTitle: Boolean = true) {
+    if (showTitle) item(key = "pk-head") {
         val c = CropLyticsTheme.colors
         Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp).testTag("fields-panel")) {
             Text("Pick your field", style = MaterialTheme.typography.headlineSmall, color = c.text, modifier = Modifier.semantics { heading() })
@@ -73,7 +73,7 @@ fun LazyListScope.fieldPicker(state: MainUiState, onQuery: (String) -> Unit, onF
     if (total > 1) item(key = "pk-filter") {
         val c = CropLyticsTheme.colors
         Column(Modifier.padding(horizontal = 16.dp)) {
-            SearchPill(state.query, onQuery, "Search by town, county or crop", Modifier.testTag("pk-search"))
+            if (showTitle) SearchPill(state.query, onQuery, "Search by town, county or crop", Modifier.testTag("pk-search"))
             Row(Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 state.families.forEach { (f, n) ->
                     FilterPill(when (f) { "rice" -> "Rice"; "forage" -> "Forage"; else -> "British Columbia" }, state.family == f, Modifier.testTag("chip-$f"), count = n) { onFamily(f) }

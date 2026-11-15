@@ -97,7 +97,7 @@ fun PillButton(label: String, kind: PillKind, modifier: Modifier = Modifier, ico
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
     ) {
         if (icon != null) { Icon(icon, null, Modifier.size(18.dp), tint = fg); Spacer(Modifier.width(8.dp)) }
-        Text(label, style = if (small) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge, color = fg, maxLines = 1)
+        Text(label, style = if (small) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge, color = fg, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
     }
 }
 

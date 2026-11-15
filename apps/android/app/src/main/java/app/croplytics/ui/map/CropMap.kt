@@ -146,23 +146,12 @@ fun CropMap(
             m.uiSettings.apply { isCompassEnabled = false; isLogoEnabled = false; isAttributionEnabled = true; isRotateGesturesEnabled = true; isTiltGesturesEnabled = true }
             m.setMaxPitchPreference(70.0)
             m.cameraPosition = CameraPosition.Builder().target(LatLng(Map3D.HOME_LAT, Map3D.HOME_LON)).zoom(Map3D.HOME_ZOOM).build()
-            var gesture = false
-            m.addOnCameraMoveStartedListener { reason -> gesture = reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE }
             m.addOnCameraMoveListener { cameraTick.value++ }
             m.addOnCameraIdleListener {
                 val c = m.cameraPosition
                 report(CameraView(c.zoom, c.tilt, c.bearing, c.target?.latitude ?: 0.0, c.target?.longitude ?: 0.0))
                 cameraTick.value++
-                // gesture-driven drill-down: zooming in near the selected field tilts the camera as the stack rises
-                val sel = latest.fields.firstOrNull { it.id.id == latest.selectedId }
-                if (gesture && sel != null && c.target != null && abs(c.target!!.latitude - sel.id.lat) < 0.06 && abs(c.target!!.longitude - sel.id.lon) < 0.08) {
-                    val f = ((c.zoom - (Map3D.Z0 - 0.3)) / (Map3D.Z1 - Map3D.Z0)).coerceIn(0.0, 1.0)
-                    val target = f * 58
-                    if (abs(c.tilt - target) > 4) {
-                        gesture = false
-                        m.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.Builder(c).tilt(target).bearing(if (f > 0) -22 * f else c.bearing).build()), 450)
-                    }
-                }
+                // no camera animation here: an animation started on idle fights the next pan or pinch (the 3D button tilts)
             }
             m.addOnMapClickListener { ll ->
                 val pt: PointF = m.projection.toScreenLocation(ll)
