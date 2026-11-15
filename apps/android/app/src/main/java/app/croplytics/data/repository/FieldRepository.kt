@@ -48,6 +48,9 @@ interface FieldRepository {
     fun insurance(id: String, force: Boolean = false): Flow<LoadState<InsuranceDto>>
     fun iss(id: String): Flow<LoadState<IssPhoto?>>
     fun glossary(force: Boolean = false): Flow<LoadState<GlossaryDto>>
+    /** BC: the First Nations card; reserve outlines near the field (context only). */
+    fun firstNations(id: String): Flow<LoadState<app.croplytics.data.remote.dto.FirstNationsDto>>
+    fun reserves(id: String): Flow<LoadState<List<app.croplytics.domain.Reserve>>>
 
     /** Re-scores the rotations (POST /score) for a water limit, the grower's priorities and a rain / heat what-if. Cached per request. */
     fun score(id: String, limitAfAc: Double, weights: Map<String, Double>? = null, scenario: ScenarioDto? = null): Flow<LoadState<List<StrategyDto>>>

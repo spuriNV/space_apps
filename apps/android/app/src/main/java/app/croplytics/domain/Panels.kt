@@ -29,7 +29,7 @@ object SeasonLogic {
     private fun band(v: Double, hi: String, mid: String, lo: String) = if (v >= 67) hi else if (v > 33) mid else lo
 
     data class View(
-        val headline: String, val outlookTag: String?, val winterRain: String, val supply: String, val nextNeed: String,
+        val headline: String, val outlookTag: String?, val bc: Boolean, val orders: List<Pair<String, String>>, val watershedNote: String?, val winterRain: String, val supply: String, val nextNeed: String,
         val outlookRows: List<Pair<String, String>>, val issued: String?, val droughtNow: String, val droughtOutlook: String,
         val reservoirs: List<Pair<String, String>>, val reservoirDate: String?,
         val rainSince: String, val rootSoil: String, val groundwater: String, val soilCite: String,
@@ -49,7 +49,9 @@ object SeasonLogic {
         val shasta = res.firstOrNull { it.name?.contains("shasta", true) == true } ?: res.firstOrNull()
         val pctAvg = { r: app.croplytics.data.remote.dto.ReservoirDto -> r.pctOfAverage?.value ?: r.pctOfOwnAverage?.value }
         val settlement = o?.allocations?.cvp?.wy2026?.get("sacramento_river_settlement_contractors")?.value
+        val wc = loc.waterContext; val lastOrder = wc?.orders?.lastOrNull()
         val supply = when {
+            loc.isBC -> "${wc?.watershed?.substringBefore(";") ?: "Watershed not looked up"}.${lastOrder?.let { " Last order to stop irrigating: ${Timeline.fmtDate(it.date)}." } ?: ""}"
             o == null -> "Loading…"
             notReady && surface -> "Not ready for this field yet."
             surface -> listOfNotNull(shasta?.let { s -> pctAvg(s)?.let { "${words(s.name.orEmpty())}: ${it.roundToInt()}% of average." } }, settlement?.let { "Your allocation: ${it.roundToInt()}%." }).joinToString(" ")
@@ -59,8 +61,8 @@ object SeasonLogic {
         val today = strategies.firstOrNull { it.isBaseline }
         val irr = o?.irrigation2027?.strategies.orEmpty().associateBy { it.id }
         val nxt = today?.let { irr[it.id]?.irrigationNeedAfAc?.value ?: it.water.irrigationNeedMm?.usable?.let { mm -> mm / 304.8 } }
-        val nextNeed = nxt?.let { "Needs ${Fmt.one(it)} acre-ft/acre. Limit ${Fmt.one(limit)}${if (example) " (example)" else ""}. ${if (it > limit) "${Fmt.one(it - limit)} short." else "It fits."}" } ?: "Loading…"
-        val headline = when { o == null -> "Loading the outlooks…"; notReady -> "Winter outlook not ready for this field yet"; wet > dry -> "Wetter than normal this winter"; dry > wet -> "Drier than normal this winter"; else -> "No clear lean this winter" }
+        val nextNeed = if (BcLogic.rainFed(today)) "${BcLogic.RAIN_FED}. Fits any limit." else nxt?.let { "Needs ${Fmt.one(it)} acre-ft/acre. Limit ${Fmt.one(limit)}${if (example) " (example)" else ""}. ${if (it > limit) "${Fmt.one(it - limit)} short." else "It fits."}" } ?: "Loading…"
+        val headline = when { o == null && !notReady -> "Loading the outlooks…"; notReady -> if (loc.isBC) "Winter outlook not available in BC" else "Winter outlook not ready for this field yet"; wet > dry -> "Wetter than normal this winter"; dry > wet -> "Drier than normal this winter"; else -> "No clear lean this winter" }
         val winterRain = when { o == null -> "Loading…"; notReady -> "Not ready for this field yet."; wet > dry -> "Leans wetter than normal this winter."; dry > wet -> "Leans drier than normal this winter."; else -> "No clear lean either way this winter." }
         val dm = o?.drought?.usDroughtMonitor; val dOut = o?.drought?.cpcDroughtOutlook?.seasonal
         val now = nasaNow?.readings
@@ -86,13 +88,15 @@ object SeasonLogic {
         val needRows = strategies.map { s ->
             val nn = s.water.irrigationNeedMm; val dr = s.exposure.replay["2022"]?.irrigationNeedMm; val wt = s.exposure.replay["2023"]?.irrigationNeedMm
             val v = nn?.usable ?: 0.0
+            if (BcLogic.rainFed(s)) return@map NeedRow(CompareLogic.shortName(s), s.isBaseline, if (irr.isNotEmpty()) BcLogic.RAIN_FED else null, false, BcLogic.RAIN_FED, false, "–", "–")
             NeedRow(CompareLogic.shortName(s), s.isBaseline, irr[s.id]?.irrigationNeedAfAc?.value?.let { Fmt.one(it) }, (irr[s.id]?.irrigationNeedAfAc?.value ?: 0.0) > limit,
                 "${Fmt.one((nn?.low ?: v) / 304.8)}–${Fmt.one((nn?.high ?: v) / 304.8)}", v / 304.8 > limit,
                 dr?.value?.let { Fmt.one(it / 304.8) } ?: "–", wt?.value?.let { Fmt.one(it / 304.8) } ?: "–")
         }
         val spread = irr.values.mapNotNull { s -> s.irrigationNeedAfAc?.let { (it.high ?: 0.0) - (it.low ?: 0.0) } }.maxOrNull()
         return View(
-            headline = headline, outlookTag = if (notReady) null else "An outlook, not a forecast.", winterRain = winterRain, supply = supply, nextNeed = nextNeed,
+            headline = headline, outlookTag = if (notReady) null else if (o?.origin == "estimate") "Past weather, not a forecast." else "An outlook, not a forecast.",
+            bc = loc.isBC, orders = wc?.orders.orEmpty().map { Timeline.fmtDate(it.date) to "${it.title}." }, watershedNote = wc?.note, winterRain = winterRain, supply = supply, nextNeed = nextNeed,
             outlookRows = seasons.take(4).map { s ->
                 val r = lean(s.precipitation, true); val t = lean(s.temperature, false)
                 (SEASON[s.season] ?: s.season) to "Rain ${r.words}${s.precipitation?.probability?.value?.let { " (${it.roundToInt()}% chance)" } ?: ""}. Temperature ${t.words}${s.temperature?.probability?.value?.let { " (${it.roundToInt()}%)" } ?: ""}."
@@ -142,6 +146,7 @@ object YearLogic {
         ml ?: return Verdict("Not ready for this field yet", "The machine-learning calendar is not ready for this field yet.")
         val agree = ml.disagreePct?.let { " The two disagree on ${it.roundToInt()}% of clear satellite days." } ?: ""
         return when {
+            ml.estimate -> Verdict("An estimate, not a trained model", "A simpler two-class greenness rule run on this field only.$agree")
             !ml.meetsTarget -> Verdict("Below accuracy target", "Below our accuracy target on this field: in 2022, a year it never trained on, it was right ${pct(ml.acc2022)} of the time against a target of 85%, and it misses bare ground too often. The rule calendar stays the answer; this is for comparison only.$agree")
             ml.inflated -> Verdict("Second opinion only", "In 2022, a year it never trained on, it scored ${pct(ml.acc2022)}. That is too good to take at face value: the model partly learned how its training labels were made. Shown as a second opinion next to the rule, not as the answer.$agree")
             else -> Verdict("Meets accuracy target", "Meets our accuracy target on this field (right ${pct(ml.acc2022)} of the time in 2022, a year it never trained on). Shown next to the rule as a comparison.$agree")
@@ -263,7 +268,8 @@ object BriefLogic {
         val soilName = soil?.muname?.substringBefore(",") ?: soil?.textureClass
         val soilBits = listOfNotNull(soil?.drainageClass?.lowercase(), inFt?.let { "holds about ${Fmt.one(it)} in of water per foot of soil" })
         val thisField = (soilName?.let { "$it${if (soilBits.isNotEmpty()) ": " + soilBits.joinToString(", ") else ""}${if ((soil?.ecDsPerM ?: 0.0) >= 4) ", salty enough to limit salt-sensitive crops" else ""}. " } ?: "") +
-            "Water from ${if (loc.water?.source == "surface") "a surface-water district" else "wells, under a groundwater allocation"}. Last three seasons: $recent. " +
+            (if (loc.isBC) "Water: ${loc.waterContext?.watershed?.substringBefore(";") ?: "watershed not looked up"}; irrigation was stopped by order in ${loc.waterContext?.orders?.filter { it.kind != "rescission" }?.map { it.date.take(4) }?.distinct()?.joinToString(", ")?.ifBlank { null } ?: "recent dry years"}. "
+             else "Water from ${if (loc.water?.source == "surface") "a surface-water district" else "wells, under a groundwater allocation"}. ") + "Last three seasons: $recent. " +
             (ob?.let { "Bare about ${it.value} days a year, mostly ${SeasonCalc.usuallyBareMonths(cal)} (satellite, ${it.years.first()}–${it.years.last()}). " } ?: "") + FieldNowLogic.openetText(strategies)
         val seasons = o?.cpc?.seasons.orEmpty().sortedBy { it.lead }
         val res = o?.reservoirsNow?.values?.firstOrNull()
@@ -285,25 +291,29 @@ object BriefLogic {
         }
         val ms = CompareLogic.monthStrip(s)
         val checks = s.brief.localReview.map { plain(it.item) to (it.severity == "high") } +
-            ("This year’s water allocation or pumping limit, and any district rules on winter flooding or fallowing." to false) +
+            ((if (loc.isBC) "This year’s water licence and any order to stop irrigating in the watershed." else "This year’s water allocation or pumping limit, and any district rules on winter flooding or fallowing.") to false) +
             ("Seed, buyer and price for the new crop: dollars are not counted in this summary." to false)
         return Brief(
-            prepared = todayLabel, name = id.name, sub = "${id.acres ?: "?"} acres, ${id.county} County, California · ${id.stateFieldNo?.let { "state field no. $it" } ?: id.id}",
+            prepared = todayLabel, name = id.name,
+            sub = if (loc.isBC) "${id.acres ?: "?"} acres, ${id.county}, British Columbia" else "${id.acres ?: "?"} acres, ${id.county} County, California · ${id.stateFieldNo?.let { "state field no. $it" } ?: id.id}",
             option = CompareLogic.shortName(s), optionIsToday = s.isBaseline, thisField = thisField, likely = likely,
             optionTitle = s.name.replace(" (current)", ""), months = (0 until 12).map { Triple(Timeline.MONTHS[it], ms.cover[it], ms.months[it]) },
-            water = "Irrigation need about ${afv(need?.value)} acre-feet per acre a year${if (upper) "*" else ""}${if (s.isBaseline) "" else ", against ${afv(needB?.value)} for what the field grows now"}. Your limit is ${Fmt.one(limit)}${if (example) " (an example limit; write in yours)" else ""}. In a dry year like 2022: ${afv(s.exposure.replay["2022"]?.irrigationNeedMm?.value)}.",
+            water = if (BcLogic.rainFed(s)) "${BcLogic.RAIN_FED}: fits any water limit." else "Irrigation need about ${afv(need?.value)} acre-feet per acre a year${if (upper) "*" else ""}${if (s.isBaseline) "" else ", against ${afv(needB?.value)} for what the field grows now"}. Your limit is ${Fmt.one(limit)}${if (example) " (an example limit; write in yours)" else ""}. In a dry year like 2022: ${afv(s.exposure.replay["2022"]?.irrigationNeedMm?.value)}.",
             waterStatus = if (over) "over the limit" else if (within) "fits" else "may go over",
             gains = tr?.gains, losses = tr?.losses, unclear = tr?.unclear.orEmpty(),
             table = strategies.map { x ->
                 val nd = x.water.irrigationNeedMm; val v = nd?.usable ?: 0.0
                 val bd = ctx.bare[x.id]?.value ?: x.exposure.bareDays?.usable ?: 0.0
+                if (BcLogic.rainFed(x)) return@map TableRow(CompareLogic.shortName(x) + if (x.isBaseline) " (today)" else "", x.id == s.id, BcLogic.RAIN_FED, "fits", "${(ctx.bare[x.id]?.value ?: x.exposure.bareDays?.usable ?: 0.0).roundToInt()} est.", ctx.heat[x.id]?.let { Fmt.one(it.value) } ?: "–")
                 TableRow(CompareLogic.shortName(x) + if (x.isBaseline) " (today)" else "", x.id == s.id,
                     "${afv(nd?.value)} (${afv(nd?.low)}–${afv(nd?.high)})${if (Regex("safflower|wheat", RegexOption.IGNORE_CASE).containsMatchIn(x.name)) "*" else ""}",
                     if ((nd?.low ?: v) / 304.8 > limit) "over" else if ((nd?.high ?: v) / 304.8 <= limit) "fits" else "may go over",
                     "${bd.roundToInt()}${if (x.isBaseline && ctx.bare[x.id] != null) " seen" else " est."}", ctx.heat[x.id]?.let { Fmt.one(it.value) } ?: "–")
             },
             checks = checks,
-            sources = "NASA: Landsat (NASA/USGS) for the field calendar with Sentinel-2 (ESA), cross-checked with HLS; NASA POWER sun, wind and humidity for crop water use; NASADEM for slope. Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Soil: USDA soil survey (SSURGO). ${SeasonCalc.BARE_DEF} ${CompareLogic.HEAT_NOTE}",
+            sources = "NASA: Landsat (NASA/USGS) for the field calendar with Sentinel-2 (ESA), cross-checked with HLS; NASA POWER sun, wind and humidity for crop water use; NASADEM for slope. " +
+                (if (loc.isBC) "Weather: Environment Canada (ECCC) stations. Crop record: AAFC Annual Crop Inventory. Soil: SoilGrids global model. Water orders: BC Gov News. ${SeasonCalc.BARE_DEF} ${CompareLogic.HEAT_NOTE.replace("NOAA", "Environment Canada")}"
+                 else "Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Soil: USDA soil survey (SSURGO). ${SeasonCalc.BARE_DEF} ${CompareLogic.HEAT_NOTE}"),
         )
     }
 }

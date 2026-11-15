@@ -22,6 +22,7 @@ import app.croplytics.domain.Calendars
 import app.croplytics.domain.CellGrid
 import app.croplytics.domain.Daily
 import app.croplytics.domain.Parsers
+import app.croplytics.domain.reserveList
 import app.croplytics.domain.RegionalSeries
 import app.croplytics.domain.Timeline
 import kotlinx.coroutines.CancellationException
@@ -95,7 +96,7 @@ class DefaultFieldRepository(
         val ml = optional { api.calendarMl(id) }?.takeIf { it.years.isNotEmpty() }
         val models = if (ml != null) optional { api.models(id) } else null
         val hist = rule.cropHistory?.byYear.orEmpty().mapNotNull { (y, c) -> y.toIntOrNull()?.let { it to c } }.toMap()
-        CalendarBundle(Calendars.convert(id, rule, ml, hist, years, hls != null), ml?.let { Parsers.ml(models, it.detector, it.disagreementPct) })
+        CalendarBundle(Calendars.convert(id, rule, ml, hist, years, hls != null), ml?.let { Parsers.ml(models, it.detector, it.disagreementPct)?.copy(estimate = it.origin == "estimate") })
     }
 
     override fun strip(id: String) = cached("strip/$id", MapSerializer(Int.serializer(), String.serializer()), false) {
@@ -115,6 +116,8 @@ class DefaultFieldRepository(
     override fun waterSeen(id: String, force: Boolean) = cached("water_seen/$id", WaterSeenDto.serializer(), force) { api.waterSeen(id) }
     override fun stress(id: String, force: Boolean) = cached("stress/$id", StressDto.serializer(), force) { api.stress(id) }
     override fun insurance(id: String, force: Boolean) = cached("insurance/$id", InsuranceDto.serializer(), force) { api.insurance(id) }
+    override fun firstNations(id: String) = cached("first_nations/$id", app.croplytics.data.remote.dto.FirstNationsDto.serializer(), false) { api.firstNations(id) }
+    override fun reserves(id: String) = cached("reserves/$id", ListSerializer(app.croplytics.domain.Reserve.serializer()), false, blobs) { app.croplytics.domain.Parsers.reserveList(api.reserves(id)) }
     override fun glossary(force: Boolean) = cached("glossary", GlossaryDto.serializer(), force) { api.glossary() }
 
     override fun iss(id: String) = cached("iss/$id", IssPhoto.serializer().nullable, false) {

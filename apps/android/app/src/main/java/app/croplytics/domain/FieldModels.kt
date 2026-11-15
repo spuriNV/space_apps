@@ -200,7 +200,7 @@ object Parsers {
 }
 
 @Serializable
-data class MLInfo(val acc2022: Double?, val f1Bare2022: Double?, val meetsTarget: Boolean, val inflated: Boolean, val disagreePct: Double?, val model: String)
+data class MLInfo(val acc2022: Double?, val f1Bare2022: Double?, val meetsTarget: Boolean, val inflated: Boolean, val disagreePct: Double?, val model: String, val estimate: Boolean = false)
 
 // ---------------- the 30 m grid for the 3D view ----------------
 

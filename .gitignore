@@ -28,3 +28,5 @@ data/cache/_points/
 
 # user-drawn fields cache (backend/api/app/myfields; optional, rebuilt on demand)
 data/user_fields/
+# national SLC zip, read once by backend/catalog/slc_bc.py (the BC summary it writes is committed)
+data/cache/_slc/

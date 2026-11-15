@@ -151,6 +151,9 @@ data class FieldData(
     val water: LoadState<WaterSeenDto> = LoadState.Loading,
     val iss: LoadState<IssPhoto?> = LoadState.Loading,
     val glossary: LoadState<GlossaryDto> = LoadState.Loading,
+    /** BC only: the First Nations card and reserve outlines (context). */
+    val firstNations: LoadState<app.croplytics.data.remote.dto.FirstNationsDto> = LoadState.Failed(app.croplytics.data.repository.LoadError.NotAvailable),
+    val reserves: LoadState<List<app.croplytics.domain.Reserve>> = LoadState.Failed(app.croplytics.data.repository.LoadError.NotAvailable),
     val limit: Double? = null,
     val exampleLimit: Boolean = true,
 ) {
@@ -229,14 +232,20 @@ class MainViewModel @Inject constructor(
         val more = combine(repository.daily(id), repository.grid(id), repository.outlook(id), repository.openet(id), repository.stress(id)) { d, g, o, oe, st ->
             listOf(d, g, o, oe, st)
         }
-        val more2 = combine(repository.insurance(id), repository.waterSeen(id), repository.iss(id), repository.glossary()) { i, w, iss, gl -> listOf(i, w, iss, gl) }
+        val bc = item.loc.isBC
+        val none: Flow<LoadState<Nothing>> = flowOf(LoadState.Failed(app.croplytics.data.repository.LoadError.NotAvailable))
+        val more2 = combine(repository.insurance(id), repository.waterSeen(id), repository.iss(id), repository.glossary(),
+            if (bc) repository.firstNations(id) else none) { i, w, iss, gl, fn -> listOf(i, w, iss, gl, fn) }
+        val reserves = if (bc) repository.reserves(id) else none
         @Suppress("UNCHECKED_CAST")
-        combine(core, more, more2) { c, m, m2 ->
+        combine(core, more, more2, reserves) { c, m, m2, rs ->
             c.copy(
                 daily = m[0] as LoadState<Daily>, grid = m[1] as LoadState<CellGrid>, outlook = m[2] as LoadState<OutlookDto>,
                 openet = m[3] as LoadState<OpenEtDto>, stress = m[4] as LoadState<StressDto>,
                 insurance = m2[0] as LoadState<InsuranceDto>, water = m2[1] as LoadState<WaterSeenDto>, iss = m2[2] as LoadState<IssPhoto?>,
                 glossary = m2[3] as LoadState<GlossaryDto>,
+                firstNations = m2[4] as LoadState<app.croplytics.data.remote.dto.FirstNationsDto>,
+                reserves = rs as LoadState<List<app.croplytics.domain.Reserve>>,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)

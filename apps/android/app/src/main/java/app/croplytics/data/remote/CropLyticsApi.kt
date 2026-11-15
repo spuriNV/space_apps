@@ -76,6 +76,13 @@ interface CropLyticsApi {
     @GET("locations/{id}/insurance")
     suspend fun insurance(@Path("id") id: String): InsuranceDto
 
+    /** BC fields: the First Nations card (404 for California fields). */
+    @GET("locations/{id}/first_nations")
+    suspend fun firstNations(@Path("id") id: String): app.croplytics.data.remote.dto.FirstNationsDto
+
+    @GET("locations/{id}/first_nations/reserves.geojson")
+    suspend fun reserves(@Path("id") id: String): JsonObject
+
     @GET("glossary")
     suspend fun glossary(): GlossaryDto
 

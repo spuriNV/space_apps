@@ -4,7 +4,7 @@
   "title": "API response envelopes",
   "description": "Response bodies for spec B3 routes. The spec only defines the 7 core types; these envelopes are the API owner's resolution. Every response object may carry _fixture:true (fixture files) and _source:'fixture'|'real'|'estimate' (added by the API; 'estimate' for the BC field's stand-ins for California-only sources). Collections are always objects with 'items' (or 'rows'), never bare arrays.",
   "$defs": {
-    "meta": {"type": "object", "properties": {"_fixture": {"type": "boolean"}, "_source": {"enum": ["fixture", "real", "estimate", "live", "user"], "description": "estimate = a field outside California answered from an estimate in the California shape (values method assumed, with a note), not the US source; live = a tapped point analysed on request (GET /api/analyze, ids pt_*)"}}},
+    "meta": {"type": "object", "properties": {"_fixture": {"type": "boolean"}, "_source": {"enum": ["fixture", "real", "estimate", "live", "user", "catalog"], "description": "estimate = a field outside California answered from an estimate in the California shape (values method assumed, with a note), not the US source; live = a tapped point analysed on request (GET /api/analyze, ids pt_*); user = a user-drawn field (my_*); catalog = a farm-catalog point (pt_* id) served from its pre-built tier-1 outputs (backend/api/out/catalog)"}}},
     "Locations": {
       "allOf": [{"$ref": "#/$defs/meta"}],
       "type": "object", "required": ["items"],

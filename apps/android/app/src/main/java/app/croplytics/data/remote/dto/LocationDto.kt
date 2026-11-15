@@ -92,6 +92,25 @@ data class TerrainDto(
 )
 
 @Serializable
+data class DataGapDto(val id: String = "", val what: String = "", val reason: String = "", @SerialName("filled_with") val filledWith: String? = null)
+
+@Serializable
+data class WaterOrderDto(val date: String = "", val kind: String? = null, val title: String = "", val url: String? = null, val licences: Int? = null, val effective: String? = null)
+
+@Serializable
+data class WaterContextDto(val watershed: String = "", val orders: List<WaterOrderDto> = emptyList(), val note: String? = null)
+
+@Serializable
+data class FirstNationsSummaryDto(
+    val statement: String = "",
+    @SerialName("field_on_reserve") val fieldOnReserve: Boolean = false,
+    @SerialName("nearest_km") val nearestKm: Double? = null,
+    @SerialName("nearest_nation") val nearestNation: String? = null,
+    /** A name here; an object on the full route. */
+    @SerialName("lower_river_nation") val lowerRiverNation: JsonElement? = null,
+)
+
+@Serializable
 data class DatasetStatusDto(val status: String? = null, val reason: String? = null)
 
 @Serializable
@@ -180,7 +199,16 @@ data class LocationDto(
     @SerialName("nasa_datasets") val nasaDatasets: List<NasaDatasetDto> = emptyList(),
     @SerialName("crop_history") val cropHistory: Map<String, String> = emptyMap(),
     val events: List<FieldEventDto> = emptyList(),
+    /** BC: California datasets this field lacks, why, and what fills the gap. */
+    @SerialName("data_gaps") val dataGaps: List<DataGapDto> = emptyList(),
+    /** BC: the watershed and the Province's irrigation orders, in place of a water district. */
+    @SerialName("water_context") val waterContext: WaterContextDto? = null,
+    /** BC: the First Nations summary; the full card comes from GET .../first_nations. */
+    @SerialName("first_nations") val firstNations: FirstNationsSummaryDto? = null,
 ) {
+    val isBC: Boolean get() = region == "bc"
+    fun gap(id: String): DataGapDto? = if (isBC) dataGaps.firstOrNull { it.id == id } else null
+
     /** County name from `county` (string or object), else null. */
     val countyName: String?
         get() = countyNameApi ?: when (val c = county) {

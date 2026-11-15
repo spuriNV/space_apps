@@ -1,0 +1,3959 @@
+{
+ "rule": "Pick the farm catalog: ~150 real California fields and ~40 real BC fields, spread out, stratified by area and crop group.\n\nCalifornia: DWR / Land IQ Statewide Crop Mapping 2023 (final) polygons, 20-300 acres, by MAIN_CROP code and county. The\n2023 USDA Cropland Data Layer at the field's interior point must agree with the crop group (the Land IQ code table is not\npublished with the service, so CDL is the check), and the farmer-facing crop word comes from that CDL class.\n\nBC: AAFC Annual Crop Inventory 2025 and 2024 (ImageServer exportImage, 30 m, BC Albers) per area box: pixels in the same\ncrop group both years, grouped into connected patches. A patch's interior point is kept when the ParcelMap BC parcel there,\nclipped to the Agricultural Land Reserve, contains it, is 20-300 acres and is >= 50 % that crop group in 2025. The parcel\nid and owner are never stored.\n\nSpread: within an (area, crop group) cell, farthest-point sampling; every catalog point is >= MIN_SEP_KM from every other,\nso no two fields touch. Reserve and tribal land are not excluded (the user asked for no special handling).\n\nNames: \"<crop word> near <nearest place>, <county or regional district>\", the place from US Census TIGERweb incorporated\nplaces / CDPs or the Canadian Geographical Names Database.",
+ "seed": 7,
+ "min_separation_km": 2.0,
+ "acres": [
+  20,
+  300
+ ],
+ "fields": [
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "orchard",
+   "pt": [
+    -119.2638,
+    50.3464
+   ],
+   "county": "Regional District of North Okanagan",
+   "acres": 82.7,
+   "crop_word": "Orchard",
+   "source": {
+    "aci_2025_majority": 188,
+    "aci_2025_group_share": 0.84
+   },
+   "place": "Orchards",
+   "name": "Orchard near Orchards, Regional District of North Okanagan",
+   "id": "pt_n503464_w1192638",
+   "crop_group_label": "Tree fruit"
+  },
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "orchard",
+   "pt": [
+    -119.0962,
+    50.2258
+   ],
+   "county": "Regional District of North Okanagan",
+   "acres": 28.9,
+   "crop_word": "Orchard",
+   "source": {
+    "aci_2025_majority": 188,
+    "aci_2025_group_share": 0.82
+   },
+   "place": "Lavington",
+   "name": "Orchard near Lavington, Regional District of North Okanagan",
+   "id": "pt_n502258_w1190962",
+   "crop_group_label": "Tree fruit"
+  },
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "orchard",
+   "pt": [
+    -119.7284,
+    49.1469
+   ],
+   "county": "Regional District of Okanagan-Similkameen",
+   "acres": 26.5,
+   "crop_word": "Orchard",
+   "source": {
+    "aci_2025_majority": 188,
+    "aci_2025_group_share": 0.58
+   },
+   "place": "Cawston",
+   "name": "Orchard near Cawston, Regional District of Okanagan-Similkameen",
+   "id": "pt_n491469_w1197284",
+   "crop_group_label": "Tree fruit"
+  },
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "orchard",
+   "pt": [
+    -119.3577,
+    49.849
+   ],
+   "county": "Regional District of Central Okanagan",
+   "acres": 84.9,
+   "crop_word": "Orchard",
+   "source": {
+    "aci_2025_majority": 188,
+    "aci_2025_group_share": 0.72
+   },
+   "place": "East Kelowna",
+   "name": "Orchard near East Kelowna, Regional District of Central Okanagan",
+   "id": "pt_n498490_w1193577",
+   "crop_group_label": "Tree fruit"
+  },
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "grapes",
+   "pt": [
+    -119.8238,
+    49.2576
+   ],
+   "county": "Regional District of Okanagan-Similkameen",
+   "acres": 98.0,
+   "crop_word": "Vineyard",
+   "source": {
+    "aci_2025_majority": 190,
+    "aci_2025_group_share": 0.52
+   },
+   "place": "Olalla",
+   "name": "Vineyard near Olalla, Regional District of Okanagan-Similkameen",
+   "id": "pt_n492576_w1198238",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "grapes",
+   "pt": [
+    -119.5436,
+    49.787
+   ],
+   "county": "Regional District of Central Okanagan",
+   "acres": 96.0,
+   "crop_word": "Vineyard",
+   "source": {
+    "aci_2025_majority": 190,
+    "aci_2025_group_share": 0.51
+   },
+   "place": "Braeloch",
+   "name": "Vineyard near Braeloch, Regional District of Central Okanagan",
+   "id": "pt_n497870_w1195436",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "grapes",
+   "pt": [
+    -119.5239,
+    49.262
+   ],
+   "county": "Regional District of Okanagan-Similkameen",
+   "acres": 24.6,
+   "crop_word": "Vineyard",
+   "source": {
+    "aci_2025_majority": 190,
+    "aci_2025_group_share": 0.96
+   },
+   "place": "Eagle Bluff",
+   "name": "Vineyard near Eagle Bluff, Regional District of Okanagan-Similkameen",
+   "id": "pt_n492620_w1195239",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "grapes",
+   "pt": [
+    -119.6242,
+    49.3769
+   ],
+   "county": "Regional District of Okanagan-Similkameen",
+   "acres": 34.9,
+   "crop_word": "Vineyard",
+   "source": {
+    "aci_2025_majority": 190,
+    "aci_2025_group_share": 0.73
+   },
+   "place": "Kaleden",
+   "name": "Vineyard near Kaleden, Regional District of Okanagan-Similkameen",
+   "id": "pt_n493769_w1196242",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "forage",
+   "pt": [
+    -119.8024,
+    49.6674
+   ],
+   "county": "Regional District of Okanagan-Similkameen",
+   "acres": 20.9,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.67
+   },
+   "place": "Greata",
+   "name": "Hay and pasture field near Greata, Regional District of Okanagan-Similkameen",
+   "id": "pt_n496674_w1198024",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Okanagan",
+   "crop_group": "forage",
+   "pt": [
+    -119.251,
+    49.0257
+   ],
+   "county": "Regional District of Kootenay Boundary",
+   "acres": 157.5,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.75
+   },
+   "place": "Sidley",
+   "name": "Hay and pasture field near Sidley, Regional District of Kootenay Boundary",
+   "id": "pt_n490257_w1192510",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Shuswap / Salmon Valley",
+   "crop_group": "forage",
+   "pt": [
+    -119.599,
+    50.4921
+   ],
+   "county": "Columbia Shuswap Regional District",
+   "acres": 160.8,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.6
+   },
+   "place": "Falkland",
+   "name": "Hay and pasture field near Falkland, Columbia Shuswap Regional District",
+   "id": "pt_n504921_w1195990",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Shuswap / Salmon Valley",
+   "crop_group": "forage",
+   "pt": [
+    -118.9547,
+    50.8407
+   ],
+   "county": "Columbia Shuswap Regional District",
+   "acres": 72.0,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.59
+   },
+   "place": "Sicamous",
+   "name": "Hay and pasture field near Sicamous, Columbia Shuswap Regional District",
+   "id": "pt_n508407_w1189547",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Shuswap / Salmon Valley",
+   "crop_group": "forage",
+   "pt": [
+    -119.2863,
+    50.3999
+   ],
+   "county": "Regional District of North Okanagan",
+   "acres": 23.5,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.88
+   },
+   "place": "O'Keefe",
+   "name": "Hay and pasture field near O'Keefe, Regional District of North Okanagan",
+   "id": "pt_n503999_w1192863",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Shuswap / Salmon Valley",
+   "crop_group": "forage",
+   "pt": [
+    -119.3653,
+    50.5376
+   ],
+   "county": "Columbia Shuswap Regional District",
+   "acres": 73.3,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.88
+   },
+   "place": "Yankee Flats",
+   "name": "Hay and pasture field near Yankee Flats, Columbia Shuswap Regional District",
+   "id": "pt_n505376_w1193653",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Shuswap / Salmon Valley",
+   "crop_group": "grain",
+   "pt": [
+    -119.3745,
+    50.8561
+   ],
+   "county": "Columbia Shuswap Regional District",
+   "acres": 70.7,
+   "crop_word": "Corn field",
+   "source": {
+    "aci_2025_majority": 147,
+    "aci_2025_group_share": 0.95
+   },
+   "place": "Balmoral",
+   "name": "Corn field near Balmoral, Columbia Shuswap Regional District",
+   "id": "pt_n508561_w1193745",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "bc",
+   "area": "Shuswap / Salmon Valley",
+   "crop_group": "grain",
+   "pt": [
+    -119.0574,
+    50.6957
+   ],
+   "county": "Regional District of North Okanagan",
+   "acres": 20.4,
+   "crop_word": "Corn field",
+   "source": {
+    "aci_2025_majority": 147,
+    "aci_2025_group_share": 0.89
+   },
+   "place": "Mara",
+   "name": "Corn field near Mara, Regional District of North Okanagan",
+   "id": "pt_n506957_w1190574",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "bc",
+   "area": "Thompson / Kamloops",
+   "crop_group": "forage",
+   "pt": [
+    -120.028,
+    50.9576
+   ],
+   "county": "Thompson-Nicola Regional District",
+   "acres": 68.1,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.86
+   },
+   "place": "Cahilty",
+   "name": "Hay and pasture field near Cahilty, Thompson-Nicola Regional District",
+   "id": "pt_n509576_w1200280",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Thompson / Kamloops",
+   "crop_group": "forage",
+   "pt": [
+    -119.8564,
+    50.5403
+   ],
+   "county": "Thompson-Nicola Regional District",
+   "acres": 42.4,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.98
+   },
+   "place": "Monte Lake",
+   "name": "Hay and pasture field near Monte Lake, Thompson-Nicola Regional District",
+   "id": "pt_n505403_w1198564",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Thompson / Kamloops",
+   "crop_group": "forage",
+   "pt": [
+    -120.3208,
+    50.8149
+   ],
+   "county": "Thompson-Nicola Regional District",
+   "acres": 66.5,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.9
+   },
+   "place": "Rayleigh Mount",
+   "name": "Hay and pasture field near Rayleigh Mount, Thompson-Nicola Regional District",
+   "id": "pt_n508149_w1203208",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Thompson / Kamloops",
+   "crop_group": "forage",
+   "pt": [
+    -120.7683,
+    50.6773
+   ],
+   "county": "Thompson-Nicola Regional District",
+   "acres": 91.2,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.61
+   },
+   "place": "Tobiano",
+   "name": "Hay and pasture field near Tobiano, Thompson-Nicola Regional District",
+   "id": "pt_n506773_w1207683",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Thompson / Kamloops",
+   "crop_group": "forage",
+   "pt": [
+    -119.8408,
+    50.6696
+   ],
+   "county": "Thompson-Nicola Regional District",
+   "acres": 81.0,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.79
+   },
+   "place": "Martin Prairie",
+   "name": "Hay and pasture field near Martin Prairie, Thompson-Nicola Regional District",
+   "id": "pt_n506696_w1198408",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Fraser Valley",
+   "crop_group": "forage",
+   "pt": [
+    -122.5938,
+    49.1025
+   ],
+   "county": "Metro Vancouver Regional District",
+   "acres": 42.0,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.58
+   },
+   "place": "Murrayville",
+   "name": "Hay and pasture field near Murrayville, Metro Vancouver Regional District",
+   "id": "pt_n491025_w1225938",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Fraser Valley",
+   "crop_group": "forage",
+   "pt": [
+    -122.357,
+    49.0777
+   ],
+   "county": "Fraser Valley Regional District",
+   "acres": 46.4,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.65
+   },
+   "place": "Gifford Station (Gifford Ry.Pt.-P.F.)",
+   "name": "Hay and pasture field near Gifford Station, Fraser Valley Regional District",
+   "id": "pt_n490777_w1223570",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Fraser Valley",
+   "crop_group": "forage",
+   "pt": [
+    -121.9415,
+    49.2389
+   ],
+   "county": "Fraser Valley Regional District",
+   "acres": 24.7,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.63
+   },
+   "place": "Harrison Mills",
+   "name": "Hay and pasture field near Harrison Mills, Fraser Valley Regional District",
+   "id": "pt_n492389_w1219415",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Fraser Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -122.5198,
+    49.0928
+   ],
+   "county": "Metro Vancouver Regional District",
+   "acres": 34.6,
+   "crop_word": "Blueberry field",
+   "source": {
+    "aci_2025_majority": 182,
+    "aci_2025_group_share": 0.67
+   },
+   "place": "Hopington",
+   "name": "Blueberry field near Hopington, Metro Vancouver Regional District",
+   "id": "pt_n490928_w1225198",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "bc",
+   "area": "Fraser Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.7912,
+    49.2139
+   ],
+   "county": "Fraser Valley Regional District",
+   "acres": 37.5,
+   "crop_word": "Blueberry field",
+   "source": {
+    "aci_2025_majority": 182,
+    "aci_2025_group_share": 0.55
+   },
+   "place": "Agassiz",
+   "name": "Blueberry field near Agassiz, Fraser Valley Regional District",
+   "id": "pt_n492139_w1217912",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "bc",
+   "area": "Fraser Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -122.6376,
+    49.2818
+   ],
+   "county": "Metro Vancouver Regional District",
+   "acres": 75.5,
+   "crop_word": "Blueberry field",
+   "source": {
+    "aci_2025_majority": 182,
+    "aci_2025_group_share": 0.65
+   },
+   "place": "Silver Valley",
+   "name": "Blueberry field near Silver Valley, Metro Vancouver Regional District",
+   "id": "pt_n492818_w1226376",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "bc",
+   "area": "Fraser Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -122.2381,
+    49.2018
+   ],
+   "county": "Fraser Valley Regional District",
+   "acres": 24.5,
+   "crop_word": "Blueberry field",
+   "source": {
+    "aci_2025_majority": 182,
+    "aci_2025_group_share": 0.89
+   },
+   "place": "Durieu",
+   "name": "Blueberry field near Durieu, Fraser Valley Regional District",
+   "id": "pt_n492018_w1222381",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "bc",
+   "area": "Fraser Valley",
+   "crop_group": "grain",
+   "pt": [
+    -122.1875,
+    49.035
+   ],
+   "county": "Fraser Valley Regional District",
+   "acres": 50.2,
+   "crop_word": "Corn field",
+   "source": {
+    "aci_2025_majority": 147,
+    "aci_2025_group_share": 0.86
+   },
+   "place": "Upper Sumas",
+   "name": "Corn field near Upper Sumas, Fraser Valley Regional District",
+   "id": "pt_n490350_w1221875",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "bc",
+   "area": "Peace River",
+   "crop_group": "canola",
+   "pt": [
+    -120.9635,
+    56.4433
+   ],
+   "county": "Peace River Regional District",
+   "acres": 159.1,
+   "crop_word": "Canola field",
+   "source": {
+    "aci_2025_majority": 153,
+    "aci_2025_group_share": 0.91
+   },
+   "place": "Montney",
+   "name": "Canola field near Montney, Peace River Regional District",
+   "id": "pt_n564433_w1209635",
+   "crop_group_label": "Canola"
+  },
+  {
+   "region": "bc",
+   "area": "Peace River",
+   "crop_group": "canola",
+   "pt": [
+    -120.8682,
+    56.2131
+   ],
+   "county": "Peace River Regional District",
+   "acres": 153.1,
+   "crop_word": "Canola field",
+   "source": {
+    "aci_2025_majority": 153,
+    "aci_2025_group_share": 0.78
+   },
+   "place": "Grand Haven",
+   "name": "Canola field near Grand Haven, Peace River Regional District",
+   "id": "pt_n562131_w1208682",
+   "crop_group_label": "Canola"
+  },
+  {
+   "region": "bc",
+   "area": "Peace River",
+   "crop_group": "canola",
+   "pt": [
+    -120.5773,
+    56.0851
+   ],
+   "county": "Peace River Regional District",
+   "acres": 158.7,
+   "crop_word": "Canola field",
+   "source": {
+    "aci_2025_majority": 153,
+    "aci_2025_group_share": 0.98
+   },
+   "place": "South Taylor",
+   "name": "Canola field near South Taylor, Peace River Regional District",
+   "id": "pt_n560851_w1205773",
+   "crop_group_label": "Canola"
+  },
+  {
+   "region": "bc",
+   "area": "Peace River",
+   "crop_group": "canola",
+   "pt": [
+    -120.7255,
+    56.3456
+   ],
+   "county": "Peace River Regional District",
+   "acres": 135.4,
+   "crop_word": "Canola field",
+   "source": {
+    "aci_2025_majority": 153,
+    "aci_2025_group_share": 0.74
+   },
+   "place": "Pineview",
+   "name": "Canola field near Pineview, Peace River Regional District",
+   "id": "pt_n563456_w1207255",
+   "crop_group_label": "Canola"
+  },
+  {
+   "region": "bc",
+   "area": "Peace River",
+   "crop_group": "grain",
+   "pt": [
+    -120.6013,
+    56.1257
+   ],
+   "county": "Peace River Regional District",
+   "acres": 40.8,
+   "crop_word": "Oat field",
+   "source": {
+    "aci_2025_majority": 136,
+    "aci_2025_group_share": 0.67
+   },
+   "place": "South Taylor",
+   "name": "Oat field near South Taylor, Peace River Regional District",
+   "id": "pt_n561257_w1206013",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "bc",
+   "area": "Peace River",
+   "crop_group": "grain",
+   "pt": [
+    -120.6666,
+    55.8729
+   ],
+   "county": "Peace River Regional District",
+   "acres": 160.1,
+   "crop_word": "Spring wheat field",
+   "source": {
+    "aci_2025_majority": 146,
+    "aci_2025_group_share": 0.61
+   },
+   "place": "Sunrise Valley",
+   "name": "Spring wheat field near Sunrise Valley, Peace River Regional District",
+   "id": "pt_n558729_w1206666",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "bc",
+   "area": "Peace River",
+   "crop_group": "grain",
+   "pt": [
+    -120.019,
+    55.7829
+   ],
+   "county": "Peace River Regional District",
+   "acres": 157.7,
+   "crop_word": "Spring wheat field",
+   "source": {
+    "aci_2025_majority": 146,
+    "aci_2025_group_share": 0.95
+   },
+   "place": "Briar Ridge",
+   "name": "Spring wheat field near Briar Ridge, Peace River Regional District",
+   "id": "pt_n557829_w1200190",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "bc",
+   "area": "Peace River",
+   "crop_group": "forage",
+   "pt": [
+    -120.9939,
+    56.4768
+   ],
+   "county": "Peace River Regional District",
+   "acres": 158.0,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.58
+   },
+   "place": "Montney",
+   "name": "Hay and pasture field near Montney, Peace River Regional District",
+   "id": "pt_n564768_w1209939",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Peace River",
+   "crop_group": "forage",
+   "pt": [
+    -120.0673,
+    55.9965
+   ],
+   "county": "Peace River Regional District",
+   "acres": 158.0,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.73
+   },
+   "place": "Doe River",
+   "name": "Hay and pasture field near Doe River, Peace River Regional District",
+   "id": "pt_n559965_w1200673",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Creston / Kootenay",
+   "crop_group": "grain",
+   "pt": [
+    -116.5066,
+    49.0682
+   ],
+   "county": "Regional District of Central Kootenay",
+   "acres": 43.7,
+   "crop_word": "Oat field",
+   "source": {
+    "aci_2025_majority": 136,
+    "aci_2025_group_share": 0.96
+   },
+   "place": "Lower Kootenay",
+   "name": "Oat field near Lower Kootenay, Regional District of Central Kootenay",
+   "id": "pt_n490682_w1165066",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "bc",
+   "area": "Creston / Kootenay",
+   "crop_group": "grain",
+   "pt": [
+    -116.5957,
+    49.1107
+   ],
+   "county": "Regional District of Central Kootenay",
+   "acres": 67.2,
+   "crop_word": "Barley field",
+   "source": {
+    "aci_2025_majority": 133,
+    "aci_2025_group_share": 0.65
+   },
+   "place": "Alice Siding",
+   "name": "Barley field near Alice Siding, Regional District of Central Kootenay",
+   "id": "pt_n491107_w1165957",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "bc",
+   "area": "Creston / Kootenay",
+   "crop_group": "forage",
+   "pt": [
+    -116.539,
+    49.0067
+   ],
+   "county": "Regional District of Central Kootenay",
+   "acres": 150.1,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.97
+   },
+   "place": "Bedlington",
+   "name": "Hay and pasture field near Bedlington, Regional District of Central Kootenay",
+   "id": "pt_n490067_w1165390",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "bc",
+   "area": "Creston / Kootenay",
+   "crop_group": "forage",
+   "pt": [
+    -116.5272,
+    49.0932
+   ],
+   "county": "Regional District of Central Kootenay",
+   "acres": 21.7,
+   "crop_word": "Hay and pasture field",
+   "source": {
+    "aci_2025_majority": 122,
+    "aci_2025_group_share": 0.59
+   },
+   "place": "Creston",
+   "name": "Hay and pasture field near Creston, Regional District of Central Kootenay",
+   "id": "pt_n490932_w1165272",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -122.1376,
+    39.351
+   ],
+   "county": "Colusa",
+   "acres": 23.7,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "0603750",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Maxwell",
+   "name": "Rice field near Maxwell, Colusa County",
+   "id": "pt_n393510_w1221376",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -121.5008,
+    38.7079
+   ],
+   "county": "Sacramento",
+   "acres": 87.2,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "3403339",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Elverta",
+   "name": "Rice field near Elverta, Sacramento County",
+   "id": "pt_n387079_w1215008",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -121.4844,
+    39.2585
+   ],
+   "county": "Yuba",
+   "acres": 22.1,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "5801010",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Honcut",
+   "name": "Rice field near Honcut, Yuba County",
+   "id": "pt_n392585_w1214844",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -121.8897,
+    39.0617
+   ],
+   "county": "Colusa",
+   "acres": 65.6,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "0604395",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Grimes",
+   "name": "Rice field near Grimes, Colusa County",
+   "id": "pt_n390617_w1218897",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -121.9296,
+    38.6239
+   ],
+   "county": "Yolo",
+   "acres": 152.0,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "5706551",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Monument Hills",
+   "name": "Rice field near Monument Hills, Yolo County",
+   "id": "pt_n386239_w1219296",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -121.7103,
+    39.547
+   ],
+   "county": "Butte",
+   "acres": 24.2,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "0407004",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Richvale",
+   "name": "Rice field near Richvale, Butte County",
+   "id": "pt_n395470_w1217103",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -122.0807,
+    39.6036
+   ],
+   "county": "Glenn",
+   "acres": 31.9,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "1104562",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Artois",
+   "name": "Rice field near Artois, Glenn County",
+   "id": "pt_n396036_w1220807",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -121.4565,
+    38.959
+   ],
+   "county": "Sutter",
+   "acres": 155.1,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "5103501",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Trowbridge",
+   "name": "Rice field near Trowbridge, Sutter County",
+   "id": "pt_n389590_w1214565",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -121.7949,
+    39.3515
+   ],
+   "county": "Butte",
+   "acres": 121.9,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "0408960",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Gridley",
+   "name": "Rice field near Gridley, Butte County",
+   "id": "pt_n393515_w1217949",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "rice",
+   "pt": [
+    -121.865,
+    38.8594
+   ],
+   "county": "Yolo",
+   "acres": 150.4,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "5705699",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Dunnigan",
+   "name": "Rice field near Dunnigan, Yolo County",
+   "id": "pt_n388594_w1218650",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -121.8102,
+    39.6649
+   ],
+   "county": "Butte",
+   "acres": 82.3,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "0400136",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Durham",
+   "name": "Almond orchard near Durham, Butte County",
+   "id": "pt_n396649_w1218102",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -122.0071,
+    38.4983
+   ],
+   "county": "Yolo",
+   "acres": 41.4,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "5707272",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Winters",
+   "name": "Almond orchard near Winters, Yolo County",
+   "id": "pt_n384983_w1220071",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -121.3782,
+    39.0269
+   ],
+   "county": "Yuba",
+   "acres": 179.3,
+   "crop_word": "Walnut orchard",
+   "source": {
+    "dwr_unique_id": "5804191",
+    "dwr_main_crop": "D13",
+    "cdl_2023": 76
+   },
+   "place": "Wheatland",
+   "name": "Walnut orchard near Wheatland, Yuba County",
+   "id": "pt_n390269_w1213782",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -122.2941,
+    39.1155
+   ],
+   "county": "Colusa",
+   "acres": 71.3,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "0600392",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Williams",
+   "name": "Almond orchard near Williams, Colusa County",
+   "id": "pt_n391155_w1222941",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -122.2021,
+    40.1829
+   ],
+   "county": "Tehama",
+   "acres": 28.0,
+   "crop_word": "Walnut orchard",
+   "source": {
+    "dwr_unique_id": "5204625",
+    "dwr_main_crop": "D13",
+    "cdl_2023": 76
+   },
+   "place": "Red Bluff",
+   "name": "Walnut orchard near Red Bluff, Tehama County",
+   "id": "pt_n401829_w1222021",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -121.7719,
+    39.2692
+   ],
+   "county": "Sutter",
+   "acres": 22.4,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "5102878",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Live Oak",
+   "name": "Almond orchard near Live Oak, Sutter County",
+   "id": "pt_n392692_w1217719",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -121.5679,
+    38.6377
+   ],
+   "county": "Yolo",
+   "acres": 22.4,
+   "crop_word": "Walnut orchard",
+   "source": {
+    "dwr_unique_id": "5705115",
+    "dwr_main_crop": "D13",
+    "cdl_2023": 76
+   },
+   "place": "West Sacramento",
+   "name": "Walnut orchard near West Sacramento, Yolo County",
+   "id": "pt_n386377_w1215679",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -122.251,
+    39.6356
+   ],
+   "county": "Glenn",
+   "acres": 72.8,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "1109220",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Artois",
+   "name": "Almond orchard near Artois, Glenn County",
+   "id": "pt_n396356_w1222510",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "grain",
+   "pt": [
+    -121.9741,
+    38.6663
+   ],
+   "county": "Yolo",
+   "acres": 44.0,
+   "crop_word": "Winter wheat field",
+   "source": {
+    "dwr_unique_id": "5701877",
+    "dwr_main_crop": "G2",
+    "cdl_2023": 24
+   },
+   "place": "Madison",
+   "name": "Winter wheat field near Madison, Yolo County",
+   "id": "pt_n386663_w1219741",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "grain",
+   "pt": [
+    -122.3676,
+    40.3436
+   ],
+   "county": "Tehama",
+   "acres": 32.2,
+   "crop_word": "Wheat and corn field",
+   "source": {
+    "dwr_unique_id": "5204187",
+    "dwr_main_crop": "G6",
+    "cdl_2023": 225
+   },
+   "place": "Cottonwood",
+   "name": "Wheat and corn field near Cottonwood, Tehama County",
+   "id": "pt_n403436_w1223676",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "grain",
+   "pt": [
+    -122.1324,
+    39.5804
+   ],
+   "county": "Glenn",
+   "acres": 70.9,
+   "crop_word": "Wheat and corn field",
+   "source": {
+    "dwr_unique_id": "1107035",
+    "dwr_main_crop": "F16",
+    "cdl_2023": 225
+   },
+   "place": "Artois",
+   "name": "Wheat and corn field near Artois, Glenn County",
+   "id": "pt_n395804_w1221324",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "grain",
+   "pt": [
+    -121.2421,
+    38.2685
+   ],
+   "county": "Sacramento",
+   "acres": 26.6,
+   "crop_word": "Winter wheat field",
+   "source": {
+    "dwr_unique_id": "3400362",
+    "dwr_main_crop": "F16",
+    "cdl_2023": 24
+   },
+   "place": "Herald",
+   "name": "Winter wheat field near Herald, Sacramento County",
+   "id": "pt_n382685_w1212421",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "forage",
+   "pt": [
+    -121.7894,
+    38.7622
+   ],
+   "county": "Yolo",
+   "acres": 67.1,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "5708050",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Yolo",
+   "name": "Alfalfa field near Yolo, Yolo County",
+   "id": "pt_n387622_w1217894",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "forage",
+   "pt": [
+    -121.3916,
+    41.0636
+   ],
+   "county": "Shasta",
+   "acres": 38.3,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "4500050",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "McArthur",
+   "name": "Alfalfa field near McArthur, Shasta County",
+   "id": "pt_n410636_w1213916",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "forage",
+   "pt": [
+    -122.3453,
+    39.9488
+   ],
+   "county": "Tehama",
+   "acres": 25.9,
+   "crop_word": "Pasture",
+   "source": {
+    "dwr_unique_id": "5206066",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 176
+   },
+   "place": "Flournoy",
+   "name": "Pasture near Flournoy, Tehama County",
+   "id": "pt_n399488_w1223453",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.824,
+    38.79
+   ],
+   "county": "Yolo",
+   "acres": 76.1,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "5703822",
+    "dwr_main_crop": "T32",
+    "cdl_2023": 54
+   },
+   "place": "Yolo",
+   "name": "Tomato field near Yolo, Yolo County",
+   "id": "pt_n387900_w1218240",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -122.2368,
+    39.5697
+   ],
+   "county": "Glenn",
+   "acres": 28.5,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "1108586",
+    "dwr_main_crop": "T32",
+    "cdl_2023": 54
+   },
+   "place": "Willows",
+   "name": "Tomato field near Willows, Glenn County",
+   "id": "pt_n395697_w1222368",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -122.1872,
+    39.105
+   ],
+   "county": "Colusa",
+   "acres": 74.7,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "0603141",
+    "dwr_main_crop": "T32",
+    "cdl_2023": 54
+   },
+   "place": "Williams",
+   "name": "Tomato field near Williams, Colusa County",
+   "id": "pt_n391050_w1221872",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -121.2644,
+    38.4414
+   ],
+   "county": "Sacramento",
+   "acres": 20.7,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "3402716",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Wilton",
+   "name": "Vineyard near Wilton, Sacramento County",
+   "id": "pt_n384414_w1212644",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Sacramento Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -122.154,
+    39.0321
+   ],
+   "county": "Colusa",
+   "acres": 50.1,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "0600147",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Arbuckle",
+   "name": "Vineyard near Arbuckle, Colusa County",
+   "id": "pt_n390321_w1221540",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "grain",
+   "pt": [
+    -121.8296,
+    38.1484
+   ],
+   "county": "Solano",
+   "acres": 285.1,
+   "crop_word": "Winter wheat field",
+   "source": {
+    "dwr_unique_id": "4800789",
+    "dwr_main_crop": "G2",
+    "cdl_2023": 24
+   },
+   "place": "Rio Vista",
+   "name": "Winter wheat field near Rio Vista, Solano County",
+   "id": "pt_n381484_w1218296",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "grain",
+   "pt": [
+    -121.4647,
+    37.8311
+   ],
+   "county": "San Joaquin",
+   "acres": 84.8,
+   "crop_word": "Wheat and corn field",
+   "source": {
+    "dwr_unique_id": "3904033",
+    "dwr_main_crop": "F16",
+    "cdl_2023": 225
+   },
+   "place": "Mountain House",
+   "name": "Wheat and corn field near Mountain House, San Joaquin County",
+   "id": "pt_n378311_w1214647",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "grain",
+   "pt": [
+    -121.461,
+    38.3219
+   ],
+   "county": "Sacramento",
+   "acres": 20.6,
+   "crop_word": "Winter wheat field",
+   "source": {
+    "dwr_unique_id": "3400132",
+    "dwr_main_crop": "G6",
+    "cdl_2023": 24
+   },
+   "place": "Franklin",
+   "name": "Winter wheat field near Franklin, Sacramento County",
+   "id": "pt_n383219_w1214610",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "grain",
+   "pt": [
+    -121.3798,
+    38.1003
+   ],
+   "county": "San Joaquin",
+   "acres": 32.9,
+   "crop_word": "Wheat and corn field",
+   "source": {
+    "dwr_unique_id": "3906864",
+    "dwr_main_crop": "F16",
+    "cdl_2023": 225
+   },
+   "place": "Lodi",
+   "name": "Wheat and corn field near Lodi, San Joaquin County",
+   "id": "pt_n381003_w1213798",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "grain",
+   "pt": [
+    -121.5374,
+    37.9906
+   ],
+   "county": "San Joaquin",
+   "acres": 26.4,
+   "crop_word": "Corn field",
+   "source": {
+    "dwr_unique_id": "3914012",
+    "dwr_main_crop": "F16",
+    "cdl_2023": 1
+   },
+   "place": "Bethel Island",
+   "name": "Corn field near Bethel Island, San Joaquin County",
+   "id": "pt_n379906_w1215374",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "forage",
+   "pt": [
+    -121.7904,
+    38.3599
+   ],
+   "county": "Solano",
+   "acres": 49.6,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "4805458",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Dixon",
+   "name": "Alfalfa field near Dixon, Solano County",
+   "id": "pt_n383599_w1217904",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "forage",
+   "pt": [
+    -121.3568,
+    37.7634
+   ],
+   "county": "San Joaquin",
+   "acres": 29.9,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "3903767",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Lathrop",
+   "name": "Alfalfa field near Lathrop, San Joaquin County",
+   "id": "pt_n377634_w1213568",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "forage",
+   "pt": [
+    -121.4217,
+    38.2335
+   ],
+   "county": "San Joaquin",
+   "acres": 27.7,
+   "crop_word": "Clover field",
+   "source": {
+    "dwr_unique_id": "3905618",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 58
+   },
+   "place": "Thornton",
+   "name": "Clover field near Thornton, San Joaquin County",
+   "id": "pt_n382335_w1214217",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "forage",
+   "pt": [
+    -121.5406,
+    37.9548
+   ],
+   "county": "San Joaquin",
+   "acres": 20.3,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "3911077",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Discovery Bay",
+   "name": "Alfalfa field near Discovery Bay, San Joaquin County",
+   "id": "pt_n379548_w1215406",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.4809,
+    38.1446
+   ],
+   "county": "San Joaquin",
+   "acres": 100.2,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "3904653",
+    "dwr_main_crop": "T32",
+    "cdl_2023": 54
+   },
+   "place": "Terminous",
+   "name": "Tomato field near Terminous, San Joaquin County",
+   "id": "pt_n381446_w1214809",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.7879,
+    38.4441
+   ],
+   "county": "Solano",
+   "acres": 20.3,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "4804778",
+    "dwr_main_crop": "T32",
+    "cdl_2023": 54
+   },
+   "place": "Dixon",
+   "name": "Tomato field near Dixon, Solano County",
+   "id": "pt_n384441_w1217879",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.3308,
+    37.8433
+   ],
+   "county": "San Joaquin",
+   "acres": 54.4,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "3912582",
+    "dwr_main_crop": "T32",
+    "cdl_2023": 54
+   },
+   "place": "Lathrop",
+   "name": "Tomato field near Lathrop, San Joaquin County",
+   "id": "pt_n378433_w1213308",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "grapes",
+   "pt": [
+    -121.5447,
+    38.4105
+   ],
+   "county": "Yolo",
+   "acres": 21.4,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "5705824",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Clarksburg",
+   "name": "Vineyard near Clarksburg, Yolo County",
+   "id": "pt_n384105_w1215447",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "grapes",
+   "pt": [
+    -121.744,
+    38.0067
+   ],
+   "county": "Contra Costa",
+   "acres": 27.3,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "0700727",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Oakley",
+   "name": "Vineyard near Oakley, Contra Costa County",
+   "id": "pt_n380067_w1217440",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "grapes",
+   "pt": [
+    -121.3308,
+    38.1692
+   ],
+   "county": "San Joaquin",
+   "acres": 31.4,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "3916227",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Woodbridge",
+   "name": "Vineyard near Woodbridge, San Joaquin County",
+   "id": "pt_n381692_w1213308",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "grapes",
+   "pt": [
+    -121.6226,
+    38.2071
+   ],
+   "county": "Solano",
+   "acres": 37.0,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "4803258",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Isleton",
+   "name": "Vineyard near Isleton, Solano County",
+   "id": "pt_n382071_w1216226",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "nuts",
+   "pt": [
+    -121.4711,
+    38.2286
+   ],
+   "county": "San Joaquin",
+   "acres": 85.0,
+   "crop_word": "Walnut orchard",
+   "source": {
+    "dwr_unique_id": "3924316",
+    "dwr_main_crop": "D13",
+    "cdl_2023": 76
+   },
+   "place": "Thornton",
+   "name": "Walnut orchard near Thornton, San Joaquin County",
+   "id": "pt_n382286_w1214711",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "nuts",
+   "pt": [
+    -121.4241,
+    37.8961
+   ],
+   "county": "San Joaquin",
+   "acres": 53.5,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "3911707",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Country Club",
+   "name": "Almond orchard near Country Club, San Joaquin County",
+   "id": "pt_n378961_w1214241",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "rice",
+   "pt": [
+    -121.4765,
+    38.1918
+   ],
+   "county": "San Joaquin",
+   "acres": 59.1,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "3919991",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Thornton",
+   "name": "Rice field near Thornton, San Joaquin County",
+   "id": "pt_n381918_w1214765",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Delta",
+   "crop_group": "rice",
+   "pt": [
+    -121.6435,
+    38.4144
+   ],
+   "county": "Yolo",
+   "acres": 42.3,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "5700334",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Clarksburg",
+   "name": "Rice field near Clarksburg, Yolo County",
+   "id": "pt_n384144_w1216435",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -120.1727,
+    37.1109
+   ],
+   "county": "Madera",
+   "acres": 37.2,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "2001622",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Fairmead",
+   "name": "Almond orchard near Fairmead, Madera County",
+   "id": "pt_n371109_w1201727",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -119.0801,
+    35.0568
+   ],
+   "county": "Kern",
+   "acres": 44.0,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "1509131",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Mettler",
+   "name": "Almond orchard near Mettler, Kern County",
+   "id": "pt_n350568_w1190801",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -119.1923,
+    36.2889
+   ],
+   "county": "Tulare",
+   "acres": 36.1,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "5438081",
+    "dwr_main_crop": "D13",
+    "cdl_2023": 75
+   },
+   "place": "Farmersville",
+   "name": "Almond orchard near Farmersville, Tulare County",
+   "id": "pt_n362889_w1191923",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -120.1013,
+    35.6711
+   ],
+   "county": "Kern",
+   "acres": 32.3,
+   "crop_word": "Pistachio orchard",
+   "source": {
+    "dwr_unique_id": "1519136",
+    "dwr_main_crop": "D14",
+    "cdl_2023": 204
+   },
+   "place": "Shandon",
+   "name": "Pistachio orchard near Shandon, Kern County",
+   "id": "pt_n356711_w1201013",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -120.37,
+    36.4469
+   ],
+   "county": "Fresno",
+   "acres": 155.9,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "1039231",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Three Rocks",
+   "name": "Almond orchard near Three Rocks, Fresno County",
+   "id": "pt_n364469_w1203700",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -119.238,
+    35.6509
+   ],
+   "county": "Kern",
+   "acres": 23.8,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "1507077",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "McFarland",
+   "name": "Almond orchard near McFarland, Kern County",
+   "id": "pt_n356509_w1192380",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -120.495,
+    37.5676
+   ],
+   "county": "Merced",
+   "acres": 79.5,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "2408969",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Snelling",
+   "name": "Almond orchard near Snelling, Merced County",
+   "id": "pt_n375676_w1204950",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -119.7832,
+    36.245
+   ],
+   "county": "Kings",
+   "acres": 49.8,
+   "crop_word": "Pistachio orchard",
+   "source": {
+    "dwr_unique_id": "1607177",
+    "dwr_main_crop": "D14",
+    "cdl_2023": 204
+   },
+   "place": "Lemoore",
+   "name": "Pistachio orchard near Lemoore, Kings County",
+   "id": "pt_n362450_w1197832",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -119.6342,
+    35.4884
+   ],
+   "county": "Kern",
+   "acres": 77.8,
+   "crop_word": "Pistachio orchard",
+   "source": {
+    "dwr_unique_id": "1501106",
+    "dwr_main_crop": "D14",
+    "cdl_2023": 204
+   },
+   "place": "Lost Hills",
+   "name": "Pistachio orchard near Lost Hills, Kern County",
+   "id": "pt_n354884_w1196342",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -120.5216,
+    36.9218
+   ],
+   "county": "Fresno",
+   "acres": 65.6,
+   "crop_word": "Pistachio orchard",
+   "source": {
+    "dwr_unique_id": "1018127",
+    "dwr_main_crop": "D14",
+    "cdl_2023": 204
+   },
+   "place": "Firebaugh",
+   "name": "Pistachio orchard near Firebaugh, Fresno County",
+   "id": "pt_n369218_w1205216",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -120.1712,
+    36.1267
+   ],
+   "county": "Fresno",
+   "acres": 78.5,
+   "crop_word": "Pistachio orchard",
+   "source": {
+    "dwr_unique_id": "1015785",
+    "dwr_main_crop": "D14",
+    "cdl_2023": 204
+   },
+   "place": "Huron",
+   "name": "Pistachio orchard near Huron, Fresno County",
+   "id": "pt_n361267_w1201712",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "nuts",
+   "pt": [
+    -119.9329,
+    36.5561
+   ],
+   "county": "Fresno",
+   "acres": 38.7,
+   "crop_word": "Almond orchard",
+   "source": {
+    "dwr_unique_id": "1014465",
+    "dwr_main_crop": "D12",
+    "cdl_2023": 75
+   },
+   "place": "Raisin City",
+   "name": "Almond orchard near Raisin City, Fresno County",
+   "id": "pt_n365561_w1199329",
+   "crop_group_label": "Almonds, walnuts and pistachios"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -120.081,
+    36.8821
+   ],
+   "county": "Madera",
+   "acres": 38.5,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "2000210",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "La Vina",
+   "name": "Vineyard near La Vina, Madera County",
+   "id": "pt_n368821_w1200810",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -118.9496,
+    35.0275
+   ],
+   "county": "Kern",
+   "acres": 20.9,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "1501146",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Mettler",
+   "name": "Vineyard near Mettler, Kern County",
+   "id": "pt_n350275_w1189496",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -119.1113,
+    36.2414
+   ],
+   "county": "Tulare",
+   "acres": 38.3,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "5408519",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Tonyville",
+   "name": "Vineyard near Tonyville, Tulare County",
+   "id": "pt_n362414_w1191113",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -119.5927,
+    35.5102
+   ],
+   "county": "Kern",
+   "acres": 188.3,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "1510982",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Lost Hills",
+   "name": "Vineyard near Lost Hills, Kern County",
+   "id": "pt_n355102_w1195927",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -120.5271,
+    37.3769
+   ],
+   "county": "Merced",
+   "acres": 71.0,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "2416535",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Franklin",
+   "name": "Vineyard near Franklin, Merced County",
+   "id": "pt_n373769_w1205271",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -119.8125,
+    36.352
+   ],
+   "county": "Kings",
+   "acres": 82.2,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "1602586",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Lemoore",
+   "name": "Vineyard near Lemoore, Kings County",
+   "id": "pt_n363520_w1198125",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -119.133,
+    35.793
+   ],
+   "county": "Tulare",
+   "acres": 23.1,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "5425061",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Rodriguez Camp",
+   "name": "Vineyard near Rodriguez Camp, Tulare County",
+   "id": "pt_n357930_w1191330",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grapes",
+   "pt": [
+    -120.5528,
+    36.645
+   ],
+   "county": "Fresno",
+   "acres": 30.6,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "1031177",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Mendota",
+   "name": "Vineyard near Mendota, Fresno County",
+   "id": "pt_n366450_w1205528",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "citrus",
+   "pt": [
+    -119.7574,
+    35.541
+   ],
+   "county": "Kern",
+   "acres": 66.8,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "1515721",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Lost Hills",
+   "name": "Citrus orchard near Lost Hills, Kern County",
+   "id": "pt_n355410_w1197574",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "citrus",
+   "pt": [
+    -120.0497,
+    37.0942
+   ],
+   "county": "Madera",
+   "acres": 76.6,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "2006705",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Madera Acres",
+   "name": "Citrus orchard near Madera Acres, Madera County",
+   "id": "pt_n370942_w1200497",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "citrus",
+   "pt": [
+    -119.0302,
+    36.3827
+   ],
+   "county": "Tulare",
+   "acres": 26.8,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "5429836",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Lemon Cove",
+   "name": "Citrus orchard near Lemon Cove, Tulare County",
+   "id": "pt_n363827_w1190302",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "citrus",
+   "pt": [
+    -118.754,
+    35.2294
+   ],
+   "county": "Kern",
+   "acres": 20.4,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "1500984",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Edmundson Acres",
+   "name": "Citrus orchard near Edmundson Acres, Kern County",
+   "id": "pt_n352294_w1187540",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "citrus",
+   "pt": [
+    -120.1148,
+    36.2789
+   ],
+   "county": "Fresno",
+   "acres": 39.0,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "1044156",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Huron",
+   "name": "Citrus orchard near Huron, Fresno County",
+   "id": "pt_n362789_w1201148",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "citrus",
+   "pt": [
+    -119.0305,
+    35.7883
+   ],
+   "county": "Kern",
+   "acres": 24.4,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "1502937",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Richgrove",
+   "name": "Citrus orchard near Richgrove, Kern County",
+   "id": "pt_n357883_w1190305",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "citrus",
+   "pt": [
+    -119.4479,
+    36.8163
+   ],
+   "county": "Fresno",
+   "acres": 36.3,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "1022530",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Centerville",
+   "name": "Citrus orchard near Centerville, Fresno County",
+   "id": "pt_n368163_w1194479",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "citrus",
+   "pt": [
+    -119.2846,
+    35.053
+   ],
+   "county": "Kern",
+   "acres": 28.7,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "1511062",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Maricopa",
+   "name": "Citrus orchard near Maricopa, Kern County",
+   "id": "pt_n350530_w1192846",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "forage",
+   "pt": [
+    -119.7758,
+    36.1857
+   ],
+   "county": "Kings",
+   "acres": 155.0,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "1600292",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Stratford",
+   "name": "Alfalfa field near Stratford, Kings County",
+   "id": "pt_n361857_w1197758",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "forage",
+   "pt": [
+    -118.8487,
+    35.1817
+   ],
+   "county": "Kern",
+   "acres": 36.6,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "1511535",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Arvin",
+   "name": "Alfalfa field near Arvin, Kern County",
+   "id": "pt_n351817_w1188487",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "forage",
+   "pt": [
+    -120.5113,
+    37.1759
+   ],
+   "county": "Merced",
+   "acres": 89.5,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "2417254",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "El Nido",
+   "name": "Alfalfa field near El Nido, Merced County",
+   "id": "pt_n371759_w1205113",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "forage",
+   "pt": [
+    -119.5734,
+    35.4761
+   ],
+   "county": "Kern",
+   "acres": 26.0,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "1517489",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Buttonwillow",
+   "name": "Alfalfa field near Buttonwillow, Kern County",
+   "id": "pt_n354761_w1195734",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "forage",
+   "pt": [
+    -120.0218,
+    36.7368
+   ],
+   "county": "Fresno",
+   "acres": 34.8,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "1025852",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Kerman",
+   "name": "Alfalfa field near Kerman, Fresno County",
+   "id": "pt_n367368_w1200218",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "forage",
+   "pt": [
+    -119.1901,
+    36.0567
+   ],
+   "county": "Tulare",
+   "acres": 38.9,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "5409779",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Poplar-Cotton Center",
+   "name": "Alfalfa field near Poplar-Cotton Center, Tulare County",
+   "id": "pt_n360567_w1191901",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "forage",
+   "pt": [
+    -119.4361,
+    35.1499
+   ],
+   "county": "Kern",
+   "acres": 23.0,
+   "crop_word": "Hay field",
+   "source": {
+    "dwr_unique_id": "1502906",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 37
+   },
+   "place": "Ford City",
+   "name": "Hay field near Ford City, Kern County",
+   "id": "pt_n351499_w1194361",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "cotton",
+   "pt": [
+    -119.9838,
+    36.2458
+   ],
+   "county": "Fresno",
+   "acres": 106.8,
+   "crop_word": "Cotton field",
+   "source": {
+    "dwr_unique_id": "1010589",
+    "dwr_main_crop": "F1",
+    "cdl_2023": 2
+   },
+   "place": "Lemoore Station",
+   "name": "Cotton field near Lemoore Station, Fresno County",
+   "id": "pt_n362458_w1199838",
+   "crop_group_label": "Cotton"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "cotton",
+   "pt": [
+    -118.8127,
+    35.1885
+   ],
+   "county": "Kern",
+   "acres": 24.0,
+   "crop_word": "Cotton field",
+   "source": {
+    "dwr_unique_id": "1522447",
+    "dwr_main_crop": "F1",
+    "cdl_2023": 2
+   },
+   "place": "Arvin",
+   "name": "Cotton field near Arvin, Kern County",
+   "id": "pt_n351885_w1188127",
+   "crop_group_label": "Cotton"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "cotton",
+   "pt": [
+    -120.4508,
+    37.1373
+   ],
+   "county": "Merced",
+   "acres": 38.0,
+   "crop_word": "Cotton field",
+   "source": {
+    "dwr_unique_id": "2411392",
+    "dwr_main_crop": "F1",
+    "cdl_2023": 2
+   },
+   "place": "El Nido",
+   "name": "Cotton field near El Nido, Merced County",
+   "id": "pt_n371373_w1204508",
+   "crop_group_label": "Cotton"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "cotton",
+   "pt": [
+    -119.6129,
+    35.5519
+   ],
+   "county": "Kern",
+   "acres": 80.2,
+   "crop_word": "Cotton field",
+   "source": {
+    "dwr_unique_id": "1517985",
+    "dwr_main_crop": "F1",
+    "cdl_2023": 2
+   },
+   "place": "Lost Hills",
+   "name": "Cotton field near Lost Hills, Kern County",
+   "id": "pt_n355519_w1196129",
+   "crop_group_label": "Cotton"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "cotton",
+   "pt": [
+    -119.3084,
+    36.082
+   ],
+   "county": "Tulare",
+   "acres": 72.6,
+   "crop_word": "Cotton field",
+   "source": {
+    "dwr_unique_id": "5407164",
+    "dwr_main_crop": "F1",
+    "cdl_2023": 2
+   },
+   "place": "Tipton",
+   "name": "Cotton field near Tipton, Tulare County",
+   "id": "pt_n360820_w1193084",
+   "crop_group_label": "Cotton"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "cotton",
+   "pt": [
+    -120.5845,
+    36.6679
+   ],
+   "county": "Fresno",
+   "acres": 24.6,
+   "crop_word": "Cotton field",
+   "source": {
+    "dwr_unique_id": "1042860",
+    "dwr_main_crop": "F1",
+    "cdl_2023": 2
+   },
+   "place": "Mendota",
+   "name": "Cotton field near Mendota, Fresno County",
+   "id": "pt_n366679_w1205845",
+   "crop_group_label": "Cotton"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "cotton",
+   "pt": [
+    -119.5309,
+    36.4197
+   ],
+   "county": "Kings",
+   "acres": 74.3,
+   "crop_word": "Cotton field",
+   "source": {
+    "dwr_unique_id": "1603058",
+    "dwr_main_crop": "F1",
+    "cdl_2023": 2
+   },
+   "place": "Traver",
+   "name": "Cotton field near Traver, Kings County",
+   "id": "pt_n364197_w1195309",
+   "crop_group_label": "Cotton"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -118.9371,
+    35.1309
+   ],
+   "county": "Kern",
+   "acres": 63.9,
+   "crop_word": "Garlic field",
+   "source": {
+    "dwr_unique_id": "1524735",
+    "dwr_main_crop": "T6",
+    "cdl_2023": 208
+   },
+   "place": "Mettler",
+   "name": "Garlic field near Mettler, Kern County",
+   "id": "pt_n351309_w1189371",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -120.5702,
+    37.2693
+   ],
+   "county": "Merced",
+   "acres": 54.7,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "2420464",
+    "dwr_main_crop": "T32",
+    "cdl_2023": 54
+   },
+   "place": "McSwain",
+   "name": "Tomato field near McSwain, Merced County",
+   "id": "pt_n372693_w1205702",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -120.0328,
+    36.1258
+   ],
+   "county": "Fresno",
+   "acres": 50.7,
+   "crop_word": "Cantaloupe field",
+   "source": {
+    "dwr_unique_id": "1016760",
+    "dwr_main_crop": "T32",
+    "cdl_2023": 209
+   },
+   "place": "Huron",
+   "name": "Cantaloupe field near Huron, Fresno County",
+   "id": "pt_n361258_w1200328",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -120.521,
+    36.6583
+   ],
+   "county": "Fresno",
+   "acres": 78.4,
+   "crop_word": "Cantaloupe field",
+   "source": {
+    "dwr_unique_id": "1008126",
+    "dwr_main_crop": "T9",
+    "cdl_2023": 209
+   },
+   "place": "Mendota",
+   "name": "Cantaloupe field near Mendota, Fresno County",
+   "id": "pt_n366583_w1205210",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -119.3568,
+    35.3877
+   ],
+   "county": "Kern",
+   "acres": 75.2,
+   "crop_word": "Potato field",
+   "source": {
+    "dwr_unique_id": "1518836",
+    "dwr_main_crop": "T12",
+    "cdl_2023": 43
+   },
+   "place": "Stebbins",
+   "name": "Potato field near Stebbins, Kern County",
+   "id": "pt_n353877_w1193568",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "vegetables",
+   "pt": [
+    -120.1092,
+    37.1137
+   ],
+   "county": "Madera",
+   "acres": 21.2,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "2011530",
+    "dwr_main_crop": "T32",
+    "cdl_2023": 54
+   },
+   "place": "Fairmead",
+   "name": "Tomato field near Fairmead, Madera County",
+   "id": "pt_n371137_w1201092",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grain",
+   "pt": [
+    -119.2883,
+    36.1073
+   ],
+   "county": "Tulare",
+   "acres": 36.2,
+   "crop_word": "Wheat and corn field",
+   "source": {
+    "dwr_unique_id": "5413135",
+    "dwr_main_crop": "F16",
+    "cdl_2023": 225
+   },
+   "place": "Tipton",
+   "name": "Wheat and corn field near Tipton, Tulare County",
+   "id": "pt_n361073_w1192883",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grain",
+   "pt": [
+    -120.5348,
+    37.4427
+   ],
+   "county": "Merced",
+   "acres": 54.7,
+   "crop_word": "Oat and corn field",
+   "source": {
+    "dwr_unique_id": "2415880",
+    "dwr_main_crop": "F16",
+    "cdl_2023": 226
+   },
+   "place": "Winton",
+   "name": "Oat and corn field near Winton, Merced County",
+   "id": "pt_n374427_w1205348",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grain",
+   "pt": [
+    -118.8984,
+    35.1127
+   ],
+   "county": "Kern",
+   "acres": 41.6,
+   "crop_word": "Triticale and corn field",
+   "source": {
+    "dwr_unique_id": "1520403",
+    "dwr_main_crop": "G6",
+    "cdl_2023": 228
+   },
+   "place": "Mettler",
+   "name": "Triticale and corn field near Mettler, Kern County",
+   "id": "pt_n351127_w1188984",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grain",
+   "pt": [
+    -120.2662,
+    36.5558
+   ],
+   "county": "Fresno",
+   "acres": 155.0,
+   "crop_word": "Corn field",
+   "source": {
+    "dwr_unique_id": "1013762",
+    "dwr_main_crop": "G6",
+    "cdl_2023": 1
+   },
+   "place": "Cantua Creek",
+   "name": "Corn field near Cantua Creek, Fresno County",
+   "id": "pt_n365558_w1202662",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "grain",
+   "pt": [
+    -120.1177,
+    35.9957
+   ],
+   "county": "Kings",
+   "acres": 56.0,
+   "crop_word": "Winter wheat field",
+   "source": {
+    "dwr_unique_id": "1602225",
+    "dwr_main_crop": "G6",
+    "cdl_2023": 24
+   },
+   "place": "Avenal",
+   "name": "Winter wheat field near Avenal, Kings County",
+   "id": "pt_n359957_w1201177",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "rice",
+   "pt": [
+    -120.5354,
+    37.2712
+   ],
+   "county": "Merced",
+   "acres": 38.7,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "2405984",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "Franklin",
+   "name": "Rice field near Franklin, Merced County",
+   "id": "pt_n372712_w1205354",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "San Joaquin Valley",
+   "crop_group": "rice",
+   "pt": [
+    -120.5833,
+    36.9023
+   ],
+   "county": "Fresno",
+   "acres": 42.8,
+   "crop_word": "Rice field",
+   "source": {
+    "dwr_unique_id": "1012571",
+    "dwr_main_crop": "R1",
+    "cdl_2023": 3
+   },
+   "place": "South Dos Palos",
+   "name": "Rice field near South Dos Palos, Fresno County",
+   "id": "pt_n369023_w1205833",
+   "crop_group_label": "Rice"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "forage",
+   "pt": [
+    -115.5741,
+    33.0336
+   ],
+   "county": "Imperial",
+   "acres": 146.8,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "1306780",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Westmorland",
+   "name": "Alfalfa field near Westmorland, Imperial County",
+   "id": "pt_n330336_w1155741",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "forage",
+   "pt": [
+    -114.561,
+    33.6649
+   ],
+   "county": "Riverside",
+   "acres": 60.0,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "3314659",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Blythe",
+   "name": "Alfalfa field near Blythe, Riverside County",
+   "id": "pt_n336649_w1145610",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "forage",
+   "pt": [
+    -115.3642,
+    32.6774
+   ],
+   "county": "Imperial",
+   "acres": 86.7,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "1307865",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Calexico",
+   "name": "Alfalfa field near Calexico, Imperial County",
+   "id": "pt_n326774_w1153642",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "forage",
+   "pt": [
+    -114.7407,
+    33.4153
+   ],
+   "county": "Imperial",
+   "acres": 42.6,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "1300161",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Palo Verde",
+   "name": "Alfalfa field near Palo Verde, Imperial County",
+   "id": "pt_n334153_w1147407",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "forage",
+   "pt": [
+    -115.6763,
+    32.7924
+   ],
+   "county": "Imperial",
+   "acres": 123.5,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "1306583",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Seeley",
+   "name": "Alfalfa field near Seeley, Imperial County",
+   "id": "pt_n327924_w1156763",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "forage",
+   "pt": [
+    -115.8372,
+    33.1258
+   ],
+   "county": "Imperial",
+   "acres": 144.8,
+   "crop_word": "Alfalfa field",
+   "source": {
+    "dwr_unique_id": "1307350",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 36
+   },
+   "place": "Westmorland",
+   "name": "Alfalfa field near Westmorland, Imperial County",
+   "id": "pt_n331258_w1158372",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "vegetables",
+   "pt": [
+    -114.6024,
+    33.5695
+   ],
+   "county": "Riverside",
+   "acres": 85.8,
+   "crop_word": "Garlic field",
+   "source": {
+    "dwr_unique_id": "3300638",
+    "dwr_main_crop": "T10",
+    "cdl_2023": 208
+   },
+   "place": "Ripley",
+   "name": "Garlic field near Ripley, Riverside County",
+   "id": "pt_n335695_w1146024",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "vegetables",
+   "pt": [
+    -116.0722,
+    33.4534
+   ],
+   "county": "Riverside",
+   "acres": 36.3,
+   "crop_word": "Pepper field",
+   "source": {
+    "dwr_unique_id": "3316847",
+    "dwr_main_crop": "T21",
+    "cdl_2023": 216
+   },
+   "place": "Desert Shores",
+   "name": "Pepper field near Desert Shores, Riverside County",
+   "id": "pt_n334534_w1160722",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "vegetables",
+   "pt": [
+    -115.2893,
+    32.7072
+   ],
+   "county": "Imperial",
+   "acres": 63.3,
+   "crop_word": "Cantaloupe field",
+   "source": {
+    "dwr_unique_id": "1304159",
+    "dwr_main_crop": "T9",
+    "cdl_2023": 209
+   },
+   "place": "Holtville",
+   "name": "Cantaloupe field near Holtville, Imperial County",
+   "id": "pt_n327072_w1152893",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "vegetables",
+   "pt": [
+    -115.638,
+    33.1293
+   ],
+   "county": "Imperial",
+   "acres": 67.9,
+   "crop_word": "Carrot field",
+   "source": {
+    "dwr_unique_id": "1301418",
+    "dwr_main_crop": "T30",
+    "cdl_2023": 206
+   },
+   "place": "Westmorland",
+   "name": "Carrot field near Westmorland, Imperial County",
+   "id": "pt_n331293_w1156380",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "citrus",
+   "pt": [
+    -116.0413,
+    33.5895
+   ],
+   "county": "Riverside",
+   "acres": 37.9,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "3312589",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Mecca",
+   "name": "Citrus orchard near Mecca, Riverside County",
+   "id": "pt_n335895_w1160413",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "citrus",
+   "pt": [
+    -114.6983,
+    33.6572
+   ],
+   "county": "Riverside",
+   "acres": 38.1,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "3310888",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Blythe",
+   "name": "Citrus orchard near Blythe, Riverside County",
+   "id": "pt_n336572_w1146983",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "citrus",
+   "pt": [
+    -115.5648,
+    32.9622
+   ],
+   "county": "Imperial",
+   "acres": 24.4,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "1302357",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Brawley",
+   "name": "Citrus orchard near Brawley, Imperial County",
+   "id": "pt_n329622_w1155648",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "grain",
+   "pt": [
+    -115.6678,
+    32.7651
+   ],
+   "county": "Imperial",
+   "acres": 78.0,
+   "crop_word": "Oat field",
+   "source": {
+    "dwr_unique_id": "1302942",
+    "dwr_main_crop": "G6",
+    "cdl_2023": 28
+   },
+   "place": "Seeley",
+   "name": "Oat field near Seeley, Imperial County",
+   "id": "pt_n327651_w1156678",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "grain",
+   "pt": [
+    -114.6131,
+    33.6555
+   ],
+   "county": "Riverside",
+   "acres": 34.2,
+   "crop_word": "Durum wheat field",
+   "source": {
+    "dwr_unique_id": "3300222",
+    "dwr_main_crop": "G2",
+    "cdl_2023": 22
+   },
+   "place": "Blythe",
+   "name": "Durum wheat field near Blythe, Riverside County",
+   "id": "pt_n336555_w1146131",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "grain",
+   "pt": [
+    -115.5256,
+    33.1657
+   ],
+   "county": "Imperial",
+   "acres": 74.3,
+   "crop_word": "Oat field",
+   "source": {
+    "dwr_unique_id": "1306639",
+    "dwr_main_crop": "G6",
+    "cdl_2023": 28
+   },
+   "place": "Calipatria",
+   "name": "Oat field near Calipatria, Imperial County",
+   "id": "pt_n331657_w1155256",
+   "crop_group_label": "Corn and grain"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "grapes",
+   "pt": [
+    -116.0919,
+    33.4389
+   ],
+   "county": "Riverside",
+   "acres": 20.0,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "3308966",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Desert Shores",
+   "name": "Vineyard near Desert Shores, Riverside County",
+   "id": "pt_n334389_w1160919",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Imperial / Coachella",
+   "crop_group": "grapes",
+   "pt": [
+    -116.113,
+    33.6669
+   ],
+   "county": "Riverside",
+   "acres": 32.2,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "3309722",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Coachella",
+   "name": "Vineyard near Coachella, Riverside County",
+   "id": "pt_n336669_w1161130",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.5403,
+    36.9768
+   ],
+   "county": "Santa Clara",
+   "acres": 34.6,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "4301461",
+    "dwr_main_crop": "T21",
+    "cdl_2023": 54
+   },
+   "place": "Gilroy",
+   "name": "Tomato field near Gilroy, Santa Clara County",
+   "id": "pt_n369768_w1215403",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "vegetables",
+   "pt": [
+    -119.5697,
+    34.94
+   ],
+   "county": "San Luis Obispo",
+   "acres": 41.8,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "4009010",
+    "dwr_main_crop": "T4",
+    "cdl_2023": 54
+   },
+   "place": "Cuyama",
+   "name": "Tomato field near Cuyama, San Luis Obispo County",
+   "id": "pt_n349400_w1195697",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "vegetables",
+   "pt": [
+    -120.8836,
+    35.9888
+   ],
+   "county": "Monterey",
+   "acres": 24.0,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "2723108",
+    "dwr_main_crop": "T4",
+    "cdl_2023": 54
+   },
+   "place": "San Ardo",
+   "name": "Tomato field near San Ardo, Monterey County",
+   "id": "pt_n359888_w1208836",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.507,
+    36.5393
+   ],
+   "county": "Monterey",
+   "acres": 44.8,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "2725452",
+    "dwr_main_crop": "T4",
+    "cdl_2023": 54
+   },
+   "place": "Chualar",
+   "name": "Tomato field near Chualar, Monterey County",
+   "id": "pt_n365393_w1215070",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.1177,
+    36.235
+   ],
+   "county": "Monterey",
+   "acres": 21.5,
+   "crop_word": "Honeydew field",
+   "source": {
+    "dwr_unique_id": "2723167",
+    "dwr_main_crop": "T30",
+    "cdl_2023": 213
+   },
+   "place": "King City",
+   "name": "Honeydew field near King City, Monterey County",
+   "id": "pt_n362350_w1211177",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.7087,
+    36.9197
+   ],
+   "county": "Santa Cruz",
+   "acres": 34.6,
+   "crop_word": "Tomato field",
+   "source": {
+    "dwr_unique_id": "4405431",
+    "dwr_main_crop": "T4",
+    "cdl_2023": 54
+   },
+   "place": "Pajaro",
+   "name": "Tomato field near Pajaro, Santa Cruz County",
+   "id": "pt_n369197_w1217087",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "vegetables",
+   "pt": [
+    -121.5875,
+    36.6427
+   ],
+   "county": "Monterey",
+   "acres": 23.8,
+   "crop_word": "Onion field",
+   "source": {
+    "dwr_unique_id": "2701654",
+    "dwr_main_crop": "T30",
+    "cdl_2023": 49
+   },
+   "place": "Spreckels",
+   "name": "Onion field near Spreckels, Monterey County",
+   "id": "pt_n366427_w1215875",
+   "crop_group_label": "Tomatoes, vegetables and berries"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -121.3646,
+    36.4654
+   ],
+   "county": "Monterey",
+   "acres": 86.2,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "2707996",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Soledad",
+   "name": "Vineyard near Soledad, Monterey County",
+   "id": "pt_n364654_w1213646",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -119.4726,
+    34.8392
+   ],
+   "county": "Santa Barbara",
+   "acres": 23.3,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "4209547",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Cuyama",
+   "name": "Vineyard near Cuyama, Santa Barbara County",
+   "id": "pt_n348392_w1194726",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -120.3977,
+    35.6463
+   ],
+   "county": "San Luis Obispo",
+   "acres": 24.4,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "4014300",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Shandon",
+   "name": "Vineyard near Shandon, San Luis Obispo County",
+   "id": "pt_n356463_w1203977",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -120.3069,
+    34.7603
+   ],
+   "county": "Santa Barbara",
+   "acres": 24.5,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "4210994",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Los Alamos",
+   "name": "Vineyard near Los Alamos, Santa Barbara County",
+   "id": "pt_n347603_w1203069",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -121.4939,
+    36.9974
+   ],
+   "county": "Santa Clara",
+   "acres": 21.8,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "4301281",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Gilroy",
+   "name": "Vineyard near Gilroy, Santa Clara County",
+   "id": "pt_n369974_w1214939",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "forage",
+   "pt": [
+    -120.0697,
+    34.6264
+   ],
+   "county": "Santa Barbara",
+   "acres": 24.3,
+   "crop_word": "Pasture",
+   "source": {
+    "dwr_unique_id": "4212837",
+    "dwr_main_crop": "P1",
+    "cdl_2023": 176
+   },
+   "place": "Santa Ynez",
+   "name": "Pasture near Santa Ynez, Santa Barbara County",
+   "id": "pt_n346264_w1200697",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "Central Coast",
+   "crop_group": "citrus",
+   "pt": [
+    -120.5495,
+    35.0851
+   ],
+   "county": "San Luis Obispo",
+   "acres": 30.7,
+   "crop_word": "Citrus orchard",
+   "source": {
+    "dwr_unique_id": "4010714",
+    "dwr_main_crop": "C",
+    "cdl_2023": 72
+   },
+   "place": "Los Berros",
+   "name": "Citrus orchard near Los Berros, San Luis Obispo County",
+   "id": "pt_n350851_w1205495",
+   "crop_group_label": "Citrus"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -122.4593,
+    38.6425
+   ],
+   "county": "Napa",
+   "acres": 20.4,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "2804771",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Angwin",
+   "name": "Vineyard near Angwin, Napa County",
+   "id": "pt_n386425_w1224593",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -123.526,
+    39.1192
+   ],
+   "county": "Mendocino",
+   "acres": 22.7,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "2303451",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Philo",
+   "name": "Vineyard near Philo, Mendocino County",
+   "id": "pt_n391192_w1235260",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -122.6792,
+    39.0887
+   ],
+   "county": "Lake",
+   "acres": 25.5,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "1700505",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Clearlake Oaks",
+   "name": "Vineyard near Clearlake Oaks, Lake County",
+   "id": "pt_n390887_w1226792",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -122.5283,
+    38.1731
+   ],
+   "county": "Sonoma",
+   "acres": 22.8,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "4913497",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Black Point-Green Point",
+   "name": "Vineyard near Black Point-Green Point, Sonoma County",
+   "id": "pt_n381731_w1225283",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -122.8861,
+    38.4452
+   ],
+   "county": "Sonoma",
+   "acres": 31.9,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "4912852",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Graton",
+   "name": "Vineyard near Graton, Sonoma County",
+   "id": "pt_n384452_w1228861",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -123.0461,
+    38.8624
+   ],
+   "county": "Mendocino",
+   "acres": 20.7,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "2303982",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Cloverdale",
+   "name": "Vineyard near Cloverdale, Mendocino County",
+   "id": "pt_n388624_w1230461",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -122.1932,
+    38.3713
+   ],
+   "county": "Napa",
+   "acres": 41.0,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "2804677",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Silverado Resort",
+   "name": "Vineyard near Silverado Resort, Napa County",
+   "id": "pt_n383713_w1221932",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -123.1789,
+    39.1168
+   ],
+   "county": "Mendocino",
+   "acres": 34.4,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "2300508",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Talmage",
+   "name": "Vineyard near Talmage, Mendocino County",
+   "id": "pt_n391168_w1231789",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "grapes",
+   "pt": [
+    -122.5586,
+    38.421
+   ],
+   "county": "Sonoma",
+   "acres": 21.0,
+   "crop_word": "Vineyard",
+   "source": {
+    "dwr_unique_id": "4905933",
+    "dwr_main_crop": "V",
+    "cdl_2023": 69
+   },
+   "place": "Kenwood",
+   "name": "Vineyard near Kenwood, Sonoma County",
+   "id": "pt_n384210_w1225586",
+   "crop_group_label": "Grapes"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "forage",
+   "pt": [
+    -122.7725,
+    38.4989
+   ],
+   "county": "Sonoma",
+   "acres": 20.9,
+   "crop_word": "Pasture",
+   "source": {
+    "dwr_unique_id": "4918556",
+    "dwr_main_crop": "P3",
+    "cdl_2023": 176
+   },
+   "place": "Fulton",
+   "name": "Pasture near Fulton, Sonoma County",
+   "id": "pt_n384989_w1227725",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  },
+  {
+   "region": "ca",
+   "area": "North Coast",
+   "crop_group": "forage",
+   "pt": [
+    -124.0629,
+    41.2991
+   ],
+   "county": "Humboldt",
+   "acres": 33.4,
+   "crop_word": "Pasture",
+   "source": {
+    "dwr_unique_id": "1202986",
+    "dwr_main_crop": "P3",
+    "cdl_2023": 176
+   },
+   "place": "Orick",
+   "name": "Pasture near Orick, Humboldt County",
+   "id": "pt_n412991_w1240629",
+   "crop_group_label": "Alfalfa, hay and pasture"
+  }
+ ]
+}

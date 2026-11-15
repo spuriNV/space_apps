@@ -63,13 +63,24 @@ fun LazyListScope.seasonPanel(state: MainUiState, data: FieldData, glossary: Map
         Section("Rain and temperature outlook") {
             v.outlookRows.forEach { (m, t) -> Row(Modifier.padding(vertical = 3.dp)) { Text(m, Modifier.width(64.dp), style = MaterialTheme.typography.labelLarge, color = CropLyticsTheme.colors.text); Body(t) } }
             How("Each season is split into a wetter, a middle and a drier third. With no lean each has a 33% chance; 40% means the odds are tilted, not that rain is certain.")
-            Cite("NOAA Climate Prediction Center 3-month outlooks${v.issued?.let { ", issued ${Timeline.fmtDate(it)}" } ?: ""}, at this field.")
+            Cite("${if (v.bc) "Environment Canada station climate, 1991–2020 (no seasonal outlook is built for BC)" else "NOAA Climate Prediction Center 3-month outlooks"}${v.issued?.let { ", issued ${Timeline.fmtDate(it)}" } ?: ""}, at this field.")
             Sub("Drought")
             Facts(listOf("Now" to v.droughtNow, "Outlook" to v.droughtOutlook))
             Cite("US Drought Monitor (county) and NOAA seasonal drought outlook.")
         }
     }
-    item(key = "cs-water") {
+    if (v.bc) item(key = "cs-orders") {
+        Section("Irrigation orders in this watershed") {
+            if (v.orders.isEmpty()) Body("None on record.")
+            v.orders.forEach { (d, t) -> Row(Modifier.padding(vertical = 3.dp)) { Text(d, Modifier.width(96.dp), style = MaterialTheme.typography.labelLarge, color = CropLyticsTheme.colors.text); Body(t) } }
+            v.watershedNote?.let { How(it) }
+            Cite("BC Gov News; orders under the Water Sustainability Act.")
+            Sub("Water in the ground going into winter")
+            Facts(listOf("Rain since 1 Oct" to v.rainSince, "Root-zone soil" to v.rootSoil, "Groundwater" to v.groundwater))
+            Cite(v.soilCite)
+        }
+    }
+    if (!v.bc) item(key = "cs-water") {
         Section("Water in storage now") {
             if (v.reservoirs.isEmpty()) Body("Not loaded.")
             v.reservoirs.forEach { (n, t) -> Column(Modifier.padding(vertical = 3.dp)) { Text(n, style = MaterialTheme.typography.labelLarge, color = CropLyticsTheme.colors.text); Body(t) } }

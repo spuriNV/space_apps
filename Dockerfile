@@ -14,6 +14,7 @@ WORKDIR /app
 COPY backend/api/ backend/api/
 COPY backend/engine/ backend/engine/
 COPY backend/fields/ backend/fields/
+COPY backend/bc/nations.py backend/bc/nations.py
 COPY backend/field/out/ backend/field/out/
 COPY backend/field/polygons/ backend/field/polygons/
 COPY backend/ai/out/ backend/ai/out/

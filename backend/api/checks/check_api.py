@@ -710,5 +710,89 @@ _tw(_r.status_code == 200 and not _e, f"reach: 200, schema-valid {_e}")
 _tw(_r.status_code == 200 and _r.json()["rice"]["california_planted_acres"]["value"] > 100000 and "rice" in _r.json()["pitch_line"],
     f"reach: rice acres > 100,000 ({_r.json()['rice']['california_planted_acres']['value']:,.0f}) and pitch line")
 # ---- end this week + reach ====================================================================================
+# ======================================================================================================
+# ---- farm catalog (backend/catalog -> backend/api/out/catalog) + BC tier 1 + reserve / tribal land (app/anyloc).
+# Catalog ids are served from the committed outputs (no upstream call); the BC, reserve and tribal taps are live.
+# ======================================================================================================
+import random as _rnd  # noqa: E402
+
+print("\nfarm catalog:")
+_rc = client.get("/api/catalog")
+_cat = _rc.json() if _rc.status_code == 200 else {"items": [], "count": 0}
+_idx = json.loads((ROOT / "backend/api/out/catalog/index.json").read_text()) if (ROOT / "backend/api/out/catalog/index.json").exists() else []
+_ca = [x for x in _cat["items"] if x["region"] == "ca"]
+_bc = [x for x in _cat["items"] if x["region"] == "bc"]
+_ok(_rc.status_code == 200 and _cat["count"] == len(_idx) >= 180 and len(_ca) >= 140 and len(_bc) >= 35,
+    f"/api/catalog lists {_cat['count']} fields (index.json {len(_idx)}): {len(_ca)} CA, {len(_bc)} BC")
+_ok(all(set(x) >= {"id", "name", "lat", "lon", "region", "crop_group", "county", "acres", "family"} for x in _cat["items"]),
+    "every catalog item has id, name, lat, lon, region, crop_group, county, acres, family")
+_rf = client.get("/api/catalog?region=bc&crop_group=forage").json()
+_ok(_rf["count"] == sum(x["crop_group"] == "forage" for x in _bc) > 0 and all(x["region"] == "bc" and x["crop_group"] == "forage" for x in _rf["items"]),
+    f"/api/catalog?region=bc&crop_group=forage -> {_rf['count']}")
+_ok(len({x["id"] for x in _cat["items"]}) == _cat["count"] and all(_al.B.parse_id(x["id"]) for x in _cat["items"]), "catalog ids unique, valid pt_ ids")
+_ok(client.get("/api/locations").json()["count"] <= 20, "/api/locations unchanged (hand-built fields only, catalog not listed)")
+_rng = _rnd.Random()
+for x in _rng.sample(_ca, min(5, len(_ca))) + _rng.sample(_bc, min(3, len(_bc))):
+    t0 = _t.time(); r = client.get(f"/api/locations/{x['id']}", headers={"X-Forwarded-For": "198.51.100.20"}); dt_ = _t.time() - t0
+    if not _ok(r.status_code == 200, f"catalog {x['id']} ({x['name']}): GET /api/locations 200"):
+        continue
+    d = r.json(); e = _errs(_LOC_V, d)
+    _ok(not e and d["_source"] == "catalog" and r.headers.get("X-Data-Source") == "catalog" and d["analysis"]["cache"] == "catalog" and dt_ < 0.5,
+        f"catalog {x['id']}: schema-valid, _source catalog, {dt_ * 1000:.0f} ms {e}")
+    _ok(d["region"] == x["region"] and d["name"] == x["name"] and all(d["sections"][k]["status"] == "ready" for k in ("weather", "crop_history", "boundary", "strategies")),
+        f"catalog {x['id']}: region {d['region']}, tier 1 ready {[(k, d['sections'][k]['status']) for k in ('weather', 'soil', 'crop_history', 'boundary', 'strategies')]}")
+    rs = client.get(f"/api/locations/{x['id']}/strategies", headers={"X-Forwarded-For": "198.51.100.20"})
+    _ok(rs.status_code == 200 and not _errs(_STR_V, rs.json()) and len(rs.json()["items"]) == 4 and rs.json()["_source"] == "catalog"
+        and all(i["id"].startswith("bc") for i in rs.json()["items"]) == (x["region"] == "bc"),
+        f"catalog {x['id']}: /strategies 200 from the catalog, schema-valid, {'BC0-3' if x['region'] == 'bc' else 'CA'} rotation set")
+
+print("\nBC tier 1 and reserve / tribal land (live):")
+_LIVE = [  # (label, lat, lon, ip, kind)
+    ("BC tap: Salmon River valley hay field", 50.6141, -119.3634, "198.51.100.30", None),
+    ("BC reserve: Switsemalph IR 3 (Neskonlith)", 50.70, -119.33, "198.51.100.31", "first_nations_reserve"),
+    ("CA tribal land: Torres-Martinez Reservation farm field", 33.51, -116.12, "198.51.100.32", "tribal_land"),
+]
+for label, lat, lon, ip, kind in _LIVE:
+    r = client.get(f"/api/analyze?lat={lat}&lon={lon}", headers={"X-Forwarded-For": ip})
+    if not _ok(r.status_code == 200, f"{label}: 200 {'' if r.status_code == 200 else r.text[:200]}"):
+        continue
+    d = r.json(); st = d["sections"]; e = _errs(_LOC_V, d)
+    _ok(not e, f"{label}: schema-valid {e}")
+    if kind is None or kind == "first_nations_reserve":
+        _ok(d["region"] == "bc" and d["region_adapter"] == "bc" and st["county"].get("regional_district"),
+            f"{label}: region bc, regional district {st['county'].get('regional_district')}")
+        _ok(st["stations"]["status"] == "ready" and d["stations"] and d["stations"][0]["network"] == "ECCC"
+            and (d.get("climate_eccc") or {}).get("monthly", {}).get("annual_precip_mm"),
+            f"{label}: ECCC stations ready ({[s['id'] for s in d['stations']]}), monthly climate {((d.get('climate_eccc') or {}).get('monthly') or {}).get('annual_precip_mm')} mm/yr")
+        _ok(st["soil"]["status"] == "ready" and d["soil"]["source"]["id"] == "aafc_slc_v3_2" and d["soil"]["awc_mm_per_m"]["value"],
+            f"{label}: SLC soil ready ({d['soil']['mukey']}, {d['soil']['texture_class']}, {d['soil']['drainage_class']}, HSG {d['soil']['hydrologic_group']})")
+        _ok(st["crop_history"]["status"] == "ready" and st["crop_history"]["source"] == "aafc_aci" and len(d["crop_history"]) >= 10,
+            f"{label}: AAFC ACI crop history ready ({len(d['crop_history'])} years, {st['crop_history'].get('years')})")
+        _ok(st["strategies"]["status"] == "ready" and d["template"] == "bc_salmon_river_forage", f"{label}: strategies = BC rotation set (BC0-BC3)")
+        rs = client.get(f"/api/locations/{d['id']}/strategies", headers={"X-Forwarded-For": ip})
+        _ok(rs.status_code == 200 and [i["id"][:3] for i in rs.json()["items"]] == ["bc0", "bc1", "bc2", "bc3"] and not _errs(_STR_V, rs.json()),
+            f"{label}: /strategies bc0-bc3, schema-valid")
+    if kind is None:
+        _ok(st["boundary"]["status"] == "ready" and st["boundary"]["source"] == "parcelmap_bc_x_alr" and "PID" not in json.dumps(d.get("parcel")),
+            f"{label}: boundary = ParcelMap BC parcel x ALR ({st['boundary'].get('clip')}), no PID stored")
+        _ok(d.get("land_status") is None and d.get("nation_tools") is None, f"{label}: not reserve land (land_status null)")
+    else:
+        ls, nt = d.get("land_status") or {}, d.get("nation_tools") or {}
+        _ok(ls.get("kind") == kind and ls.get("name") and ls.get("nation") and st["land_status"]["status"] == "ready",
+            f"{label}: land_status {ls.get('kind')} '{ls.get('name')}' (Nation: {ls.get('nation')})")
+        progs = nt.get("programs") or []
+        _ok(nt.get("nation") == ls.get("nation") and progs and all(p.get("url", "").startswith("https://") for p in progs if p["verified"]),
+            f"{label}: nation_tools with {len(progs)} programs ({sum(p['verified'] for p in progs)} with verified links)")
+        _ok(st["weather"]["status"] == "ready" and st["strategies"]["status"] == "ready" and st["crop_history"]["status"] == "ready",
+            f"{label}: full tier-1 analysis (weather, crop history, strategies ready)")
+        if kind == "first_nations_reserve":
+            _ok((nt.get("salmon") or {}).get("route") == "/salmon", f"{label}: in the Salmon River watershed, links /salmon")
+        if kind == "tribal_land":
+            g = nt.get("groundwater") or {}
+            _ok(g.get("sgma_subbasin") and "10723.2" in g["tribal_engagement"]["citation"], f"{label}: SGMA subbasin {g.get('sgma_subbasin')}, GSA {g.get('gsa')}, Water Code 10723.2(h) note")
+        r2 = client.get(f"/api/analyze?lat={lat}&lon={lon}", headers={"X-Forwarded-For": ip})
+        _ok(r2.status_code == 200 and r2.json()["analysis"]["cache"] == "hit", f"{label}: cached like any other point (repeat tap is a hit)")
+_ok(client.get("/api/analyze?lat=50.6141&lon=-119.3634").json()["nation_tools"] is None, "BC farm off reserve: no nation_tools")
+# ---- end farm catalog ========================================================================================
 print(f"\n{'ALL PASS' if not fails else str(fails) + ' FAIL'}")
 sys.exit(1 if fails else 0)
