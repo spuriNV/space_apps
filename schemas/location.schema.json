@@ -12,7 +12,7 @@
     }
   },
   "properties": {
-    "id": {"type": "string", "pattern": "^((ca[rf]|bc)_[a-z0-9_]+|pt_[ns][0-9]+_[ew][0-9]+)$", "description": "registry field id (backend/fields/registry.json): car_* rice, caf_* forage, bc_* British Columbia; or a tapped point pt_<n|s><lat x 1e4>_<e|w><lon x 1e4> (GET /api/analyze)"},
+    "id": {"type": "string", "pattern": "^((ca[rf]|bc)_[a-z0-9_]+|pt_[ns][0-9]+_[ew][0-9]+|my_[A-Za-z0-9_-]+)$", "description": "registry field id (backend/fields/registry.json): car_* rice, caf_* forage, bc_* British Columbia; or a tapped point pt_<n|s><lat x 1e4>_<e|w><lon x 1e4> (GET /api/analyze); or a user-drawn field my_<base64url> (POST /api/my-fields)"},
     "name": {"type": "string"},
     "region_adapter": {"enum": ["ca", "bc", "other"], "description": "other = a tapped point outside California (GET /api/analyze)"},
     "regime": {"type": "string"},

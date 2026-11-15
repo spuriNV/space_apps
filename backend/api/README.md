@@ -134,6 +134,21 @@ Extra keys on the payload: `sections.<name> = {status, reason?, ...}` with statu
 
 Guards (env vars, defaults sized for Render's 512 MB free instance): `ANYLOC_MAX_CONCURRENT=2` engine runs at once (cold analyses and re-scores), `ANYLOC_PER_IP_MIN=6` and `ANYLOC_PER_IP_HOUR=40` new spots per client IP, `ANYLOC_GLOBAL_HOUR=400` new spots per hour for the instance, `ANYLOC_READS_PER_MIN=120` cached reads per IP; every upstream call has its own timeout (4-5 s connect, 6-25 s read) and a size cap. Cache: `ANYLOC_CACHE_DIR` (default `data/cache/_points/`, git- and docker-ignored, gzip JSON + one parquet per POWER cell), `ANYLOC_TTL_H=168` (15 min when a tier-1 section errored), `ANYLOC_MAX_POINTS=1500` points kept. On Render the disk resets on deploy/restart; nothing depends on it. Measured: process peak RSS 137 MB idle, 191 MB after a cold analysis, 213 MB after 7.
 
+## My fields (`app/myfields/`)
+
+Users draw a rectangle or polygon, name it, and get the tap-anywhere analysis over the whole polygon. Nothing has to persist server-side (Render's disk is wiped on deploy): the id **is** the field. `my_<base64url(zlib(JSON))>` carries the name and the outline (corners in 1e-5 degree units, delta-coded; if the id would pass 1,800 characters the outline is simplified with Douglas-Peucker, 5 m doubling, and `id_note` says so). Any server decodes an id and recomputes, so share links survive deploys. Rename or redraw = a new id; "delete" is the client forgetting the id. `MYFIELDS_DIR` (default `data/user_fields/`, git- and docker-ignored) is an optional cache only; `MYFIELDS_TTL_H=168`, `MYFIELDS_MAX_CACHED=5000`.
+
+| Route | Answer |
+|---|---|
+| `POST /api/my-fields {name, geometry}` | location payload (schema-valid) + `field_id`, `_source: "user"`, `sections`, `analysis`, `user_field`; 422 for a bad outline (not a single Polygon, holes, over 200 corners, self-crossing, under 0.5 ha or over 2,000 ha, empty name); 429 + `Retry-After`; 504 past 50 s |
+| `GET /api/my-fields/{id}` | same payload, from cache or recomputed; 400 for a bad/corrupt id |
+| `GET /api/my-fields?ids=a,b,c` | `{items: [{id, name, acres, area_ha, centroid, bbox, geometry, computed, family?, county_name?, last_crop?}], invalid: [{id, reason}]}`; decoded from the ids, no upstream calls (max 100) |
+| `GET /api/locations/{my_id}`, `/strategies`, `/daily`, `POST /score` | same as the tapped-point routes; other sub-routes 404 "not computed for user-drawn fields" |
+
+Analysis: acres from the spherical (authalic radius) area of the polygon; CDL majority class per year over a grid of up to 25 sample points inside it (`crop_history`, `crop_history_purity` = share of points in that class, `user_field.crop_mix` top 3 per year); SSURGO via SDA polygon intersection, map units weighted by area inside it (`soil.map_units[].area_share`); county, SGMA subbasin, GSA, water district and POWER at the interior point nearest the centroid, with `user_field.spans = {counties, districts, gsas, subbasins}` listing everything the polygon touches (counties from the centroid plus up to 4 extreme sample points); `user_field.dwr_fields` = DWR/Land IQ 2023 fields intersecting the polygon (id, crop, class, acres; up to 100); engine strategies by family (rice -> CAR0-3, else CAF0-3). Non-California or non-US outlines get the section statuses anyloc uses (`unavailable`); there is no BC tier 1 in anyloc yet, so BC polygons get the same `unavailable` sections.
+
+Guards (env): `MYFIELDS_MAX_CONCURRENT=2`, `MYFIELDS_PER_IP_MIN=4`, `MYFIELDS_PER_IP_HOUR=30`, `MYFIELDS_GLOBAL_HOUR=300`, `MYFIELDS_READS_PER_MIN=120`. Cache hits only count against the read limit. `schemas/` accept `my_*` ids and `_source: "user"`.
+
 ## Deploy (Render)
 
 One Docker service serves the API and the built frontend from the same origin (`/api/...` plus the app at `/`). The root `Dockerfile` builds `frontend/app` (`VITE_API_BASE=/api`), installs `backend/api` with the engine, copies the committed outputs and `data/cache`, and runs uvicorn on `$PORT` with `FRONTEND_DIST` set (the API mounts the built app, SPA fallback for non-`/api` paths). The image is about 500 MB. No keys are needed: the app serves the committed cache.

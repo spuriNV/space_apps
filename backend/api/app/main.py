@@ -8,6 +8,7 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from .myfields import router as myfields_router  # user-drawn fields (app/myfields); my_* ids only
 from .anyloc import router as anyloc_router  # analyse any tapped point (app/anyloc); pt_* ids only
 
 ROOT = Path(os.environ.get("FIELDSHIFT_ROOT", Path(__file__).resolve().parents[3]))
@@ -66,6 +67,7 @@ app = FastAPI(title="Field Shift API", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
                    allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Data-Source"])
 app.include_router(anyloc_router)  # before the preset routes: /api/analyze and /api/locations/pt_* (other ids fall through)
+app.include_router(myfields_router)  # my_* ids and /api/my-fields
 
 
 def _read(path: Path) -> Any:

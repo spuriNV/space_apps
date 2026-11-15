@@ -512,5 +512,104 @@ _al.PER_IP_MIN = _old
 r = client.get(f"/api/analyze?lat={_PTS[0][1]}&lon={_PTS[0][2]}", headers={"X-Forwarded-For": "198.51.100.10"})
 _ok(r.status_code == 200 and r.json()["analysis"]["cache"] == "hit", "cached spots are still served when the new-spot limit is reached")
 # ---- end analyse any location ================================================================================
+
+# ======================================================================================================
+# ---- my fields (app/myfields): user-drawn polygons. Self-contained ids (name + outline), optional disk cache.
+# ======================================================================================================
+import math as _m  # noqa: E402
+import app.myfields as _mf  # noqa: E402
+
+_mf.DIR = Path(_tf.mkdtemp(prefix="myfields_check_"))
+_HM = {"X-Forwarded-For": "198.51.100.50"}
+
+
+def _mok(cond, label):
+    global fails
+    fails += not cond
+    print(("PASS" if cond else "FAIL") + " myfields " + label)
+    return cond
+
+
+def _rect(lon, lat, w_m, h_m):
+    dx, dy = w_m / 2 / (111320 * _m.cos(_m.radians(lat))), h_m / 2 / 110574
+    return {"type": "Polygon", "coordinates": [[[lon - dx, lat - dy], [lon + dx, lat - dy], [lon + dx, lat + dy], [lon - dx, lat + dy], [lon - dx, lat - dy]]]}
+
+
+print("\nmy fields:")
+_rice = _rect(-122.03, 39.19, 640, 640)            # about 41 ha, Colusa rice
+t0 = _t.time(); r = client.post("/api/my-fields", json={"name": "North rice", "geometry": _rice}, headers=_HM); cold = _t.time() - t0
+if _mok(r.status_code == 200, f"POST /api/my-fields 200 ({cold:.1f} s cold) {'' if r.status_code == 200 else r.text[:200]}"):
+    d = r.json(); fid = d["id"]
+    _mok(fid.startswith("my_") and len(fid) < 1800 and d["_source"] == "user" and r.headers.get("X-Data-Source") == "user", f"id {fid[:24]}... ({len(fid)} chars), _source user")
+    e = _errs(_LOC_V, d)
+    _mok(not e, f"location payload schema-valid {e}")
+    _mok(35 < d["area_ha"]["value"] < 45 and abs(d["acres"] - d["area_ha"]["value"] * 2.47105) < 0.2, f"geodesic area {d['area_ha']['value']} ha = {d['acres']} acres")
+    st = d["sections"]
+    _mok(all(v["status"] in d["analysis"]["section_statuses"] for v in st.values()), "every section status valid")
+    _mok(all(st[k]["status"] == "ready" for k in ("weather", "soil", "crop_history", "county", "strategies", "boundary", "dwr_fields")),
+         f"tier 1 ready {[(k, st[k]['status']) for k in ('weather', 'soil', 'crop_history', 'county', 'strategies', 'dwr_fields')]}")
+    _mok(d["family"] == "rice" and d["county_name"] == "Colusa" and st["crop_history"]["points_sampled"] >= 16, f"family {d['family']}, county {d['county_name']}, {st['crop_history']['points_sampled']} CDL sample points")
+    _mok(set(d["crop_history_purity"]) == set(d["crop_history"]) and all(0 < v <= 1 for v in d["crop_history_purity"].values()), "crop history has a purity per year")
+    _mok(d["user_field"]["dwr_fields"] and d["user_field"]["spans"]["counties"] == ["Colusa"] and d["user_field"]["spans"]["gsas"], f"DWR fields {len(d['user_field']['dwr_fields'])}, spans {d['user_field']['spans']}")
+    _mok(sum(m["area_share"] for m in d["soil"]["map_units"]) > 0.99, f"soil area-weighted over {len(d['soil']['map_units'])} map units")
+    _mok(cold < 25, f"cold create < 25 s ({cold:.1f} s; {d['analysis']['timings_ms']})")
+    r2 = client.get(f"/api/my-fields/{fid}"); _mok(r2.status_code == 200 and r2.json()["analysis"]["cache"] == "hit" and r2.json()["name"] == "North rice", "GET /api/my-fields/{id} 200 (cache hit)")
+    r3 = client.get(f"/api/locations/{fid}"); _mok(r3.status_code == 200 and r3.json()["id"] == fid and not _errs(_LOC_V, r3.json()), "GET /api/locations/{id} 200 schema-valid")
+    # fresh process: no cache at all, the id alone is enough
+    _old_dir = _mf.DIR; _mf.DIR = Path(_tf.mkdtemp(prefix="myfields_fresh_"))
+    t0 = _t.time(); r4 = client.get(f"/api/my-fields/{fid}", headers={"X-Forwarded-For": "198.51.100.51"}); recompute = _t.time() - t0
+    _mok(r4.status_code == 200 and r4.json()["id"] == fid and r4.json()["analysis"]["cache"] == "miss" and r4.json()["name"] == "North rice" and r4.json()["family"] == "rice",
+         f"empty cache dir: id still resolves, recomputed ({recompute:.1f} s)")
+    # rename = new id
+    r5 = client.post("/api/my-fields", json={"name": "South rice", "geometry": r4.json()["geometry"]}, headers=_HM)
+    _mok(r5.status_code == 200 and r5.json()["id"] != fid and r5.json()["name"] == "South rice", "rename gives a new id and the new name")
+    rl = client.get(f"/api/my-fields?ids={fid},{r5.json()['id']},my_garbage")
+    _mok(rl.status_code == 200 and [i["name"] for i in rl.json()["items"]] == ["North rice", "South rice"] and len(rl.json()["invalid"]) == 1 and rl.json()["items"][0]["computed"],
+         "GET /api/my-fields?ids= summaries (2 valid, 1 invalid listed)")
+    rs = client.get(f"/api/locations/{fid}/strategies", headers=_HM)
+    _mok(rs.status_code == 200 and not _errs(_STR_V, rs.json()) and len(rs.json()["items"]) == 4 and all(i["id"].startswith("car") and i["location_id"] == fid for i in rs.json()["items"]),
+         f"/strategies 200, CAR0-3, schema-valid {_errs(_STR_V, rs.json()) if rs.status_code == 200 else rs.text[:120]}")
+    rd = client.get(f"/api/locations/{fid}/daily?from=2024-01-01&to=2024-12-31", headers=_HM)
+    _mok(rd.status_code == 200 and not _errs(_DAILY_V, rd.json()) and len(rd.json()["rows"]) == 366, f"/daily 2024 = 366 rows, schema-valid {_errs(_DAILY_V, rd.json()) if rd.status_code == 200 else rd.text[:120]} {len(rd.json().get('rows', []))}")
+    rsc = client.post(f"/api/locations/{fid}/score", json={"weights": {"water_use": 4}, "scenario": {"dT_c": 2, "dP_pct": -10}}, headers=_HM)
+    _mok(rsc.status_code == 200 and not _errs(_SCORE_V, rsc.json()) and len(rsc.json()["ranking"]) == 4, f"POST /score 200, schema-valid {'' if rsc.status_code == 200 else rsc.text[:150]}")
+    rc = client.get(f"/api/locations/{fid}/calendar")
+    _mok(rc.status_code == 404 and "not computed for user-drawn fields" in rc.json()["detail"], "/calendar 404 with a reason")
+    _mf.DIR = _old_dir
+# bad ids -> 400
+for label, bad in (("garbage", "my_notvalid!!"), ("not zlib", "my_AAAAAAAAAAAAAAAA"), ("truncated", fid[:40] if "fid" in dir() else "my_eJxLSyxK"), ("wrong prefix", "xx_abc")):
+    rb = client.get(f"/api/my-fields/{bad}")
+    _mok(rb.status_code == 400 and "bad field id" in rb.json()["detail"], f"bad id ({label}) -> 400 with a reason")
+_mok(client.get("/api/locations/my_AAAAAAAAAAAAAAAA").status_code == 400, "bad id on /api/locations -> 400")
+# invalid geometry and limits -> 422
+_bow = {"type": "Polygon", "coordinates": [[[-122.03, 39.19], [-122.02, 39.20], [-122.02, 39.19], [-122.03, 39.20], [-122.03, 39.19]]]}
+_circ = lambda n: {"type": "Polygon", "coordinates": [[[-122.03 + 0.004 * _m.cos(2 * _m.pi * i / n), 39.19 + 0.004 * _m.sin(2 * _m.pi * i / n)] for i in range(n)] + [[-122.03 + 0.004, 39.19]]]}
+for label, geo, name, why in (
+        ("self-intersecting bowtie", _bow, "x", "crosses"),
+        ("201 vertices", _circ(201), "x", "201 vertices"),
+        ("MultiPolygon", {"type": "MultiPolygon", "coordinates": [_rice["coordinates"]]}, "x", "single"),
+        ("holes", {"type": "Polygon", "coordinates": _rice["coordinates"] + [[[-122.03, 39.19], [-122.029, 39.19], [-122.029, 39.191], [-122.03, 39.19]]]}, "x", "holes"),
+        ("too small (0.1 ha)", _rect(-122.03, 39.19, 30, 30), "x", "minimum"),
+        ("too large (4,000 ha)", _rect(-122.03, 39.19, 6325, 6325), "x", "maximum"),
+        ("out of range coordinates", {"type": "Polygon", "coordinates": [[[200, 39], [201, 39], [201, 40], [200, 39]]]}, "x", "outside"),
+        ("no name", _rice, "  ", "name")):
+    rv = client.post("/api/my-fields", json={"name": name, "geometry": geo}, headers=_HM)
+    _mok(rv.status_code == 422 and why in rv.json()["detail"], f"{label} -> 422 ({str(rv.json().get('detail'))[:70]})")
+# 200 corners fit in an id (simplified if needed)
+import app.myfields.fid as _fid  # noqa: E402
+_noisy = {"type": "Polygon", "coordinates": [[[-122.03 + (0.004 + 0.0004 * ((i * 7919) % 13) / 13) * _m.cos(2 * _m.pi * i / 200), 39.19 + (0.004 + 0.0004 * ((i * 7919) % 13) / 13) * _m.sin(2 * _m.pi * i / 200)] for i in range(200)]]}
+_noisy["coordinates"][0].append(_noisy["coordinates"][0][0])
+_i, _p, _h, _n = _fid.encode("noisy", _noisy)
+_mok(len(_i) <= 1800 and _fid.decode(_i)[1] == _p, f"200-corner outline: id {len(_i)} chars, round-trips ({'simplified ' + str(_n['corners_before']) + ' -> ' + str(_n['corners_after']) if _n else 'not simplified'})")
+# limiter
+_o = _mf.PER_IP_MIN; _mf.PER_IP_MIN = 0
+rr = client.post("/api/my-fields", json={"name": "limit", "geometry": _rect(-122.05, 39.2, 600, 600)}, headers={"X-Forwarded-For": "198.51.100.60"})
+_mok(rr.status_code == 429 and int(rr.headers.get("Retry-After", 0)) > 0, "per-IP limit -> 429 with Retry-After")
+_mf.PER_IP_MIN = _o
+_sv = _mf.GUARD.active; _mf.GUARD.active = _mf.MAX_CONCURRENT
+rr = client.post("/api/my-fields", json={"name": "limit", "geometry": _rect(-122.05, 39.2, 600, 600)}, headers={"X-Forwarded-For": "198.51.100.61"})
+_mok(rr.status_code == 429, "concurrency bound -> 429")
+_mf.GUARD.active = _sv
+# ---- end my fields ===========================================================================================
 print(f"\n{'ALL PASS' if not fails else str(fails) + ' FAIL'}")
 sys.exit(1 if fails else 0)

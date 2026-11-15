@@ -10,7 +10,7 @@
   },
   "properties": {
     "id": {"type": "string"},
-    "location_id": {"type": "string", "pattern": "^((ca[rf]|bc)_[a-z0-9_]+|pt_[ns][0-9]+_[ew][0-9]+)$"},
+    "location_id": {"type": "string", "pattern": "^((ca[rf]|bc)_[a-z0-9_]+|pt_[ns][0-9]+_[ew][0-9]+|my_[A-Za-z0-9_-]+)$"},
     "name": {"type": "string"},
     "short_name": {"type": "string", "description": "short farmer-facing label, e.g. 'Rice + winter cover' (backend/engine build_data.py)"},
     "is_baseline": {"type": "boolean"},

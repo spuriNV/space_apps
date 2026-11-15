@@ -25,3 +25,6 @@ data/cache/_appeears/
 
 # analyse-any-location cache (backend/api/app/anyloc; rebuilt on demand)
 data/cache/_points/
+
+# user-drawn fields cache (backend/api/app/myfields; optional, rebuilt on demand)
+data/user_fields/
