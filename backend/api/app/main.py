@@ -7,10 +7,12 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, Field
 from .myfields import router as myfields_router  # user-drawn fields (app/myfields); my_* ids only
 from .nation import router as nation_router  # Nation tools (app/nation): /api/locations/{pid}/nation/*
 from .week import router as week_router  # this week + reach (app/week)
+from .rain import router as rain_router  # NOAA WPC rain forecast for the map (app/rain): /api/rain_forecast
 from .anyloc import router as anyloc_router  # analyse any tapped point (app/anyloc); pt_* ids only
 from .chat import router as chat_router  # Ask CropLytics chat (app/chat): /api/chat, /api/chat/status
 
@@ -67,9 +69,11 @@ except Exception:  # noqa: BLE001
     _engine_score_fn = None
 
 app = FastAPI(title="Field Shift API", version="0.1.0")
+app.add_middleware(GZipMiddleware, minimum_size=2048)  # large GeoJSON (rain forecast, grids) compresses ~5x
 app.add_middleware(CORSMiddleware, allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
                    allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Data-Source"])
 app.include_router(chat_router)
+app.include_router(rain_router)
 app.include_router(nation_router)  # before anyloc: its pt_* catch-all would 404 the /nation routes
 app.include_router(week_router)  # before anyloc: its pt_* catch-all would swallow /this_week
 app.include_router(anyloc_router)  # before the preset routes: /api/analyze and /api/locations/pt_* (other ids fall through)

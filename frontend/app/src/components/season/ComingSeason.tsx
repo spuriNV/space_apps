@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react';
 // "Coming season": outlooks for this winter and next season, always labelled as outlooks, not forecasts.
 import type { Calendar, Location, Regional, RotationStrategy } from '../../types';
 import { linkOf } from '../../types';
-import { bcGap, isBC, type NasaNow, type Outlook, type OutlookCat, type ProvMap, type RegionalLive } from '../../api';
+import { bcGap, getRainAt, isBC, type RainAt, type NasaNow, type Outlook, type OutlookCat, type ProvMap, type RegionalLive } from '../../api';
 import { whenT } from '../ui/FieldNow';
 import type { Daily } from '../../season';
 import { bareWindow } from '../../season';
@@ -49,6 +50,10 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
   const rainFed = !!today && isRainFed(today);
   const g = nxt != null ? waterGap(nxt, p.allocation) : null;
   const short = !rainFed && !!g?.short, even = !rainFed && !!g?.even;
+  // NOAA rain forecast at the field, next 7 days (app/rain reads NOAA's full-detail shapes for the point)
+  const [rain7, setRain7] = useState<{ id: string; r: RainAt | null } | null>(null);
+  useEffect(() => { let ok = true; getRainAt(p.loc.centroid.lat, p.loc.centroid.lon, 7).then((r) => ok && setRain7({ id: p.loc.id, r })); return () => { ok = false; }; }, [p.loc.id, p.loc.centroid.lat, p.loc.centroid.lon]);
+  const r7 = rain7?.id === p.loc.id ? rain7.r : undefined;
   const rainWords = !o ? null : notReady && gOut ? <GapLine gap={gOut} missing /> : notReady ? 'Not ready for this field yet' : wetLean > dryLean ? 'Leans wetter than normal' : dryLean > wetLean ? 'Leans drier than normal' : 'No clear lean either way';
   const fieldLine = <><b>{fieldName(p.loc)}</b> · {acres(p.loc)} acres</>;
   return (
@@ -170,6 +175,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
         </div>
       </div>}>
       <KeyFacts facts={[
+        ...(r7 === undefined || (r7 && r7.covered) ? [{ label: 'Rain next 7 days', value: r7 === undefined ? <span className="skel" /> : <>{r7!.text}<small>NOAA forecast</small></> }] : []),
         { label: 'Winter rain', value: rainWords ?? <span className="skel" />, tone: dryLean > wetLean ? 'warn' : undefined },
         { label: 'Water supply', value: supply },
       ]} />

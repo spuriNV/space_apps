@@ -14,6 +14,7 @@ import ComparePanel from './components/compare/ComparePanel';
 import { FieldTimeline, type SimMode } from './components/ui/FieldTimeline';
 import RotationBrief from './components/brief/RotationBrief';
 import BriefStep from './components/brief/BriefStep';
+import { RainTimeline, WeatherControl, type RainMode, type WxLayer } from './components/rain/RainControl';
 import { BCCard, LayersDrawer } from './components/Panels';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
 import { setGlossary } from './components/ui/What';
@@ -77,6 +78,44 @@ export default function App() {
   const [allocation, setAllocation] = useState<Record<string, number>>({});
   const [briefOpen, setBriefOpen] = useState(false);
   const [briefPreview, setBriefPreview] = useState(false);
+  // rain and drought on the map (Windy-style layer card; NOAA WPC rain forecast and U.S. Drought Monitor via app/rain)
+  const [wxOn, setWxOn] = useState(false);
+  const [wxLayer, setWxLayer] = useState<WxLayer>('rain');
+  const [rainMode, setRainMode] = useState<RainMode>('total');
+  const [rainDays, setRainDays] = useState<api.RainDays>(7);
+  const [rain, setRain] = useState<{ days: api.RainDays; data: api.RainForecast | null } | null>(null);
+  const [steps, setSteps] = useState<(api.RainForecast | null)[]>(() => Array(12).fill(null));
+  const [stepsDone, setStepsDone] = useState(0);
+  const [rainStep, setRainStep] = useState(0);
+  const [rainPlaying, setRainPlaying] = useState(false);
+  const [drought, setDrought] = useState<api.DroughtNow | null | undefined>(undefined);
+  const rainTotal = wxOn && wxLayer === 'rain' && rainMode === 'total';
+  const rainHourly = wxOn && wxLayer === 'rain' && rainMode === 'hourly';
+  useEffect(() => {
+    if (!rainTotal) return;
+    let ok = true;
+    api.getRainForecast(rainDays).then((r) => ok && setRain({ days: rainDays, data: r }));
+    return () => { ok = false; };
+  }, [rainTotal, rainDays]);
+  useEffect(() => { // the timeline: all twelve 6-hour steps, so play never waits
+    if (!rainHourly || stepsDone === 12) return;
+    let ok = true;
+    Array.from({ length: 12 }, (_, k) => api.getRainStep(k).then((r) => { if (!ok) return; setSteps((xs) => { const n = [...xs]; n[k] = r; return n; }); setStepsDone((c) => c + 1); }));
+    return () => { ok = false; };
+  }, [rainHourly]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!rainPlaying || !rainHourly) return;
+    const h = setInterval(() => setRainStep((k) => (k + 1) % 12), 1100);
+    return () => clearInterval(h);
+  }, [rainPlaying, rainHourly]);
+  useEffect(() => { if (!rainHourly) setRainPlaying(false); }, [rainHourly]);
+  useEffect(() => { if (wxOn && wxLayer === 'drought' && drought === undefined) api.getDroughtNow().then(setDrought); }, [wxOn, wxLayer, drought]);
+  const rainNow = rainTotal ? (rain?.days === rainDays ? rain.data : null) : rainHourly ? steps[rainStep] : null;
+  const droughtNow = wxOn && wxLayer === 'drought' ? drought ?? null : null;
+  const rainState: 'idle' | 'loading' | 'ready' | 'error' = !wxOn ? 'idle'
+    : wxLayer === 'drought' ? (drought === undefined ? 'loading' : drought ? 'ready' : 'error')
+    : rainTotal ? (rain?.days !== rainDays ? 'loading' : rain.data ? 'ready' : 'error')
+    : steps[rainStep] ? 'ready' : stepsDone === 12 ? 'error' : 'loading';
   const [briefPick, setBriefPick] = useState<string | null>(null);
   const [bcOpen, setBcOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -323,10 +362,10 @@ export default function App() {
 
   return (
     <DetailCtx.Provider value={{ on: detail, set: setDetail }}>
-    <div className={`app ${detail ? 'detail-on' : 'detail-off'}`}>
+    <div className={`app ${detail ? 'detail-on' : 'detail-off'} ${wxOn ? 'wx-open' : ''}`}>
       <MapView ref={map} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
-        onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} />
+        onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} rain={rainNow} drought={droughtNow} />
 
       <header className="topbar" data-testid="topbar">
         <button className="tb-brand" onClick={goHome} title="Back to all of California">CropLytics</button>
@@ -441,6 +480,8 @@ export default function App() {
         </div>
       </div>
 
+      {!drawing && <WeatherControl on={wxOn} setOn={setWxOn} layer={wxLayer} setLayer={setWxLayer} mode={rainMode} setMode={setRainMode} days={rainDays} setDays={setRainDays} rain={rainNow ?? (rainHourly ? steps.find(Boolean) ?? null : null)} drought={droughtNow} state={rainState} right={16 + rightInset} />}
+      {rainHourly && !sim && <RainTimeline step={rainStep} setStep={setRainStep} playing={rainPlaying} setPlaying={setRainPlaying} steps={steps} loaded={stepsDone} left={phone ? '50%' : `calc(50% + ${(leftInset - rightInset) / 2}px)`} />}
       <DrawLayer ref={draw} getMap={() => map.current?.getMap() ?? null} mf={mf} rightInset={rightInset} onActive={(on, hideId) => setDrawing(on ? { hideId: hideId ?? null } : null)}
         onSubmitting={onSubmitting} onSaved={onSaved} onDeleted={(id) => { if (selectedId === id) { setSelectedId(null); setPanel('none'); } }} onOpenShared={openMine} />
 

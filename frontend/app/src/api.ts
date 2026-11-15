@@ -239,8 +239,8 @@ export function prefetchFieldStack(loc: Location, caPresets?: Location[]) {
 export function fieldStackSeed(loc: Location, live: boolean, caPresets?: Location[]): FieldBundle {
   const id = loc.id, lite = isLite(id), presets = caPresets ?? MOCK_LOCS, borrow = lite ? nearestCaPreset(loc, presets) : id;
   const mid = templateId(id, loc.family);
-  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? borrow : mid]);
-  const reg0 = (regional as unknown as ById<Regional>)[lite ? borrow : mid];
+  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? templateId(borrow) : mid]);
+  const reg0 = (regional as unknown as ById<Regional>)[lite ? templateId(borrow) : mid];
   const prov: ProvMap = {
     calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', lite ? `illustrative · nearest prepared field (${borrow})` : 'illustrative'),
     grid: P('grid', '100 ft squares in the 3D view', 'mock', lite ? `illustrative · shifted from ${borrow}` : 'illustrative'),
@@ -316,7 +316,7 @@ interface RealCalYear { year: number; segments: { start_doy: number; end_doy: nu
 /** A year with no processed imagery yet (2026): every 10-day step is "no reading". Drawn hatched, never guessed. */
 const blankYear = (year: number, cdl = 'Not published yet'): CalendarYear => ({ year, cdl, rule: 'u'.repeat(36), ml: 'u'.repeat(36), ndvi: Array(36).fill(0), et_mm_day: Array(36).fill(0), greenup_dekad: null, senescence_dekad: null, risks: [] });
 /** Pad a calendar to YEARS (the bundled mock stops at 2025). */
-const padCalendar = (c: Calendar): Calendar => ({ ...c, years: YEARS.map((y, i) => c.years.find((x) => x.year === y) ?? c.years[i] ?? blankYear(y)) });
+const padCalendar = (c: Calendar | undefined): Calendar => ({ ...(c ?? {}), years: YEARS.map((y, i) => c?.years?.find((x) => x.year === y) ?? c?.years?.[i] ?? blankYear(y)) }) as Calendar;
 /** One year of a real calendar (rule or ML) as 36 ten-day classes. */
 function classString(ry: RealCalYear | undefined, year: number) {
   if (!ry) return 'u'.repeat(36);
@@ -547,7 +547,7 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   const id = loc.id, lite = isLite(id), presets = caPresets ?? MOCK_LOCS, borrow = lite ? nearestCaPreset(loc, presets) : id;
   const mid = templateId(id, loc.family); // mid: the bundled example used until the API answers
   const dataId = lite ? borrow : id;
-  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? borrow : mid]);
+  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? templateId(borrow) : mid]);
   const prov: ProvMap = {
     calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', 'illustrative'),
     grid: P('grid', '100 ft squares in the 3D view', 'mock', 'illustrative'),
@@ -556,7 +556,7 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', 'no real series served yet'),
     ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
   };
-  const reg0 = (regional as unknown as ById<Regional>)[lite ? borrow : mid];
+  const reg0 = (regional as unknown as ById<Regional>)[lite ? templateId(borrow) : mid];
   const used: Partial<Record<string, NasaStatus>> = loc.nasadem ? { nasadem: 'live' } : {};
   const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, { ...used, ...(soilExample() ? { smap: 'example' as const } : {}) }).list;
   let soilShown: 'smap' | 'grace_da' | null = null;
@@ -821,3 +821,22 @@ const TODAY_KEY = 'croplytics.today';
 /** The grower's picks, remembered in this browser (per field id). */
 export function loadTodayPicks(): Record<string, string> { try { return JSON.parse(localStorage.getItem(TODAY_KEY) ?? '{}'); } catch { return {}; } }
 export function saveTodayPicks(v: Record<string, string>) { try { localStorage.setItem(TODAY_KEY, JSON.stringify(v)); } catch { /* private mode */ } }
+
+// ---------- rain forecast (backend app/rain: NOAA WPC QPF) ----------
+export type RainDays = 1 | 3 | 5 | 7;
+export interface RainForecast extends GeoJSON.FeatureCollection { days: RainDays; step?: number | null; label: string; issued: string | null; valid_from: string | null; valid_to: string | null; stale?: boolean }
+export interface RainAt { days: RainDays; covered: boolean; low?: number; high?: number | null; text?: string; issued?: string | null; note?: string }
+const rainCache: Partial<Record<RainDays, Promise<RainForecast | null>>> = {};
+/** Expected total rain over the next 1, 3 or 7 days, as bands in inches (California). null when unavailable. */
+export const getRainForecast = (days: RainDays) => (rainCache[days] ??= get(`/api/rain_forecast?days=${days}`, undefined, 40000).catch(() => { delete rainCache[days]; return null; }));
+const stepCache: Record<number, Promise<RainForecast | null>> = {};
+/** Rain in one 6-hour step (0-11) of the next 72 hours: the timeline. */
+export const getRainStep = (k: number) => (stepCache[k] ??= get(`/api/rain_forecast?step=${k}`, undefined, 40000).catch(() => { delete stepCache[k]; return null; }));
+export interface DroughtNow extends GeoJSON.FeatureCollection { map_date: string; stale?: boolean }
+let droughtP: Promise<DroughtNow | null> | null = null;
+/** U.S. Drought Monitor, current weekly map, clipped to California (backend app/rain). */
+export const getDroughtNow = () => (droughtP ??= get('/api/drought_now', undefined, 60000).catch(() => { droughtP = null; return null; }));
+/** The forecast band at one point ("1.5 to 1.75 in"), read from NOAA's full-detail shapes. */
+export const getRainAt = (lat: number, lon: number, days: RainDays = 7): Promise<RainAt | null> => get(`/api/rain_forecast/at?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&days=${days}`, undefined, 25000).catch(() => null);
+/** NOAA times are UTC ("2026-11-15 17:54:40"). */
+export const utc = (s: string | null | undefined) => (s ? new Date(s.replace(' ', 'T') + 'Z') : null);

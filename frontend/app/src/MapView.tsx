@@ -1,5 +1,6 @@
 import { addCatalogLayers, setCatalogData, type CatalogItem } from './components/week/catalog';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { DROUGHT_COLOR, RAIN_COLOR } from './components/rain/RainControl';
 import maplibregl, { type GeoJSONSource, type StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { acres, fieldName, latestCrop } from './components/ui/shared';
@@ -60,6 +61,10 @@ interface Props {
   catalog?: CatalogItem[] | null; catGroup?: string | null; onCatalogPick?: (it: { id: string; lat: number; lon: number }) => void;
   /** a tap, click or long-press on open map (not on a field or a pin): analyse that spot */
   onTap?: (lat: number, lon: number) => void;
+  /** NOAA rain forecast bands (inches), drawn under the fields when the Rain forecast button is on */
+  rain?: GeoJSON.FeatureCollection | null;
+  /** U.S. Drought Monitor categories (D0-D4), drawn under the fields when Drought now is on */
+  drought?: GeoJSON.FeatureCollection | null;
   onView: (v: { zoom: number; pitch: number; bearing: number; lat: number; lon: number }) => void;
 }
 interface StackLabel { key: string; ax: number; ay: number; color: string; tag: string; title: string; value: string; note: string }
@@ -101,6 +106,23 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.on('load', () => {
       el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
       for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves']) map.addSource(id, { type: 'geojson', data: fc() });
+      // rain forecast bands: added first, so every field outline, pin and label draws on top
+      map.addSource('rain', { type: 'geojson', data: fc() });
+      map.addLayer({ id: 'rain-fill', type: 'fill', source: 'rain', layout: { visibility: 'none' }, paint: { 'fill-color': RAIN_COLOR as unknown as maplibregl.ExpressionSpecification, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 5, 0.72, 11, 0.5, 14, 0.3] } });
+      map.addLayer({ id: 'rain-line', type: 'line', source: 'rain', layout: { visibility: 'none' }, paint: { 'line-color': 'rgba(255,255,255,0.45)', 'line-width': 0.6 } });
+      map.addSource('drought', { type: 'geojson', data: fc() });
+      map.addLayer({ id: 'drought-fill', type: 'fill', source: 'drought', layout: { visibility: 'none' }, paint: { 'fill-color': DROUGHT_COLOR as unknown as maplibregl.ExpressionSpecification, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 5, 0.7, 11, 0.45, 14, 0.28] } });
+      map.addLayer({ id: 'drought-line', type: 'line', source: 'drought', layout: { visibility: 'none' }, paint: { 'line-color': 'rgba(255,255,255,0.4)', 'line-width': 0.6 } });
+      // hover readout (Windy's picker): the rain band or drought category under the pointer, desktop only
+      const tip = new maplibregl.Popup({ closeButton: false, closeOnClick: false, className: 'wx-tip', offset: 14 });
+      map.on('mousemove', (e) => {
+        const f = map.queryRenderedFeatures(e.point, { layers: ['rain-fill', 'drought-fill'].filter((l) => map.getLayoutProperty(l, 'visibility') === 'visible') })[0];
+        if (!f) { tip.remove(); return; }
+        const pr = f.properties as { qpf?: number; qpf_next?: number | null; dm?: number; name?: string };
+        const text = pr.dm != null ? (pr.name ?? `D${pr.dm}`) : pr.qpf != null && pr.qpf <= 0.01 ? 'Under 0.1 in of rain' : `About ${pr.qpf} to ${pr.qpf_next ?? '+'} in of rain`;
+        tip.setLngLat(e.lngLat).setText(text).addTo(map);
+      });
+      map.getCanvas().addEventListener('mouseleave', () => tip.remove());
       addCatalogLayers(map, (it) => live.current.onCatalogPick?.(it));
       // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
       map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(10,12,8,0.5)', 'line-width': 3.6 } });
@@ -273,6 +295,19 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     });
     return () => mk.forEach((m) => m.remove());
   }, [ready, p.locations, p.selected, p.layersOn, p.datasets, p.regionalLive.smap]);
+  // rain forecast: set the bands and show or hide both layers
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map) return;
+    (map.getSource('rain') as maplibregl.GeoJSONSource | undefined)?.setData(p.rain ?? fc());
+    for (const id of ['rain-fill', 'rain-line']) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', p.rain ? 'visible' : 'none');
+  }, [ready, p.rain]);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map) return;
+    (map.getSource('drought') as maplibregl.GeoJSONSource | undefined)?.setData(p.drought ?? fc());
+    for (const id of ['drought-fill', 'drought-line']) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', p.drought ? 'visible' : 'none');
+  }, [ready, p.drought]);
 
   // ---------- exploded layer stack for the scrubber date ----------
   useEffect(() => {

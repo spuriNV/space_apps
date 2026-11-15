@@ -1890,3 +1890,65 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 @media (max-width: 700px) and (min-width: 641px) { .tb-field { max-width: 136px; } .tb-brand { padding: 0 10px; } }
 @media (max-width: 660px) and (min-width: 641px) { .tb-field { max-width: 126px; } }
 .lc-step output small { white-space: nowrap; } .limit-ctl .lc-row label { min-width: 0; flex: 1; }
+
+/* ---------- Rain forecast on the map (components/rain/RainControl.tsx) ---------- */
+.rain-ctl { position: absolute; top: calc(var(--bar-h) + 3px + var(--s-4) + var(--h-btn) + var(--s-2)); z-index: 16; display: flex; flex-direction: column; align-items: flex-end; gap: var(--s-2); transition: right 0.2s; }
+.rain-btn { display: inline-flex; align-items: center; gap: var(--s-2); min-height: var(--h-btn); padding: 0 var(--s-5) 0 var(--s-4); border-radius: var(--r-full); background: var(--panel); color: var(--text); box-shadow: var(--e2);
+  font: 600 var(--fs-body)/1 var(--font-ui); transition: background-color var(--dur-1) var(--ease-std), transform 160ms var(--ease-enter); }
+.rain-btn svg { color: #2a6fbf; }
+.rain-btn:active { transform: scale(0.97); }
+.rain-btn.on { background: var(--accent-container); color: var(--on-accent-container); }
+.rain-card { width: 300px; padding: var(--s-4); border-radius: var(--r-lg); background: var(--panel); box-shadow: var(--e3); animation: pop-in var(--dur-2) var(--ease-enter) backwards; transform-origin: top right; }
+.rain-card .seg { width: 100%; }
+.rain-title { margin: var(--s-3) 0 var(--s-2); font-weight: 600; font-size: var(--fs-small); }
+.rain-title small { display: block; font-weight: 400; color: var(--muted); }
+.rain-legend { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin: 0; padding: 0; list-style: none; }
+.rain-legend li { display: flex; flex-direction: column; gap: 4px; }
+.rain-legend i { height: 12px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(25, 28, 22, 0.18); }
+.rain-legend li:first-child i { border-radius: 4px 2px 2px 4px; } .rain-legend li:last-child i { border-radius: 2px 4px 4px 2px; }
+.rain-legend span { font-size: var(--fs-fine); color: var(--text-2); font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
+.rain-src { margin: var(--s-3) 0 0; font-size: var(--fs-fine); color: var(--muted); line-height: 1.4; }
+@media (hover: hover) and (pointer: fine) { .rain-btn:hover:not(.on) { background: var(--panel-2); } }
+@media (max-width: 640px) {
+  .rain-ctl { top: calc(var(--bar-h) + 3px + var(--s-3) + var(--h-btn) + var(--s-2)); right: var(--s-3) !important; }
+  .rain-card { width: min(300px, calc(100vw - 24px)); }
+}
+.rain-card > .seg { width: 100%; }
+.rain-row { margin-top: var(--s-3); margin-bottom: var(--s-2); }
+.rain-legend.drought { grid-template-columns: repeat(5, 1fr); }
+.rain-legend.drought span { white-space: normal; line-height: 1.25; }
+.rain-legend.drought span b { display: block; }
+/* timeline docked at the bottom of the map (after Windy) */
+.rain-tl { position: absolute; bottom: var(--s-4); transform: translateX(-50%); z-index: 17; display: flex; align-items: center; gap: var(--s-3); width: min(640px, calc(100vw - 520px)); min-width: 340px;
+  padding: var(--s-3) var(--s-5) var(--s-3) var(--s-3); border-radius: var(--r-full); background: var(--panel); box-shadow: var(--e3); animation: content-in var(--dur-3) var(--ease-enter) backwards; }
+.rain-tl .play { flex: none; width: 44px; height: 44px; background: var(--accent); color: var(--accent-ink); }
+.rain-tl .play:disabled { background: var(--tint-2); color: var(--muted); }
+.rain-tl .tl-body { position: relative; flex: 1; min-width: 0; padding-bottom: 16px; }
+.tl-now { margin: 0 0 2px; font-size: var(--fs-small); }
+.tl-now small { color: var(--muted); }
+.rain-tl input[type="range"] { width: 100%; margin: 0; accent-color: var(--accent); }
+.tl-days { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; }
+.tl-days span { position: absolute; transform: translateX(-50%); font-size: var(--fs-fine); color: var(--muted); white-space: nowrap; }
+.tl-days span:first-child { transform: none; }
+.wx-tip .maplibregl-popup-content { padding: 6px 10px; border-radius: var(--r-sm); background: var(--panel); color: var(--text); font: 600 var(--fs-small)/1.3 var(--font-ui); box-shadow: var(--e2); }
+.wx-tip .maplibregl-popup-tip { display: none; }
+@media (max-width: 640px) {
+  .rain-tl { bottom: calc(var(--tabs-h) + var(--s-2)); width: calc(100vw - 16px); min-width: 0; border-radius: var(--r-lg); }
+}
+@media (max-width: 640px) {
+  /* a round drop icon in the space the drill hint leaves on the right; the text stays the accessible name */
+  .rain-btn { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; gap: 0; }
+  .rain-btn svg { width: 20px; height: 20px; }
+}
+.drought-legend { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.drought-legend li { display: grid; grid-template-columns: 28px 28px 1fr; align-items: center; gap: var(--s-2); font-size: var(--fs-small); }
+.drought-legend i { height: 14px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(25, 28, 22, 0.18); }
+.drought-legend b { font-variant-numeric: tabular-nums; }
+.drought-legend span { color: var(--text-2); }
+@media (max-width: 640px) {
+  /* while the rain & drought card is open, the step sheet drops to a peek so the map, card and timeline show */
+  .app.wx-open .fpanel { --sheet-off: calc(100% - 96px) !important; }
+  .app.wx-open .rain-card { position: relative; z-index: 24; }
+  .rain-tl { z-index: 22; }
+  .rain-card .rain-title small { display: none; }
+}
