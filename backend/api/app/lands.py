@@ -1,6 +1,7 @@
 """First Nations reserves and tribal lands (backend/nation/fetch_lands.py -> backend/api/out/lands/lands.geojson).
 
-  GET /api/lands        the whole file (BC reserves + California tribal lands), cacheable for a day
+  GET /api/lands        GeoJSON of the lands: whole file, or ?bbox=w,s,e,n&country=US|CAN&province=&state=&min_ha=&limit= (the map viewport)
+  GET /api/lands/overview  every land without outlines (id, name, Nation, kind, area, region, centroid, bbox) for the zoomed-out map and the list
   GET /api/lands/{id}   one land: name, Nation, area, kind, centroid, nearby catalog farms and prepared fields within 15 km,
                         links to the Nation tools at its centroid, the Nation's public website when backend data has one
 
@@ -13,7 +14,7 @@ import math
 from functools import lru_cache
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Query, Response
 from fastapi.responses import FileResponse
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -21,13 +22,21 @@ LANDS = ROOT / "backend" / "api" / "out" / "lands" / "lands.geojson"
 CATALOG = ROOT / "backend" / "api" / "out" / "catalog" / "index.json"
 NEAR_KM = 15
 router = APIRouter()
-KIND = {"reserve": "Reserve", "reservation": "Tribal land", "trust": "Tribal land"}
+KIND = {"reserve": "Reserve", "reservation": "Tribal land", "trust": "Tribal land", "other": "Tribal area"}
+KINDS = ["reserve", "reservation", "trust", "other"]
 
 
 @lru_cache(maxsize=1)
 def _load() -> dict:
     d = json.loads(LANDS.read_text())
     d["_by_id"] = {f["properties"]["id"]: f for f in d["features"]}
+    d["_json"] = {f["properties"]["id"]: _fjson(f) for f in d["features"]}
+    rows = []
+    for f in d["features"]:
+        p = f["properties"]
+        rows.append([p["id"], p["name"], p["nation"], KINDS.index(p["kind"]) if p["kind"] in KINDS else 3, p["area_ha"], p["country"], _region(p), *p["centroid"], *p["bbox"]])
+    d["_overview"] = json.dumps({"cols": ["id", "name", "nation", "kind", "area_ha", "country", "region", "lon", "lat", "w", "s", "e", "n"], "kinds": KINDS,
+                                 "fetched": d["properties"].get("fetched"), "rows": rows}, separators=(",", ":"), ensure_ascii=False)
     return d
 
 
@@ -72,11 +81,67 @@ def _presets() -> list[dict]:
     return out
 
 
+def _norm_country(c: str | None) -> str | None:
+    if not c:
+        return None
+    c = c.strip().upper()
+    if c in ("US", "USA", "UNITED STATES"):
+        return "US"
+    if c in ("CAN", "CANADA"):
+        return "CAN"
+    raise HTTPException(422, "country must be US or CAN (Canada)")
+
+
+def _fjson(f: dict) -> str:
+    return json.dumps(f, separators=(",", ":"))
+
+
+def _region(p: dict) -> str:
+    return p.get("province") or p.get("state") or ""
+
+
 @router.get("/api/lands")
-def lands(resp: Response):
+def lands(resp: Response, bbox: str | None = Query(None, description="west,south,east,north (lon/lat): lands that touch it"),
+          country: str | None = Query(None, description="US | CAN"), province: str | None = None, state: str | None = None,
+          min_ha: float = Query(0, ge=0), limit: int = Query(4000, ge=1, le=20000)):
+    """GeoJSON of the lands. No filters: the whole file. With a bbox (the map viewport) only lands that touch it, largest first, up to `limit`."""
     if not LANDS.is_file():
         raise HTTPException(404, "lands.geojson not built (run backend/nation/fetch_lands.py)")
-    return FileResponse(LANDS, media_type="application/geo+json", headers={"Cache-Control": "public, max-age=86400"})
+    hdr = {"Cache-Control": "public, max-age=86400"}
+    if not (bbox or country or province or state or min_ha):
+        return FileResponse(LANDS, media_type="application/geo+json", headers=hdr)
+    d = _load()
+    cc, pv, st = _norm_country(country), (province or "").upper(), (state or "").upper()
+    box = None
+    if bbox:
+        try:
+            box = [float(x) for x in bbox.split(",")]
+            assert len(box) == 4
+        except Exception:  # noqa: BLE001
+            raise HTTPException(422, "bbox must be west,south,east,north") from None
+    out = []
+    for f in d["features"]:
+        p = f["properties"]
+        if cc and p.get("country") != cc or pv and p.get("province") != pv or st and p.get("state") != st or p["area_ha"] < min_ha:
+            continue
+        if box:
+            w, s, e, n = p["bbox"]
+            if e < box[0] or w > box[2] or n < box[1] or s > box[3]:
+                continue
+        out.append(f)
+    total = len(out)
+    out.sort(key=lambda f: -f["properties"]["area_ha"])
+    out = out[:limit]
+    body = '{"type":"FeatureCollection","properties":{"total":%d,"returned":%d},"features":[%s]}' % (total, len(out), ",".join(d["_json"][f["properties"]["id"]] for f in out))
+    return Response(body, media_type="application/geo+json", headers=hdr)
+
+
+@router.get("/api/lands/overview")
+def overview():
+    """Light index of every land without outlines (for the zoomed-out map and the list): one row per land, columns named in `cols`."""
+    if not LANDS.is_file():
+        raise HTTPException(404, "lands.geojson not built")
+    return Response(_load()["_overview"], media_type="application/json", headers={"Cache-Control": "public, max-age=86400"})
 
 
 @router.get("/api/lands/{lid}")
@@ -102,7 +167,7 @@ def land(lid: str, resp: Response):
         if km <= NEAR_KM:
             near.append({**it, "distance_km": round(km, 1)})
     near.sort(key=lambda x: x["distance_km"])
-    jur = "BC" if p.get("province") == "BC" else "CA"
+    jur = "BC" if p.get("province") == "BC" else "CAN" if p.get("country") == "CAN" else "CA" if p.get("state") == "CA" else "US"
     base = f"/api/locations/{pid}/nation"
     resp.headers["Cache-Control"] = "public, max-age=3600"
     return {
@@ -111,8 +176,9 @@ def land(lid: str, resp: Response):
         "centroid": {"lon": lon, "lat": lat}, "location_id": pid,
         "nearby": near[:12], "nearby_radius_km": NEAR_KM,
         "tools": {"summary": base, "drought_rotation": f"{base}/drought_rotation", "groundwater": f"{base}/groundwater", "land_season": f"{base}/land_season",
-                  "funding": f"{base}/funding", "report_pdf": f"{base}/report.pdf"},
+                  "funding": f"{base}/funding?jurisdiction={jur}", "report_pdf": f"{base}/report.pdf"},
         "website": _sites().get(p["nation"]),
         "caveat": "Reserve, reservation and trust boundaries are legal or statistical lines, not traditional territory and not where a Nation's rights apply.",
-        "source": next((s for s in _load()["properties"]["sources"] if s["region"] == jur), None),
+        "country": p["country"], "region": _region(p),
+        "source": next((s for s in _load()["properties"]["sources"] if s["region"] == {"BC": "BC", "CAN": "CAN"}.get(jur, "US")), None),
     }

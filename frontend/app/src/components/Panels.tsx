@@ -55,7 +55,7 @@ export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolea
             <span className="sw sw-reserve" />
             <span className="layer-body">
               <span className="layer-top"><b>First Nations lands</b></span>
-              <span className="layer-sees">Indian reserves in British Columbia and tribal lands in California{p.landsCount ? ` (${p.landsCount.toLocaleString('en-US')})` : ''}. Click one for its Nation panel.</span>
+              <span className="layer-sees">Indian reserves and tribal lands across the US and Canada{p.landsCount ? ` (${p.landsCount.toLocaleString('en-US')})` : ''}. Click one for its Nation panel.</span>
               <span className="layer-meta">Legal boundaries, not traditional territory · BC Data Catalogue, US Census</span>
             </span>
           </label>

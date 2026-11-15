@@ -117,6 +117,39 @@ def _us(lon, lat) -> dict:
                                                       "url": TIGER_URL, "layer": TIGER}}
 
 
+_CAN_POLY = None
+
+
+def in_canada(lon: float, lat: float) -> bool:
+    """Coarse test (about 20 km) for 'north of the US border': picks the Canada programs and reserve source for a tapped point."""
+    global _CAN_POLY
+    if _CAN_POLY is None:
+        from shapely.geometry import Polygon
+        _CAN_POLY = Polygon([(-141, 84), (-141, 60), (-137.5, 58.9), (-135.5, 59.6), (-134, 58.5), (-132, 56.6), (-130, 55.9), (-130, 54.7), (-135, 51), (-129, 48), (-123.0, 48.2),
+                             (-123.0, 49.0), (-95.15, 49.0), (-95.15, 49.4), (-94.6, 48.7), (-92.0, 48.3), (-89.6, 48.0), (-88.4, 48.3), (-84.8, 46.5), (-83.5, 46.0), (-82.5, 45.3), (-82.4, 43.0),
+                             (-83.2, 42.0), (-82.4, 42.2), (-80.0, 42.2), (-79.0, 42.85), (-79.0, 43.65), (-76.3, 44.1), (-75.0, 44.9), (-71.5, 45.0), (-70.8, 45.4), (-70.3, 46.1),
+                             (-69.2, 47.45), (-68.3, 47.35), (-67.8, 47.07), (-67.8, 45.7), (-67.4, 45.2), (-66.9, 44.8), (-66.0, 43.0), (-58, 44), (-50, 52), (-50, 84)])
+    from shapely.geometry import Point
+    return _CAN_POLY.contains(Point(lon, lat))
+
+
+def _can(lon, lat) -> dict:
+    """Canada outside BC: the NRCan CLSS reserves in backend/api/out/lands (same file as /api/lands)."""
+    from .. import lands as L
+    areas = []
+    for f in L._load()["features"]:
+        p = f["properties"]
+        if p.get("country") != "CAN":
+            continue
+        w, s, e, n = p["bbox"]
+        if lon < w - 0.3 or lon > e + 0.3 or lat < s - 0.3 or lat > n + 0.3:
+            continue
+        km, inside = distance_km(lon, lat, f["geometry"])
+        areas.append({"name": p["name"], "nation": p["nation"], "band_name": None, "kind": "reserve", "distance_km": km, "inside": inside})
+    return {"areas": areas, "source": {"title": "Aboriginal Lands of Canada Legislative Boundaries (NRCan CLSS)", "url": "https://open.canada.ca/data/en/dataset/522b07b9-78e2-4819-b736-ad9208eb1067",
+                                       "licence": "Open Government Licence - Canada"}}
+
+
 def nearby(lon: float, lat: float, region: str) -> dict:
     """{'ok': bool, 'areas': [...sorted by distance], 'source': {...}, 'error'?}. Never raises."""
     key = (round(lon, 3), round(lat, 3), region)
@@ -124,7 +157,7 @@ def nearby(lon: float, lat: float, region: str) -> dict:
     if hit and time.time() - hit[0] < 3600:
         return hit[1]
     try:
-        r = _bc(lon, lat) if region == "bc" else _us(lon, lat)
+        r = _bc(lon, lat) if region == "bc" else _can(lon, lat) if region == "can" else _us(lon, lat)
         r["ok"] = True
         r["areas"].sort(key=lambda a: a["distance_km"])
     except Exception as e:  # noqa: BLE001

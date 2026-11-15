@@ -91,3 +91,6 @@
   .pk-tabs { margin: 0 var(--s-4) var(--s-2); }
   .lp-has dl > div { grid-template-columns: 80px 1fr; }
 }
+.ll-region { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-2) var(--s-5) 0; font-size: var(--fs-small); color: var(--muted); }
+.ll-region select { flex: 1; min-height: 44px; border: 1px solid var(--line, #d8d2c6); border-radius: var(--r-md); padding: 0 var(--s-3); font: inherit; color: var(--ink, inherit); background: var(--surface, #fff); }
+.ll-dot.other { background: transparent; border: 2px solid var(--land); }

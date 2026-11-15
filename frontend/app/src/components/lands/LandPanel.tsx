@@ -8,7 +8,7 @@ import Icon from '../Icons';
 import { NationTools } from '../week/NationTools';
 import { ThisWeek } from '../week/ThisWeek';
 import { cropName, soilFacts, known } from '../ui/shared';
-import { areaText, kindLabel, type LandDetail, type LandFeature } from './lands';
+import { areaText, kindLabel, regionName, regionOf, type LandDetail, type LandFeature } from './lands';
 import './lands.css';
 
 type Spot = { state: 'loading' } | { state: 'ok'; loc: Location } | { state: 'error'; message: string };
@@ -51,7 +51,7 @@ export function LandPanel({ land, presets, onClose, onOpenSpot, onOpenField, onO
           <p className="lp-eyebrow">Information for First Nations and tribal farmers and land managers</p>
           <span className={`lp-pill ${p.kind}`} data-testid="land-pill"><i />{kindLabel(p.kind)}</span>
           <h1 data-testid="land-name">{p.name}</h1>
-          <p className="lp-nation"><b>{p.nation}</b>{bc ? ` · British Columbia${p.band_number ? ` · band ${p.band_number}` : ''}` : ' · California'}</p>
+          <p className="lp-nation"><b>{p.nation}</b>{` · ${regionName(regionOf(p))}, ${p.country === 'CAN' ? 'Canada' : 'United States'}${bc && p.band_number ? ` · band ${p.band_number}` : ''}`}</p>
           <p className="lp-area">{areaText(p.area_ha)}</p>
         </header>
 

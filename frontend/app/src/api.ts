@@ -2,7 +2,7 @@
 // Everything real comes from the CropLytics API at VITE_API_BASE: http://localhost:8000/api in dev, same-origin /api in a
 // production build (the backend serves the built app and the API from one origin). Anything the API does not answer falls
 // back to the bundled examples in src/mock, and the UI says so in the source line.
-import type { LandDetail, LandFeature } from './components/lands/lands';
+import { fromOverview, type LandDetail, type LandFeature } from './components/lands/lands';
 import type { BCInfo, Calendar, CalendarYear, CellGrid, CoverClass, DataGap, Dataset, FirstNations, GridLayer, Location, NewsItem, Regional, RotationStrategy, SourcedNumber, Source, ScoreKey } from './types';
 import mockLocations from './mock/locations.json';
 import mockCells from './mock/cells.json';
@@ -110,9 +110,14 @@ export async function getReserves(id: string): Promise<GeoJSON.FeatureCollection
   return b?.features ? (b as GeoJSON.FeatureCollection) : null;
 }
 
-/** GET /api/lands: every BC reserve and California tribal land (one file, cached by the browser for a day). */
+/** GET /api/lands/overview: every land in North America as a point with its name, Nation, kind, area and bounding box (no outlines; cached a day). */
 let landsP: Promise<LandFeature[] | null> | null = null;
-export const getLands = (): Promise<LandFeature[] | null> => (landsP ??= apiReal('/api/lands', undefined, 30000).then((b) => (b?.features ? (b.features as LandFeature[]) : null)).catch(() => null)).then((r) => { if (!r) landsP = null; return r; });
+export const getLands = (): Promise<LandFeature[] | null> => (landsP ??= apiReal('/api/lands/overview', undefined, 30000).then((b) => (b?.rows ? fromOverview(b) : null)).catch(() => null)).then((r) => { if (!r) landsP = null; return r; });
+/** GET /api/lands?bbox=: outlines of the lands in view (largest first). */
+export async function getLandsIn(bbox: [number, number, number, number], limit = 2500): Promise<LandFeature[] | null> {
+  const b = await apiReal(`/api/lands?bbox=${bbox.map((x) => x.toFixed(3)).join(',')}&limit=${limit}`, undefined, 30000);
+  return b?.features ? (b.features as LandFeature[]) : null;
+}
 /** GET /api/lands/{id}: one land with its centroid, nearby fields and Nation-tool links. */
 export async function getLand(id: string): Promise<LandDetail | null> {
   const b = await apiReal(`/api/lands/${encodeURIComponent(id)}`);
