@@ -91,19 +91,32 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
     if (!SR) return;
     if (listening) { rec.current?.stop(); return; }
     stopSpeech(); sp.prime();
-    const r = new SR();
-    r.lang = 'en-US'; r.interimResults = true; r.maxAlternatives = 1;
-    let final = '';
+    let r: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    try { r = new SR(); } catch { setErr('Voice input is not available in this browser. Type your question instead.'); return; }
+    r.lang = navigator.language || 'en-US'; r.interimResults = true; r.maxAlternatives = 1;
+    let final = '', latest = '', failed = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     r.onresult = (ev: any) => {
       let txt = '';
       for (let i = 0; i < ev.results.length; i++) { txt += ev.results[i][0].transcript; if (ev.results[i].isFinal) final = txt; }
-      setQ(txt);
+      latest = txt; setQ(txt);
     };
-    r.onerror = () => { setListening(false); setLive('Could not hear that. Try again or type your question.'); };
-    r.onend = () => { setListening(false); rec.current = null; if (final.trim()) send(final, true); };
-    rec.current = r; setListening(true); setLive('Listening. Ask your question.');
-    r.start();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    r.onerror = (ev: any) => {
+      const code = ev?.error as string | undefined;
+      if (code === 'aborted') return;
+      failed = true; setListening(false);
+      const m = code === 'not-allowed' || code === 'service-not-allowed' ? 'Microphone access is blocked. Allow the microphone for this site in your browser, or type your question.'
+        : code === 'no-speech' ? 'No speech heard. Tap the microphone and try again.'
+        : code === 'audio-capture' ? 'No microphone was found. Type your question instead.'
+        : code === 'network' ? "Voice input isn't available right now in this browser (its speech service can't be reached). Type your question instead."
+        : 'Could not hear that. Try again or type your question.';
+      setErr(m); setLive(m);
+    };
+    r.onend = () => { setListening(false); rec.current = null; const t = (final || latest).trim(); if (t && !failed) send(t, true); };
+    rec.current = r;
+    try { r.start(); setListening(true); setErr(null); setLive('Listening. Ask your question.'); }
+    catch { rec.current = null; setErr('Could not start voice input. Type your question instead.'); }
   };
 
   const toggleSpeak = () => { const v = !speak; setSpeak(v); saveSpeak(v); if (!v) stopSpeech(); else sp.prime(); };
