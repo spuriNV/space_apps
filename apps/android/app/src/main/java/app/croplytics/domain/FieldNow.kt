@@ -303,7 +303,7 @@ object FieldNowLogic {
         s?.ecDsPerM?.let { add("Salt" to "${if (it >= 4) "Salty soil; limits salt-sensitive crops" else "Low salt"} (EC ${Fmt.one(it)} dS/m)") }
         val w = loc.water
         val src = when (w?.source) { "surface" -> "Surface water"; "groundwater" -> "Groundwater (wells)"; "mixed" -> "Surface water and wells"; else -> null }
-        val real = w != null && (w.lookup == true || (w.district != null && !w.district.contains("(U)"))) && w.verified != false
+        val real = w != null && w.lookedUp && !w.unverified
         add("Water" to if (!real) listOfNotNull(src, "water district not looked up yet").joinToString("; ") else
             listOfNotNull(src, w!!.district).joinToString(". ") + "." + (w.sgmaStatus?.text?.let { " $it." } ?: ""))
         loc.terrain?.slopeMeanPct?.value?.let { sl ->

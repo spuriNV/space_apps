@@ -107,9 +107,17 @@ data class WaterDto(
     val district: String? = null,
     @SerialName("sgma_subbasin") val sgmaSubbasin: String? = null,
     @SerialName("sgma_status") val sgmaStatus: SgmaStatusDto? = null,
-    val lookup: Boolean? = null,
-    val verified: Boolean? = null,
-)
+    /** An object ({looked_up, ...}) or a flag, depending on the API version: kept raw. */
+    val lookup: JsonElement? = null,
+    val verified: JsonElement? = null,
+    /** BC: why the water source is not known. */
+    @SerialName("source_note") val sourceNote: String? = null,
+) {
+    /** The district / GSA was looked up (not the project brief's placeholder). */
+    val lookedUp: Boolean get() = (lookup != null && lookup !is kotlinx.serialization.json.JsonNull && (lookup as? JsonPrimitive)?.contentOrNull != "false") ||
+        (district != null && !district.contains("(U)"))
+    val unverified: Boolean get() = (verified as? JsonPrimitive)?.contentOrNull == "false"
+}
 
 @Serializable
 data class StationDto(

@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -170,9 +171,9 @@ class MainViewModel @Inject constructor(
 
     private val ui = MutableStateFlow(MainUiState(t = todayT, todayT = todayT))
     private val reload = MutableStateFlow(0)
-    private val commands = MutableSharedFlow<MapCommand>(extraBufferCapacity = 8, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-    /** One-shot camera moves for the map. */
-    val mapCommands: SharedFlow<MapCommand> = commands
+    /** One-shot camera moves for the map, kept until the map is ready to take them (a deep link arrives before the map). */
+    private val commands = kotlinx.coroutines.channels.Channel<MapCommand>(capacity = 16, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    val mapCommands: Flow<MapCommand> = commands.receiveAsFlow()
     private var playJob: Job? = null
 
     /** Quick picks: today, last summer, last spring, the 2023 floods, the 2022 drought. */
@@ -243,18 +244,18 @@ class MainViewModel @Inject constructor(
 
     fun select(id: String) {
         ui.update { it.copy(selectedId = id, panelOpen = true, bcOpen = false, tab = if (it.selectedId == null) Tab.Now else it.tab) }
-        commands.tryEmit(MapCommand.FlyToField(id, MapCommand.FlyToField.Mode.Card))
+        commands.trySend(MapCommand.FlyToField(id, MapCommand.FlyToField.Mode.Card))
     }
 
     /** Back to the whole state and the pick list (the wordmark / home button). */
     fun goHome() {
         ui.update { it.copy(selectedId = null, tab = Tab.Now, bcOpen = false, panelOpen = true) }
-        commands.tryEmit(MapCommand.FlyHome)
+        commands.trySend(MapCommand.FlyHome)
     }
 
     fun goBC() {
         ui.update { it.copy(bcOpen = true) }
-        commands.tryEmit(MapCommand.FlyTo(49.9, -121.0, 6.4))
+        commands.trySend(MapCommand.FlyTo(49.9, -121.0, 6.4))
     }
     fun closeBC() = ui.update { it.copy(bcOpen = false) }
 
@@ -262,14 +263,14 @@ class MainViewModel @Inject constructor(
         if (ui.value.selectedId == null) return
         ui.update { it.copy(tab = tab, panelOpen = true) }
         val id = ui.value.selectedId!!
-        if (tab == Tab.Year && ui.value.camera.zoom > 13.2) commands.tryEmit(MapCommand.FlyToField(id, MapCommand.FlyToField.Mode.Year))
+        if (tab == Tab.Year && ui.value.camera.zoom > 13.2) commands.trySend(MapCommand.FlyToField(id, MapCommand.FlyToField.Mode.Year))
     }
 
     fun closePanel() = ui.update { it.copy(panelOpen = false) }
     fun reopenPanel() = ui.update { it.copy(panelOpen = true) }
 
     /** "Look under the field in 3D": fly in, tilt, and the stack rises. */
-    fun drill() { ui.value.selectedId?.let { commands.tryEmit(MapCommand.FlyToField(it, MapCommand.FlyToField.Mode.Drill)) } }
+    fun drill() { ui.value.selectedId?.let { commands.trySend(MapCommand.FlyToField(it, MapCommand.FlyToField.Mode.Drill)) } }
 
     fun onQuery(q: String) = ui.update { it.copy(query = q) }
     fun toggleFamily(f: String) = ui.update { it.copy(family = if (it.family == f) null else f) }
@@ -300,7 +301,7 @@ class MainViewModel @Inject constructor(
     fun setLayersOpen(open: Boolean) = ui.update { it.copy(layersOpen = open) }
 
     fun onCamera(v: CameraView) = ui.update { it.copy(camera = v) }
-    fun map(cmd: MapCommand) { commands.tryEmit(cmd) }
+    fun map(cmd: MapCommand) { commands.trySend(cmd) }
 
     fun setLimit(acreFeetPerAcre: Double) {
         val id = ui.value.selectedId ?: return
