@@ -40,7 +40,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
   const limitWord = p.exampleLimit ? ' (an example limit; write in yours)' : '';
   const last = p.cal ? yearOf(lastDataT(p.cal)) : 2025;
   const recent = [last - 2, last - 1, last].map((y) => `${y} ${loc.crop_history[y] ? cropName(loc.crop_history[y]).toLowerCase() : '(crop map not out yet)'}`).join(', ');
-  const soil = loc.soil, inFt = (soil.awc_mm_per_m.value / 1000) * 12, saline = (soil.ec_ds_per_m ?? 0) >= 4;
+  const soil = loc.soil ?? ({} as Location['soil']), awc = soil.awc_mm_per_m?.value, inFt = awc != null ? (awc / 1000) * 12 : null, saline = (soil.ec_ds_per_m ?? 0) >= 4;
   const o = p.outlook, rain = rainNow(p.nasaNow, p.daily, TODAY_T);
   const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const wet = o?.seasons.filter((x) => x.rain?.category.startsWith('above')).length ?? 0;
@@ -64,7 +64,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <div className="p-cols">
             <section>
               <h2>1. This field</h2>
-              <p>{soil.muname.split(',')[0]}: {soil.drainage_class.toLowerCase()}, holds about {inFt.toFixed(1)} in of water per foot of soil{saline ? ', salty enough to limit salt-sensitive crops' : ''}.{cite(loc.area_ha.source)} Water from {loc.water.source === 'surface' ? 'a surface-water district' : 'wells, under a groundwater allocation'}. Last three seasons: {recent}. {ob ? `Bare about ${ob.value} days a year, mostly ${bareWhen} (satellite, ${ob.years[0]}–${ob.years[ob.years.length - 1]}).` : ''} {openetText(strategies)}{cite(base.water.etc_vs_openet_pct?.source)}</p>
+              <p>{soil.muname || soil.texture_class ? <>{soil.muname ? soil.muname.split(',')[0] : soil.texture_class}{[soil.drainage_class?.toLowerCase(), inFt != null ? `holds about ${inFt.toFixed(1)} in of water per foot of soil` : null].filter(Boolean).length ? ': ' : ''}{[soil.drainage_class?.toLowerCase(), inFt != null ? `holds about ${inFt.toFixed(1)} in of water per foot of soil` : null].filter(Boolean).join(', ')}{saline ? ', salty enough to limit salt-sensitive crops' : ''}.</> : null}{cite(loc.area_ha.source)} Water from {loc.water.source === 'surface' ? 'a surface-water district' : 'wells, under a groundwater allocation'}. Last three seasons: {recent}. {ob ? `Bare about ${ob.value} days a year, mostly ${bareWhen} (satellite, ${ob.years[0]}–${ob.years[ob.years.length - 1]}).` : ''} {openetText(strategies)}{cite(base.water.etc_vs_openet_pct?.source)}</p>
             </section>
             <section>
               <h2>2. What’s likely this season <small>outlooks, not forecasts</small></h2>

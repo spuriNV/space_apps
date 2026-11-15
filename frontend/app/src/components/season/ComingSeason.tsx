@@ -31,13 +31,14 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
   const wetLean = rainLean.filter((x) => x > 0).length, dryLean = rainLean.filter((x) => x < 0).length;
   const surface = p.loc.water.source === 'surface';
   const shasta = o?.reservoirs.find((r) => /shasta/i.test(r.name)) ?? o?.reservoirs[0];
-  const supply = !o ? 'Loading…' : surface
+  const notReady = !!o?.notReady;
+  const supply = !o ? 'Loading…' : notReady && surface ? 'Not ready for this field yet.' : surface
     ? `${shasta && shasta.pctAvg != null ? `${words(shasta.name)}: ${Math.round(shasta.pctAvg)}% of average.` : ''}${o.cvpNow?.settlement != null ? ` Your allocation: ${o.cvpNow.settlement}%.` : ''}`
     : gw ? `Basin groundwater: ${band(gw.v, 'above usual', 'about usual', 'below usual')}. Under state pumping rules.` : 'Groundwater reading not available right now.';
   const today = p.strategies.find((s) => s.is_baseline);
   const nxt = today ? o?.irrigation?.[today.id]?.value ?? mmToAfac(today.water.irrigation_need_mm.value) : null;
   const nextNeed = nxt == null ? 'Loading…' : `Needs ${nxt.toFixed(1)} acre-ft/acre. Limit ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}. ${nxt > p.allocation ? `${(nxt - p.allocation).toFixed(1)} short.` : 'It fits.'}`;
-  const headline = !o ? 'Loading the outlooks…' : wetLean > dryLean ? 'Wetter than normal this winter' : dryLean > wetLean ? 'Drier than normal this winter' : 'No clear lean this winter';
+  const headline = !o ? 'Loading the outlooks…' : notReady ? 'Winter outlook not ready for this field yet' : wetLean > dryLean ? 'Wetter than normal this winter' : dryLean > wetLean ? 'Drier than normal this winter' : 'No clear lean this winter';
   const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const allYearsBw = bw;
   return (
@@ -45,12 +46,12 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
       <header className="sheet-head">
         <div>
           <h2>Coming season: what’s likely this winter and next year</h2>
-          <p className="sheet-lede">{headline}. <span className="outlook-tag">An outlook, not a forecast.</span></p>
+          <p className="sheet-lede">{headline}.{!notReady && <> <span className="outlook-tag">An outlook, not a forecast.</span></>}</p>
         </div>
         <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
       </header>
       <div className="cs-sum" data-testid="season-summary">
-        <div><h3>Winter rain</h3><p>{!o ? 'Loading…' : wetLean > dryLean ? 'Leans wetter than normal this winter.' : dryLean > wetLean ? 'Leans drier than normal this winter.' : 'No clear lean either way this winter.'}</p></div>
+        <div><h3>Winter rain</h3><p>{!o ? 'Loading…' : notReady ? 'Not ready for this field yet.' : wetLean > dryLean ? 'Leans wetter than normal this winter.' : dryLean > wetLean ? 'Leans drier than normal this winter.' : 'No clear lean either way this winter.'}</p></div>
         <div><h3>Water supply</h3><p>{supply}</p></div>
         <div><h3>Next season, today’s rotation</h3><p>{nextNeed}</p></div>
       </div>

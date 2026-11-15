@@ -48,6 +48,17 @@ let health: Promise<boolean> | null = null;
 /** true when the API answers. Cached for the session. */
 export const apiLive = () => (health ??= get('/api/health').then((b) => !!b?.ok).catch(() => false));
 /** The route's body if it is real data (`_source: real`, or no `_source` for routes that are real-only), else null. */
+/** Like apiReal, but tells a route the API does not have for this field (404: not built yet) apart from one that failed. */
+async function apiRealOr404(route: string): Promise<{ body: any; missing: boolean }> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  if (!(await apiLive())) return { body: null, missing: false };
+  try {
+    const r = await fetch(`${API_BASE}${route.replace(/^\/api/, '')}`);
+    if (r.status === 404) return { body: null, missing: true };
+    if (!r.ok) return { body: null, missing: false };
+    const b = await r.json();
+    return { body: b && (b._source === 'real' || b._source === undefined) ? b : null, missing: false };
+  } catch { return { body: null, missing: false }; }
+}
 async function apiReal(route: string, init?: RequestInit, ms = 12000) {
   if (!(await apiLive())) return null;
   try { const b = await get(route, init, ms); return b && (b._source === 'real' || b._source === undefined) ? b : null; } catch { return null; }
@@ -75,31 +86,49 @@ function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: Prov
     water: P('water', 'Water source and district', 'mock', 'project brief, not looked up'),
   };
   if (EXTRA[base.id]?.rma) prov.rma = P('rma', 'Crop-insurance payouts (USDA RMA)', 'file', 'backend/ground, 2010–2024');
-  let loc: Location = { ...base, rma: EXTRA[base.id]?.rma, water: { ...base.water, allocation_input: { unit: 'acre-ft/acre', value: EXAMPLE_LIMIT[base.id] ?? base.water.allocation_input.value } } };
+  EXAMPLE_LIMIT[base.id] ??= /^car|rice/.test(base.id) || apiLoc?.family === 'rice' ? 5.0 : 3.0; // example limit per family until the grower moves it
+  let loc: Location = { ...base, rma: EXTRA[base.id]?.rma, water: { ...base.water, allocation_input: { unit: 'acre-ft/acre', value: EXAMPLE_LIMIT[base.id] } } };
   if (!apiLoc?.geometry) return { loc, prov };
   const a = apiLoc;
   loc = { ...loc, ...(base.id === 'caf_tulare_forage' ? KINGS : {}),
-    geometry: a.geometry, centroid: a.centroid, area_ha: a.area_ha, county: COUNTY[a.county_fips] ?? loc.county,
+    geometry: a.geometry, centroid: a.centroid, area_ha: a.area_ha, county: a.county_name ?? COUNTY[a.county_fips] ?? loc.county,
+    family: a.family ?? loc.family, farmer_name: a.farmer_name ?? loc.farmer_name, county_name: a.county_name ?? loc.county_name,
     dwr_id: a.dwr_unique_id ?? a.dwr_id,
     soil: { ...loc.soil, ...a.soil },
     crop_history: a.crop_history ?? loc.crop_history, nasa_datasets: a.nasa_datasets, datasets: a.datasets, terrain: a.terrain ?? loc.terrain,
     nasadem: a.terrain?.slope_mean_pct?.value != null ? { slope_mean_pct: a.terrain.slope_mean_pct.value, slope_p90_pct: a.terrain.slope_p90_pct?.value, low_spot_fraction: a.terrain.low_spot_fraction?.value } : undefined };
   if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', 'api', 'NASA JPL elevation, 30 m');
-  // water district / GSA: use the API's only when it is looked up (the placeholder text carries "(U)")
+  // water district / GSA: use the API's only when it is looked up (the placeholder text carries "(U)"); a looked-up field may have no district
   const w = a.water;
-  if (w?.district && !/\(U\)/.test(String(w.district)) && w.verified !== false) { loc = { ...loc, water: { ...loc.water, ...w, allocation_input: loc.water.allocation_input }, water_real: true }; prov.water = P('water', 'Water source and district', 'api', String(w.district)); }
+  if (w && (w.lookup || (w.district && !/\(U\)/.test(String(w.district)))) && w.verified !== false) { loc = { ...loc, water: { ...loc.water, ...w, allocation_input: loc.water.allocation_input }, water_real: true }; prov.water = P('water', 'Water source and district', 'api', String(w.district ?? w.sgma_subbasin ?? 'looked up')); }
   prov.outline = P('outline', 'Field outline', 'api', `DWR / Land IQ 2023${loc.dwr_id ? ` field ${loc.dwr_id}` : ''}`);
   if (a.soil?.muname) prov.soil = P('soil', 'Soil (USDA soil survey)', 'api', a.soil.muname);
   if (a.crop_history) prov.crop_history = P('crop_history', 'Crop on record (USDA Cropland Data Layer)', 'api', 'USDA CDL 2008–2025');
   return { loc, prov };
 }
+/** The bundled example field a new field borrows its example numbers from (rice or forage). */
+const MOCK_IDS = new Set((mockLocations as unknown as Location[]).map((l) => l.id));
+export const templateId = (id: string, family?: string) => (MOCK_IDS.has(id) ? id : family === 'rice' || id.startsWith('car') ? 'car_colusa_rice' : 'caf_tulare_forage');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function baseFor(item: any): Location {
+  const mocks = mockLocations as unknown as Location[];
+  const m = mocks.find((l) => l.id === item.id);
+  if (m) return m;
+  const t = mocks.find((l) => l.id === templateId(item.id, item.family))!;
+  // a new field: only the shape comes from the example; its own values come from the API (no example soil or water leaks in)
+  return { ...t, id: item.id, name: item.farmer_name ?? item.name ?? item.id, short_name: item.farmer_name ?? item.id, headline: '', events: item.events ?? [], stations: item.stations ?? [],
+    observed_cover: item.observed_cover ?? { summary: '' }, crop_history: item.crop_history ?? {}, market_preference: item.market_preference ?? t.market_preference,
+    soil: {} as Location['soil'], terrain: item.terrain ?? t.terrain, county: item.county_name, water: { ...t.water, district: '', sgma_subbasin: '', sgma_status: { text: '', url: '', verified: false } } };
+}
 export async function getLocations(): Promise<{ locations: Location[]; prov: ById<ProvMap>; live: boolean }> {
   const live = await apiLive();
   const real = live ? await apiReal('/api/locations') : null;
-  const byId = Object.fromEntries(((real?.items ?? []) as { id: string }[]).map((x) => [x.id, x]));
+  // every field the API serves (the bundled two when it does not answer)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const items: any[] = real?.items?.length ? real.items : (mockLocations as unknown as Location[]).map((l) => ({ id: l.id }));
   // the list route may omit newer per-field keys (nasa_datasets); the single-field route carries them
-  const one = live ? await Promise.all((mockLocations as unknown as Location[]).map((l) => apiReal(`/api/locations/${l.id}`))) : [];
-  const out = (mockLocations as unknown as Location[]).map((l, i) => realLocation(l, one[i]?.geometry ? one[i] : byId[l.id]));
+  const one = live ? await Promise.all(items.map((x) => (x.geometry && x.nasa_datasets ? x : apiReal(`/api/locations/${x.id}`)))) : [];
+  const out = items.map((x, i) => realLocation(baseFor(one[i] ?? x), one[i]?.geometry ? one[i] : x.geometry ? x : undefined));
   return { locations: out.map((o) => o.loc), prov: Object.fromEntries(out.map((o) => [o.loc.id, o.prov])), live: live && !!real };
 }
 
@@ -303,8 +332,8 @@ const nowOf = (b: any): NasaNow | null => { const r = b?.readings; if (!r) retur
 export interface RegionalLive { smap: boolean; grace: boolean; soilSource?: 'smap' | 'grace_da' | null }
 /** Everything the field view needs. Resolves as soon as the answers' data is in; the 3D grid and the news arrive later through onLate. */
 export async function getField(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void): Promise<FieldBundle> {
-  const id = loc.id;
-  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[id]);
+  const id = loc.id, mid = templateId(id, loc.family); // mid: the bundled example used until the API answers
+  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[mid]);
   const prov: ProvMap = {
     calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', 'illustrative'),
     grid: P('grid', '100 ft squares in the 3D view', 'mock', 'illustrative'),
@@ -313,12 +342,12 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', 'no real series served yet'),
     ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
   };
-  const reg0 = (regional as unknown as ById<Regional>)[id];
+  const reg0 = (regional as unknown as ById<Regional>)[mid];
   const used: Partial<Record<string, NasaStatus>> = loc.nasadem ? { nasadem: 'live' } : {};
   const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, { ...used, ...(soilExample() ? { smap: 'example' as const } : {}) }).list;
   let soilShown: 'smap' | 'grace_da' | null = null;
   const soilExample = () => soilShown == null; // the soil answer shows SMAP example numbers when no real soil series came back
-  if (!live) return { id, regional: reg0, cells: (mockCells as unknown as ById<CellGrid>)[id], cal: mCal, strategies: mockStrats(id), news: (mockNews as unknown as ById<NewsItem[]>)[id], ml: null, nasa: nasa().map((d) => (d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)), regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, extras: { openet: null, stress: null, insurance: null, water: null }, prov };
+  if (!live) return { id, regional: reg0, cells: (mockCells as unknown as ById<CellGrid>)[mid], cal: mCal, strategies: mockStrats(mid), news: (mockNews as unknown as ById<NewsItem[]>)[mid], ml: null, nasa: nasa().map((d) => (d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)), regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, extras: { openet: null, stress: null, insurance: null, water: null }, prov };
   const lateP = Promise.all([apiReal(`/api/locations/${id}/grid`, undefined, 30000), apiReal(`/api/locations/${id}/news`)]);
   const [cal, hls, strat, mlCal, models, ns, now, oet, stressB, insB, waterB] = await Promise.all([
     apiReal(`/api/locations/${id}/calendar`),
@@ -334,7 +363,7 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     apiReal(`/api/locations/${id}/water_seen`),
   ]);
   // live: no stand-in squares in the 3D view while the real 30 m grid is still loading
-  let c = mCal, cells: CellGrid | null = null, strategies = mockStrats(id), nws = (mockNews as unknown as ById<NewsItem[]>)[id];
+  let c = mCal, cells: CellGrid | null = null, strategies = mockStrats(mid), nws = id === mid ? (mockNews as unknown as ById<NewsItem[]>)[mid] : [];
   // NASA first: the HLS calendar wins when the API serves it (it says so in its sources)
   const isHls = !!hls?.years && /hls/i.test(JSON.stringify(hls.source ?? hls.sources ?? hls.calendar_source ?? hls.method ?? ''));
   const calSrc = isHls ? hls : cal;
@@ -413,6 +442,8 @@ export interface Outlook {
   bare?: { start: string; end: string; days: number | null; low: number | null; high: number | null; chance: number | null; chanceLo: number | null; chanceHi: number | null; chanceOutlook: number | null; note: string } | null;
   irrigation?: Record<string, { value: number; low: number; high: number }>;
   prov: { cpc: Prov; water: Prov; alloc: Prov };
+  /** true when the API has no outlook built for this field yet (404) */
+  notReady?: boolean;
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const num = (x: any): number | null => (x == null ? null : typeof x === 'number' ? x : typeof x.value === 'number' ? x.value : null);
@@ -444,8 +475,11 @@ export async function getOutlook(id: string, live: boolean): Promise<Outlook> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ex = outlookExample as any;
   const exAlloc = ex.presets[id]?.allocations ?? null;
-  const full = live ? await apiReal(`/api/locations/${id}/outlook`) : null;
+  const { body: full, missing } = live ? await apiRealOr404(`/api/locations/${id}/outlook`) : { body: null, missing: false };
   if (full) return fromOutlookFile(full.presets?.[id] ?? full, exAlloc, 'api');
+  // the API is up but this field's outlook is not built yet: say so quietly instead of showing another field's example
+  if (missing || (live && !ex.presets[id])) return { issued: null, seasons: [], droughtNow: null, droughtOutlook: null, reservoirs: [], allocations: null, notReady: true,
+    prov: { cpc: P('outlook_cpc', 'Winter outlooks (NOAA)', 'api', 'not ready for this field yet'), water: P('outlook_water', 'Drought and reservoirs', 'api', 'not ready for this field yet'), alloc: P('outlook_alloc', 'Water allocations', 'api', 'not ready for this field yet') } };
   return adaptOutlook(ex.example_full, ex.example_full, exAlloc, { cpc: 'mock', water: 'mock', alloc: 'mock' }, 'example file');
 }
 

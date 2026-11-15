@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -21,10 +23,27 @@ android {
         // The live API. Override for a local server with -PapiBaseUrl=http://10.0.2.2:8000/api/
         val apiBaseUrl = (project.findProperty("apiBaseUrl") as String?) ?: "https://croplytics-app.onrender.com/api/"
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
+        // Optional: -Pabi=arm64-v8a builds a smaller APK for one phone type (sideloading).
+        (project.findProperty("abi") as String?)?.let { ndk { abiFilters += it.split(",") } }
     }
+
+    // Release signing: reads a keystore.properties outside git (path in CROPLYTICS_KEYSTORE_PROPS,
+    // default ~/.croplytics/keystore.properties). Without it, release builds are left unsigned.
+    val keystorePropsFile = file(System.getenv("CROPLYTICS_KEYSTORE_PROPS")
+        ?: "${System.getProperty("user.home")}/.croplytics/keystore.properties")
+    val releaseSigning = if (keystorePropsFile.exists()) {
+        val props = Properties().apply { keystorePropsFile.inputStream().use { load(it) } }
+        signingConfigs.create("release") {
+            storeFile = file(props.getProperty("storeFile"))
+            storePassword = props.getProperty("storePassword")
+            keyAlias = props.getProperty("keyAlias")
+            keyPassword = props.getProperty("keyPassword")
+        }
+    } else null
 
     buildTypes {
         release {
+            releaseSigning?.let { signingConfig = it }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

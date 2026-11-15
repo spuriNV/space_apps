@@ -221,7 +221,7 @@ export default function App() {
                   <b>{r.title}</b><small>{r.sub}</small>
                 </button>
               ))}
-              {results.length === 0 && <p className="muted pad">Only the two California fields are set up so far.</p>}
+              {results.length === 0 && <p className="muted pad">No field matches.</p>}
             </div>
           )}
         </div>

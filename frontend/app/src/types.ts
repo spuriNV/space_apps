@@ -12,7 +12,9 @@ export interface Location {
   soil: { muname: string; drainage_class: string; hydrologic_group: string; texture_class: string; awc_mm_per_m: SourcedNumber; om_pct?: SourcedNumber; ec_ds_per_m?: number; texture_detail?: { sand_pct: number; silt_pct: number; clay_pct: number } };
   county?: string; dwr_id?: string; boundary_title?: string; cdl_source?: Source;
   terrain: { slope_mean_pct: SourcedNumber; note: string };
-  water: { source: string; allocation_input: { unit: string; value: number }; district: string; sgma_subbasin: string; sgma_status: { text: string; url: string; verified: boolean } };
+  water: { source: string | null; allocation_input: { unit: string; value: number }; district: string | null; sgma_subbasin: string | null; sgma_status: { text: string | null; url: string | null; verified: boolean }; gsa?: string[] | string | null };
+  /** from GET /api/locations: crop family, the grower-facing name, county */
+  family?: string; farmer_name?: string; county_name?: string;
   market_preference: string;
   stations: { network: string; id: number | string; name: string; distance_km?: number }[];
   crop_history: Record<string, string>;
