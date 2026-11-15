@@ -2,6 +2,7 @@
 // The same chips filter the map pins (state lives in App). Clicking a farm opens the point panel for its pt_ id.
 import { useRef, useState } from 'react';
 import Icon from '../Icons';
+import { t } from '../../i18n';
 import { groupColor, groupLetter, landNote, type Catalog, type CatalogItem } from './catalog';
 import './catalog.css';
 
@@ -16,11 +17,11 @@ export function CatalogGroup({ catalog, group, setGroup, onPick }: { catalog: Ca
   return (
     <section className="cg" ref={ref} data-testid="farm-catalog">
       <button className={`more-detail cg-toggle ${open ? 'on' : ''}`} onClick={toggle} aria-expanded={open}>
-        <span><b>Farm catalog</b><small>{catalog.total} more farms across California and BC, by crop</small></span><Icon name="chevdown" size={20} />
+        <span><b>{t('week.catTitle')}</b><small>{t('week.catSub', { n: catalog.total })}</small></span><Icon name="chevdown" size={20} />
       </button>
       <div className={`cg-more ${open ? 'on' : ''}`}>
         <div className="cg-in">
-          <div className="chips cg-chips" role="group" aria-label="Crop group">
+          <div className="chips cg-chips" role="group" aria-label={t('week.cropGroup')}>
             {groups.map(([g, v]) => (
               <button key={g} className="chip" aria-pressed={group === g} onClick={() => { setGroup(group === g ? null : g); setN(PAGE); }}>
                 <Icon name="check" size={16} /><i className="cg-dot" style={{ background: groupColor(g) }} aria-hidden="true">{groupLetter(g)}</i>{v.label} <span className="n">{v.count}</span>
@@ -33,14 +34,14 @@ export function CatalogGroup({ catalog, group, setGroup, onPick }: { catalog: Ca
                 <button className="pk-row cg-row" onClick={() => onPick(it)} data-testid={`cat-${it.id}`}>
                   <i className="cg-dot" style={{ background: groupColor(it.crop_group) }} aria-hidden="true">{groupLetter(it.crop_group)}</i>
                   <span className="pk-body"><b>{it.name}</b>
-                    <span className="pk-facts">{it.crop_group_label}{it.acres ? ` · ${Math.round(it.acres)} acres` : ''} · {it.area}</span>
+                    <span className="pk-facts">{it.crop_group_label}{it.acres ? ` · ${t('week.acresN', { n: Math.round(it.acres) })}` : ''} · {it.area}</span>
                     {landNote(it.land_status) && <span className="pk-note">{landNote(it.land_status)}</span>}</span>
                 </button>
               </li>
             ))}
           </ul>
-          {rows.length > n && <button className="btn btn-outline btn-sm cg-more-btn" onClick={() => setN(n + PAGE)}>Show {Math.min(PAGE, rows.length - n)} more</button>}
-          <p className="nt-fine cg-note">Each farm is a point from the public crop map; open it for live numbers.</p>
+          {rows.length > n && <button className="btn btn-outline btn-sm cg-more-btn" onClick={() => setN(n + PAGE)}>{t('week.showMore', { n: Math.min(PAGE, rows.length - n) })}</button>}
+          <p className="nt-fine cg-note">{t('week.catNote')}</p>
         </div>
       </div>
     </section>

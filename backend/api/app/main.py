@@ -72,8 +72,10 @@ except Exception:  # noqa: BLE001
 
 app = FastAPI(title="Field Shift API", version="0.1.0")
 app.add_middleware(GZipMiddleware, minimum_size=2048)  # large GeoJSON (rain forecast, grids) compresses ~5x
+from .i18n_es import SpanishMiddleware  # noqa: E402  ?lang=es: translates user-facing text of any /api JSON response (the one place)
+app.add_middleware(SpanishMiddleware)   # added before CORS so CORS stays outermost
 app.add_middleware(CORSMiddleware, allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
-                   allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Data-Source"])
+                   allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Data-Source", "X-Lang-Fallback", "Content-Language"])
 app.include_router(chat_router)
 app.include_router(lands_router)
 app.include_router(rain_router)

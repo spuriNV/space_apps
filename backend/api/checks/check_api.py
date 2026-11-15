@@ -747,6 +747,38 @@ for _id in _tw_ids:
 _r = client.get("/api/locations/car_colusa_rice/this_week")
 _tw(_r.headers.get("X-Cache") == "hit", "second call is served from the 3 h cache")
 _tw(client.get("/api/locations/nope_field/this_week").status_code == 404, "unknown id -> 404")
+# ?lang=es (app/i18n_es.py): same shape, same ids and numbers; only prose differs. No DEEPSEEK_API_KEY -> English + X-Lang-Fallback.
+_UNTOUCHED_KEYS = {"id", "url", "source_url", "unit", "units", "method", "type", "date", "crop_id", "location_id", "strategy_id", "status", "weekday"}
+
+
+def _same_but_prose(a, b, key=None, path="$"):
+    """Empty list when b (Spanish) equals a (English) in every key, list length, non-string leaf and every string under an id/url/unit-type key."""
+    if isinstance(a, dict):
+        if not isinstance(b, dict) or list(a) != list(b):
+            return [path + " keys differ"]
+        return [m for k in a for m in _same_but_prose(a[k], b[k], k, f"{path}.{k}")]
+    if isinstance(a, list):
+        if not isinstance(b, list) or len(a) != len(b):
+            return [path + " list length differs"]
+        return [m for i, (x, y) in enumerate(zip(a, b)) for m in _same_but_prose(x, y, key, f"{path}[{i}]")]
+    if isinstance(a, str):
+        if not isinstance(b, str):
+            return [path + " type differs"]
+        return [path + f" {a!r} != {b!r}"] if (key in _UNTOUCHED_KEYS or (key or "").endswith(("_id", "_url")) or not b.strip()) and a != b else []
+    return [] if a == b and type(a) is type(b) else [path + f" {a!r} != {b!r}"]
+
+
+_en = client.get("/api/locations/car_colusa_rice/this_week")
+_es = client.get("/api/locations/car_colusa_rice/this_week?lang=es")
+if _tw(_es.status_code == 200, "lang=es: 200"):
+    _fb = _es.headers.get("X-Lang-Fallback")
+    _tw(_fb in (None, "en", "partial"), f"lang=es: X-Lang-Fallback {_fb!r} ({'Spanish' if not _fb else 'English fallback'})")
+    _e = _errs(_TW_V, _es.json())
+    _tw(not _e, f"lang=es: schema-valid like the plain call {_e}")
+    _diff = _same_but_prose({k: v for k, v in _en.json().items()}, _es.json())
+    _tw(not _diff, f"lang=es: keys, numbers, ids, urls and units identical to English {_diff[:3]}")
+    _tw(_fb == "en" or _es.json()["irrigation"]["verdict"] != _en.json()["irrigation"]["verdict"], "lang=es: verdict is translated (or fell back to English)")
+_tw(client.get("/api/locations/car_colusa_rice/this_week?lang=en").json() == client.get("/api/locations/car_colusa_rice/this_week").json(), "lang=en: unchanged")
 _r = client.get("/api/reach")
 _e = _errs(_RC_V, _r.json()) if _r.status_code == 200 else [_r.text[:100]]
 _tw(_r.status_code == 200 and not _e, f"reach: 200, schema-valid {_e}")

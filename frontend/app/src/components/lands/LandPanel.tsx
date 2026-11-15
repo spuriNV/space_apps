@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import * as api from '../../api';
 import type { Location } from '../../types';
 import Icon from '../Icons';
+import { t, tx } from '../../i18n';
 import { NationTools } from '../week/NationTools';
 import { ThisWeek } from '../week/ThisWeek';
 import { cropName, soilFacts, known } from '../ui/shared';
@@ -34,7 +35,7 @@ export function LandPanel({ land, presets, onClose, onOpenSpot, onOpenField, onO
     api.analyzeSpot(lat, lon).then((r) => {
       if (!ok) return;
       if (r.kind === 'ok') setSpot({ state: 'ok', loc: r.loc });
-      else if (r.kind === 'preset') { const pre = presets.find((l) => l.id === r.id); setSpot(pre ? { state: 'ok', loc: pre } : { state: 'error', message: 'This land is inside one of the prepared fields.' }); }
+      else if (r.kind === 'preset') { const pre = presets.find((l) => l.id === r.id); setSpot(pre ? { state: 'ok', loc: pre } : { state: 'error', message: t('lp.inPrepared') }); }
       else setSpot({ state: 'error', message: r.message });
     });
     return () => { ok = false; };
@@ -45,21 +46,21 @@ export function LandPanel({ land, presets, onClose, onOpenSpot, onOpenField, onO
   return (
     <aside className="lpanel" aria-label={`${p.name}, ${kindLabel(p.kind).toLowerCase()}`} data-testid="land-panel">
       <div className="lp-grab" aria-hidden="true"><i /></div>
-      <button className="icon-btn lp-close" onClick={onClose} aria-label="Close" title="Close" data-testid="land-close"><Icon name="close" size={20} /></button>
+      <button className="icon-btn lp-close" onClick={onClose} aria-label={t('common.close')} title={t('common.close')} data-testid="land-close"><Icon name="close" size={20} /></button>
       <div className="lp-scroll" key={p.id}>
         <header className="lp-head">
-          <p className="lp-eyebrow">Information for First Nations and tribal farmers and land managers</p>
+          <p className="lp-eyebrow">{t('lp.eyebrow')}</p>
           <span className={`lp-pill ${p.kind}`} data-testid="land-pill"><i />{kindLabel(p.kind)}</span>
           <h1 data-testid="land-name">{p.name}</h1>
-          <p className="lp-nation"><b>{p.nation}</b>{bc ? ` · British Columbia${p.band_number ? ` · band ${p.band_number}` : ''}` : ' · California'}</p>
+          <p className="lp-nation"><b>{p.nation}</b>{bc ? (p.band_number ? t('lp.bcBand', { n: p.band_number }) : t('lp.bc')) : t('lp.ca')}</p>
           <p className="lp-area">{areaText(p.area_ha)}</p>
         </header>
 
         <section className="lp-sec" aria-labelledby="lp-has">
-          <h2 id="lp-has" className="fp-h">What this land has</h2>
-          <p className="lp-note">From public satellite, soil and weather data at the middle of this land. It describes the ground here, not how anyone uses it.</p>
-          {spot.state === 'loading' && <div className="wk-skel" aria-label="Loading">{[88, 70, 80, 60].map((w, i) => <span key={i} className="skel" style={{ width: `${w}%` }} />)}</div>}
-          {spot.state === 'error' && <p className="gap-line">{spot.message} <button className="btn btn-outline btn-sm" onClick={() => setTries(tries + 1)}>Try again</button></p>}
+          <h2 id="lp-has" className="fp-h">{t('lp.has')}</h2>
+          <p className="lp-note">{t('lp.hasNote')}</p>
+          {spot.state === 'loading' && <div className="wk-skel" aria-label={t('lp.loading')}>{[88, 70, 80, 60].map((w, i) => <span key={i} className="skel" style={{ width: `${w}%` }} />)}</div>}
+          {spot.state === 'error' && <p className="gap-line">{spot.message} <button className="btn btn-outline btn-sm" onClick={() => setTries(tries + 1)}>{t('lp.retry')}</button></p>}
           {spot.state === 'ok' && <Has loc={spot.loc} />}
         </section>
 
@@ -67,23 +68,23 @@ export function LandPanel({ land, presets, onClose, onOpenSpot, onOpenField, onO
 
         {FARMS[p.id] && onOpenFarm && (
           <section className="lp-sec" aria-labelledby="lp-farm">
-            <h2 id="lp-farm" className="fp-h">Farm on this land</h2>
+            <h2 id="lp-farm" className="fp-h">{t('lp.farm')}</h2>
             <ul className="lp-near" data-testid="land-farm">
-              <li><button onClick={() => onOpenFarm(FARMS[p.id].id)}><span><b>{FARMS[p.id].name}</b><small>{FARMS[p.id].note}</small></span></button></li>
+              <li><button onClick={() => onOpenFarm(FARMS[p.id].id)}><span><b>{tx(FARMS[p.id].name)}</b><small>{tx(FARMS[p.id].note)}</small></span></button></li>
             </ul>
           </section>
         )}
 
         <section className="lp-sec" aria-labelledby="lp-near">
-          <h2 id="lp-near" className="fp-h">Nearby fields</h2>
+          <h2 id="lp-near" className="fp-h">{t('lp.near')}</h2>
           {!detail && <div className="wk-skel"><span className="skel" style={{ width: '80%' }} /></div>}
-          {detail && !detail.nearby.length && <p className="lp-note">No prepared fields or catalogued farms within {detail.nearby_radius_km} km.</p>}
+          {detail && !detail.nearby.length && <p className="lp-note">{t('lp.noNear', { n: detail.nearby_radius_km })}</p>}
           {detail && detail.nearby.length > 0 && (
             <ul className="lp-near" data-testid="land-nearby">
               {detail.nearby.map((n) => (
                 <li key={n.id}>
                   <button onClick={() => (n.kind === 'prepared field' ? onOpenField(n.id) : onOpenSpot(n.lat, n.lon))}>
-                    <span><b>{n.name}</b><small>{n.kind === 'prepared field' ? 'Prepared field' : [n.crop, n.acres ? `${Math.round(n.acres)} acres` : null].filter(Boolean).join(' · ') || 'Farm'}</small></span>
+                    <span><b>{n.name}</b><small>{n.kind === 'prepared field' ? t('lp.prepared') : [n.crop, n.acres ? t('lp.acres', { n: Math.round(n.acres) }) : null].filter(Boolean).join(' · ') || t('lp.farmw')}</small></span>
                     <em>{(n.distance_km * 0.621).toFixed(1)} mi</em>
                   </button>
                 </li>
@@ -93,10 +94,10 @@ export function LandPanel({ land, presets, onClose, onOpenSpot, onOpenField, onO
         </section>
 
         {detail?.website && (
-          <p className="lp-web"><a href={detail.website} target="_blank" rel="noreferrer" data-testid="land-website"><Icon name="link" size={16} />{detail.nation} public website</a></p>
+          <p className="lp-web"><a href={detail.website} target="_blank" rel="noreferrer" data-testid="land-website"><Icon name="link" size={16} />{t('lp.web', { nation: detail.nation })}</a></p>
         )}
-        <p className="lp-fine" data-testid="land-caveat">{detail?.caveat ?? 'Reserve, reservation and trust boundaries are legal or statistical lines, not traditional territory and not where a Nation’s rights apply.'} Nothing here implies that any Nation or tribe uses, endorses or partners with CropLytics.
-          {detail?.source && <> Boundary source: <a href={detail.source.url} target="_blank" rel="noreferrer">{detail.source.title.split(',')[0]}</a>.</>}</p>
+        <p className="lp-fine" data-testid="land-caveat">{detail?.caveat ?? t('lp.caveat')} {t('lp.nothing')}
+          {detail?.source && <> {t('lp.source')} <a href={detail.source.url} target="_blank" rel="noreferrer">{detail.source.title.split(',')[0]}</a>.</>}</p>
       </div>
     </aside>
   );
@@ -109,14 +110,14 @@ function Has({ loc }: { loc: Location }) {
   const crops = years.slice(0, 6).map((y) => ({ y, c: cropName(loc.crop_history[y]) }));
   const soil = soilFacts(loc.soil);
   const w = loc.water;
-  const waterBits = [w?.source === 'surface' ? 'Surface water' : w?.source === 'groundwater' || w?.source === 'wells' ? 'Wells' : null, known(w?.district) ? w.district : null, known(w?.sgma_subbasin) ? `Basin: ${w.sgma_subbasin}` : null, loc.water_context?.watershed ? `Watershed: ${loc.water_context.watershed}` : null].filter(Boolean);
+  const waterBits = [w?.source === 'surface' ? t('lp.surface') : w?.source === 'groundwater' || w?.source === 'wells' ? t('lp.wells') : null, known(w?.district) ? w.district : null, known(w?.sgma_subbasin) ? t('lp.basin', { v: String(w.sgma_subbasin) }) : null, loc.water_context?.watershed ? t('lp.watershed', { v: String(loc.water_context.watershed) }) : null].filter(Boolean);
   const farm = sp?.cropland !== false && crops.length > 0;
   return (
     <div className="lp-has" data-testid="land-has">
       <dl>
-        <div><dt>Crop history</dt><dd>{farm ? crops.map((c) => <span key={c.y} className="lp-crop"><b>{c.y}</b> {c.c}</span>) : 'Satellite crop maps show little or no cropping here.'}</dd></div>
-        <div><dt>Soil</dt><dd>{[soil.texture ? `${soil.texture}.` : null, soil.holds, soil.drains, soil.salt].filter(Boolean).join(' ') || 'No soil map for this spot.'}</dd></div>
-        <div><dt>Water</dt><dd>{waterBits.length ? waterBits.join(' · ') : 'No water district or basin found for this spot.'}</dd></div>
+        <div><dt>{t('lp.crops')}</dt><dd>{farm ? crops.map((c) => <span key={c.y} className="lp-crop"><b>{c.y}</b> {c.c}</span>) : t('lp.noCrops')}</dd></div>
+        <div><dt>{t('lp.soil')}</dt><dd>{[soil.texture ? `${soil.texture}.` : null, soil.holds, soil.drains, soil.salt].filter(Boolean).join(' ') || t('lp.noSoil')}</dd></div>
+        <div><dt>{t('lp.water')}</dt><dd>{waterBits.length ? waterBits.join(' · ') : t('lp.noWater')}</dd></div>
       </dl>
       <ThisWeek loc={loc} compact />
     </div>

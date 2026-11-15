@@ -154,6 +154,7 @@ class ChatRequest(BaseModel):
     field_id: str | None = Field(None, max_length=120)
     screen: str | None = Field(None, max_length=40)   # the tab or panel open: now, season, year, compare, brief, fields
     date: str | None = Field(None, max_length=40)     # the Viewing date label, e.g. "Today, mid Nov 2026"
+    lang: str | None = Field(None, pattern="^(en|es)$")  # "es": answer in Spanish
     water_limit: float | None = Field(None, ge=0, le=20)  # acre-feet per acre set on screen (example unless changed)
 
 
@@ -179,7 +180,7 @@ async def chat(body: ChatRequest, req: Request):
     context = (APP_GUIDE + "\nWhat the person has open now: " + json.dumps(screen) +
                "\n\nFacts for the field on screen (JSON; null or missing means not available):\n" +
                json.dumps(facts, ensure_ascii=False, separators=(",", ":")))
-    msgs: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM + "\n\n" + context}]
+    msgs: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM + ("\n\nAnswer in Spanish (Latin American, plain spoken, short sentences), with the same rules as above. Keep numbers, units and place names as given." if body.lang == "es" else "") + "\n\n" + context}]
     for t in body.history[-MAX_HISTORY:]:
         msgs.append({"role": t.role, "content": t.content[:MAX_TURN]})
     msgs.append({"role": "user", "content": q})

@@ -4,8 +4,9 @@ import { useRef } from 'react';
 import type { Calendar, CoverClass, FieldEvent } from '../../types';
 import { CLASS_COLOR, MONTHS, T_MAX, TODAY_T, dateToT, dekadOf, lastDataT, tLabel, tOf, yearOf } from '../../lib';
 import Icon from '../Icons';
+import { t } from '../../i18n';
 
-const LABEL: Record<CoverClass, string> = { b: 'Bare', p: 'Thin', c: 'Crop', w: 'Water', u: 'No view' };
+const LABEL: Record<CoverClass, string> = { b: t('ui.tl.bare'), p: t('ui.tl.thin'), c: t('ui.tl.crop'), w: t('ui.tl.water'), u: t('ui.tl.noview') };
 
 export type SimMode = {
   year: number;
@@ -52,10 +53,10 @@ export function FieldTimeline(p: {
     <div className={`field-tl ${p.sim ? 'sim-on' : ''}`} data-testid="field-timeline">
       {p.sim && (
         <div className="sim-banner" data-testid="sim-banner">
-          <b>Sim: {p.sim.name}</b>
+          <b>{t('ui.tl.sim', { name: p.sim.name })}</b>
           <span>{p.sim.label} · {tLabel(p.t)}</span>
           <span className={`sim-water ${over ? 'over' : ''}`}>
-            ~{simCum!.toFixed(1)} / {p.sim.limitAf.toFixed(1)} acre-ft/acre
+            ~{simCum!.toFixed(1)} / {p.sim.limitAf.toFixed(1)} {t('ui.u.afac')}
           </span>
           <div className="sim-cover" aria-hidden>
             {p.sim.cover.split('').map((c, i) => (
@@ -68,12 +69,12 @@ export function FieldTimeline(p: {
         <button type="button" className="ftl-play" onClick={() => {
           if (!p.playing && p.t >= tMax) p.setT(tMin);
           p.setPlaying(!p.playing);
-        }} title={p.playing ? 'Pause' : 'Play through the season'} data-testid="tl-play">
+        }} title={p.playing ? t('ui.tl.pause') : t('ui.tl.play')} data-testid="tl-play">
           <Icon name={p.playing ? 'pause' : 'play'} size={18} />
         </button>
         <div className="ftl-date">
           <b>{tLabel(p.t)}</b>
-          <span>{LABEL[(rule[d] as CoverClass) || 'u']}{p.t === TODAY_T ? ' · today' : ''}</span>
+          <span>{LABEL[(rule[d] as CoverClass) || 'u']}{p.t === TODAY_T ? ` · ${t('ui.tl.today_dot')}` : ''}</span>
         </div>
         <div
           className="ftl-track"
@@ -84,7 +85,7 @@ export function FieldTimeline(p: {
           aria-valuemin={tMin}
           aria-valuemax={tMax}
           aria-valuenow={p.t}
-          aria-label="Field date"
+          aria-label={t('ui.tl.fielddate')}
           data-testid="tl-track"
         >
           <div className="ftl-strip">
@@ -103,7 +104,7 @@ export function FieldTimeline(p: {
                 type="button"
                 className="ftl-ev"
                 style={{ left: `${((tt - tMin) / span) * 100}%` }}
-                title={`${ev.title} — jump here`}
+                title={t('ui.tl.jump', { title: ev.title })}
                 onClick={(e) => { e.stopPropagation(); p.setT(tt); p.setPlaying(false); }}
               />
             );
@@ -111,7 +112,7 @@ export function FieldTimeline(p: {
           <span className="ftl-thumb" style={{ left: `${pct}%` }} />
         </div>
         {p.t !== TODAY_T && !p.sim && (
-          <button type="button" className="ftl-today" onClick={() => { p.setT(TODAY_T); p.setPlaying(false); }}>Today</button>
+          <button type="button" className="ftl-today" onClick={() => { p.setT(TODAY_T); p.setPlaying(false); }}>{t('ui.tl.today')}</button>
         )}
       </div>
       <div className="ftl-years">

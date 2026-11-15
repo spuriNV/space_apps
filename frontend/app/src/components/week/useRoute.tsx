@@ -1,4 +1,4 @@
-import { withLang } from '../../i18n';
+import { withLang, t } from '../../i18n';
 // Small fetch hook shared by "This week" and "Nation tools": one route, friendly states.
 // 404 = this place has no such data, 429 = busy (Retry-After, one automatic retry when it is short), anything else = failed.
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
@@ -61,8 +61,8 @@ export function useRoute<T>(path: string | null, ms = 30000): RouteState<T> & { 
 
 /** The quiet "busy" / "failed" line with a retry button. */
 export function RouteProblem({ st, what, reload }: { st: RouteState<unknown>; what: string; reload: () => void }): ReactNode {
-  if (st.kind === 'busy') return <div className="wk-note" role="status"><span>Busy right now. {st.seconds ? `Try again in about ${st.seconds} seconds.` : 'Try again in a moment.'}</span><button className="btn btn-outline btn-sm" onClick={reload}>Try again</button></div>;
-  if (st.kind === 'error') return <div className="wk-note" role="status"><span>{what} is not available right now.</span><button className="btn btn-outline btn-sm" onClick={reload}>Try again</button></div>;
+  if (st.kind === 'busy') return <div className="wk-note" role="status"><span>{t('week.busy')} {st.seconds ? t('week.busySecs', { n: st.seconds }) : t('week.busyMoment')}</span><button className="btn btn-outline btn-sm" onClick={reload}>{t('week.tryAgain')}</button></div>;
+  if (st.kind === 'error') return <div className="wk-note" role="status"><span>{t('week.unavailable', { what })}</span><button className="btn btn-outline btn-sm" onClick={reload}>{t('week.tryAgain')}</button></div>;
   return null;
 }
 

@@ -1,23 +1,34 @@
-import { withLang, lang } from './i18n';
+import { withLang, lang, t, tx } from './i18n';
 // Single data-access seam (CONTRACT.md).
 // Everything real comes from the CropLytics API at VITE_API_BASE: http://localhost:8000/api in dev, same-origin /api in a
 // production build (the backend serves the built app and the API from one origin). Anything the API does not answer falls
 // back to the bundled examples in src/mock, and the UI says so in the source line.
 import type { LandDetail, LandFeature } from './components/lands/lands';
 import type { BCInfo, Calendar, CalendarYear, CellGrid, CoverClass, DataGap, Dataset, FirstNations, GridLayer, Location, NewsItem, Regional, RotationStrategy, SourcedNumber, Source, ScoreKey } from './types';
-import mockLocations from './mock/locations.json';
+import _mockLocations from './mock/locations.json';
 import mockCells from './mock/cells.json';
-import mockCalendar from './mock/calendar.json';
-import regional from './mock/regional.json';
-import mockStrategies from './mock/strategies.json';
-import mockNews from './mock/news.json';
-import datasets from './mock/datasets.json';
-import bc from './mock/bc.json';
+import _mockCalendar from './mock/calendar.json';
+import _regional from './mock/regional.json';
+import _mockStrategies from './mock/strategies.json';
+import _mockNews from './mock/news.json';
+import _datasets from './mock/datasets.json';
+import _bc from './mock/bc.json';
 import fieldExtra from './mock/field_extra.json';
 import { YEARS, dateToT } from './lib';
 import type { Daily } from './season';
-import outlookExample from './mock/outlook.example.json';
+import _outlookExample from './mock/outlook.example.json';
 import { nasaList, type NasaDataset, type NasaStatus } from './nasa';
+
+// Bundled English data text -> Spanish (i18n/parts/data.tx.json); codes, ids and enum-like fields are left alone.
+const TX_SKIP = new Set(['id', 'location_id', 'crop_id', 'role', 'type', 'kind', 'method', 'unit', 'source_ids', 'author', 'model', 'severity', 'classes', 'group', 'in_stack', 'url', 'date', 'category', 'worst_category', 'season', 'target', 'rule', 'ml', 'cdl', 'crop_history']);
+function txd<T>(v: T, key?: string): T {
+  if (lang !== 'es') return v;
+  if (typeof v === 'string') return (key && TX_SKIP.has(key) ? v : tx(v)) as unknown as T;
+  if (Array.isArray(v)) return v.map((x) => txd(x, key)) as unknown as T;
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, TX_SKIP.has(k) && typeof x === 'object' ? x : txd(x, k)])) as unknown as T;
+  return v;
+}
+const mockLocations = txd(_mockLocations), mockCalendar = txd(_mockCalendar), regional = txd(_regional), mockStrategies = txd(_mockStrategies), mockNews = txd(_mockNews), datasets = txd(_datasets), bc = txd(_bc), outlookExample = txd(_outlookExample);
 
 export const API_BASE = ((import.meta.env.VITE_API_BASE as string | undefined) ?? (import.meta.env.DEV ? 'http://localhost:8000/api' : '/api')).replace(/\/+$/, '');
 const BASE = import.meta.env.BASE_URL ?? '/';
@@ -32,7 +43,7 @@ export const EXAMPLE_LIMIT: Record<string, number> = { car_colusa_rice: 5.0, caf
 export type Origin = 'api' | 'estimate' | 'file' | 'mock';
 export interface Prov { part: string; label: string; origin: Origin; detail: string }
 export type ProvMap = Record<string, Prov>;
-export const P = (part: string, label: string, origin: Origin, detail: string): Prov => ({ part, label, origin, detail });
+export const P = (part: string, label: string, origin: Origin, detail: string): Prov => ({ part, label: tx(label), origin, detail: tx(detail) });
 export const isMock = (p?: Prov) => !p || p.origin === 'mock';
 /** 'estimate' when the API filled a region gap with an estimate (`_source: "estimate"`), else 'api'. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -120,7 +131,7 @@ export async function getLand(id: string): Promise<LandDetail | null> {
 }
 
 // ---------- locations: bundled card text + the API's outline, area, soil, crop history ----------
-const KINGS = { short_name: 'Kings County forage', name: 'Kings County forage field for dairy (example)' };
+const KINGS = { short_name: tx('Kings County forage'), name: tx('Kings County forage field for dairy (example)') };
 const COUNTY: Record<string, string> = { '011': 'Colusa', '031': 'Kings' };
 const EXTRA = (fieldExtra as unknown as { fields: ById<{ rma?: Location['rma'] }> }).fields;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -148,7 +159,7 @@ export function realLocation(base: Location, apiLoc?: any): { loc: Location; pro
   if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', 'api', 'NASA JPL elevation, 30 m');
   // water district / GSA: use the API's only when it is looked up or verified (status from lookup / verified, not text markers); a looked-up field may have no district
   const w = a.water;
-  if (w && (w.lookup || (w.district && w.verified === true)) && w.verified !== false) { loc = { ...loc, water: { ...loc.water, ...w, allocation_input: loc.water.allocation_input }, water_real: true }; prov.water = P('water', 'Water source and district', 'api', String(w.district ?? w.sgma_subbasin ?? 'looked up')); }
+  if (w && (w.lookup || (w.district && w.verified === true)) && w.verified !== false) { loc = { ...loc, water: { ...loc.water, ...w, allocation_input: loc.water.allocation_input }, water_real: true }; prov.water = P('water', 'Water source and district', 'api', String(w.district ?? w.sgma_subbasin ?? tx('looked up'))); }
   if (loc.region === 'bc') {
     // BC: a ParcelMap BC parcel clipped to AAFC forage pixels; AAFC crop inventory; AAFC Soil Landscapes of Canada; no California water district
     prov.outline = P('outline', 'Field outline', 'api', 'ParcelMap BC parcel inside the farmland reserve, clipped to AAFC forage pixels');
@@ -159,7 +170,7 @@ export function realLocation(base: Location, apiLoc?: any): { loc: Location; pro
     loc = { ...loc, water: { ...loc.water, source: a.water?.source ?? null } }; // not the forage example's wells
     return { loc, prov };
   }
-  prov.outline = P('outline', 'Field outline', 'api', `DWR / Land IQ 2023${loc.dwr_id ? ` field ${loc.dwr_id}` : ''}`);
+  prov.outline = P('outline', 'Field outline', 'api', loc.dwr_id ? t('api.dwrField', { id: loc.dwr_id }) : t('api.dwrOnly'));
   if (a.soil?.muname) prov.soil = P('soil', 'Soil (USDA soil survey)', 'api', a.soil.muname);
   if (a.crop_history) prov.crop_history = P('crop_history', 'Crop on record (USDA Cropland Data Layer)', 'api', 'USDA CDL 2008–2025');
   return { loc, prov };
@@ -266,11 +277,11 @@ export function fieldStackSeed(loc: Location, live: boolean, caPresets?: Locatio
   const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? borrow : mid] ?? (mockCalendar as unknown as ById<Calendar>)[mid]);
   const reg0 = (regional as unknown as ById<Regional>)[lite ? borrow : mid];
   const prov: ProvMap = {
-    calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', lite ? `illustrative · nearest prepared field (${borrow})` : 'illustrative'),
-    grid: P('grid', '100 ft squares in the 3D view', 'mock', lite ? `illustrative · shifted from ${borrow}` : 'illustrative'),
+    calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', lite ? t('api.illusNearest', { id: borrow }) : 'illustrative'),
+    grid: P('grid', '100 ft squares in the 3D view', 'mock', lite ? t('api.illusShifted', { id: borrow }) : 'illustrative'),
     strategies: P('strategies', 'Rotations, water need and scores', 'mock', 'still loading'),
     news: P('news', 'News headlines', 'mock', 'project brief examples'),
-    regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', lite ? `example numbers · nearest prepared field (${borrow})` : 'no real series served yet'),
+    regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', lite ? t('api.examplesNearest', { id: borrow }) : 'no real series served yet'),
     ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
   };
   // Squares sit on this outline immediately (template grid shifted onto the field). /grid replaces them.
@@ -304,7 +315,7 @@ function square200(lat: number, lon: number) {
 export function spotPlaceholder(lat: number, lon: number): Location {
   const id = spotId(lat, lon);
   const base = baseFor({ id });
-  return { ...base, id, name: 'Tapped spot', short_name: 'Tapped spot', farmer_name: 'Tapped spot', county: undefined, county_name: null, family: 'other', region: 'ca', dwr_id: undefined,
+  return { ...base, id, name: tx('Tapped spot'), short_name: tx('Tapped spot'), farmer_name: tx('Tapped spot'), county: undefined, county_name: null, family: 'other', region: 'ca', dwr_id: undefined,
     geometry: square200(lat, lon), centroid: { lat, lon }, area_ha: { value: 4, low: null, high: null, unit: 'ha', method: 'assumed' }, crop_history: {}, events: [],
     water: { ...base.water, allocation_input: { unit: 'acre-ft/acre', value: 3.0 } }, spot: { state: 'loading', lat, lon } };
 }
@@ -315,14 +326,14 @@ export async function analyzeSpot(lat: number, lon: number): Promise<SpotResult>
   const h = setTimeout(() => ctl.abort(), 55000);
   try {
     const r = await fetch(`${API_BASE}${withLang(`/analyze?lat=${r4(lat).toFixed(4)}&lon=${r4(lon).toFixed(4)}`)}`, { signal: ctl.signal });
-    if (r.status === 429) { const s = +(r.headers.get('Retry-After') ?? '') || undefined; return { kind: 'error', message: 'Busy, try again in a moment.', retryAfter: s }; }
-    if (r.status === 422) return { kind: 'error', message: 'That spot cannot be analysed (the coordinates are out of range).' };
-    if (r.status === 504) return { kind: 'error', message: 'No answer after 45 seconds. Try again.' };
-    if (!r.ok) return { kind: 'error', message: 'The analysis did not work this time. Try again.' };
+    if (r.status === 429) { const s = +(r.headers.get('Retry-After') ?? '') || undefined; return { kind: 'error', message: tx('Busy, try again in a moment.'), retryAfter: s }; }
+    if (r.status === 422) return { kind: 'error', message: tx('That spot cannot be analysed (the coordinates are out of range).') };
+    if (r.status === 504) return { kind: 'error', message: tx('No answer after 45 seconds. Try again.') };
+    if (!r.ok) return { kind: 'error', message: tx('The analysis did not work this time. Try again.') };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const b: any = await r.json();
     if (b?.analysis?.matches_preset) return { kind: 'preset', id: b.analysis.matches_preset };
-    if (!b?.geometry || !b?.id) return { kind: 'error', message: 'The analysis came back empty. Try again.' };
+    if (!b?.geometry || !b?.id) return { kind: 'error', message: tx('The analysis came back empty. Try again.') };
     const { loc, prov } = realLocation(baseFor(b), b);
     const sec = (b.sections ?? {}) as Record<string, { status: string; reason?: string; fallback?: string; cropland?: boolean }>;
     const fallbackSquare = sec.boundary?.fallback === 'square_200m';
@@ -330,7 +341,7 @@ export async function analyzeSpot(lat: number, lon: number): Promise<SpotResult>
     const spot: Location['spot'] = { state: 'ready', lat: b.analysis?.point?.lat ?? lat, lon: b.analysis?.point?.lon ?? lon, sections: b.sections, fallbackSquare, cropland: sec.family?.cropland !== false };
     return { kind: 'ok', loc: { ...loc, events: [], spot, county_name: b.county_name ?? null, county: b.county_name ?? undefined }, prov };
   } catch {
-    return { kind: 'error', message: ctl.signal.aborted ? 'No answer after 45 seconds. Try again.' : 'Could not reach the CropLytics server, or it is busy. Try again in a moment.' };
+    return { kind: 'error', message: ctl.signal.aborted ? tx('No answer after 45 seconds. Try again.') : tx('Could not reach the CropLytics server, or it is busy. Try again in a moment.') };
   } finally { clearTimeout(h); }
 }
 // ---------- satellite calendar (backend/field/out/<id>/calendar.json) -> 10-day steps ----------
@@ -339,7 +350,7 @@ const doy = (y: number, m: number, d: number) => Math.round((Date.UTC(y, m - 1, 
 const dekadDate = (y: number, k: number) => [y, Math.floor(k / 3) + 1, [5, 15, 25][k % 3]] as const;
 interface RealCalYear { year: number; segments: { start_doy: number; end_doy: number; class: string }[]; markers: { date: string; type: string }[]; observations: { date: string; ndvi: number | null; class: string }[] }
 /** A year with no processed imagery yet (2026): every 10-day step is "no reading". Drawn hatched, never guessed. */
-const blankYear = (year: number, cdl = 'Not published yet'): CalendarYear => ({ year, cdl, rule: 'u'.repeat(36), ml: 'u'.repeat(36), ndvi: Array(36).fill(0), et_mm_day: Array(36).fill(0), greenup_dekad: null, senescence_dekad: null, risks: [] });
+const blankYear = (year: number, cdl = tx('Not published yet')): CalendarYear => ({ year, cdl, rule: 'u'.repeat(36), ml: 'u'.repeat(36), ndvi: Array(36).fill(0), et_mm_day: Array(36).fill(0), greenup_dekad: null, senescence_dekad: null, risks: [] });
 /** Pad a calendar to YEARS (the bundled mock stops at 2025). */
 const padCalendar = (c: Calendar | undefined): Calendar => ({ ...(c as Calendar), years: YEARS.map((y, i) => (c?.years ?? []).find((x) => x.year === y) ?? (c?.years ?? [])[i] ?? blankYear(y)) });
 /** One year of a real calendar (rule or ML) as 36 ten-day classes. */
@@ -352,8 +363,8 @@ function classString(ry: RealCalYear | undefined, year: number) {
 function convertCalendar(real: { years: RealCalYear[] }, mock: Calendar, hist: Record<string, string>, ml: { years: RealCalYear[] } | null): Calendar {
   const years: CalendarYear[] = YEARS.map((year, yi) => {
     const ry = (real?.years ?? []).find((y) => y.year === year);
-    const my = mock?.years?.[yi] ?? blankYear(year, hist[year] ?? 'Not published yet');
-    if (!ry) return year > 2025 ? blankYear(year, hist[year] ?? 'Not published yet') : my;
+    const my = mock?.years?.[yi] ?? blankYear(year, hist[year] ?? tx('Not published yet'));
+    if (!ry) return year > 2025 ? blankYear(year, hist[year] ?? tx('Not published yet')) : my;
     const obs = ry.observations.filter((o) => o.ndvi != null).map((o) => ({ t: Date.parse(o.date), v: o.ndvi as number }));
     const rule = classString(ry, year);
     const ndvi: number[] = [];
@@ -419,10 +430,10 @@ function normStrategy(s: any): RotationStrategy {
     const note = typeof raw?.note === 'string' && raw.note
       ? raw.note
       : typeof irrNote === 'string' && /replay/i.test(irrNote)
-        ? (y === '2022' ? 'Dry year replay: less rain, more heat and pumping.' : 'Wet year replay: more winter rain, less summer irrigation.')
+        ? tx(y === '2022' ? 'Dry year replay: less rain, more heat and pumping.' : 'Wet year replay: more winter rain, less summer irrigation.')
         : raw?.irrigation_need_mm
-          ? `Replay of ${y} weather at this field (NASA POWER).`
-          : 'No replay for this year';
+          ? t('api.replayOf', { y })
+          : tx('No replay for this year');
     return {
       irrigation_need_mm: raw?.irrigation_need_mm ?? s.water.irrigation_need_mm,
       exposed_rain_days: raw?.exposed_rain_days ?? s.exposure.exposed_rain_days,
@@ -430,12 +441,12 @@ function normStrategy(s: any): RotationStrategy {
     };
   };
   const rp = s.risk_profile;
-  const r = (k: string) => (rp[k]?.value == null ? blank('share', rp[k]?.note ?? 'blocked', rp[k]?.source) : rp[k]);
+  const r = (k: string) => (rp[k]?.value == null ? blank('share', rp[k]?.note ?? tx('blocked'), rp[k]?.source) : rp[k]);
   return {
     ...s,
-    short_name: SHORT[s.id] ?? s.short_name ?? s.name.split(/[,(]/)[0].trim(),
+    short_name: SHORT[s.id] ? tx(SHORT[s.id]) : s.short_name ?? s.name.split(/[,(]/)[0].trim(),
     calendar_months: strip.months, month_cover: strip.cover, strip_year: year,
-    exposure: { ...s.exposure, cover_basis: s.exposure.bare_days_per_year?.note ?? 'modelled from the calendar', replay: { 2022: rep('2022'), 2023: rep('2023') } },
+    exposure: { ...s.exposure, cover_basis: s.exposure.bare_days_per_year?.note ?? tx('modelled from the calendar'), replay: { 2022: rep('2022'), 2023: rep('2023') } },
     water: { ...s.water, etc_by_month_mm: (s.water.etc_by_month_mm ?? []).map((m: SourcedNumber | number) => (typeof m === 'number' ? m : m.value)),
       openet_et_mm_season: s.water.openet_et_mm_season?.value == null ? null : s.water.openet_et_mm_season, etc_vs_openet_pct: s.water.etc_vs_openet_pct?.value == null ? null : s.water.etc_vs_openet_pct },
     risk_profile: { ...rp, rma_share_drought: r('rma_share_drought'), rma_share_excess_moisture: r('rma_share_excess_moisture'), rma_share_heat: r('rma_share_heat'), crop: rp.crop ?? '', blocked: rp.rma_share_drought?.value == null },
@@ -518,13 +529,13 @@ export interface Extras {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extrasOf(oet: any, st: any, ins: any, w: any, ns: any, prov: ProvMap, used: Partial<Record<string, NasaStatus>>): Extras {
   const openet = oet?.rows?.length ? (oet.rows as { month?: string; date: string; et_in?: number; et_mm?: number }[]).map((r) => ({ month: r.month ?? r.date.slice(0, 7), in: r.et_in ?? (r.et_mm ?? 0) / 25.4 })) : null;
-  if (openet) prov.openet = P('openet', 'Measured crop water use (OpenET)', orig(oet), `${openet.length} months`);
+  if (openet) prov.openet = P('openet', 'Measured crop water use (OpenET)', orig(oet), t('api.months', { n: openet.length }));
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wk: any[] = st?.weeks ?? st?.items ?? [];
   const evaluated: Record<number, number> = {};
   for (const x of wk) if (x.evaluated) evaluated[x.iso_year] = (evaluated[x.iso_year] ?? 0) + 1;
   const stress = wk.length ? { weeks: wk.filter((x) => x.status === 'one' || x.status === 'both').map((x) => ({ start: x.week_start, status: x.status, drivers: x.drivers ?? [], tmaxC: x.tmax_c ?? null, crop: x.crop ?? '' })), evaluated } : null;
-  if (stress) prov.stress = P('stress', 'Crop-stress weeks (two statistical methods)', orig(st), `${stress.weeks.length} weeks flagged`);
+  if (stress) prov.stress = P('stress', 'Crop-stress weeks (two statistical methods)', orig(st), t('api.weeksFlagged', { n: stress.weeks.length }));
   // insurance: route shape may be the rma_profile file (profiles) or a flat summary
   const pr = ins?.profiles ? (Object.values(ins.profiles)[0] as any) : ins; // eslint-disable-line @typescript-eslint/no-explicit-any
   let insurance: Location['rma'] | null = null;
@@ -555,7 +566,7 @@ function extrasOf(oet: any, st: any, ins: any, w: any, ns: any, prov: ProvMap, u
     const sc = (ns.rows as Record<string, unknown>[]).filter((r) => typeof r.dswx_water_frac === 'number').map((r) => ({ date: String(r.date), frac: r.dswx_water_frac as number }));
     if (sc.length) water = { scenes: sc, summary: null, seasons: [] };
   }
-  if (water) { prov.water_seen = P('water_seen', 'Standing water seen (NASA OPERA)', w?.scenes?.length ? orig(w) : 'api', `${water.scenes.length} clear views`); used.opera = 'live'; }
+  if (water) { prov.water_seen = P('water_seen', 'Standing water seen (NASA OPERA)', w?.scenes?.length ? orig(w) : 'api', t('api.clearViews', { n: water.scenes.length })); used.opera = 'live'; }
   return { openet, stress, insurance, water };
 }
 
@@ -586,7 +597,7 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, { ...used, ...(soilExample() ? { smap: 'example' as const } : {}) }).list;
   let soilShown: 'smap' | 'grace_da' | null = null;
   const soilExample = () => soilShown == null; // the soil answer shows SMAP example numbers when no real soil series came back
-  const borrowNote = lite ? `nearest prepared field (${borrow})` : '';
+  const borrowNote = lite ? t('api.nearestPrepared', { id: borrow }) : '';
   if (!live) {
     const cells = gridAt(loc, lite ? borrow : mid) ?? gridAt(loc, 'car_colusa_rice');
     return {
@@ -634,11 +645,11 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   const ml = mlInfo(models, mlCal);
   if (calSrc?.years) {
     c = calFor(convertCalendar(calSrc, mCal, loc.crop_history, mlCal?.years ? mlCal : null), id);
-    prov.calendar = P('calendar', 'Bare / green / flooded calendar', 'api', `${isHls ? 'NASA/USGS HLS, greenness rule' : 'Landsat (NASA/USGS) and Sentinel-2, greenness rule'}${borrowNote ? ` · ${borrowNote}` : ''}`);
+    prov.calendar = P('calendar', 'Bare / green / flooded calendar', 'api', `${tx(isHls ? 'NASA/USGS HLS, greenness rule' : 'Landsat (NASA/USGS) and Sentinel-2, greenness rule')}${borrowNote ? ` · ${borrowNote}` : ''}`);
     used.landsat = 'live';
     if (isHls) used.hls = 'live';
   }
-  if (mlCal?.years) prov.ml = P('ml', 'Machine-learning calendar (comparison)', orig(mlCal), `${ml?.model ?? 'random forest'}, Sentinel-2`);
+  if (mlCal?.years) prov.ml = P('ml', 'Machine-learning calendar (comparison)', orig(mlCal), t('api.mlDetail', { model: ml?.model ?? tx('random forest') }));
   if (strat?.items?.length) { strategies = strat.items.map(normStrategy); prov.strategies = P('strategies', 'Rotations, water need and scores', orig(strat), lite ? 'rotation model, NASA POWER weather for this field' : 'rotation model, NASA POWER weather'); used.power = 'live'; }
   else if (lite) prov.strategies = P('strategies', 'Rotations, water need and scores', 'mock', 'still loading or unavailable');
   let reg = reg0;
@@ -652,10 +663,10 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     if (smapS) used.smap = 'live';
     if (gr || gdaSoil) used.grace = 'live';
     if (/imerg/.test(JSON.stringify(ns?.sources ?? ''))) used.imerg = 'live'; // rain so far this season reads IMERG from the daily record
-    prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', sm && gr ? 'api' : 'mock', `${soilSource === 'smap' ? 'SMAP' : soilSource === 'grace_da' ? 'GRACE-FO data assimilation (SMAP not cached yet)' : 'soil: example numbers'}; ${gr ? 'GRACE-FO groundwater' : 'groundwater: example numbers'}${borrowNote ? ` · ${borrowNote}` : ''}`);
+    prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', sm && gr ? 'api' : 'mock', `${soilSource === 'smap' ? 'SMAP' : soilSource === 'grace_da' ? t('api.graceDa') : t('api.soilExample')}; ${gr ? t('api.graceReal') : t('api.graceExample')}${borrowNote ? ` · ${borrowNote}` : ''}`);
   } else if (lite && reg0) {
     reg = reg0;
-    prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', 'mock', `example numbers · ${borrowNote}`);
+    prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', 'mock', t('api.examplesNote', { note: borrowNote }));
   }
   const extras = lite ? { openet: null, stress: null, insurance: null, water: null } : extrasOf(oet, stressB, insB, waterB, ns, prov, used);
   const first: FieldBundle = { id, regional: reg, cells, cal: c, strategies, news: nws, ml, nasa: nasa(), regionalLive: { smap: !!sm, grace: !!gr, soilSource }, nasaNow: nowOf(now), extras, prov };
@@ -679,9 +690,9 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
         g = shiftGrid(g, loc.centroid.lon - bc.lon, loc.centroid.lat - bc.lat);
       }
       cells2 = g;
-      p2.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells2.features.length} squares, Sentinel-2 greenness${gridRes.shifted ? ` · shifted from ${borrow}` : ''}`);
+      p2.grid = P('grid', '100 ft squares in the 3D view', 'api', gridRes.shifted ? t('api.squaresShifted', { n: cells2.features.length, id: borrow }) : t('api.squares', { n: cells2.features.length }));
     }
-    if (news?.items?.length) { nws2 = news.items.map(normNews); p2.news = P('news', 'News headlines', 'api', `${news.items.length} saved headlines`); }
+    if (news?.items?.length) { nws2 = news.items.map(normNews); p2.news = P('news', 'News headlines', 'api', t('api.savedHeadlines', { n: news.items.length })); }
     // after the caller has stored `first` (a late result must not be overwritten by the early one)
     if (cells2 !== cells || nws2 !== nws) setTimeout(() => onLate?.({ ...first, cells: cells2, news: nws2, prov: p2 }), 0);
   });
@@ -706,9 +717,9 @@ export async function getDaily(id: string): Promise<{ daily: Daily | null; prov:
   if (!b?.rows?.length && isLite(id)) { await new Promise((r) => setTimeout(r, 1500)); b = await apiReal(`/api/locations/${id}/daily`, undefined, 30000); }
   if (!b?.rows?.length) return { daily: null, prov: P('daily', 'Rain (NASA GPM IMERG), heat and frost (NOAA stations)', 'mock', 'daily route not reachable') };
   const rows = b.rows as Daily['rows'];
-  const net = b.station_network === 'ECCC' ? 'Environment Canada stations' : 'NOAA stations';
-  if (isLite(id)) return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', 'Rain, heat and crop water demand (NASA POWER, this spot)', 'api', `daily record ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 7)}`) };
-  return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', `Rain (NASA GPM IMERG), heat and frost (${net})`, 'api', `daily record ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 7)}`) };
+  const net = tx(b.station_network === 'ECCC' ? 'Environment Canada stations' : 'NOAA stations');
+  if (isLite(id)) return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', 'Rain, heat and crop water demand (NASA POWER, this spot)', 'api', t('api.dailyRecord', { from: rows[0].date.slice(0, 4), to: rows[rows.length - 1].date.slice(0, 7) })) };
+  return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', t('api.rainHeatFrost', { net }), 'api', t('api.dailyRecord', { from: rows[0].date.slice(0, 4), to: rows[rows.length - 1].date.slice(0, 7) })) };
 }
 
 // ---------- coming-season outlooks ----------
@@ -786,7 +797,7 @@ export async function getOutlook(id: string, live: boolean): Promise<Outlook> {
 }
 
 const MD = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const mdText = (mmdd?: string) => { if (!mmdd) return ''; const [m, d] = mmdd.split('-').map(Number); return `${d <= 10 ? 'early' : d <= 20 ? 'mid' : 'late'} ${MD[m - 1]}`; };
+const mdText = (mmdd?: string) => { if (!mmdd) return ''; const [m, d] = mmdd.split('-').map(Number); return t('api.mdText', { part: t(d <= 10 ? 'api.early' : d <= 20 ? 'api.mid' : 'api.late'), month: t(`api.m${m}`) }); };
 /** backend/outlook/out/<id>/outlook.json (the coming-season file built by backend/outlook) */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function fromOutlookFile(j: any, exAlloc: any, origin: Origin): Outlook {
@@ -808,7 +819,7 @@ function fromOutlookFile(j: any, exAlloc: any, origin: Origin): Outlook {
     start: mdText(bw.median_start), end: mdText(bw.median_end), days: num(bw.median_days), low: bw.median_days?.low ?? null, high: bw.median_days?.high ?? null,
     chance: num(hr.chance_any_day_ge_25mm_climatology), chanceLo: hr.chance_any_day_ge_25mm_climatology?.low ?? null, chanceHi: hr.chance_any_day_ge_25mm_climatology?.high ?? null,
     chanceOutlook: num(hr.chance_given_cpc_outlook), note: '',
-  } : { start: '', end: '', days: null, low: null, high: null, chance: null, chanceLo: null, chanceHi: null, chanceOutlook: null, note: String(bw?.note ?? f.note ?? 'No typical bare window') };
+  } : { start: '', end: '', days: null, low: null, high: null, chance: null, chanceLo: null, chanceHi: null, chanceOutlook: null, note: String(bw?.note ?? f.note ?? tx('No typical bare window')) };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   base.irrigation = Object.fromEntries((j.irrigation_2027?.strategies ?? []).map((s: any) => [s.id, { value: num(s.irrigation_need_af_ac) ?? 0, low: s.irrigation_need_af_ac?.low ?? 0, high: s.irrigation_need_af_ac?.high ?? 0 }]));
   base.allocations = exAlloc ? { ...exAlloc, items: [] } : null; // only the grower-facing note (GSA for groundwater fields); history comes from storageVsAlloc
@@ -828,11 +839,11 @@ export async function askChat(body: { question: string; history: ChatTurn[]; fie
   try {
     const r = await fetch(`${API_BASE}/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, lang }), signal: ctl.signal });
     const b = await r.json().catch(() => null);
-    if (!r.ok) throw new Error(typeof b?.detail === 'string' ? b.detail : 'The assistant could not answer. Please try again.');
+    if (!r.ok) throw new Error(typeof b?.detail === 'string' ? b.detail : tx('The assistant could not answer. Please try again.'));
     return String(b?.answer ?? '');
   } catch (e) {
-    if (e instanceof Error && e.name === 'AbortError') throw new Error('The assistant took too long. Please try again.');
-    throw e instanceof Error ? e : new Error('The assistant could not answer. Please try again.');
+    if (e instanceof Error && e.name === 'AbortError') throw new Error(tx('The assistant took too long. Please try again.'));
+    throw e instanceof Error ? e : new Error(tx('The assistant could not answer. Please try again.'));
   } finally { clearTimeout(h); }
 }
 

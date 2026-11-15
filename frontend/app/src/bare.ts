@@ -2,9 +2,10 @@
 // bare = satellite greenness (NDVI) below 0.2 and not under water. The same threshold the rotation model uses.
 // Today's rotation uses what the satellites saw; alternatives use the rotation model's estimate, labelled as such.
 import type { Calendar, CalendarYear } from './types';
+import { t } from './i18n';
 import { MONTHS, lastDataT, yearOf } from './lib';
 
-export const BARE_DEF = 'Bare = satellite greenness below 0.2 and not under water.';
+export const BARE_DEF = t('bare.def');
 
 /** Bare days in one calendar year, scaled up for the 10-day steps with no clear view. Null when under half the year was seen. */
 export function bareDaysYear(y: CalendarYear): number | null {
@@ -35,10 +36,10 @@ export function usuallyBareMonths(cal: Calendar | null): string {
     for (const y of ys) for (let k = 0; k < 3; k++) { const c = y.rule[m * 3 + k]; if (c && c !== 'u') { n++; if (c === 'b') b++; } }
     return n ? b / n >= 0.5 : false;
   });
-  if (!months.some(Boolean)) return 'rarely bare';
+  if (!months.some(Boolean)) return t('bare.rarely');
   // group consecutive months, wrapping December into January
   const runs: [number, number][] = [];
   for (let m = 0; m < 12; m++) if (months[m] && !months[(m + 11) % 12]) { let e = m; while (months[(e + 1) % 12] && (e + 1) % 12 !== m) e = (e + 1) % 12; runs.push([m, e]); }
-  if (!runs.length) return 'bare all year';
-  return runs.map(([a, e]) => (a === e ? MONTHS[a] : `${MONTHS[a]} to ${MONTHS[e]}`)).join(' and ');
+  if (!runs.length) return t('bare.all');
+  return runs.map(([a, e]) => (a === e ? MONTHS[a] : t('bare.to', { a: MONTHS[a], b: MONTHS[e] }))).join(t('bare.and'));
 }

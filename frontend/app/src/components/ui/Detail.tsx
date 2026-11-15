@@ -3,6 +3,7 @@
 // ranges, glossary, insurance, earlier years, 3D) is one tap away. Elements marked .d-only appear only with detail on.
 import { createContext, useContext, useState } from 'react';
 import Icon from '../Icons';
+import { t } from '../../i18n';
 
 const KEY = 'croplytics.detail';
 const read = () => { try { return sessionStorage.getItem(KEY) === '1'; } catch { return false; } };
@@ -19,7 +20,7 @@ export function MoreDetail({ what }: { what: string }) {
   const d = useDetail();
   return (
     <button className={`more-detail ${d.on ? 'on' : ''}`} onClick={() => d.set(!d.on)} aria-expanded={d.on} data-testid="more-detail">
-      <span><b>{d.on ? 'Less detail' : 'More detail'}</b><small>{d.on ? 'Back to the short version' : what}</small></span><Icon name="chevdown" size={20} />
+      <span><b>{d.on ? t('ui.detail.less') : t('ui.detail.more')}</b><small>{d.on ? t('ui.detail.back') : what}</small></span><Icon name="chevdown" size={20} />
     </button>
   );
 }

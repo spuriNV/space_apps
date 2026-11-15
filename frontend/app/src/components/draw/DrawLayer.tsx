@@ -5,6 +5,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import type maplibregl from 'maplibre-gl';
 import './draw.css';
 import Icon from '../Icons';
+import { t, locale } from '../../i18n';
 import { Seg } from '../ui/Seg';
 import { Modal } from './Modal';
 import type { DrawHandle, DrawKind, DrawRole, Shape } from './terraDraw';
@@ -31,7 +32,7 @@ type Phase = 'off' | 'draw' | 'edit';
 type Dlg = { t: 'name'; mode: 'new' | 'rename'; geometry: Geom; loc?: Location } | { t: 'delete'; loc: Location };
 const MIN_AC = 1.24, MAX_AC = 4942; // 0.5 ha and 2,000 ha: the API's limits, shown as hints while drawing
 const phoneNow = () => window.matchMedia('(max-width: 640px)').matches;
-const fmtAc = (a: number) => (a < 10 ? a.toFixed(1) : Math.round(a).toLocaleString('en-US'));
+const fmtAc = (a: number) => (a < 10 ? a.toFixed(1) : Math.round(a).toLocaleString(locale));
 
 export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p, ref) {
   const { mf } = p;
@@ -77,7 +78,7 @@ export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p,
     redraw(loc) {
       const replaceId = loc.id === DRAFT_ID ? mf.draft?.args.replaceId : loc.id;
       if (loc.id === DRAFT_ID) mf.dropDraft();
-      setRedraw({ name: loc.mine?.name ?? 'My field', replaceId }); setPhase('edit'); setAcres(null); setErr(null); setRole('part');
+      setRedraw({ name: loc.mine?.name ?? t('my.field'), replaceId }); setPhase('edit'); setAcres(null); setErr(null); setRole('part');
       p.onActive(true, replaceId ?? null);
       begin(kind, loc.mine?.geometry ?? loc.geometry);
     },
@@ -106,36 +107,36 @@ export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p,
     if (redraw) save({ name: redraw.name, geometry: r.geom, replaceId: redraw.replaceId });
     else setDlg({ t: 'name', mode: 'new', geometry: r.geom });
   };
-  const HINT: Record<DrawKind, string> = { rect: 'Drag across the field, or tap two opposite corners.', circle: 'Drag out from the middle of the field.', shape: 'Tap each corner of the field. Tap the first point to finish.', free: 'Draw around the field with your finger or the mouse.' };
-  const hint = phase === 'edit' ? 'Drag a corner to reshape it. Drag a small dot to add a corner.' : role === 'hole' ? `Draw a hole inside a shape. ${HINT[kind]}` : count ? `Another shape for the same field. ${HINT[kind]}` : HINT[kind];
-  const size = acres == null ? null : acres < MIN_AC ? `Too small: the smallest field is ${MIN_AC.toFixed(1)} acres.` : acres > MAX_AC ? 'Too big: the largest field is about 5,000 acres.' : null;
+  const HINT: Record<DrawKind, string> = { rect: t('draw.hRect'), circle: t('draw.hCircle'), shape: t('draw.hShape'), free: t('draw.hFree') };
+  const hint = phase === 'edit' ? t('draw.hEdit') : role === 'hole' ? t('draw.hHole', { h: HINT[kind] }) : count ? t('draw.hMore', { h: HINT[kind] }) : HINT[kind];
+  const size = acres == null ? null : acres < MIN_AC ? t('draw.small', { n: MIN_AC.toFixed(1) }) : acres > MAX_AC ? t('draw.big') : null;
 
   return (
     <>
-      {phase === 'off' && <button className="draw-btn" style={{ right: 16 + p.rightInset }} onClick={start} data-testid="draw-btn"><Icon name="draw" size={18} />Draw a field</button>}
+      {phase === 'off' && <button className="draw-btn" style={{ right: 16 + p.rightInset }} onClick={start} data-testid="draw-btn"><Icon name="draw" size={18} />{t('draw.draw')}</button>}
       {phase !== 'off' && (
-        <div className="draw-bar" role="region" aria-label="Draw a field" data-testid="draw-bar" style={{ '--right': `${p.rightInset}px` } as React.CSSProperties}>
+        <div className="draw-bar" role="region" aria-label={t('draw.draw')} data-testid="draw-bar" style={{ '--right': `${p.rightInset}px` } as React.CSSProperties}>
           <div className="draw-top">
-            <h2>{redraw ? `Redraw ${redraw.name}` : 'Draw a field'}</h2>
-            {acres != null && <p className={`draw-acres ${size ? 'bad' : ''}`} aria-live="polite" data-testid="draw-acres"><b className="tnum">{fmtAc(acres)}</b> acres</p>}
+            <h2>{redraw ? t('draw.redraw', { name: redraw.name }) : t('draw.draw')}</h2>
+            {acres != null && <p className={`draw-acres ${size ? 'bad' : ''}`} aria-live="polite" data-testid="draw-acres"><b className="tnum">{fmtAc(acres)}</b> {t('draw.acres')}</p>}
           </div>
           <p className="draw-hint" data-testid="draw-hint">{err ?? size ?? hint}</p>
           {phase === 'draw' && (
             <div className="draw-row">
-              <Seg label="Drawing tool" value={kind} onChange={(k) => { setKind(k); draw.current?.mode(k, role); }} testid="draw-kind" className="draw-seg"
-                options={[{ v: 'rect', label: <><Icon name="rect" size={18} />Rectangle</>, testid: 'draw-rect' }, { v: 'circle', label: <><Icon name="circle" size={18} />Circle</>, testid: 'draw-circle' },
-                  { v: 'shape', label: <><Icon name="shape" size={18} />Shape</>, testid: 'draw-shape' }, { v: 'free', label: <><Icon name="free" size={18} />Freehand</>, testid: 'draw-free' }]} />
+              <Seg label={t('draw.tool')} value={kind} onChange={(k) => { setKind(k); draw.current?.mode(k, role); }} testid="draw-kind" className="draw-seg"
+                options={[{ v: 'rect', label: <><Icon name="rect" size={18} />{t('draw.rect')}</>, testid: 'draw-rect' }, { v: 'circle', label: <><Icon name="circle" size={18} />{t('draw.circle')}</>, testid: 'draw-circle' },
+                  { v: 'shape', label: <><Icon name="shape" size={18} />{t('draw.shape')}</>, testid: 'draw-shape' }, { v: 'free', label: <><Icon name="free" size={18} />{t('draw.free')}</>, testid: 'draw-free' }]} />
             </div>
           )}
           <div className="draw-row">
-            {phase === 'edit' && <button className="btn btn-secondary" onClick={() => { setRole('part'); setPhase('draw'); draw.current?.mode(kind, 'part'); }} data-testid="draw-add"><Icon name="plus" />Add another shape</button>}
-            {phase === 'edit' && <button className="btn btn-secondary" onClick={() => { setRole('hole'); setPhase('draw'); draw.current?.mode(kind, 'hole'); }} data-testid="draw-hole"><Icon name="minus" />Cut a hole</button>}
-            {phase === 'edit' && count > 1 && <button className="btn btn-outline" onClick={() => draw.current?.removeSelected()} data-testid="draw-remove"><Icon name="trash" />Remove shape</button>}
-            {phase === 'draw' && count > 0 && <button className="btn btn-outline" onClick={() => { setRole('part'); draw.current?.edit(); }} data-testid="draw-back">Back to editing</button>}
-            {(phase === 'edit' || count > 0) && <button className="btn btn-outline" onClick={() => { setPhase('draw'); setAcres(null); setRedraw(null); setErr(null); setRole('part'); draw.current?.clear(); draw.current?.mode(kind, 'part'); }} data-testid="draw-again">Start over</button>}
+            {phase === 'edit' && <button className="btn btn-secondary" onClick={() => { setRole('part'); setPhase('draw'); draw.current?.mode(kind, 'part'); }} data-testid="draw-add"><Icon name="plus" />{t('draw.add')}</button>}
+            {phase === 'edit' && <button className="btn btn-secondary" onClick={() => { setRole('hole'); setPhase('draw'); draw.current?.mode(kind, 'hole'); }} data-testid="draw-hole"><Icon name="minus" />{t('draw.hole')}</button>}
+            {phase === 'edit' && count > 1 && <button className="btn btn-outline" onClick={() => draw.current?.removeSelected()} data-testid="draw-remove"><Icon name="trash" />{t('draw.remove')}</button>}
+            {phase === 'draw' && count > 0 && <button className="btn btn-outline" onClick={() => { setRole('part'); draw.current?.edit(); }} data-testid="draw-back">{t('draw.back')}</button>}
+            {(phase === 'edit' || count > 0) && <button className="btn btn-outline" onClick={() => { setPhase('draw'); setAcres(null); setRedraw(null); setErr(null); setRole('part'); draw.current?.clear(); draw.current?.mode(kind, 'part'); }} data-testid="draw-again">{t('draw.again')}</button>}
             <span className="draw-gap" />
-            <button className="btn btn-outline" onClick={cancel} data-testid="draw-cancel">Cancel</button>
-            {phase === 'edit' && <button className="btn btn-primary" onClick={next} data-testid="draw-next">{redraw ? 'Save shape' : 'Name it'}</button>}
+            <button className="btn btn-outline" onClick={cancel} data-testid="draw-cancel">{t('draw.cancel')}</button>
+            {phase === 'edit' && <button className="btn btn-primary" onClick={next} data-testid="draw-next">{redraw ? t('draw.saveShape') : t('draw.nameIt')}</button>}
           </div>
         </div>
       )}
@@ -147,25 +148,25 @@ export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p,
           else setDlg(null);
         }} />}
       {dlg?.t === 'delete' && (
-        <Modal title={`Delete ${dlg.loc.mine?.name ?? 'this field'}?`} onClose={() => setDlg(null)} testid="delete-dialog">
-          <p className="dlg-text">It leaves your list on this device. A share link you already sent still opens it.</p>
+        <Modal title={t('draw.delTitle', { name: dlg.loc.mine?.name ?? t('draw.thisField') })} onClose={() => setDlg(null)} testid="delete-dialog">
+          <p className="dlg-text">{t('draw.delText')}</p>
           <div className="dlg-row">
-            <button className="btn btn-outline" onClick={() => setDlg(null)} data-autofocus>Keep it</button>
-            <button className="btn btn-danger" onClick={() => { const id = dlg.loc.id; mf.remove(id); setDlg(null); p.onDeleted(id); }} data-testid="delete-confirm"><Icon name="trash" />Delete field</button>
+            <button className="btn btn-outline" onClick={() => setDlg(null)} data-autofocus>{t('draw.keep')}</button>
+            <button className="btn btn-danger" onClick={() => { const id = dlg.loc.id; mf.remove(id); setDlg(null); p.onDeleted(id); }} data-testid="delete-confirm"><Icon name="trash" />{t('draw.delBtn')}</button>
           </div>
         </Modal>
       )}
       {sh && !sh.known && (
-        <Modal title={sh.loc ? 'Add this field to yours?' : 'This link did not open'} onClose={mf.declineShared} testid="share-dialog">
+        <Modal title={sh.loc ? t('draw.addTitle') : t('draw.noOpen')} onClose={mf.declineShared} testid="share-dialog">
           {sh.loc ? <>
-            <p className="dlg-text"><b>{sh.loc.mine?.name}</b>, {acresOf(sh.loc)} acres{sh.loc.county_name ? `, ${county(sh.loc)} County` : ''}. Someone shared it with you.</p>
+            <p className="dlg-text"><b>{sh.loc.mine?.name}</b>{t('draw.shareTail', { c: t('draw.shareAc', { n: acresOf(sh.loc) }) + (sh.loc.county_name ? t('draw.shareCounty', { c: county(sh.loc) }) : '') })}</p>
             <div className="dlg-row">
-              <button className="btn btn-outline" onClick={mf.declineShared}>Not now</button>
-              <button className="btn btn-primary" data-autofocus onClick={() => { const id = mf.acceptShared(); if (id) p.onOpenShared(id); }} data-testid="share-add">Add to my fields</button>
+              <button className="btn btn-outline" onClick={mf.declineShared}>{t('draw.notNow')}</button>
+              <button className="btn btn-primary" data-autofocus onClick={() => { const id = mf.acceptShared(); if (id) p.onOpenShared(id); }} data-testid="share-add">{t('draw.addMine')}</button>
             </div>
           </> : <>
-            <p className="dlg-text">{sh.error?.message ?? 'The field could not be opened.'}</p>
-            <div className="dlg-row"><button className="btn btn-outline" onClick={mf.declineShared} data-autofocus>Close</button></div>
+            <p className="dlg-text">{sh.error?.message ?? t('draw.noOpenText')}</p>
+            <div className="dlg-row"><button className="btn btn-outline" onClick={mf.declineShared} data-autofocus>{t('draw.close')}</button></div>
           </>}
         </Modal>
       )}
@@ -179,14 +180,14 @@ function NameDialog({ dlg, names, acres, onSave, onClose }: { dlg: Extract<Dlg, 
   useEffect(() => { ref.current?.select(); }, []);
   const ok = name.trim().length > 0;
   return (
-    <Modal title={dlg.mode === 'rename' ? 'Rename field' : 'Name your field'} onClose={onClose} testid="name-dialog">
+    <Modal title={dlg.mode === 'rename' ? t('draw.rename') : t('draw.nameTitle')} onClose={onClose} testid="name-dialog">
       <form onSubmit={(e) => { e.preventDefault(); if (ok) onSave(name.trim()); }}>
-        <label className="dlg-field"><span>Field name</span>
+        <label className="dlg-field"><span>{t('draw.fname')}</span>
           <input ref={ref} value={name} onChange={(e) => setName(e.target.value)} maxLength={80} data-autofocus autoComplete="off" data-testid="name-input" /></label>
-        {acres != null && <p className="dlg-text">About {fmtAc(acres)} acres</p>}
+        {acres != null && <p className="dlg-text">{t('draw.about', { n: fmtAc(acres) })}</p>}
         <div className="dlg-row">
-          <button type="button" className="btn btn-outline" onClick={onClose}>Cancel</button>
-          <button type="submit" className="btn btn-primary" disabled={!ok} data-testid="name-save">{dlg.mode === 'rename' ? 'Save name' : 'Save field'}</button>
+          <button type="button" className="btn btn-outline" onClick={onClose}>{t('draw.cancel')}</button>
+          <button type="submit" className="btn btn-primary" disabled={!ok} data-testid="name-save">{dlg.mode === 'rename' ? t('draw.saveName') : t('draw.saveField')}</button>
         </div>
       </form>
     </Modal>

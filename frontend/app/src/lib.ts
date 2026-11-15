@@ -1,3 +1,4 @@
+import { t, isEs } from './i18n';
 import type { Calendar, CellGrid, CellProps, CoverClass, GridLayer, Location } from './types';
 
 export const YEARS = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
@@ -7,8 +8,8 @@ export const TODAY_ISO = '2026-11-14';
 export const THIS_YEAR = 2026;
 /** By default the timeline and calendars show this season plus the last 3; older years sit behind "Show earlier years". */
 export const RECENT_FROM = 2023;
-export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const PART = ['Early', 'Mid', 'Late'];
+export const MONTHS = Array.from({ length: 12 }, (_, i) => t(`lib.m${i}`));
+const PART = [0, 1, 2].map((i) => t(`lib.part${i}`));
 
 export const tOf = (year: number, dekad: number) => (year - 2016) * 36 + dekad;
 export const yearOf = (t: number) => 2016 + Math.floor(t / 36);
@@ -19,7 +20,7 @@ export const dateToT = (iso: string) => { const [y, m, d] = iso.split('-').map(N
 export const fmtDate = (iso: string) => { const [y, m, d] = iso.split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
 
 export const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
-export const ordinal = (n: number) => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+export const ordinal = (n: number) => { if (isEs) return t('lib.ord', { n }); const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
 
 // dual units (spec B8)
 export const haToAc = (ha: number) => ha * 2.47105;
@@ -27,17 +28,17 @@ export const mmToIn = (mm: number) => mm / 25.4;
 export const afacToMm = (af: number) => af * 304.8;
 export const mmToAfac = (mm: number) => mm / 304.8;
 /** A dryland rotation: the API marks every crop year in its calendar `irrigated: false`. Its irrigation need is 0 by design. */
-export const RAIN_FED = 'Rain-fed (no irrigation)';
+export const RAIN_FED = t('lib.rainfed');
 export const isRainFed = (s: { calendar?: { irrigated?: boolean }[] }) => !!s.calendar?.length && s.calendar.every((c) => c.irrigated === false);
 /** "3.1 acre-ft/acre", or the rain-fed label for a dryland rotation. */
-export const needText = (s: { calendar?: { irrigated?: boolean }[] }, af: number) => (isRainFed(s) ? RAIN_FED : `${af.toFixed(1)} acre-ft/acre`);
+export const needText = (s: { calendar?: { irrigated?: boolean }[] }, af: number) => (isRainFed(s) ? RAIN_FED : t('lib.afac', { n: af.toFixed(1) }));
 
-export const CLASS_LABEL: Record<CoverClass, string> = { b: 'Bare', p: 'Partial cover', c: 'Covered', w: 'Water', u: 'Unknown (cloud)' };
+export const CLASS_LABEL: Record<CoverClass, string> = { b: t('lib.cls.b'), p: t('lib.cls.p'), c: t('lib.cls.c'), w: t('lib.cls.w'), u: t('lib.cls.u') };
 export const CLASS_COLOR: Record<CoverClass, string> = { b: '#9a5b25', p: '#e6dc5a', c: '#00875f', w: '#0072B2', u: '#6b7280' };
 /** Soil texture (data colours; never used for chrome): sand tan, silt light, clay brown. */
 export const SOIL_COLOR = { sand: '#d9b46a', silt: '#e9e3d3', clay: '#7a4a2b' } as const;
 export const RISK_COLOR = { rain: '#6cb6ff', frost: '#b8f0ff', heat: '#ff6b5e', dry: '#ffb44a' } as const;
-export const RISK_LABEL = { rain: 'Heavy rain', frost: 'Frost', heat: 'Heat', dry: 'Dry spell' } as const;
+export const RISK_LABEL = { rain: t('lib.risk.rain'), frost: t('lib.risk.frost'), heat: t('lib.risk.heat'), dry: t('lib.risk.dry') } as const;
 
 function hex(c: string) { const n = parseInt(c.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
 export function ramp(stops: [number, string][], v: number) {
@@ -128,7 +129,7 @@ export function gridLayerFor(cells: CellGrid, t: number): GridLayer | null {
   const scene = cells.layers.find((l) => l.kind === 'scene' && l.date && Math.abs(Date.parse(l.date) - tt) <= 12 * 864e5);
   return scene ?? cells.layers.find((l) => l.kind === 'quarter_median' && l.year === y && l.quarter === Math.floor((m - 1) / 3) + 1) ?? null;
 }
-export const gridLayerLabel = (l: GridLayer | null) => !l ? 'no image for this date' : l.kind === 'scene' ? `image of ${fmtDate(l.date!)}` : `${['Jan–Mar', 'Apr–Jun', 'Jul–Sep', 'Oct–Dec'][(l.quarter ?? 1) - 1]} ${l.year}, middle of ${l.n_scenes} image${l.n_scenes === 1 ? '' : 's'}`;
+export const gridLayerLabel = (l: GridLayer | null) => !l ? t('lib.noimg') : l.kind === 'scene' ? t('lib.imgof', { d: fmtDate(l.date!) }) : t(l.n_scenes === 1 ? 'lib.mid1' : 'lib.midn', { q: t(`lib.q${(l.quarter ?? 1) - 1}`), y: l.year ?? '', n: l.n_scenes ?? '' });
 export function realCellState(c: CellProps, layer: GridLayer | null, fs: FieldState): CellState {
   const v = layer ? c.nd?.[layer.key] : null;
   if (v == null) return { cls: 'u', ndvi: 0, et: 0 };

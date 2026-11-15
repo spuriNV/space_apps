@@ -1,3 +1,4 @@
+import { tx, t } from './i18n';
 // The NASA datasets behind a field, in the grower's words. NASA sources are listed first everywhere in the app.
 // Status comes from GET /api/locations/{id} `nasa_datasets` when the API sends it; otherwise from FALLBACK below.
 // FALLBACK is the single switch to flip by hand when a dataset goes live without an API field for it.
@@ -16,24 +17,24 @@ export const FALLBACK: Record<string, NasaStatus> = {
 };
 
 export const NASA_CATALOGUE: Omit<NasaDataset, 'status'>[] = [
-  { id: 'hls', name: 'Harmonized Landsat Sentinel-2 (HLS)', agency: 'NASA / USGS', tells: 'Whether the field is bare, green or flooded, every 2 to 3 days.', scale: '100 ft squares (30 m)', usedFor: 'Field calendar' },
-  { id: 'landsat', name: 'Landsat 8 and 9', agency: 'NASA / USGS', tells: 'Green cover and bare ground on this field since 2016.', scale: '100 ft squares (30 m)', usedFor: 'Field calendar, green cover' },
-  { id: 'power', name: 'NASA POWER weather', agency: 'NASA Langley', tells: 'Daily sun, wind and humidity, which set how much water a crop uses.', scale: 'one reading for about 35 miles (0.5°)', usedFor: 'Crop water use' },
-  { id: 'smap', name: 'SMAP soil moisture', agency: 'NASA JPL', tells: 'Whether the root zone is wetter or drier than usual for the date.', scale: 'one reading for a 6-mile square (9 km)', usedFor: 'Soil moisture answer, 3D view' },
-  { id: 'grace', name: 'GRACE-FO groundwater', agency: 'NASA / GFZ', tells: 'Whether groundwater in the basin is above or below usual. Basin-wide, not your own well.', scale: 'one reading for a 17-mile square (0.25°)', usedFor: 'Groundwater answer, 3D view' },
-  { id: 'imerg', name: 'GPM IMERG rainfall', agency: 'NASA / JAXA', tells: 'Daily rain over the field, filling the gaps between weather stations.', scale: 'one reading for a 6-mile square (0.1°)', usedFor: 'Rain check against stations' },
-  { id: 'opera', name: 'OPERA surface water', agency: 'NASA JPL', tells: 'When the field held standing water, such as winter flooding of rice.', scale: '100 ft squares (30 m)', usedFor: 'Flooded days in the calendar' },
-  { id: 'modis', name: 'MODIS greenness', agency: 'NASA', tells: 'How green the area was against normal, back to 2000.', scale: '800 ft squares (250 m)', usedFor: 'Long-term greenness' },
-  { id: 'ecostress', name: 'ECOSTRESS', agency: 'NASA JPL, on the Space Station', tells: 'Crop water stress from leaf temperature.', scale: '230 ft squares (70 m)', usedFor: 'Crop stress' },
-  { id: 'nasadem', name: 'NASADEM elevation', agency: 'NASA JPL', tells: 'Slope, and low spots where water ponds or frost settles.', scale: '100 ft squares (30 m)', usedFor: 'Slope and low spots' },
-  { id: 'iss', name: 'Astronaut photos from the ISS', agency: 'NASA Johnson Space Center', tells: 'What the valley around the field looked like from orbit.', scale: 'photo, about 400 mm lens', usedFor: 'Photo on this panel' },
+  { id: 'hls', name: 'Harmonized Landsat Sentinel-2 (HLS)', agency: 'NASA / USGS', tells: tx('Whether the field is bare, green or flooded, every 2 to 3 days.'), scale: tx('100 ft squares (30 m)'), usedFor: tx('Field calendar') },
+  { id: 'landsat', name: tx('Landsat 8 and 9'), agency: 'NASA / USGS', tells: tx('Green cover and bare ground on this field since 2016.'), scale: tx('100 ft squares (30 m)'), usedFor: tx('Field calendar, green cover') },
+  { id: 'power', name: tx('NASA POWER weather'), agency: 'NASA Langley', tells: tx('Daily sun, wind and humidity, which set how much water a crop uses.'), scale: tx('one reading for about 35 miles (0.5°)'), usedFor: tx('Crop water use') },
+  { id: 'smap', name: tx('SMAP soil moisture'), agency: 'NASA JPL', tells: tx('Whether the root zone is wetter or drier than usual for the date.'), scale: tx('one reading for a 6-mile square (9 km)'), usedFor: tx('Soil moisture answer, 3D view') },
+  { id: 'grace', name: tx('GRACE-FO groundwater'), agency: 'NASA / GFZ', tells: tx('Whether groundwater in the basin is above or below usual. Basin-wide, not your own well.'), scale: tx('one reading for a 17-mile square (0.25°)'), usedFor: tx('Groundwater answer, 3D view') },
+  { id: 'imerg', name: tx('GPM IMERG rainfall'), agency: 'NASA / JAXA', tells: tx('Daily rain over the field, filling the gaps between weather stations.'), scale: tx('one reading for a 6-mile square (0.1°)'), usedFor: tx('Rain check against stations') },
+  { id: 'opera', name: tx('OPERA surface water'), agency: 'NASA JPL', tells: tx('When the field held standing water, such as winter flooding of rice.'), scale: tx('100 ft squares (30 m)'), usedFor: tx('Flooded days in the calendar') },
+  { id: 'modis', name: tx('MODIS greenness'), agency: 'NASA', tells: tx('How green the area was against normal, back to 2000.'), scale: tx('800 ft squares (250 m)'), usedFor: tx('Long-term greenness') },
+  { id: 'ecostress', name: 'ECOSTRESS', agency: tx('NASA JPL, on the Space Station'), tells: tx('Crop water stress from leaf temperature.'), scale: tx('230 ft squares (70 m)'), usedFor: tx('Crop stress') },
+  { id: 'nasadem', name: tx('NASADEM elevation'), agency: 'NASA JPL', tells: tx('Slope, and low spots where water ponds or frost settles.'), scale: tx('100 ft squares (30 m)'), usedFor: tx('Slope and low spots') },
+  { id: 'iss', name: tx('Astronaut photos from the ISS'), agency: tx('NASA Johnson Space Center'), tells: tx('What the valley around the field looked like from orbit.'), scale: tx('photo, about 400 mm lens'), usedFor: tx('Photo on this panel') },
 ];
 
 export const STATUS_WORDS: Record<NasaStatus, string> = {
-  live: 'Live.',
-  saved: 'Downloaded; not on screen yet.',
-  example: 'Example numbers on screen until it is wired in.',
-  pending: 'Not downloaded yet.',
+  live: t('nasa.live'),
+  saved: t('nasa.saved'),
+  example: t('nasa.example'),
+  pending: t('nasa.pending'),
 };
 
 const RANK: Record<NasaStatus, number> = { pending: 0, example: 1, saved: 2, live: 3 };

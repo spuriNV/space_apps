@@ -1,5 +1,6 @@
 // "Sources": every dataset and model behind the field view, grouped like the brief's sources section. One line each.
 import Icon from '../Icons';
+import { t, tx } from '../../i18n';
 
 const GROUPS: { title: string; items: [string, string][] }[] = [
   { title: 'NASA', items: [
@@ -48,18 +49,18 @@ const CA_ONLY = /NOAA weather|Cropland Data|SSURGO|DWR \/ Land IQ|Risk Managemen
 export function SourcesSheet({ onClose, bc = false }: { onClose: () => void; bc?: boolean }) {
   const groups = bc ? [...GROUPS.filter((g) => g.title !== 'Ground data'), BC_GROUND].map((g) => ({ ...g, items: g.items.filter(([n]) => !CA_ONLY.test(n) && !/OpenET/.test(n)) })) : GROUPS;
   return (
-    <div className="src-wrap" role="dialog" aria-label="Sources" onClick={onClose} data-testid="sources">
+    <div className="src-wrap" role="dialog" aria-label={t('ui.src.title')} onClick={onClose} data-testid="sources">
       <div className="src-sheet" onClick={(e) => e.stopPropagation()}>
-        <header><h2>Sources</h2><button className="icon-btn" onClick={onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button></header>
+        <header><h2>{t('ui.src.title')}</h2><button className="icon-btn" onClick={onClose} title={t('ui.close')} aria-label={t('ui.close')}><Icon name="close" size={16} /></button></header>
         <div className="src-cols">
           {groups.map((g) => (
             <section key={g.title}>
-              <h3>{g.title}</h3>
-              <ul>{g.items.map(([n, d]) => <li key={n}><b>{n}</b><span>{d}</span></li>)}</ul>
+              <h3>{tx(g.title)}</h3>
+              <ul>{g.items.map(([n, d]) => <li key={n}><b>{tx(n)}</b><span>{tx(d)}</span></li>)}</ul>
             </section>
           ))}
         </div>
-        <p className="src-foot">Every number in CropLytics comes from one of these, or is marked as our assumption. It supports the grower and adviser; it does not replace either.</p>
+        <p className="src-foot">{t('ui.src.foot')}</p>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 // device), one sentence at a time with the next one fetched while the current one plays, so speech starts quickly. If the
 // server has no voice or a request fails, the rest of the answer is read by the device's own voice.
 import { API_BASE } from '../../api';
+import { isEs, speechLang } from '../../i18n';
 
 const TTS: SpeechSynthesis | undefined = typeof window !== 'undefined' ? window.speechSynthesis : undefined;
 // 0.05 s of silence: played during a tap so iOS and other browsers allow the later, non-tap playback
@@ -21,6 +22,12 @@ export function sentences(text: string): string[] {
 
 function deviceVoice(): SpeechSynthesisVoice | undefined {
   const vs = TTS?.getVoices() ?? [];
+  if (isEs) {
+    // Spanish: es-US first, then any es-*; natural/enhanced voices ahead of the rest
+    const es = vs.filter((v) => /^es[-_]US/i.test(v.lang)), any = vs.filter((v) => /^es/i.test(v.lang));
+    const ep = es.length ? es : any;
+    return ep.find((v) => /natural|enhanced|premium|neural/i.test(v.name)) ?? ep.find((v) => /Paulina|Monica|M[oó]nica|Sabina|Helena|Dalia|Elvira|Google espa/i.test(v.name)) ?? ep.find((v) => v.default) ?? ep[0];
+  }
   const en = vs.filter((v) => /^en[-_]US/i.test(v.lang));
   const pool = en.length ? en : vs.filter((v) => /^en/i.test(v.lang));
   // a female voice where the name says so, enhanced/natural first
@@ -91,7 +98,7 @@ export class Speaker {
   private device(text: string, run: number) {
     if (!TTS) { this.onDone(); return; }
     const u = new SpeechSynthesisUtterance(text);
-    const v = deviceVoice(); if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-US';
+    const v = deviceVoice(); if (v) { u.voice = v; u.lang = v.lang; } else u.lang = isEs ? speechLang : 'en-US';
     u.rate = 0.95;
     u.onend = u.onerror = () => { if (run === this.run) this.onDone(); };
     TTS.speak(u);

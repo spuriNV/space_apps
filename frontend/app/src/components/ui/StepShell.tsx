@@ -8,6 +8,7 @@ import Icon from '../Icons';
 import { MoreDetail } from './Detail';
 import { ReadAloud } from '../help/ReadAloud';
 import { FLOW, StepLine, type FlowId } from './shared';
+import { t } from '../../i18n';
 
 export type Tone = 'good' | 'warn' | 'neutral';
 export interface Fact { label: string; value: ReactNode; tone?: Tone }
@@ -38,14 +39,14 @@ export function LimitControl({ value, example, onChange }: { value: number; exam
   return (
     <div className="limit-ctl" data-testid="limit-ctl">
       <div className="lc-row">
-        <label htmlFor="alloc">Water you can get each year<small>From your district or wells. 1 acre-ft per acre = 12 inches over the field.</small>{example && <small><em className="status example ex-limit">example, change to yours</em></small>}</label>
+        <label htmlFor="alloc">{t('ui.lim.label')}<small>{t('ui.lim.hint')}</small>{example && <small><em className="status example ex-limit">{t('ui.lim.example')}</em></small>}</label>
         <div className="lc-step">
-          <button type="button" className="icon-btn" onClick={() => set(value - 0.1)} aria-label="Lower by 0.1"><Icon name="minus" size={18} /></button>
-          <output htmlFor="alloc" aria-live="polite"><b>{value.toFixed(1)}</b><small>acre-ft/acre</small></output>
-          <button type="button" className="icon-btn" onClick={() => set(value + 0.1)} aria-label="Raise by 0.1"><Icon name="plus" size={18} /></button>
+          <button type="button" className="icon-btn" onClick={() => set(value - 0.1)} aria-label={t('ui.lim.lower')}><Icon name="minus" size={18} /></button>
+          <output htmlFor="alloc" aria-live="polite"><b>{value.toFixed(1)}</b><small>{t('ui.u.afac')}</small></output>
+          <button type="button" className="icon-btn" onClick={() => set(value + 0.1)} aria-label={t('ui.lim.raise')}><Icon name="plus" size={18} /></button>
         </div>
       </div>
-      <input id="alloc" type="range" min={0.5} max={8} step={0.1} value={value} onChange={(e) => set(+e.target.value)} data-testid="alloc" aria-label="Water you can get each year, acre-feet per acre" />
+      <input id="alloc" type="range" min={0.5} max={8} step={0.1} value={value} onChange={(e) => set(+e.target.value)} data-testid="alloc" aria-label={t('ui.lim.aria')} />
     </div>
   );
 }
@@ -96,10 +97,10 @@ export function StepShell(p: StepShellProps) {
   useEffect(() => { if (sheet.snap !== 'full') scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); }, [sheet.snap]);
   const step = FLOW.find((f) => f.id === p.id)!;
   return (
-    <aside ref={sheet.ref} id="field-panel" tabIndex={-1} className={`panel fpanel step-shell step-${p.id} sheet-${sheet.snap} ${p.className ?? ''}`} data-testid={p.testid} aria-label={`Step ${step.n} of ${FLOW.length}: ${step.label}`} {...sheet.handlers}>
-      <button className="fp-grab" onClick={sheet.cycle} onKeyDown={sheet.onKey} aria-label="Resize the panel" data-testid="grab"><i /></button>
+    <aside ref={sheet.ref} id="field-panel" tabIndex={-1} className={`panel fpanel step-shell step-${p.id} sheet-${sheet.snap} ${p.className ?? ''}`} data-testid={p.testid} aria-label={`${t('ui.step.of', { n: step.n, total: FLOW.length })}: ${step.label}`} {...sheet.handlers}>
+      <button className="fp-grab" onClick={sheet.cycle} onKeyDown={sheet.onKey} aria-label={t('ui.resize')} data-testid="grab"><i /></button>
       <div className="fp-body">
-        <button className="icon-btn fp-close" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={20} /></button>
+        <button className="icon-btn fp-close" onClick={p.onClose} title={t('ui.close')} aria-label={t('ui.close')}><Icon name="close" size={20} /></button>
         <div className="panel-scroll" ref={scrollRef} onScroll={onScroll}>
           <div className="fp-content" key={p.resetKey}>
             <header className="fp-head step-head">
@@ -111,7 +112,7 @@ export function StepShell(p: StepShellProps) {
             {p.answer}
             {p.children}
             {p.detail && <>
-              <MoreDetail what={p.detailWhat ?? 'Sources and the full numbers'} />
+              <MoreDetail what={p.detailWhat ?? t('ui.shell.detail')} />
               <div className="fp-more"><div className="fp-more-in">{p.detail}</div></div>
             </>}
             {p.after}
@@ -119,7 +120,7 @@ export function StepShell(p: StepShellProps) {
         </div>
       </div>
       <footer className={`fp-foot step-foot ${footStuck ? 'stuck' : ''}`}>
-        {p.onBack && <button className="btn btn-outline step-back" onClick={p.onBack} data-testid="step-back"><Icon name="left" size={20} />Back</button>}
+        {p.onBack && <button className="btn btn-outline step-back" onClick={p.onBack} data-testid="step-back"><Icon name="left" size={20} />{t('ui.back')}</button>}
         {p.next && <button className="btn btn-primary next-step" onClick={p.next.onClick} data-testid={p.next.testid}>
           {p.next.icon && <Icon name={p.next.icon} size={20} />}
           <span><b>{p.next.label}</b>{p.next.sub && <small>{p.next.sub}</small>}</span>{!p.next.icon && <Icon name="right" size={20} />}

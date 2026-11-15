@@ -3,6 +3,7 @@ import type { Location, RotationStrategy } from '../../types';
 import { tOf } from '../../lib';
 import type { SimMode } from '../ui/FieldTimeline';
 import Icon from '../Icons';
+import { t } from '../../i18n';
 import { type Weather, weatherLabels, waterOf } from './weatherReplay';
 
 export function SimRun(p: {
@@ -32,17 +33,17 @@ export function SimRun(p: {
   };
   return (
     <div className="sim-run" data-testid="sim-run">
-      <h3>Play a year on the map</h3>
-      <p className="how">Watch the field's cover change month by month. Weather year: <b>{L[p.weather]}</b> (change with the chips above).</p>
+      <h3>{t('compare.playYear')}</h3>
+      <p className="how">{t('compare.watchCover')} <b>{L[p.weather]}</b> {t('compare.changeChips')}</p>
       <p className="sim-preview" data-testid="sim-preview">
-        <b>{s.short_name}</b> · ~{need.toFixed(1)} acre-ft/acre vs your {p.allocation.toFixed(1)} limit
-        {need > p.allocation ? <em className="over"> · short by {(need - p.allocation).toFixed(1)}</em> : <em className="ok"> · fits</em>}
+        <b>{s.short_name}</b> · {t('compare.vsLimit', { n: need.toFixed(1), a: p.allocation.toFixed(1) })}
+        {need > p.allocation ? <em className="over"> · {t('compare.shortBy', { n: (need - p.allocation).toFixed(1) })}</em> : <em className="ok"> · {t('compare.fits')}</em>}
       </p>
       {p.running ? (
-        <button type="button" className="btn btn-outline wide" onClick={p.onStop} data-testid="sim-stop">Stop sim</button>
+        <button type="button" className="btn btn-outline wide" onClick={p.onStop} data-testid="sim-stop">{t('compare.stopSim')}</button>
       ) : (
         <button type="button" className="btn btn-primary wide" onClick={start} data-testid="sim-start">
-          Play {year} on the map<Icon name="play" size={16} />
+          {t('compare.playOnMap', { year })}<Icon name="play" size={16} />
         </button>
       )}
     </div>

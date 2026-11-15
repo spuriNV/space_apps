@@ -1,20 +1,21 @@
 // Dry / wet / typical year: irrigation need from engine replay (2022, 2023) or 2015–2025 mean.
 import type { RotationStrategy } from '../../types';
 import { isBC } from '../../api';
+import { t } from '../../i18n';
 import type { Location } from '../../types';
 import { isRainFed, mmToAfac } from '../../lib';
 
 export type Weather = 'typical' | '2022' | '2023';
 
 export const WEATHER_LABEL: Record<Weather, string> = {
-  typical: 'Typical year',
-  '2022': 'Dry, like 2022',
-  '2023': 'Wet, like 2023',
+  typical: t('compare.wTypical'),
+  '2022': t('compare.wDry'),
+  '2023': t('compare.wWet'),
 };
 
 export function weatherLabels(loc: Location): Record<Weather, string> {
   if (!isBC(loc)) return WEATHER_LABEL;
-  return { typical: 'Typical year', '2022': 'Drier year (2022 weather)', '2023': 'Restricted water (like 2023)' };
+  return { typical: t('compare.wTypical'), '2022': t('compare.bcDry'), '2023': t('compare.bcWet') };
 }
 
 export function irrigationNeedMm(s: RotationStrategy, w: Weather) {
@@ -53,27 +54,27 @@ export function scenarioBlurb(loc: Location, w: Weather, rotation: RotationStrat
   const dataNote = replayNote && !/^engine replay/i.test(replayNote) ? replayNote : '';
 
   if (w === 'typical') {
-    return `Typical year uses average sun, rain and heat here, 2015–2025. This rotation needs about ${typ.toFixed(1)} acre-ft/acre of irrigation in the model.`;
+    return t('compare.blTypical', { n: typ.toFixed(1) });
   }
 
   const headline = w === '2022'
-    ? (bc ? '2022 had less rain and tighter irrigation orders on many farms.' : 'Dry like 2022: less rain and more heat at this field.')
-    : (bc ? '2023 brought a wet winter; many growers irrigated less.' : 'Wet like 2023: more winter rain and some cooler weeks.');
+    ? (bc ? t('compare.bl2022bc') : t('compare.bl2022'))
+    : (bc ? t('compare.bl2023bc') : t('compare.bl2023'));
 
   const d = cur - typ;
   let needLine: string;
   if (Math.abs(d) < 0.08) {
-    needLine = `In the model, irrigation need stays about ${cur.toFixed(1)} acre-ft/acre (within ${Math.abs(d).toFixed(1)} of a typical year). Most rain still falls before summer pumping.`;
+    needLine = t('compare.needSame', { n: cur.toFixed(1), d: Math.abs(d).toFixed(1) });
   } else if (d > 0) {
-    needLine = `Needs about ${cur.toFixed(1)} acre-ft/acre, roughly ${d.toFixed(1)} more than a typical year (${typ.toFixed(1)}).`;
+    needLine = t('compare.needMore', { n: cur.toFixed(1), d: d.toFixed(1), typ: typ.toFixed(1) });
   } else {
-    needLine = `Needs about ${cur.toFixed(1)} acre-ft/acre, roughly ${(-d).toFixed(1)} less than a typical year (${typ.toFixed(1)}).`;
+    needLine = t('compare.needLess', { n: cur.toFixed(1), d: (-d).toFixed(1), typ: typ.toFixed(1) });
   }
 
   const rain = exposedRainDays(rotation, w);
   const rainTyp = rotation.exposure.exposed_rain_days;
   const rainBit = rain.value != null && Math.abs((rain.value ?? 0) - (rainTyp.value ?? 0)) >= 0.4
-    ? ` Heavy rain on bare soil: about ${rain.value!.toFixed(1)} days a year${w === '2022' ? ' (dry year)' : ' (wet year)'}.`
+    ? ` ${t('compare.heavyRainBit', { n: rain.value!.toFixed(1), y: w === '2022' ? t('compare.dryYearP') : t('compare.wetYearP') })}`
     : '';
 
   return `${headline} ${needLine}${rainBit}${dataNote ? ` ${dataNote}` : ''}`;
@@ -81,9 +82,9 @@ export function scenarioBlurb(loc: Location, w: Weather, rotation: RotationStrat
 
 export function fitsLimit(s: RotationStrategy, w: Weather, allocation: number): string {
   const need = waterOf(s, w);
-  if (need.rf) return 'Fits your limit';
-  if (need.v == null) return 'Need not scored yet';
-  if ((need.hi ?? 0) <= allocation) return 'Fits your limit';
-  if ((need.lo ?? 0) > allocation) return 'Over your limit';
-  return 'May go over your limit';
+  if (need.rf) return t('compare.fitsLimit');
+  if (need.v == null) return t('compare.needNotScored');
+  if ((need.hi ?? 0) <= allocation) return t('compare.fitsLimit');
+  if ((need.lo ?? 0) > allocation) return t('compare.overLimit');
+  return t('compare.mayGoOver');
 }

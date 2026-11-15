@@ -1,4 +1,5 @@
 import RainLayer from './components/RainLayer';
+import { t, isEs } from './i18n';
 import { addCatalogLayers, setCatalogData, type CatalogItem } from './components/week/catalog';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { DROUGHT_COLOR, RAIN_COLOR } from './components/rain/RainControl';
@@ -27,7 +28,7 @@ const STYLE: StyleSpecification = {
     { id: 'roads', type: 'line', source: 'omt', 'source-layer': 'transportation', minzoom: 8, filter: ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary']]], paint: { 'line-color': 'rgba(255,236,170,0.5)', 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.6, 14, 2.2] } },
     { id: 'admin', type: 'line', source: 'omt', 'source-layer': 'boundary', filter: ['all', ['<=', ['get', 'admin_level'], 4], ['!=', ['get', 'maritime'], 1]], paint: { 'line-color': 'rgba(255,255,255,0.6)', 'line-width': 1.1, 'line-dasharray': [3, 2] } },
     { id: 'place', type: 'symbol', source: 'omt', 'source-layer': 'place', filter: ['in', ['get', 'class'], ['literal', ['city', 'town', 'state']]],
-      layout: { 'text-field': ['coalesce', ['get', 'name:en'], ['get', 'name']], 'text-font': ['Noto Sans Bold'], 'text-size': ['interpolate', ['linear'], ['zoom'], 4, ['match', ['get', 'class'], 'state', 14, 13], 12, 16], 'text-letter-spacing': ['match', ['get', 'class'], 'state', 0.18, 0.02], 'text-transform': ['match', ['get', 'class'], 'state', 'uppercase', 'none'], 'symbol-sort-key': ['get', 'rank'], 'text-padding': 6 },
+      layout: { 'text-field': isEs ? ['coalesce', ['get', 'name:es'], ['get', 'name:en'], ['get', 'name']] : ['coalesce', ['get', 'name:en'], ['get', 'name']], 'text-font': ['Noto Sans Bold'], 'text-size': ['interpolate', ['linear'], ['zoom'], 4, ['match', ['get', 'class'], 'state', 14, 13], 12, 16], 'text-letter-spacing': ['match', ['get', 'class'], 'state', 0.18, 0.02], 'text-transform': ['match', ['get', 'class'], 'state', 'uppercase', 'none'], 'symbol-sort-key': ['get', 'rank'], 'text-padding': 6 },
       paint: { 'text-color': ['match', ['get', 'class'], 'state', 'rgba(255,255,255,0.75)', '#ffffff'], 'text-halo-color': 'rgba(5,10,16,0.85)', 'text-halo-width': 1.5 } },
   ],
 };
@@ -271,8 +272,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       d.dataset.id = loc.id;
       const lc = latestCrop(loc);
       d.innerHTML = `${PIN_SVG}<span class="pin-text"><b></b><i></i></span>`;
-      d.querySelector('b')!.textContent = loc.spot && !loc.mine ? (loc.spot.state === 'ready' ? fieldName(loc) : 'Tapped spot') : fieldName(loc);
-      d.querySelector('i')!.textContent = loc.mine ? `${acres(loc)} acres · yours` : loc.spot && loc.spot.state !== 'ready' ? 'Analysing this spot…' : `${acres(loc)} acres${Number.isFinite(lc.year) ? ` · ${lc.crop} in ${lc.year}` : ''}`;
+      d.querySelector('b')!.textContent = loc.spot && !loc.mine ? (loc.spot.state === 'ready' ? fieldName(loc) : t('map.tapped')) : fieldName(loc);
+      d.querySelector('i')!.textContent = loc.mine ? t('map.yours', { a: acres(loc) }) : loc.spot && loc.spot.state !== 'ready' ? t('map.analysing') : Number.isFinite(lc.year) ? t('map.acCrop', { a: acres(loc), crop: lc.crop, y: lc.year }) : t('map.ac', { a: acres(loc) });
       d.onclick = (ev) => { ev.stopPropagation(); live.current.onSelect(loc.id); };
       d.classList.toggle('on', live.current.selected?.id === loc.id);
       // the pin tip (14, 36 inside the 28 x 36 pin) sits on the field centroid; the label hangs to its right
@@ -282,7 +283,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     for (const pl of p.bc?.places ?? []) {
       const d = document.createElement('button');
       d.className = 'pin pin-bc';
-      d.innerHTML = `<span class="pin-dot"></span><span class="pin-text"><b>${pl.name}</b><i>British Columbia · not set up yet</i></span>`;
+      d.innerHTML = `<span class="pin-dot"></span><span class="pin-text"><b>${pl.name}</b><i>${t('map.bcNot')}</i></span>`;
       d.onclick = (ev) => { ev.stopPropagation(); live.current.onBC(); };
       ms.push(new maplibregl.Marker({ element: d, anchor: 'left', offset: [-9, 0] }).setLngLat([pl.lon, pl.lat]).addTo(map)); d.setAttribute('aria-label', [...d.querySelectorAll('b, i')].map((x) => x.textContent).filter(Boolean).join(', ')); // replaces MapLibre's generic "Map marker"; it contains the visible text
     }
@@ -340,7 +341,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const d = document.createElement('div');
       d.className = 'res-tag';
       d.innerHTML = `<b></b><i></i>`;
-      d.querySelector('b')!.textContent = reserveName(pr.name ?? 'Reserve');
+      d.querySelector('b')!.textContent = reserveName(pr.name ?? t('map.reserve'));
       d.querySelector('i')!.textContent = pr.nation ?? pr.band ?? '';
       return { km: pr.distance_to_field_km ?? 99, m: new maplibregl.Marker({ element: d, anchor: 'center' }).setLngLat(at as [number, number]).addTo(map) };
     }).sort((a, b) => a.km - b.km);
@@ -366,7 +367,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const fps: unknown[] = [], grids: unknown[] = [], lbls: unknown[] = [];
     if (p.selected?.spot?.fallbackSquare) {
       const b = bbox(p.selected);
-      lbls.push({ type: 'Feature', properties: { color: '#ffd166', label: '200 m square around your tap, not a field outline' }, geometry: { type: 'Point', coordinates: [b.e, b.s] } });
+      lbls.push({ type: 'Feature', properties: { color: '#ffd166', label: t('map.sq200') }, geometry: { type: 'Point', coordinates: [b.e, b.s] } });
     }
     if (p.selected) {
       const loc = p.selected, m = mPerDeg(loc.centroid.lat), b = bbox(loc);
@@ -377,14 +378,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
           const w = loc.centroid.lon - (ds.footprint_m * ox) / m.lon, s = loc.centroid.lat - (ds.footprint_m * oy) / m.lat;
           const e = w + ds.footprint_m / m.lon, n = s + ds.footprint_m / m.lat;
           fps.push(rect(w, s, e, n, { color: ds.color }));
-          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${({ grace: 'Groundwater', smap: 'Soil moisture', imerg: 'Rainfall', modis: 'Greenness' } as Record<string, string>)[ds.id] ?? ds.name}: this ${(ds.footprint_m / 1609).toFixed(0)}-mile square${ds.id === 'smap' && !live.current.regionalLive.smap ? ' (still downloading)' : ''}` }, geometry: { type: 'Point', coordinates: [e, n] } });
+          lbls.push({ type: 'Feature', properties: { color: ds.color, label: t(ds.id === 'smap' && !live.current.regionalLive.smap ? 'map.mileSqDl' : 'map.mileSq', { name: ['grace', 'smap', 'imerg', 'modis'].includes(ds.id) ? t(`map.ds.${ds.id}`) : ds.name, n: (ds.footprint_m / 1609).toFixed(0) }) }, geometry: { type: 'Point', coordinates: [e, n] } });
         } else if (ds.id !== 'hls') {
           const pad = ds.footprint_m * 2, lines: number[][][] = [];
           const w = b.w - pad / m.lon, e = b.e + pad / m.lon, s = b.s - pad / m.lat, n = b.n + pad / m.lat;
           for (let x = w; x <= e + 1e-9; x += ds.footprint_m / m.lon) lines.push([[x, s], [x, n]]);
           for (let y = s; y <= n + 1e-9; y += ds.footprint_m / m.lat) lines.push([[w, y], [e, y]]);
           grids.push({ type: 'Feature', properties: { color: ds.color }, geometry: { type: 'MultiLineString', coordinates: lines } });
-          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${ds.name} · ${ds.native_scale} grid` }, geometry: { type: 'Point', coordinates: [e, s] } });
+          lbls.push({ type: 'Feature', properties: { color: ds.color, label: t('map.grid', { name: ds.name, scale: ds.native_scale }) }, geometry: { type: 'Point', coordinates: [e, s] } });
         }
       }
     }
@@ -465,21 +466,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       }));
       const mean = n ? sum / n : 0;
       const real = !!cells.layers;
-      info.push({ key: 'hls', alt: cellBase + 60 * S, pad: 0, color: '#7ee081', tag: real ? `Sentinel-2 satellite, 100 ft squares${p.metric === 'et' ? ' · water use is example numbers' : ''}` : 'Landsat and Sentinel-2, 100 ft squares · example numbers', title: p.metric === 'et' ? 'The crop: water it is using' : `The crop: ${CLASS_LABEL[fs.cls].toLowerCase()}`,
-        value: (real ? !n : fs.cls === 'u') ? 'No clear view (cloud)' : p.metric === 'et' ? `${mean.toFixed(1)} mm/day (${(mean / 25.4).toFixed(2)} in/day)` : `Greenness ${mean.toFixed(2)} on a 0 to 1 scale`,
-        note: real ? `${cells.features.length} squares · ${gridLayerLabel(layer)}` : `${cells.features.length} cells inside your field · ${p.detector === 'rule' ? 'rule' : 'ML'} detector${fs.disagree ? ' · detectors disagree' : ''}` });
+      info.push({ key: 'hls', alt: cellBase + 60 * S, pad: 0, color: '#7ee081', tag: real ? t(p.metric === 'et' ? 'map.tagS2et' : 'map.tagS2') : t('map.tagLS'), title: p.metric === 'et' ? t('map.cropWater') : t('map.crop', { c: CLASS_LABEL[fs.cls].toLowerCase() }),
+        value: (real ? !n : fs.cls === 'u') ? t('map.noView') : p.metric === 'et' ? t('map.mmday', { mm: mean.toFixed(1), inch: (mean / 25.4).toFixed(2) }) : t('map.green', { v: mean.toFixed(2) }),
+        note: real ? t('map.squares', { n: cells.features.length, l: gridLayerLabel(layer) }) : t(fs.disagree ? 'map.cellsDis' : 'map.cells', { n: cells.features.length, d: p.detector === 'rule' ? t('map.rule') : t('map.ml') }) });
     } else if (!replaying.current) set('cells', []);
     if (p.layersOn.smap) {
       const b = 235 * S, col = smap == null ? '#737a86' : ramp(SMAP_RAMP, smap);
       set('slab-smap', [padded(loc, 110 * S, { b, h: b + (14 + (smap ?? 10) * 0.42) * S, col })]);
-      info.push({ key: 'smap', alt: b + 20 * S, pad: 110 * S, color: '#5ab0ff', tag: p.regionalLive.soilSource === 'grace_da' ? 'NASA GRACE-FO with a land model, root zone' : `NASA SMAP satellite${p.regionalLive.smap ? '' : ' · example numbers'}`, title: 'Soil moisture in the root zone', value: smap == null ? 'No reading' : `${smap >= 67 ? 'Wetter than usual' : smap > 33 ? 'About normal' : 'Drier than usual'} (${ordinal(Math.round(smap))} percentile)`,
-        note: fs.cls === 'w' ? 'Reading is unreliable over standing water' : `One reading covers about ${Math.round(81 / (loc.area_ha.value / 100))} fields this size` });
+      info.push({ key: 'smap', alt: b + 20 * S, pad: 110 * S, color: '#5ab0ff', tag: p.regionalLive.soilSource === 'grace_da' ? t('map.tagGraceDA') : t(p.regionalLive.smap ? 'map.tagSmap' : 'map.tagSmapEx'), title: t('map.smapTitle'), value: smap == null ? t('map.noRead') : t('map.pctl', { w: smap >= 67 ? t('map.wetter') : smap > 33 ? t('map.normal') : t('map.drier'), n: ordinal(Math.round(smap)) }),
+        note: fs.cls === 'w' ? t('map.unrel') : t('map.covers', { n: Math.round(81 / (loc.area_ha.value / 100)) }) });
     } else set('slab-smap', []);
     if (p.layersOn.grace) {
       const b = 45 * S, col = grace == null ? '#5d636e' : ramp(GRACE_RAMP, grace);
       set('slab-grace', [padded(loc, 230 * S, { b, h: b + (14 + (grace ?? 4) * 0.42) * S, col })]);
-      info.push({ key: 'grace', alt: b + 16 * S, pad: 230 * S, color: '#ff7eb6', tag: `NASA GRACE-FO satellites${p.regionalLive.grace ? '' : ' · example numbers'}`, title: 'Groundwater in the basin', value: grace == null ? 'No reading: gap between satellite missions' : `${grace >= 67 ? 'More than usual' : grace > 33 ? 'About normal' : 'Less than usual'} (${ordinal(Math.round(grace))} percentile)`,
-        note: 'Basin-wide signal, not your own well' });
+      info.push({ key: 'grace', alt: b + 16 * S, pad: 230 * S, color: '#ff7eb6', tag: t(p.regionalLive.grace ? 'map.tagGrace' : 'map.tagGraceEx'), title: t('map.graceTitle'), value: grace == null ? t('map.gap') : t('map.pctl', { w: grace >= 67 ? t('map.more') : grace > 33 ? t('map.normal') : t('map.less'), n: ordinal(Math.round(grace)) }),
+        note: t('map.basinWide') });
     } else set('slab-grace', []);
     // corner posts tie the slabs together
     const bb = bbox(loc), m = mPerDeg(loc.centroid.lat), w = 5 * S;
@@ -557,9 +558,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const hist = (loc.crop_history ?? {}) as Record<string, string>;
     const QN = ['Jan to Mar', 'Apr to Jun', 'Jul to Sep', 'Oct to Dec'];
     const captionFor = (year: number) => {
-      if (year === 2022 && dryYear) return { head: '2022: water ran short. The field stayed bare all year.', sub: 'No green-up in any quarter. Compare 2021 and 2023.' };
+      if (year === 2022 && dryYear) return { head: t('map.cap2022'), sub: t('map.cap2022s') };
       const crop = hist[String(year)];
-      return { head: crop ? `${year}: ${crop.replace('Fallow/Idle Cropland', 'fallow')}` : `${year}`, sub: crop ? 'USDA crop record, as the satellites saw it' : 'Satellite record only; USDA crop record not out yet' };
+      return { head: crop ? `${year}: ${crop.replace('Fallow/Idle Cropland', t('map.fallow'))}` : `${year}`, sub: crop ? t('map.capUsda') : t('map.capNone') };
     };
     // timeline (s): fly, draw, rise, then the quarters; 2022 plays slowly where the data is dry
     const T = RM ? { fly: [0, 0], line: [0, 0], rise: [0, 0] } : { fly: [0, 5.2], line: [3.8, 5.8], rise: [5.4, 6.6] };
@@ -722,13 +723,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     <div className={`map-wrap zoom-${zoomClass}`}>
       <div ref={el} className="map" />
       <RainLayer map={mapRef.current} ready={ready} on={!!p.layersOn.rain} leftInset={p.leftInset} bottomInset={p.bottomInset} />
-      <button className={`lands-legend ${p.landsOn ? 'on' : ''}`} style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 + (p.reservesChip && !p.landsOn ? 62 : 0) }} onClick={p.onToggleLands} aria-pressed={!!p.landsOn} data-testid="lands-legend" title={p.landsOn ? 'Hide First Nations lands' : 'Show First Nations lands'}>
-        <i aria-hidden="true" /><span>First Nations lands</span><small>{p.landsOn ? 'Reserves and tribal lands. Click one.' : 'Hidden. Tap to show.'}</small>
+      <button className={`lands-legend ${p.landsOn ? 'on' : ''}`} style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 + (p.reservesChip && !p.landsOn ? 62 : 0) }} onClick={p.onToggleLands} aria-pressed={!!p.landsOn} data-testid="lands-legend" title={p.landsOn ? t('map.hideLands') : t('map.showLands')}>
+        <i aria-hidden="true" /><span>{t('map.lands')}</span><small>{p.landsOn ? t('map.landsOn') : t('map.landsOff')}</small>
       </button>
       {p.reservesChip && !p.landsOn && (
         <button className={`res-legend ${p.reservesOn ? 'on' : ''}`} style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 }} onClick={p.onToggleReserves} aria-pressed={!!p.reservesOn} data-testid="reserves-legend">
-          <span><i />Reserve land</span>
-          <small>{p.reservesOn ? 'Shown for context. Tap to hide.' : 'Tap to show on the map.'}</small>
+          <span><i />{t('map.resLand')}</span>
+          <small>{p.reservesOn ? t('map.resOn') : t('map.resOff')}</small>
         </button>
       )}
       {caption && <div className="stack-label replay-cap" style={{ top: 176, left: p.leftInset + (el.current?.clientWidth ?? 1200) / 2 - p.leftInset / 2 }} role="status" aria-live="polite" data-testid="replay-caption"><b>{caption.head}</b><i>{caption.sub}</i></div>}

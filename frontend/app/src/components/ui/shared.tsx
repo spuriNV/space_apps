@@ -6,22 +6,24 @@ import { linkOf } from '../../types';
 import { BARE_DEF, observedBare, usuallyBareMonths } from '../../bare';
 import type { ProvMap, Prov } from '../../api';
 import { SOIL_COLOR, dateToT, fmtDate, haToAc, yearOf, dekadOf } from '../../lib';
-const MONTHS_FULL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+import { t, tx, isEs, locale } from '../../i18n';
 import Icon from '../Icons';
 
 export const fieldCode = (l: Location) => (l.dwr_id ? `DWR ${l.dwr_id}` : l.id.toUpperCase());
-export const coords = (l: Location) => `${Math.abs(l.centroid.lat).toFixed(4)}° ${l.centroid.lat >= 0 ? 'N' : 'S'}, ${Math.abs(l.centroid.lon).toFixed(4)}° ${l.centroid.lon < 0 ? 'W' : 'E'}`;
+/** "State field no. 123" for a DWR field code, else the id (lower-cased by the brief). */
+export const stateFieldNo = (l: Location) => fieldCode(l).replace('DWR ', `${t('ui.statefield')} `);
+export const coords = (l: Location) => `${Math.abs(l.centroid.lat).toFixed(4)}° ${l.centroid.lat >= 0 ? t('ui.dir.N') : t('ui.dir.S')}, ${Math.abs(l.centroid.lon).toFixed(4)}° ${l.centroid.lon < 0 ? t('ui.dir.W') : t('ui.dir.E')}`;
 export const county = (l: Location) => l.county_name ?? l.county ?? (l.id === 'car_colusa_rice' ? 'Colusa' : 'Kings');
 /** "Kings County" in California; "Columbia-Shuswap, BC" (a regional district) in British Columbia. */
-export const place = (l: Location) => (l.spot ? spotPlace(l) : l.region === 'bc' ? `${county(l)}, BC` : `${county(l)} County`);
+export const place = (l: Location) => (l.spot ? spotPlace(l) : l.region === 'bc' ? `${county(l)}, BC` : t('ui.place.county', { name: county(l) }));
 /** A tapped spot's place: its county (and state outside California), or the coordinates when no US county was found. */
 const spotPlace = (l: Location) => (l.region === 'bc'
-  ? `${(l as { regional_district?: string | null }).regional_district || l.county_name || 'British Columbia'}, BC`
-  : l.county_name ?`${l.county_name} County${l.state_code && l.state_code !== 'CA' ? `, ${l.state_code}` : ''}` : l.spot?.state === 'ready' ? 'Outside the US counties' : 'Finding the county');
+  ? `${(l as { regional_district?: string | null }).regional_district || l.county_name || t('ui.place.bc')}, BC`
+  : l.county_name ? `${t('ui.place.county', { name: l.county_name })}${l.state_code && l.state_code !== 'CA' ? `, ${l.state_code}` : ''}` : l.spot?.state === 'ready' ? t('ui.place.outside') : t('ui.place.finding'));
 /** The weather stations behind heat, frost and station rain. */
-export const stationsName = (l: Location) => (l.region === 'bc' ? 'Environment Canada (ECCC) weather stations near the field' : 'NOAA weather stations near the field');
+export const stationsName = (l: Location) => (l.region === 'bc' ? t('ui.stations.bc') : t('ui.stations.ca'));
 /** The yearly crop map. */
-export const cropMapName = (l: Location) => (l.region === 'bc' ? 'AAFC Annual Crop Inventory (Agriculture Canada)' : 'USDA Cropland Data Layer');
+export const cropMapName = (l: Location) => (l.region === 'bc' ? t('ui.cropmap.bc') : t('ui.cropmap.ca'));
 /** Soil with the API's placeholders ("unknown", a pending SoilGrids name) blanked, for text that reads the fields directly. */
 export const cleanSoil = (s: Location['soil'] | undefined): Location['soil'] => {
   const x = s ?? ({} as Location['soil']);
@@ -33,17 +35,19 @@ export const known = (x?: string | null) => !!x && !/^(unknown|pending|n\/a)$/i.
 export const acres = (l: Location) => Math.round(haToAc(l.area_ha.value));
 
 /** Plain crop names: the Cropland Data Layer's own labels are not what a grower says. */
-export const usd = (v: number) => (v >= 1e6 ? `$${(v / 1e6).toFixed(v >= 1e8 ? 0 : 1)} million` : `$${Math.round(v / 1000).toLocaleString()} thousand`);
-export const cropName = (raw = '') => { const c = raw.replace(/\s*\(CDL pending\)/i, ''); return (
+export const usd = (v: number) => (v >= 1e6 ? t('ui.usd.million', { n: (v / 1e6).toFixed(v >= 1e8 ? 0 : 1) }) : t('ui.usd.thousand', { n: Math.round(v / 1000).toLocaleString(locale) }));
+export const cropKey = (raw = '') => { const c = raw.replace(/\s*\(CDL pending\)/i, ''); return (
   c.startsWith('Pasture / Forages') ? 'Hay or pasture' : c.startsWith('Agriculture (undifferentiated)') ? 'Farmland, crop not identified' : c.startsWith('Not mapped') ? 'Not mapped' :
   c.startsWith('Fallow') ? 'Left fallow' : c.startsWith('Dbl Crop WinWht/Corn') ? 'Wheat, then corn' : c.startsWith('Dbl') ? c.replace('Dbl Crop ', '').replace('/', ', then ') : c || 'Not recorded'); };
+/** The crop's name for display (Spanish in Spanish mode); `cropKey` stays English for comparisons and colours. */
+export const cropName = (raw = '') => { const k = cropKey(raw), whole = tx(k); return whole !== k || !k.includes(', then ') ? whole : k.split(', then ').map(tx).join(t('ui.then')); };
 
 const TOWNS: [string, number, number][] = [
   ['Williams', 39.1546, -122.1494], ['Colusa', 39.2143, -122.0094], ['Arbuckle', 39.0174, -122.0578], ['Maxwell', 39.2763, -122.1914],
   ['Hanford', 36.3275, -119.6457], ['Lemoore', 36.3008, -119.7829], ['Corcoran', 36.098, -119.5604], ['Stratford', 36.1897, -119.8232],
   ['Salmon Arm', 50.7001, -119.2838], ['Enderby', 50.5508, -119.1397],
 ];
-const DIRS = ['north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west', 'northwest'];
+const DIRS = () => ['north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west', 'northwest'].map((d) => t(`ui.dir.${d}`));
 /** "3 miles east of Williams": nearest town from a short list, computed from the field centroid. */
 export function nearTown(l: Location) {
   const { lat, lon } = l.centroid;
@@ -54,36 +58,39 @@ export function nearTown(l: Location) {
   }
   if (best.km > 60) return place(l);
   const mi = Math.max(1, Math.round(best.km * 0.621 * 2) / 2);
-  const dir = DIRS[Math.round(((Math.atan2(best.dx, best.dy) * 180) / Math.PI + 360) % 360 / 45) % 8];
-  return `${mi % 1 ? mi.toFixed(1) : mi} mile${mi === 1 ? '' : 's'} ${dir} of ${best.name}`;
+  const dir = DIRS()[Math.round(((Math.atan2(best.dx, best.dy) * 180) / Math.PI + 360) % 360 / 45) % 8];
+  return t(mi === 1 ? 'ui.near.one' : 'ui.near.many', { mi: mi % 1 ? mi.toFixed(1) : mi, dir, name: best.name });
 }
 const years = (l: Location) => Object.keys(l.crop_history).map(Number).sort();
-export const latestCrop = (l: Location) => { const ys = years(l), y = ys[ys.length - 1]; return { year: y, crop: cropName(l.crop_history[y]) }; };
+export const latestCrop = (l: Location) => { const ys = years(l), y = ys[ys.length - 1]; return { year: y, crop: cropName(l.crop_history[y]), key: cropKey(l.crop_history[y]) }; };
 /** The crop the field is known for: most frequent non-fallow crop over the last 10 years on record. */
 export function mainCrop(l: Location) {
   const n: Record<string, number> = {};
-  years(l).slice(-10).forEach((y) => { const c = cropName(l.crop_history[y]); if (c !== 'Left fallow') n[c] = (n[c] ?? 0) + 1; });
+  years(l).slice(-10).forEach((y) => { const c = cropKey(l.crop_history[y]); if (c !== 'Left fallow') n[c] = (n[c] ?? 0) + 1; });
   return Object.entries(n).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'Crop';
 }
 /** BC: the grower's short name in miles ("Hay field 6 miles southwest of Salmon Arm"), not the API's longer km name. */
-export const fieldName = (l: Location) => (l.region === 'bc' ? `${mainCrop(l).split(/,| or /)[0]} field ${nearTown(l)}` : l.farmer_name ?? `${mainCrop(l).split(',')[0]} field ${nearTown(l)}`);
+const cropWord = (c: string) => (isEs ? tx(c).toLowerCase() : c);
+export const fieldName = (l: Location) => (l.region === 'bc' ? t('ui.field.name', { crop: cropWord(mainCrop(l).split(/,| or /)[0]), near: nearTown(l) }) : l.farmer_name ?? t('ui.field.name', { crop: cropWord(mainCrop(l).split(',')[0]), near: nearTown(l) }));
 
 /** Data status as words in the source line, not a pill: measured / from a saved run / example numbers. */
 export function Src({ p }: { p?: Prov }) {
   // live parts carry no status words; only example data (API not answering) is flagged
-  if (p?.origin === 'estimate') return <span className="src-tag est status estimate" title={`${p.label}: estimated, not measured on this field`}>Estimated.</span>;
+  if (p?.origin === 'estimate') return <span className="src-tag est status estimate" title={t('ui.src.est_title', { label: p.label })}>{t('ui.src.est')}</span>;
   if (!p || p.origin !== 'mock') return null;
-  return <span className="src-tag mock status example" title={`${p.label}: ${p.detail}`}>Example numbers.</span>;
+  return <span className="src-tag mock status example" title={`${p.label}: ${p.detail}`}>{t('ui.src.example')}</span>;
 }
 
 /** The satellites behind the field calendar, NASA first. */
-export const calSource = (p?: Prov) => (/HLS/.test(p?.detail ?? '') ? 'NASA/USGS HLS satellites (Landsat and Sentinel-2, harmonised by NASA)' : 'Landsat (NASA/USGS) and Sentinel-2 satellites');
+export const calSource = (p?: Prov) => (/HLS/.test(p?.detail ?? '') ? t('ui.cal.hls') : t('ui.cal.ls'));
+/** The same without the word "satellites" (for "Greenness from ..."). */
+export const calSourceShort = (p?: Prov) => (/HLS/.test(p?.detail ?? '') ? t('ui.cal.hls_short') : t('ui.cal.ls_short'));
 
 /** BC: a California dataset this field lacks. `missing` = the route still answers 404: one quiet line where the panel would be.
  *  Otherwise the panel shows the API's estimate and this line (why, and what fills the gap) sits under More detail. */
 export function GapLine({ gap, missing, className = '' }: { gap: DataGap | null; missing: boolean; className?: string }) {
   if (!gap) return null;
-  if (missing) return <span className={`gap-line ${className}`} data-testid={`gap-${gap.id}`}>Not available in BC. {gap.reason}</span>;
+  if (missing) return <span className={`gap-line ${className}`} data-testid={`gap-${gap.id}`}>{t('ui.gap.bc')} {gap.reason}</span>;
   return <span className={`gap-line d-only ${className}`} data-testid={`gap-${gap.id}`}>{gap.reason}{gap.filled_with ? ` ${cap1(gap.filled_with)}${/[.]$/.test(cap1(gap.filled_with)) ? '' : '.'}` : ''}</span>;
 }
 // "(/insurance)" and similar API route names are for developers, not growers
@@ -93,11 +100,11 @@ export type Step = 'drill' | 'year' | 'compare' | 'brief' | 'season';
 export type FlowId = 'pick' | 'now' | 'season' | 'compare' | 'brief';
 /** The numbered path (from the sp branch): one step per screen, steps 2 to 5 locked until a field is picked. */
 export const FLOW: { n: number; id: FlowId; label: string; short: string; does: string }[] = [
-  { n: 1, id: 'pick', label: 'Pick your field', short: 'Pick', does: 'Choose the field' },
-  { n: 2, id: 'now', label: 'Your field now', short: 'Now', does: 'Does today’s plan fit the water?' },
-  { n: 3, id: 'season', label: 'Coming season', short: 'Season', does: 'What winter and next year look like' },
-  { n: 4, id: 'compare', label: 'Compare rotations', short: 'Compare', does: 'What you’d gain or give up' },
-  { n: 5, id: 'brief', label: 'Print for your adviser', short: 'Print', does: 'One page to take with you' },
+  { n: 1, id: 'pick', label: t('ui.flow.pick.label'), short: t('ui.flow.pick.short'), does: t('ui.flow.pick.does') },
+  { n: 2, id: 'now', label: t('ui.flow.now.label'), short: t('ui.flow.now.short'), does: t('ui.flow.now.does') },
+  { n: 3, id: 'season', label: t('ui.flow.season.label'), short: t('ui.flow.season.short'), does: t('ui.flow.season.does') },
+  { n: 4, id: 'compare', label: t('ui.flow.compare.label'), short: t('ui.flow.compare.short'), does: t('ui.flow.compare.does') },
+  { n: 5, id: 'brief', label: t('ui.flow.brief.label'), short: t('ui.flow.brief.short'), does: t('ui.flow.brief.does') },
 ];
 /** Top of each step's screen: where you are ("Step 2 of 5", with a 5-segment bar) and one sentence on what the step is for.
  *  After the USWDS step indicator and the GOV.UK one-question-per-page heading. */
@@ -106,7 +113,7 @@ export function StepLine({ id, purpose }: { id: FlowId; purpose?: string }) {
   return (
     <div className="step-line" data-testid={`step-line-${id}`}>
       <p className="step-of">
-        <b>Step {i + 1} of {FLOW.length}</b>
+        <b>{t('ui.step.of', { n: i + 1, total: FLOW.length })}</b>
         <span className="step-bar" aria-hidden="true">{FLOW.map((s, k) => <i key={s.id} className={k < i ? 'done' : k === i ? 'on' : ''} />)}</span>
       </p>
       {purpose && <p className="step-purpose">{purpose}</p>}
@@ -116,9 +123,9 @@ export function StepLine({ id, purpose }: { id: FlowId; purpose?: string }) {
 /** Problem, what this tool does, goal. Shown on Pick. */
 export function Workflow() {
   const rows: [string, string][] = [
-    ['The problem', '2023 cut forage water. Will your plan still fit?'],
-    ['What this does', 'Reads NASA satellite data for your field and checks it against the water you can count on.'],
-    ['Your goal', 'A rotation you can print and take to your adviser.'],
+    [t('ui.wf.problem'), t('ui.wf.problem_t')],
+    [t('ui.wf.does'), t('ui.wf.does_t')],
+    [t('ui.wf.goal'), t('ui.wf.goal_t')],
   ];
   return (
     <dl className="workflow" data-testid="workflow">
@@ -127,11 +134,11 @@ export function Workflow() {
   );
 }
 export const ACTIONS: { id: Step; label: string; sub: string }[] = [
-  { id: 'season', label: 'What’s likely this winter', sub: 'Rain, drought, reservoirs, bare weeks' },
-  { id: 'year', label: 'See this field’s year (3D)', sub: 'Bare, green or flooded, 2023–2026, on the 3D grid' },
-  { id: 'drill', label: 'Look under the field in 3D', sub: 'Crop, soil moisture, then groundwater slabs' },
-  { id: 'compare', label: 'Compare rotations', sub: 'What you gain and give up' },
-  { id: 'brief', label: 'Print for your adviser', sub: 'One page, Letter size' },
+  { id: 'season', label: t('ui.act.season'), sub: t('ui.act.season_s') },
+  { id: 'year', label: t('ui.act.year'), sub: t('ui.act.year_s') },
+  { id: 'drill', label: t('ui.act.drill'), sub: t('ui.act.drill_s') },
+  { id: 'compare', label: t('ui.act.compare'), sub: t('ui.act.compare_s') },
+  { id: 'brief', label: t('ui.act.brief'), sub: t('ui.act.brief_s') },
 ];
 const brief = () => ACTIONS.find((a) => a.id === 'brief')!;
 /** The one primary action of the field panel: a filled pill in the panel footer. */
@@ -141,7 +148,7 @@ export function PrimaryAction({ onStep }: { onStep: (s: Step) => void }) {
 /** The other next steps as tappable rows with a chevron (they open a view), after the answers. */
 export function NextSteps({ onStep }: { onStep: (s: Step) => void }) {
   return (
-    <nav className="next-steps" aria-label="Next steps">
+    <nav className="next-steps" aria-label={t('ui.act.next')}>
       {ACTIONS.filter((a) => a.id !== 'brief').map((a) => (
         <button key={a.id} className="nav-row" onClick={() => onStep(a.id)} data-testid={`step-${a.id}`}>
           <span>{a.label}</span><Icon name="right" size={20} />
@@ -154,7 +161,7 @@ export function NextSteps({ onStep }: { onStep: (s: Step) => void }) {
 export function Actions({ onStep }: { onStep: (s: Step) => void }) {
   const order = [brief(), ...ACTIONS.filter((a) => a.id !== 'brief')];
   return (
-    <div className="sheet-actions" role="group" aria-label="Next steps">
+    <div className="sheet-actions" role="group" aria-label={t('ui.act.next')}>
       {order.map((a) => (
         <button key={a.id} className={`btn ${a.id === 'brief' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => onStep(a.id)} data-testid={`pill-${a.id}`}>
           {a.id === 'brief' && <Icon name="print" />}{a.label}
@@ -178,15 +185,15 @@ export function soilFacts(soil: Location['soil'] | null | undefined) {
   const ec = ok(s?.ec_ds_per_m) ? s!.ec_ds_per_m! : null, salty = ec != null && ec >= 4;
   const clayey = (mix ? mix.clay >= 35 : false) || /clay/.test(texture?.toLowerCase() ?? '') && !/sandy clay loam/.test(texture?.toLowerCase() ?? '');
   const sandy = (mix ? mix.sand >= 60 : /sand/.test(texture?.toLowerCase() ?? ''));
-  const rotation = salty ? 'Salt hurts some crops more than others; check the crop’s salt tolerance with your adviser.'
-    : clayey && (hg === 'C' || hg === 'D') && drain === 'slow' ? 'Clay holds water and drains slowly, so it suits flooded rice; slow drainage limits how much a rotation can improve infiltration.'
-    : sandy && inFt != null && inFt < 1.4 ? 'Sandy soil holds little water, so crops that need steady moisture take more irrigation here, and flooded rice would lose water downward.'
+  const rotation = salty ? t('ui.soil.rot_salt')
+    : clayey && (hg === 'C' || hg === 'D') && drain === 'slow' ? t('ui.soil.rot_clay')
+    : sandy && inFt != null && inFt < 1.4 ? t('ui.soil.rot_sand')
     : null;
   return {
     mix, texture,
-    holds: inFt == null ? null : `Holds ${inFt.toFixed(1)} in of water per foot.${inFt < 1.4 ? ' Low.' : ''}`,
-    drains: drain == null ? null : drain === 'slow' ? 'Drains slowly.' : drain === 'fast' ? 'Drains fast.' : 'Drains well.',
-    salt: ec == null ? null : salty ? `Salty: ${ec.toFixed(1)} dS/m.` : 'Salt is low.',
+    holds: inFt == null ? null : `${t('ui.soil.holds', { n: inFt.toFixed(1) })}${inFt < 1.4 ? ` ${t('ui.soil.low')}` : ''}`,
+    drains: drain == null ? null : drain === 'slow' ? t('ui.soil.drain_slow') : drain === 'fast' ? t('ui.soil.drain_fast') : t('ui.soil.drain_well'),
+    salt: ec == null ? null : salty ? t('ui.soil.salty', { n: ec.toFixed(1) }) : t('ui.soil.salt_low'),
     rotation,
     source: soilSourceName(s?.source?.id ?? s?.awc_mm_per_m?.source?.id),
   };
@@ -194,10 +201,10 @@ export function soilFacts(soil: Location['soil'] | null | undefined) {
 /** The soil map behind the soil facts, from the soil's source id. */
 export function soilSourceName(id?: string | null) {
   const k = (id ?? '').toLowerCase();
-  if (/aafc|slc/.test(k)) return 'AAFC Soil Landscapes of Canada v3.2, a 1:1,000,000 map (not field scale)';
-  if (/soilgrids|isric/.test(k)) return 'SoilGrids global soil model (ISRIC), 800 ft squares';
-  if (/ssurgo|usda|nrcs/.test(k)) return 'USDA soil survey (SSURGO), top 3 feet';
-  return 'Soil survey';
+  if (/aafc|slc/.test(k)) return t('ui.soil.src_aafc');
+  if (/soilgrids|isric/.test(k)) return t('ui.soil.src_sg');
+  if (/ssurgo|usda|nrcs/.test(k)) return t('ui.soil.src_ssurgo');
+  return t('ui.soil.src_other');
 }
 /** Sand / silt / clay as one stacked bar with a key underneath. */
 export function SoilBar({ mix }: { mix: { sand: number; silt: number; clay: number } }) {
@@ -205,44 +212,44 @@ export function SoilBar({ mix }: { mix: { sand: number; silt: number; clay: numb
   const parts = (['sand', 'silt', 'clay'] as const).map((k) => ({ k, w: (mix[k] / tot) * 100, pct: Math.round(mix[k]) }));
   return (
     <span className="soilbar" data-testid="soil-bar">
-      <span className="sb-track" role="img" aria-label={parts.map((x) => `${x.k} ${x.pct}%`).join(', ')}>
+      <span className="sb-track" role="img" aria-label={parts.map((x) => `${t(`ui.soil.${x.k}`)} ${x.pct}%`).join(', ')}>
         {parts.map((x) => <i key={x.k} style={{ width: `${x.w}%`, background: SOIL_COLOR[x.k] }} />)}
       </span>
-      <span className="sb-key">{parts.map((x) => <span key={x.k}><i style={{ background: SOIL_COLOR[x.k] }} />{x.k.charAt(0).toUpperCase() + x.k.slice(1)} {x.pct}%</span>)}</span>
+      <span className="sb-key">{parts.map((x) => <span key={x.k}><i style={{ background: SOIL_COLOR[x.k] }} />{t(`ui.soil.${x.k}`).replace(/^./, (c) => c.toUpperCase())} {x.pct}%</span>)}</span>
     </span>
   );
 }
 
 /** One BC order in a few words, from its kind: an order to stop irrigating (with its licence count) or a rescission. */
-export const orderText = (o: WaterOrder) => o.kind === 'rescission' ? 'order rescinded'
-  : `order to stop irrigating forage${o.licences ? ` (${o.licences} licences)` : ''}${o.effective && o.effective !== o.date ? `, from ${fmtDate(o.effective)}` : ''}`;
+export const orderText = (o: WaterOrder) => o.kind === 'rescission' ? t('ui.order.rescinded')
+  : `${t('ui.order.stop')}${o.licences ? ` (${t('ui.order.licences', { n: o.licences })})` : ''}${o.effective && o.effective !== o.date ? `, ${t('ui.order.from', { date: fmtDate(o.effective) })}` : ''}`;
 /** Water source, district, GSA and groundwater-basin status from the looked-up location (empty values left out). */
 export function WaterLine({ loc }: { loc: Location }) {
   const w = loc.water;
   const wc = loc.water_context;
   if (loc.region === 'bc') {
     // BC: no water district or groundwater basin; the watershed and the Province's irrigation orders instead
-    if (!wc) return <small className="na-line">watershed not looked up yet</small>;
+    if (!wc) return <small className="na-line">{t('ui.water.nows')}</small>;
     return (
       <>{wc.watershed.split(';')[0]}.
-        {wc.orders.map((o) => <span key={o.date + o.title} className="water-order"> {fmtDate(o.date)}: {orderText(o)}.{linkOf(o) && <> <a href={linkOf(o)!} target="_blank" rel="noreferrer">Source</a></>}</span>)}
+        {wc.orders.map((o) => <span key={o.date + o.title} className="water-order"> {fmtDate(o.date)}: {orderText(o)}.{linkOf(o) && <> <a href={linkOf(o)!} target="_blank" rel="noreferrer">{t('ui.source')}</a></>}</span>)}
       </>
     );
   }
-  const src = w?.source === 'surface' ? 'Surface water' : w?.source === 'groundwater' ? 'Groundwater (wells)' : w?.source === 'mixed' ? 'Surface water and wells' : null;
-  if (!loc.water_real) return <>{src}<small className="na-line">{src ? '; ' : ''}water district not looked up yet</small></>;
+  const src = w?.source === 'surface' ? t('ui.water.surface') : w?.source === 'groundwater' ? t('ui.water.gw') : w?.source === 'mixed' ? t('ui.water.mixed') : null;
+  if (!loc.water_real) return <>{src}<small className="na-line">{src ? '; ' : ''}{t('ui.water.nodistrict')}</small></>;
   const gsa = (Array.isArray(w.gsa) ? w.gsa : w.gsa ? [w.gsa] : []).filter(Boolean);
-  const parts = [src, w.district, gsa.length ? `GSA: ${gsa.join(', ')}` : null].filter(Boolean);
+  const parts = [src, w.district, gsa.length ? `${t('ui.water.gsa')}: ${gsa.join(', ')}` : null].filter(Boolean);
   return (
     <>{parts.join('. ')}{parts.length ? '.' : ''}
       {w.sgma_status?.text && <span className="water-sgma"> {w.sgma_status.text}.</span>}
-      {linkOf(w.sgma_status) && <> <a href={linkOf(w.sgma_status)!} target="_blank" rel="noreferrer">Source</a></>}
+      {linkOf(w.sgma_status) && <> <a href={linkOf(w.sgma_status)!} target="_blank" rel="noreferrer">{t('ui.source')}</a></>}
     </>
   );
 }
 
-const CAUSE: Record<string, string> = { drought: 'drought', excess_moisture: 'too much water', heat: 'heat', other: 'frost and other', frost_other: 'frost and other', frost: 'frost', cold: 'cold' };
-const when = (t: number) => { const d = dekadOf(t); return `${['early', 'mid', 'late'][d % 3]} ${MONTHS_FULL[Math.floor(d / 3)]}`; };
+const CAUSE: Record<string, string> = { drought: t('ui.cause.drought'), excess_moisture: t('ui.cause.excess'), heat: t('ui.cause.heat'), other: t('ui.cause.other'), frost_other: t('ui.cause.other'), frost: t('ui.cause.frost'), cold: t('ui.cause.cold') };
+const whenOf = (tt: number) => { const d = dekadOf(tt); return t('ui.when', { part: t(`ui.part.${d % 3}`), month: t(`ui.month.${Math.floor(d / 3) + 1}`) }); };
 export function AboutField({ loc, prov, cal, insurance, insGap }: { loc: Location; prov: ProvMap; cal: Calendar | null; insurance: Location['rma'] | null; insGap?: DataGap | null }) {
   const rma = insurance;
   const ob = observedBare(cal), when = usuallyBareMonths(cal), dem = loc.nasadem;
@@ -253,16 +260,16 @@ export function AboutField({ loc, prov, cal, insurance, insGap }: { loc: Locatio
   const tex = known(s.texture_class) ? s.texture_class! : '', dc = known(s.drainage_class) ? s.drainage_class! : '', hg = known(s.hydrologic_group) ? s.hydrologic_group! : '';
   return (
     <dl className="facts">
-      {(mu || tex) && <div><dt>Soil</dt><dd>{mu ? mu.split(',')[0] : ''}{tex ? `${mu ? ', ' : ''}${tex.toLowerCase()}` : ''} <cite><Src p={prov.soil} /></cite></dd></div>}
-      {inFt != null && <div><dt>Holds</dt><dd>{inFt.toFixed(1)} in of water per foot of soil{inFt < 1.4 ? ' (low: needs frequent, short irrigations)' : inFt > 2 ? ' (high)' : ''}</dd></div>}
-      {(dc || hg) && <div><dt>Drainage</dt><dd>{dc}{hg ? `${dc ? '; ' : ''}runoff group ${hg}` : ''}</dd></div>}
-      {s.ec_ds_per_m != null && <div><dt>Salt</dt><dd className={saline ? 'warn' : ''}>{saline ? 'Salty soil; limits salt-sensitive crops' : 'Low salt'}<small> (EC {s.ec_ds_per_m.toFixed(1)} dS/m)</small></dd></div>}
-      <div><dt>{loc.region === 'bc' ? 'Watershed' : 'Water'}</dt><dd><WaterLine loc={loc} /></dd></div>
-      {dem?.slope_mean_pct != null && <div><dt>Slope</dt><dd>{dem.slope_mean_pct < 2 ? 'Nearly flat' : dem.slope_mean_pct < 5 ? 'Gentle slope' : 'Sloping'}, about {dem.slope_mean_pct.toFixed(1)}% on average{dem.low_spot_fraction ? `; low spots on about ${Math.round(dem.low_spot_fraction * 100)}% of the field, where water ponds and frost settles` : ''}. <cite>NASA NASADEM elevation, 100 ft squares; radar elevation reads 1 to 2% on a levelled field. <Src p={prov.terrain} /></cite></dd></div>}
-      {!rma && insGap && <div><dt>Crop insurance</dt><dd><GapLine gap={insGap} missing /></dd></div>}
-      {rma && rma.total_usd == null && <div><dt>Crop losses</dt><dd>Usual causes of crop loss here: {(rma.shares ?? []).map((x) => `${CAUSE[x.cause] ?? x.cause.replace(/_/g, ' ')} ${Math.round(x.share * 100)}%`).join(', ')}. No dollar figures. <cite><Src p={prov.rma} /></cite>{insGap && <GapLine gap={insGap} missing={false} />}</dd></div>}
-      {rma && rma.total_usd != null && <div><dt>Crop insurance</dt><dd>{usd(rma.total_usd)} paid out on {rma.scope} {rma.crop.replace('_forage', '').replace(/_/g, ' ')}, {rma.from}–{rma.to}; {usd(rma.top_usd)} in {rma.top_year} alone.{rma.share_drought >= 0.3 ? ` ${Math.round(rma.share_drought * 100)}% of it for drought or failed irrigation water.` : ''} <cite>USDA Risk Management Agency, county totals, not this farm. <Src p={prov.rma} /></cite>{insGap && <GapLine gap={insGap} missing={false} />}</dd></div>}
-      <div><dt>Usually bare</dt><dd>{ob && ob.years?.length ? <>About {ob.value} days a year, mostly {when} <cite>Seen by satellite, {ob.years[0]}–{ob.years[ob.years.length - 1]}. {BARE_DEF} <Src p={prov.calendar} /></cite></> : loc.observed_cover.summary}</dd></div>
+      {(mu || tex) && <div><dt>{t('ui.about.soil')}</dt><dd>{mu ? mu.split(',')[0] : ''}{tex ? `${mu ? ', ' : ''}${tex.toLowerCase()}` : ''} <cite><Src p={prov.soil} /></cite></dd></div>}
+      {inFt != null && <div><dt>{t('ui.about.holds')}</dt><dd>{t('ui.about.holds_t', { n: inFt.toFixed(1) })}{inFt < 1.4 ? ` ${t('ui.about.holds_low')}` : inFt > 2 ? ` ${t('ui.about.holds_high')}` : ''}</dd></div>}
+      {(dc || hg) && <div><dt>{t('ui.about.drainage')}</dt><dd>{dc}{hg ? `${dc ? '; ' : ''}${t('ui.about.runoff', { g: hg })}` : ''}</dd></div>}
+      {s.ec_ds_per_m != null && <div><dt>{t('ui.about.salt')}</dt><dd className={saline ? 'warn' : ''}>{saline ? t('ui.about.salty') : t('ui.about.lowsalt')}<small> (EC {s.ec_ds_per_m.toFixed(1)} dS/m)</small></dd></div>}
+      <div><dt>{loc.region === 'bc' ? t('ui.about.watershed') : t('ui.about.water')}</dt><dd><WaterLine loc={loc} /></dd></div>
+      {dem?.slope_mean_pct != null && <div><dt>{t('ui.about.slope')}</dt><dd>{dem.slope_mean_pct < 2 ? t('ui.about.flat') : dem.slope_mean_pct < 5 ? t('ui.about.gentle') : t('ui.about.sloping')}, {t('ui.about.avg', { n: dem.slope_mean_pct.toFixed(1) })}{dem.low_spot_fraction ? `; ${t('ui.about.lowspots', { n: Math.round(dem.low_spot_fraction * 100) })}` : ''}. <cite>{t('ui.about.dem')} <Src p={prov.terrain} /></cite></dd></div>}
+      {!rma && insGap && <div><dt>{t('ui.about.ins')}</dt><dd><GapLine gap={insGap} missing /></dd></div>}
+      {rma && rma.total_usd == null && <div><dt>{t('ui.about.losses')}</dt><dd>{t('ui.about.causes')} {(rma.shares ?? []).map((x) => `${CAUSE[x.cause] ?? x.cause.replace(/_/g, ' ')} ${Math.round(x.share * 100)}%`).join(', ')}. {t('ui.about.nodollars')} <cite><Src p={prov.rma} /></cite>{insGap && <GapLine gap={insGap} missing={false} />}</dd></div>}
+      {rma && rma.total_usd != null && <div><dt>{t('ui.about.ins')}</dt><dd>{t('ui.about.paid', { total: usd(rma.total_usd), scope: rma.scope, crop: rma.crop.replace('_forage', '').replace(/_/g, ' '), from: rma.from, to: rma.to, top: usd(rma.top_usd), year: rma.top_year })}{rma.share_drought >= 0.3 ? ` ${t('ui.about.drought_share', { n: Math.round(rma.share_drought * 100) })}` : ''} <cite>{t('ui.about.rma')} <Src p={prov.rma} /></cite>{insGap && <GapLine gap={insGap} missing={false} />}</dd></div>}
+      <div><dt>{t('ui.about.bare')}</dt><dd>{ob && ob.years?.length ? <>{t('ui.about.bare_t', { n: ob.value, when })} <cite>{t('ui.about.seen', { from: ob.years[0], to: ob.years[ob.years.length - 1] })} {BARE_DEF} <Src p={prov.calendar} /></cite></> : loc.observed_cover.summary}</dd></div>
     </dl>
   );
 }
@@ -270,13 +277,13 @@ export function AboutField({ loc, prov, cal, insurance, insGap }: { loc: Locatio
 export const CROP_COL = (c: string) => (c.startsWith('Rice') ? '#3d7fc4' : c === 'Left fallow' ? '#b08a5a' : c.startsWith('Alfalfa') || c.startsWith('Hay') ? '#4f8f3a' : c.startsWith('Corn') ? '#d4b23c' : c.startsWith('Wheat') ? '#c79a3a' : '#8a8a80');
 export function CropRecord({ loc, prov, from = 2016 }: { loc: Location; prov: ProvMap; from?: number }) {
   const ys = years(loc).filter((y) => y >= from);
-  const crops = [...new Set(ys.map((y) => cropName(loc.crop_history[y])))];
+  const crops = [...new Set(ys.map((y) => cropKey(loc.crop_history[y])))];
   return (
     <div className="record">
       <div className="rec-row">
-        {ys.map((y) => { const c = cropName(loc.crop_history[y]); return <span key={y} title={`${y}: ${c}`}><i style={{ background: CROP_COL(c) }} /><em>{y}</em></span>; })}
+        {ys.map((y) => { const c = cropName(loc.crop_history[y]); return <span key={y} title={`${y}: ${c}`}><i style={{ background: CROP_COL(cropKey(loc.crop_history[y])) }} /><em>{y}</em></span>; })}
       </div>
-      <div className="rec-key">{crops.map((c) => <span key={c}><i style={{ background: CROP_COL(c) }} />{c}</span>)}</div>
+      <div className="rec-key">{crops.map((c) => <span key={c}><i style={{ background: CROP_COL(c) }} />{cropName(c)}</span>)}</div>
       <cite>{cropMapName(loc)} · <Src p={prov.crop_history} /></cite>
     </div>
   );
@@ -286,10 +293,10 @@ export function EventLog({ events, setT }: { events: FieldEvent[]; setT: (t: num
   return (
     <div className="evlog">
       {events.map((e) => (
-        <button key={e.date} onClick={() => setT(dateToT(e.date))} title="Move the timeline to this date">
+        <button key={e.date} onClick={() => setT(dateToT(e.date))} title={t('ui.ev.move')}>
           <time>{fmtDate(e.date)}</time>
           <span><b>{e.title}</b>{e.detail && <small>{e.detail}</small>}</span>
-          {linkOf(e) && <a href={linkOf(e)!} target="_blank" rel="noreferrer" onClick={(ev) => ev.stopPropagation()} title="Source"><Icon name="link" size={13} /></a>}
+          {linkOf(e) && <a href={linkOf(e)!} target="_blank" rel="noreferrer" onClick={(ev) => ev.stopPropagation()} title={t('ui.source')}><Icon name="link" size={13} /></a>}
         </button>
       ))}
     </div>
@@ -304,23 +311,23 @@ export function ProvList({ prov }: { prov: ProvMap }) {
   );
 }
 
-export const yearLabel = (t: number) => `${when(t)} ${yearOf(t)}`;
+export const yearLabel = (tt: number) => t('ui.when_year', { when: whenOf(tt), year: yearOf(tt) });
 
 /** Honest line on how the water model compares with OpenET measured water use on this field (baseline crop years only). */
 export function openetText(strategies: RotationStrategy[] | null | undefined) {
   const b = strategies?.find((s) => s.is_baseline), v = b?.water.etc_vs_openet_pct?.value;
-  if (v == null) return 'Not yet checked against measured water use (OpenET).';
+  if (v == null) return t('ui.openet.none');
   const r = Math.round(Math.abs(v));
-  return `Checked against OpenET satellite measurements of this field: our estimate runs about ${r}% ${v >= 0 ? 'high' : 'low'}${v >= 0 ? ', as expected for a fully watered crop' : ''}.`;
+  return t(v >= 0 ? 'ui.openet.high' : 'ui.openet.low', { n: r });
 }
 
 /** The pick-list line, from the crop record: "Rice in 7 of the last 10 years; left fallow 2016, 2020 and 2022." */
 export function recordLine(l: Location) {
   const ys = years(l).slice(-10), main = mainCrop(l);
-  const n = ys.filter((y) => cropName(l.crop_history[y]).startsWith(main.split(',')[0])).length;
-  const fallow = ys.filter((y) => cropName(l.crop_history[y]) === 'Left fallow');
-  const list = (a: number[]) => (a.length > 1 ? `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}` : String(a[0]));
-  return `${main.split(',')[0]} in ${n} of the last ${ys.length} years${fallow.length ? `; left fallow ${list(fallow)}` : ''}.`;
+  const n = ys.filter((y) => cropKey(l.crop_history[y]).startsWith(main.split(',')[0])).length;
+  const fallow = ys.filter((y) => cropKey(l.crop_history[y]) === 'Left fallow');
+  const list = (a: number[]) => (a.length > 1 ? `${a.slice(0, -1).join(', ')} ${t('ui.and')} ${a[a.length - 1]}` : String(a[0]));
+  return `${t('ui.rec.in', { crop: tx(main.split(',')[0]), n, total: ys.length })}${fallow.length ? `; ${t('ui.rec.fallow', { list: list(fallow) })}` : ''}.`;
 }
 /** A rotation's name in a sentence: "rice + winter flood" (no "(current)", lower case). */
 export const rotName = (s: { short_name: string }) => s.short_name.replace(/\s*\(current\)$/i, '').replace(/^\w/, (c) => c.toLowerCase());

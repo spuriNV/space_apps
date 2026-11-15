@@ -2154,5 +2154,7 @@ html[data-outdoor="1"] .btn small, html[data-outdoor="1"] .btn-primary small { c
 .lang-toggle button { background: none; border: 0; padding: 6px 4px; font: inherit; color: inherit; cursor: pointer; border-radius: 6px; min-height: 32px; }
 .lang-toggle button.on { font-weight: 700; color: var(--ink, #111); text-decoration: underline; text-underline-offset: 4px; }
 .lang-toggle button:focus-visible { outline: 2px solid var(--focus, #1a73e8); outline-offset: 1px; }
-.tb-right .lang-toggle { margin: 0 8px; }
+.tb-right .lang-toggle { margin: 0 2px; font-size: 12px; white-space: nowrap; }
 @media (max-width: 760px) { .tb-right .lang-toggle { margin: 8px 16px; font-size: 15px; } }
+/* Spanish labels are longer: keep the top bar from squeezing the steps */
+@media (max-width: 1500px) and (min-width: 761px) { html[lang="es"] .tb-date small { display: none; } html[lang="es"] .tb-field { min-width: 220px; max-width: 260px; } html[lang="es"] .tb-right { gap: 6px; padding: 0 8px; } html[lang="es"] .tb-layers { padding: 0 8px; } }

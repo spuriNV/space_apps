@@ -1,4 +1,4 @@
-import { withLang } from './i18n';
+import { withLang, t } from './i18n';
 // "My fields": fields the user drew. The id (`my_...`) is the field: it carries the name and the outline, so any server can
 // rebuild it. This file holds the client side: the saved list (localStorage["myFields"] = [{id, name}]), the calls to
 // /api/my-fields, and a hook that gives App the drawn fields as ordinary `Location`s (with `spot` and `mine` set, so the
@@ -72,12 +72,12 @@ async function call<T>(path: string, init: RequestInit | undefined, ms: number):
       const j = await r.json();
       detail = typeof j?.detail === 'string' ? j.detail : Array.isArray(j?.detail) ? j.detail.map((d: { msg?: string }) => d.msg).filter(Boolean).join('; ') : '';
     } catch { /* no body */ }
-    if (r.status === 422) return { ok: false, err: { kind: 'invalid', message: detail || 'That outline cannot be used. Redraw it and try again.' } };
-    if (r.status === 429) { const s = +(r.headers.get('Retry-After') ?? '') || undefined; return { ok: false, err: { kind: 'busy', message: `Busy right now. Try again${s ? ` in about ${s} seconds` : ' in a moment'}.`, retryAfter: s } }; }
-    if (r.status === 504) return { ok: false, err: { kind: 'timeout', message: 'No answer after 50 seconds. Try again.' } };
-    return { ok: false, err: { kind: 'failed', message: r.status === 400 ? 'That field link is not valid.' : 'The analysis did not work this time. Try again.' } };
+    if (r.status === 422) return { ok: false, err: { kind: 'invalid', message: detail || t('my.invalid') } };
+    if (r.status === 429) { const s = +(r.headers.get('Retry-After') ?? '') || undefined; return { ok: false, err: { kind: 'busy', message: s ? t('my.busyS', { s }) : t('my.busy'), retryAfter: s } }; }
+    if (r.status === 504) return { ok: false, err: { kind: 'timeout', message: t('my.timeout') } };
+    return { ok: false, err: { kind: 'failed', message: r.status === 400 ? t('my.badlink') : t('my.failed') } };
   } catch {
-    return { ok: false, err: ctl.signal.aborted ? { kind: 'timeout', message: 'No answer after 50 seconds. Try again.' } : { kind: 'network', message: 'Could not reach the CropLytics server, or it is busy. Try again in a moment.' } };
+    return { ok: false, err: ctl.signal.aborted ? { kind: 'timeout', message: t('my.timeout') } : { kind: 'network', message: t('my.network') } };
   } finally { clearTimeout(h); }
 }
 export const createField = (name: string, geometry: Geom) => call<Record<string, any>>('/my-fields', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, geometry }) }, 55000); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -97,9 +97,9 @@ const mineInfo = (name: string, b: Record<string, any> | null, extra?: Partial<M
 /** The full payload (POST or GET /api/my-fields/{id}) as a Location and its provenance. */
 export function fromPayload(b: Record<string, any>): { loc: Location; prov: ProvMap } { // eslint-disable-line @typescript-eslint/no-explicit-any
   const { loc, prov } = realLocation(baseFor(b), b);
-  const name: string = b.name ?? b.farmer_name ?? 'My field';
+  const name: string = b.name ?? b.farmer_name ?? t('my.field');
   const sec = (b.sections ?? {}) as Record<string, { cropland?: boolean }>;
-  prov.outline = P('outline', 'Your outline', 'api', 'The outline you drew');
+  prov.outline = P('outline', t('my.outline'), 'api', t('my.outlineDrew'));
   const first = b.geometry?.type === 'MultiPolygon' ? { type: 'Polygon' as const, coordinates: b.geometry.coordinates[0] } : b.geometry;
   return { prov, loc: { ...loc, geometry: first ?? loc.geometry, events: [], farmer_name: name, name, short_name: name, county_name: b.county_name ?? null, county: b.county_name ?? undefined,
     spot: { state: 'ready', lat: b.centroid.lat, lon: b.centroid.lon, sections: b.sections, fallbackSquare: false, cropland: sec.family?.cropland !== false }, mine: mineInfo(name, b) } };
@@ -195,7 +195,7 @@ export function useMyFields(selectedId: string | null) {
     if (!shared?.loc) { setShared(null); return null; }
     const { id, loc, prov } = shared;
     setFull((f) => ({ ...f, [id]: { loc, prov } }));
-    setRefs((rs) => (rs.some((r) => r.id === id) ? rs : [{ id, name: loc.mine?.name ?? 'Shared field' }, ...rs]));
+    setRefs((rs) => (rs.some((r) => r.id === id) ? rs : [{ id, name: loc.mine?.name ?? t('my.shared') }, ...rs]));
     setShared(null);
     return id;
   }, [shared]);
@@ -219,6 +219,6 @@ export type MyFields = ReturnType<typeof useMyFields>;
 /** "My field 3": the first number not already used. */
 export function nextName(existing: string[]): string {
   const used = new Set(existing.map((n) => n.trim().toLowerCase()));
-  for (let i = 1; i < 500; i++) if (!used.has(`my field ${i}`)) return `My field ${i}`;
-  return 'My field';
+  for (let i = 1; i < 500; i++) if (!used.has(t('my.fieldN', { n: i }).toLowerCase())) return t('my.fieldN', { n: i });
+  return t('my.field');
 }

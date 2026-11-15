@@ -7,6 +7,7 @@ import type maplibregl from 'maplibre-gl';
 import { TerraDraw, TerraDrawCircleMode, TerraDrawFreehandMode, TerraDrawPolygonMode, TerraDrawRectangleMode, TerraDrawSelectMode, type HexColor } from 'terra-draw';
 import { TerraDrawMapLibreGLAdapter } from 'terra-draw-maplibre-gl-adapter';
 import { openRing, partsOf, type Geom } from '../../myFields';
+import { t } from '../../i18n';
 
 export type DrawKind = 'rect' | 'circle' | 'shape' | 'free';
 export type DrawRole = 'part' | 'hole';
@@ -112,11 +113,11 @@ export function createDraw(map: maplibregl.Map, ev: DrawEvents) {
       if (!all.length) return { geom: null };
       for (let tol = 0; all.reduce((a, s) => a + openRing(s.ring).length, 0) > MAX_VERTICES && tol < 1e-3; tol = tol ? tol * 2 : 5e-6) all = all.map((s) => ({ ...s, ring: simplify(s.ring, tol) }));
       const parts = all.filter((s) => !s.hole).map((s) => [round(s.ring)]);
-      if (!parts.length) return { geom: null, error: 'Draw a shape for the field first. A hole needs a shape around it.' };
+      if (!parts.length) return { geom: null, error: t('draw.errNoShape') };
       for (const h of all.filter((s) => s.hole)) {
         const o = openRing(h.ring), at = [o.reduce((a, p) => a + p[0], 0) / o.length, o.reduce((a, p) => a + p[1], 0) / o.length];
         const home = all.filter((s) => !s.hole).findIndex((s) => pointIn(at, s.ring) && pointIn(o[0], s.ring));
-        if (home < 0) return { geom: null, error: 'A hole sits outside every shape. Move it inside a shape, or remove it.' };
+        if (home < 0) return { geom: null, error: t('draw.errHole') };
         parts[home].push(round(h.ring));
       }
       return { geom: parts.length === 1 ? { type: 'Polygon', coordinates: parts[0] } : { type: 'MultiPolygon', coordinates: parts } };

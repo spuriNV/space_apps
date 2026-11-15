@@ -27,6 +27,7 @@ import { DetailCtx, useDetailState } from './components/ui/Detail';
 import { FLOW, ProvList, acres, fieldName, place, type FlowId, type Step } from './components/ui/shared';
 import { announce, onOtherOpen } from './overlays';
 import LangToggle from './i18n/LangToggle';
+import { t as tr } from './i18n';
 import { MenuItems } from './components/a11y/MenuItems';
 import { AccessibilityPage } from './components/a11y/AccessibilityPage';
 import { MapList, type ReserveRow } from './components/a11y/MapList';
@@ -38,11 +39,11 @@ import Tour, { tourDismissed, TOUR_STOPS } from './components/ui/Tour';
 type Panel = 'none' | 'fields' | 'season' | 'compare';
 /** Quick dates in the grower's words for the "Viewing" control. */
 const QUICK: { label: string; sub: string; t: number }[] = [
-  { label: 'Today', sub: 'mid Nov 2026', t: TODAY_T },
-  { label: 'Last summer', sub: 'Jul 2026', t: tOf(2026, 19) },
-  { label: 'Last spring', sub: 'Apr 2026', t: tOf(2026, 10) },
-  { label: '2023 floods', sub: 'Mar 2023', t: tOf(2023, 7) },
-  { label: '2022 drought', sub: 'Jul 2022', t: tOf(2022, 19) },
+  { label: tr('app.q.today'), sub: tr('app.q.todaySub'), t: TODAY_T },
+  { label: tr('app.q.summer'), sub: tr('app.q.summerSub'), t: tOf(2026, 19) },
+  { label: tr('app.q.spring'), sub: tr('app.q.springSub'), t: tOf(2026, 10) },
+  { label: tr('app.q.floods'), sub: tr('app.q.floodsSub'), t: tOf(2023, 7) },
+  { label: tr('app.q.drought'), sub: tr('app.q.droughtSub'), t: tOf(2022, 19) },
 ];
 /** Phone width: the field panel becomes a bottom sheet and the sections a bottom tab bar. */
 function usePhone() {
@@ -405,7 +406,7 @@ export default function App() {
     const xs: number[] = [], ys: number[] = [];
     const walk = (c: unknown): void => { if (Array.isArray(c) && typeof c[0] === 'number') { xs.push(c[0]); ys.push(c[1] as number); } else if (Array.isArray(c)) c.forEach(walk); };
     walk((f.geometry as GeoJSON.Polygon).coordinates);
-    return { name: pr.name ?? 'Reserve', km: pr.distance_to_field_km, lon: (Math.min(...xs) + Math.max(...xs)) / 2, lat: (Math.min(...ys) + Math.max(...ys)) / 2 };
+    return { name: pr.name ?? tr('app.reserve'), km: pr.distance_to_field_km, lon: (Math.min(...xs) + Math.max(...xs)) / 2, lat: (Math.min(...ys) + Math.max(...ys)) / 2 };
   }), [reservesFc]);
   // "Pause all motion": stop the replay and any playing timeline
   const pausedMotion = usePrefs().pause;
@@ -443,9 +444,9 @@ export default function App() {
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     const items = [
-      ...locations.filter((l) => !api.isSpot(l.id)).map((l) => ({ key: l.id, title: fieldName(l), sub: `${place(l)} · ${acres(l)} acres${l.dwr_id ? ' · state field no. ' + l.dwr_id : ''}`, icon: 'fields', go: () => select(l.id) })),
-      ...(hasBC ? [] : [{ key: 'bc', title: 'Sumas Prairie, British Columbia', sub: 'Not set up yet: why', icon: 'info', go: goBC }]),
-      { key: 'ca', title: 'California', sub: 'Back to the whole state', icon: 'home', go: goHome },
+      ...locations.filter((l) => !api.isSpot(l.id)).map((l) => ({ key: l.id, title: fieldName(l), sub: l.dwr_id ? tr('app.subDwr', { place: place(l), a: acres(l), n: l.dwr_id }) : tr('app.sub', { place: place(l), a: acres(l) }), icon: 'fields', go: () => select(l.id) })),
+      ...(hasBC ? [] : [{ key: 'bc', title: tr('app.sumas'), sub: tr('app.notSet'), icon: 'info', go: goBC }]),
+      { key: 'ca', title: tr('app.ca'), sub: tr('app.caSub'), icon: 'home', go: goHome },
     ];
     return q ? items.filter((i) => (i.title + i.sub).toLowerCase().includes(q)) : items;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -465,42 +466,42 @@ export default function App() {
   return (
     <DetailCtx.Provider value={{ on: detail, set: setDetail }}>
     <div className={`app ${detail ? 'detail-on' : 'detail-off'} ${wxOn ? 'wx-open' : ''}`}>
-      <a className="skip-link" href="#field-panel" onClick={(e) => { e.preventDefault(); const el = document.getElementById('field-panel'); if (el) { el.focus(); el.scrollIntoView({ block: 'nearest' }); } else document.getElementById('main')?.focus(); }}>Skip to field panel</a>
-      <div className="sr-only" role="status" aria-live="polite" data-testid="live">{selected ? (d ? `${fieldName(selected)} is ready.` : `Loading ${fieldName(selected)}.`) : ''}</div>
-      <main id="main" tabIndex={-1} aria-label="Map" className="map-main">
+      <a className="skip-link" href="#field-panel" onClick={(e) => { e.preventDefault(); const el = document.getElementById('field-panel'); if (el) { el.focus(); el.scrollIntoView({ block: 'nearest' }); } else document.getElementById('main')?.focus(); }}>{tr('app.skip')}</a>
+      <div className="sr-only" role="status" aria-live="polite" data-testid="live">{selected ? (d ? tr('app.ready', { name: fieldName(selected) }) : tr('app.loadingN', { name: fieldName(selected) })) : ''}</div>
+      <main id="main" tabIndex={-1} aria-label={tr('app.map')} className="map-main">
       <MapView ref={map} lands={lands} landsOn={!!layersOn.lands} activeLandId={land ? landId : null} onLandClick={drawing ? undefined : openLand} onToggleLands={() => setLayersOn((l) => ({ ...l, lands: !l.lands }))} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} reservesChip={reservesAvail} reservesOn={!!layersOn.reserves} onToggleReserves={() => setLayersOn((l) => ({ ...l, reserves: !l.reserves }))} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={{ ...layersOn, rain: wxOn && wxLayer === 'past' }} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
         onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onReplayT={setT} onReplayRunning={setReplaying} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} rain={rainNow} drought={droughtNow} droughtRegion={wxOn && wxLayer === 'drought' ? dRegion : null} />
       </main>
 
       <header className="topbar" data-testid="topbar">
-        <button className="tb-brand" onClick={goHome} title="Back to all of California">CropLytics</button>
+        <button className="tb-brand" onClick={goHome} title={tr('app.backCA')}>CropLytics</button>
         <div className={`tb-switch ${switchOpen ? 'open' : ''}`}>
           <button className="tb-field" onClick={() => { setSwitchOpen(!switchOpen); setTimeout(() => searchRef.current?.focus(), 0); }} data-testid="field-switch" aria-expanded={switchOpen}>
-            <span><small>{selected ? (selected.spot?.state === 'loading' ? (selected.mine ? 'Analysing your field…' : 'Analysing this spot…') : `${place(selected)}, ${acres(selected)} acres`) : 'No field picked'}</small><b>{selected ? fieldName(selected) : 'Pick your field'}</b></span>
+            <span><small>{selected ? (selected.spot?.state === 'loading' ? (selected.mine ? tr('app.analyseMine') : tr('app.analyseSpot')) : tr('app.placeAc', { place: place(selected), a: acres(selected) })) : tr('app.noField')}</small><b>{selected ? fieldName(selected) : tr('app.pick')}</b></span>
             <Icon name="down" size={18} />
           </button>
           {switchOpen && (
             <div className="tb-menu" data-testid="field-menu">
               <div className="tb-search"><Icon name="search" size={16} />
-                <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Escape') setSwitchOpen(false); if (e.key === 'Enter' && results[0]) { results[0].go(); setQuery(''); setSwitchOpen(false); } }} placeholder="Find a field by town, county or crop" data-testid="search" />
+                <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Escape') setSwitchOpen(false); if (e.key === 'Enter' && results[0]) { results[0].go(); setQuery(''); setSwitchOpen(false); } }} placeholder={tr('app.find')} data-testid="search" />
               </div>
               {results.map((r) => (
                 <button key={r.key} className={r.key === selectedId ? 'on' : ''} onClick={() => { r.go(); setQuery(''); setSwitchOpen(false); }} data-testid={`switch-${r.key}`}>
                   <b>{r.title}</b><small>{r.sub}</small>
                 </button>
               ))}
-              <button onClick={() => openExample(true)} data-testid="menu-tour"><b>Take the tour</b><small>A 4-stop walk through the Colusa rice example</small></button>
-              {results.length === 0 && <p className="muted pad">No field matches.</p>}
+              <button onClick={() => openExample(true)} data-testid="menu-tour"><b>{tr('app.tour')}</b><small>{tr('app.tourSub')}</small></button>
+              {results.length === 0 && <p className="muted pad">{tr('app.noMatch')}</p>}
             </div>
           )}
         </div>
-        <nav className="tb-tabs" aria-label="Steps" data-testid="steps">
+        <nav className="tb-tabs" aria-label={tr('app.steps')} data-testid="steps">
           {FLOW.map((f) => {
             const locked = f.id !== 'pick' && !selected;
             return (
-              <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} data-testid={`tab-${f.id}`} disabled={locked} title={locked ? 'Pick a field first' : f.does} aria-label={`Step ${f.n}: ${f.label}`}>
-                <i>{f.n}</i><span className="tb-long">{f.label}</span><span className="tb-short">{f.short}</span>
+              <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} data-testid={`tab-${f.id}`} disabled={locked} title={locked ? tr('app.pickFirst') : tr(`flow.${f.id}.does`)} aria-label={tr('app.stepAria', { n: f.n, label: tr(`flow.${f.id}.label`) })}>
+                <i>{f.n}</i><span className="tb-long">{tr(`flow.${f.id}.label`)}</span><span className="tb-short">{tr(`flow.${f.id}.short`)}</span>
               </button>
             );
           })}
@@ -508,13 +509,13 @@ export default function App() {
         <AskChat fieldId={selected && selected.id !== DRAFT_ID && selected.spot?.state !== 'loading' ? selected.id : null} fieldName={selected ? fieldName(selected) : null}
           screen={!selected ? 'pick a field' : briefOpen ? 'print for your adviser' : panel === 'compare' ? 'compare' : panel === 'season' ? 'coming season' : yearExpanded ? "this field's year" : 'field now'}
           date={t === TODAY_T ? `Today, ${tLabel(t)}` : tLabel(t)} waterLimit={selected ? allocation[selected.id] : null} />
-        <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} aria-haspopup="true" data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
+        <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label={tr('app.menu')} aria-expanded={menuOpen} aria-haspopup="true" data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
         <div className={`tb-right ${menuOpen ? 'open' : ''}`}>
           <LangToggle />
-          <button className="btn btn-text btn-sm tb-tour" onClick={() => openExample(true)} data-testid="take-tour">Take the tour</button>
+          <button className="btn btn-text btn-sm tb-tour" onClick={() => openExample(true)} data-testid="take-tour">{tr('app.tour')}</button>
           <div className="tb-date-wrap">
             <button className={`tb-date ${dateOpen ? 'open' : ''}`} onClick={() => setDateOpen(!dateOpen)} data-testid="date-control" aria-expanded={dateOpen}>
-              <small>Viewing</small><b>{t === TODAY_T ? `Today, ${tLabel(t).charAt(0).toLowerCase()}${tLabel(t).slice(1)}` : tLabel(t)}</b><Icon name="down" size={16} />
+              <small>{tr('app.viewing')}</small><b>{t === TODAY_T ? tr('app.todayD', { d: `${tLabel(t).charAt(0).toLowerCase()}${tLabel(t).slice(1)}` }) : tLabel(t)}</b><Icon name="down" size={16} />
             </button>
             {dateOpen && (
               <div className="tb-datepop" data-testid="date-pop">
@@ -529,21 +530,21 @@ export default function App() {
                   ))}
                 </div>
                 <div className="dp-foot">
-                  <button className="btn btn-text btn-sm" onClick={() => setShowEarlier(!showEarlier)}>{showEarlier ? 'Hide earlier years' : 'Show earlier years (2016–2022)'}</button>
-                  {t !== TODAY_T && <button className="btn btn-outline btn-sm" onClick={() => { setT(TODAY_T); setDateOpen(false); }}>Back to today</button>}
+                  <button className="btn btn-text btn-sm" onClick={() => setShowEarlier(!showEarlier)}>{showEarlier ? tr('app.hideEarly') : tr('app.showEarly')}</button>
+                  {t !== TODAY_T && <button className="btn btn-outline btn-sm" onClick={() => { setT(TODAY_T); setDateOpen(false); }}>{tr('app.backToday')}</button>}
                 </div>
               </div>
             )}
           </div>
-          <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} data-testid="layers-btn" aria-expanded={layersOpen}><Icon name="layers" size={16} />Map layers</button>
+          <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} data-testid="layers-btn" aria-expanded={layersOpen}><Icon name="layers" size={16} />{tr('app.layers')}</button>
           {menuOpen && <MenuItems onList={() => { announce('draw'); setListOpen(true); }} onAbout={() => setAboutOpen(true)} onDone={() => setMenuOpen(false)} />}
         </div>
       </header>
       {tour != null && selected?.id === EX_ID && <Tour idx={tour} go={tourGo} canReplay={canReplay} onReplay={startReplay} onClose={() => setTour(null)} />}
-      <nav className="mob-tabs" aria-label="Steps">
-        {FLOW.map((f) => <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} disabled={f.id !== 'pick' && !selected} data-testid={`mtab-${f.id}`}><span>{f.n} {f.short}</span></button>)}
+      <nav className="mob-tabs" aria-label={tr('app.steps')}>
+        {FLOW.map((f) => <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} disabled={f.id !== 'pick' && !selected} data-testid={`mtab-${f.id}`}><span>{f.n} {tr(`flow.${f.id}.short`)}</span></button>)}
       </nav>
-      {t !== TODAY_T && panel !== 'season' && panel !== 'compare' && !briefOpen && <div className="date-banner" data-testid="date-banner" role="status" style={phone ? undefined : { left: `calc(50% + ${(leftInset - rightInset) / 2}px)` }}><span>Showing <b>{tLabel(t)}</b></span><button className="btn btn-secondary btn-sm" onClick={() => { setT(TODAY_T); setPlaying(false); }}>Back to today</button></div>}
+      {t !== TODAY_T && panel !== 'season' && panel !== 'compare' && !briefOpen && <div className="date-banner" data-testid="date-banner" role="status" style={phone ? undefined : { left: `calc(50% + ${(leftInset - rightInset) / 2}px)` }}><span>{tr('app.showing')} <b>{tLabel(t)}</b></span><button className="btn btn-secondary btn-sm" onClick={() => { setT(TODAY_T); setPlaying(false); }}>{tr('app.backToday')}</button></div>}
 
       {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.mine ? () => mf.retry(selected.id) : selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} onMine={(a) => draw.current?.[a === 'delete' ? 'del' : a](selected)} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={strats} onToday={(sid) => pickToday(selected.id, sid)} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
@@ -562,7 +563,7 @@ export default function App() {
         </div>
       )}
 
-      {!drawing && !listOpen && <button className="list-btn btn btn-secondary" onClick={() => { announce('draw'); setListOpen(true); }} data-testid="list-btn" style={{ right: 16 + rightInset + 176 }}><Icon name="fields" size={18} />List</button>}
+      {!drawing && !listOpen && <button className="list-btn btn btn-secondary" onClick={() => { announce('draw'); setListOpen(true); }} data-testid="list-btn" style={{ right: 16 + rightInset + 176 }}><Icon name="fields" size={18} />{tr('app.list')}</button>}
       {listOpen && <MapList locations={locations} catalog={catalog?.items ?? []} reserves={reserveRows} onClose={() => setListOpen(false)}
         onField={(id) => { setListOpen(false); select(id); }} onFarm={(it) => { setListOpen(false); pickCatalog(it); }}
         onReserve={(r) => { setListOpen(false); map.current?.flyTo(r.lat, r.lon, 11); }} onFind={(lat, lon) => { setListOpen(false); tapSpot(lat, lon); }} />}
@@ -571,31 +572,31 @@ export default function App() {
 
       {stackField && !drilled && panel !== 'compare' && panel !== 'season' && view.zoom > 9.5 && view.zoom <= 13.4 && (
         <button className="hud glass drill-hint" data-testid="drill-hint" onClick={() => onStep('drill')}>
-          <span className="hud-title"><Icon name="cube" size={16} />Scroll in (or tap) to look under the field</span>
+          <span className="hud-title"><Icon name="cube" size={16} />{tr('app.hint')}</span>
         </button>
       )}
       {drilled && panel !== 'compare' && panel !== 'season' && (
         <div className="hud glass" data-testid="hud">
-          <span className="hud-title"><Icon name="cube" size={16} />Under the field</span>
+          <span className="hud-title"><Icon name="cube" size={16} />{tr('app.under')}</span>
           <div className="hud-legend">
-            <span><i style={{ background: '#7ee081' }} />Cover</span>
-            <span><i style={{ background: '#5ab0ff' }} />Soil moisture</span>
-            <span><i style={{ background: '#ff7eb6' }} />Groundwater</span>
-            <span className="hud-note">taller = greener</span>
+            <span><i style={{ background: '#7ee081' }} />{tr('app.cover')}</span>
+            <span><i style={{ background: '#5ab0ff' }} />{tr('app.soil')}</span>
+            <span><i style={{ background: '#ff7eb6' }} />{tr('app.gw')}</span>
+            <span className="hud-note">{tr('app.taller')}</span>
           </div>
         </div>
       )}
             {bc && !hasBC && (bcOpen || nearBC) && panel === 'none' && <div className="bc-float" style={{ left: `calc(${leftInset}px + 24px)` }}><BCCard bc={bc} floating onClose={bcOpen ? () => setBcOpen(false) : undefined} /></div>}
 
       <div className="controls" style={{ right: 16 + rightInset, bottom: bottomInset + 14 }}>
-        <button className="ctl ctl-desk glass" onClick={goHome} title="Whole of California" aria-label="Show all of California"><Icon name="home" size={18} /></button>
-        <button className="ctl ctl-desk glass" onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} title="Map layers" aria-label="Map layers" aria-expanded={layersOpen} data-testid="layers-ctl"><Icon name="layers" size={18} /></button>
-        {selected && d?.cal && <button className="ctl glass" onClick={() => { if (canReplay) startReplay(); else setPlaying(!playing); }} title={playing || replaying ? 'Pause' : 'Play the seasons'} aria-label={playing || replaying ? 'Pause the replay' : 'Play the seasons on the map'} aria-pressed={playing || replaying} data-testid="play-ctl"><Icon name={playing || replaying ? 'pause' : 'play'} size={18} /></button>}
-        <button className="ctl glass" onClick={() => map.current?.resetNorth()} title="Reset north" aria-label="Reset north to the top"><span style={{ transform: `rotate(${-view.bearing - 45}deg)`, display: 'flex' }}><Icon name="compass" size={20} /></span></button>
-        <button className="ctl glass text" onClick={() => map.current?.toggle3D()} title="Tilt" aria-label={view.pitch > 5 ? 'Flat map view' : 'Tilt the map to 3D'} data-testid="tilt">{view.pitch > 5 ? '2D' : '3D'}</button>
+        <button className="ctl ctl-desk glass" onClick={goHome} title={tr('app.homeT')} aria-label={tr('app.homeA')}><Icon name="home" size={18} /></button>
+        <button className="ctl ctl-desk glass" onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} title={tr('app.layers')} aria-label={tr('app.layers')} aria-expanded={layersOpen} data-testid="layers-ctl"><Icon name="layers" size={18} /></button>
+        {selected && d?.cal && <button className="ctl glass" onClick={() => { if (canReplay) startReplay(); else setPlaying(!playing); }} title={playing || replaying ? tr('app.pause') : tr('app.playT')} aria-label={playing || replaying ? tr('app.pauseA') : tr('app.playA')} aria-pressed={playing || replaying} data-testid="play-ctl"><Icon name={playing || replaying ? 'pause' : 'play'} size={18} /></button>}
+        <button className="ctl glass" onClick={() => map.current?.resetNorth()} title={tr('app.north')} aria-label={tr('app.northA')}><span style={{ transform: `rotate(${-view.bearing - 45}deg)`, display: 'flex' }}><Icon name="compass" size={20} /></span></button>
+        <button className="ctl glass text" onClick={() => map.current?.toggle3D()} title={tr('app.tilt')} aria-label={view.pitch > 5 ? tr('app.flat') : tr('app.tilt3d')} data-testid="tilt">{view.pitch > 5 ? '2D' : '3D'}</button>
         <div className="ctl-group glass">
-          <button onClick={() => map.current?.zoomBy(1)} title="Zoom in" aria-label="Zoom in"><Icon name="plus" size={18} /></button>
-          <button onClick={() => map.current?.zoomBy(-1)} title="Zoom out" aria-label="Zoom out"><Icon name="minus" size={18} /></button>
+          <button onClick={() => map.current?.zoomBy(1)} title={tr('app.zin')} aria-label={tr('app.zin')}><Icon name="plus" size={18} /></button>
+          <button onClick={() => map.current?.zoomBy(-1)} title={tr('app.zout')} aria-label={tr('app.zout')}><Icon name="minus" size={18} /></button>
         </div>
       </div>
 

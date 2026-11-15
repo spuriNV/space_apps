@@ -5,34 +5,35 @@ import { isRainFed, mmToAfac, RAIN_FED } from '../../lib';
 import Icon from '../Icons';
 import { acres, fieldName } from '../ui/shared';
 import { Answer, KeyFacts, StepShell } from '../ui/StepShell';
+import { t } from '../../i18n';
 
 export default function BriefStep(p: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; exampleLimit: boolean; onPreview: () => void; onBack: () => void; onClose: () => void; onSheet?: (px: number) => void }) {
   const base = p.strategies.find((x) => x.is_baseline) ?? p.strategies[0];
   const s = p.strategies.find((x) => x.id === p.pick) ?? p.strategies.find((x) => !x.is_baseline) ?? base;
   if (!s) return null;
-  const need = (x: RotationStrategy) => (isRainFed(x) ? RAIN_FED : `about ${mmToAfac(x.water.irrigation_need_mm.value).toFixed(1)} acre-ft per acre`);
+  const need = (x: RotationStrategy) => (isRainFed(x) ? RAIN_FED : t('ui.brief.about_af', { n: mmToAfac(x.water.irrigation_need_mm.value).toFixed(1) }));
   return (
     <StepShell id="brief" testid="brief-step" resetKey={p.loc.id} onSheet={p.onSheet} onClose={p.onClose} onBack={p.onBack}
-      field={<><b>{fieldName(p.loc)}</b> · {acres(p.loc)} acres</>}
-      title="Take a one-page summary to your adviser"
-      answer={<Answer tone="good" headline="Your page is ready to print." sub={s.is_baseline ? 'It covers what you grow today.' : `It compares ${s.short_name.toLowerCase()} with what you grow today.`} />}
-      next={{ label: 'Print or save as PDF', sub: 'One page, Letter size', icon: 'print', onClick: () => window.print(), testid: 'print' }}>
-      <div className="opt-list" role="radiogroup" aria-label="Option on the page">
+      field={<><b>{fieldName(p.loc)}</b> · {t('ui.n_acres', { n: acres(p.loc) })}</>}
+      title={t('ui.brief.title')}
+      answer={<Answer tone="good" headline={t('ui.brief.ready')} sub={s.is_baseline ? t('ui.brief.covers') : t('ui.brief.compares', { name: s.short_name.toLowerCase() })} />}
+      next={{ label: t('ui.brief.print'), sub: t('ui.act.brief_s'), icon: 'print', onClick: () => window.print(), testid: 'print' }}>
+      <div className="opt-list" role="radiogroup" aria-label={t('ui.brief.option')}>
         {[...p.strategies].sort((a, b) => Number(b.is_baseline) - Number(a.is_baseline)).map((x) => (
           <button key={x.id} role="radio" aria-checked={x.id === s.id} className={`opt-row ${x.id === s.id ? 'on' : ''}`} onClick={() => p.setPick(x.id)} data-testid={`brief-pick-${x.id}`}>
             <span className="opt-radio" aria-hidden="true" />
-            <span className="opt-body"><b>{x.short_name}{x.is_baseline ? ' (today)' : ''}</b><small>{need(x)}</small></span>
+            <span className="opt-body"><b>{x.short_name}{x.is_baseline ? ` (${t('ui.brief.today')})` : ''}</b><small>{need(x)}</small></span>
           </button>
         ))}
       </div>
-      <h2 className="fp-h">On the page</h2>
+      <h2 className="fp-h">{t('ui.brief.onpage')}</h2>
       <KeyFacts facts={[
-        { label: 'Your field', value: 'Soil, water source, last three crops' },
-        { label: 'This season', value: 'Rain so far and the winter outlook' },
-        { label: 'The option', value: `Water need against your limit of ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}, what you gain and give up` },
-        { label: 'To check', value: 'A checklist for you and your adviser' },
+        { label: t('ui.brief.f1'), value: t('ui.brief.f1v') },
+        { label: t('ui.brief.f2'), value: t('ui.brief.f2v') },
+        { label: t('ui.brief.f3'), value: t('ui.brief.f3v', { n: p.allocation.toFixed(1), ex: p.exampleLimit ? ` ${t('ui.fnow.example')}` : '' }) },
+        { label: t('ui.brief.f4'), value: t('ui.brief.f4v') },
       ]} />
-      <button className="btn btn-outline btn-block preview-btn" onClick={p.onPreview} data-testid="brief-preview"><Icon name="brief" />Preview the page</button>
+      <button className="btn btn-outline btn-block preview-btn" onClick={p.onPreview} data-testid="brief-preview"><Icon name="brief" />{t('ui.brief.preview')}</button>
     </StepShell>
   );
 }

@@ -7,11 +7,12 @@ import { API_BASE, askChat, chatStatus, type ChatTurn } from '../../api';
 import { Speaker } from './speech';
 import Icon from '../Icons';
 import { announce, onOtherOpen } from '../../overlays';
+import { t, isEs, speechLang } from '../../i18n';
 
 interface Props { fieldId: string | null; fieldName: string | null; screen: string; date: string; waterLimit?: number | null }
 
-const SUGGEST_FIELD = ['Describe this field', 'What do these numbers mean?', 'How do I compare rotations?'];
-const SUGGEST_NONE = ['What is this app?', 'How do I pick a field?', 'How do I use this with a screen reader?'];
+const SUGGEST_FIELD = [t('ui.chat.sf1'), t('ui.chat.sf2'), t('ui.chat.sf3')];
+const SUGGEST_NONE = [t('ui.chat.sn1'), t('ui.chat.sn2'), t('ui.chat.sn3')];
 const SPEAK_KEY = 'croplytics.ask.speak';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,7 +76,7 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
     const question = text.trim().slice(0, 300);
     if (!question || busy) return;
     setQ(''); setErr(null); setBusy(true);
-    setLive('Thinking.');
+    setLive(t('ui.chat.thinking_live'));
     stopSpeech();
     if (!byVoice) sp.prime();
     const history = turns.slice(-6);
@@ -84,10 +85,10 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
       const a = await askChat({ question, history, field_id: fieldId, screen, date, water_limit: waterLimit ?? null });
       const idx = turns.length + 1; // after the question just added
       setTurns((t) => [...t, { role: 'assistant', content: a }]);
-      if ((speak || byVoice) && sp.canSpeak) { setLive('Answer ready.'); say(a, idx); } // spoken here: don't make a screen reader read it a second time
-      else setLive(`CropLytics says: ${a}`);
+      if ((speak || byVoice) && sp.canSpeak) { setLive(t('ui.chat.ready')); say(a, idx); } // spoken here: don't make a screen reader read it a second time
+      else setLive(t('ui.chat.says', { a }));
     } catch (e) {
-      const m = e instanceof Error ? e.message : 'The assistant could not answer. Please try again.';
+      const m = e instanceof Error ? e.message : t('ui.chat.err');
       setErr(m); setLive(m);
       setTurns((t) => t.slice(0, -1)); setQ(question); // give the question back so it can be sent again
     } finally {
@@ -151,8 +152,8 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
     if (listening) { rec.current?.stop(); return; }
     stopSpeech(); sp.prime();
     let r: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    try { r = new SR(); } catch { if (CAN_REC) { forceRec.current = true; void recordClip(); } else setErr('Voice input is not available in this browser. Type your question instead.'); return; }
-    r.lang = navigator.language || 'en-US'; r.interimResults = true; r.maxAlternatives = 1;
+    try { r = new SR(); } catch { if (CAN_REC) { forceRec.current = true; void recordClip(); } else setErr(t('ui.chat.novoice')); return; }
+    r.lang = isEs ? speechLang : (navigator.language || 'en-US'); r.interimResults = true; r.maxAlternatives = 1;
     let final = '', latest = '', failed = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     r.onresult = (ev: any) => {
@@ -166,17 +167,17 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
       if (code === 'aborted') return;
       failed = true; setListening(false);
       if (CAN_REC && (code === 'network' || code === 'service-not-allowed' || code === 'not-allowed' || code === 'language-not-supported')) { forceRec.current = true; void recordClip(); return; }
-      const m = code === 'not-allowed' || code === 'service-not-allowed' ? 'Microphone access is blocked. Allow the microphone for this site in your browser, or type your question.'
-        : code === 'no-speech' ? 'No speech heard. Tap the microphone and try again.'
-        : code === 'audio-capture' ? 'No microphone was found. Type your question instead.'
-        : code === 'network' ? "Voice input isn't available right now in this browser (its speech service can't be reached). Type your question instead."
-        : 'Could not hear that. Try again or type your question.';
+      const m = code === 'not-allowed' || code === 'service-not-allowed' ? t('ui.chat.mic_blocked')
+        : code === 'no-speech' ? t('ui.chat.nospeech')
+        : code === 'audio-capture' ? t('ui.chat.nomic')
+        : code === 'network' ? t('ui.chat.network')
+        : t('ui.chat.nohear');
       setErr(m); setLive(m);
     };
     r.onend = () => { setListening(false); rec.current = null; const t = (final || latest).trim(); if (t && !failed) send(t, true); };
     rec.current = r;
-    try { r.start(); setListening(true); setErr(null); setLive('Listening. Ask your question.'); }
-    catch { rec.current = null; setErr('Could not start voice input. Type your question instead.'); }
+    try { r.start(); setListening(true); setErr(null); setLive(t('ui.chat.listening_live')); }
+    catch { rec.current = null; setErr(t('ui.chat.nostart')); }
   };
 
   const toggleSpeak = () => { const v = !speak; setSpeak(v); saveSpeak(v); if (!v) stopSpeech(); else sp.prime(); };
@@ -184,42 +185,42 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
 
   return (
     <div className="ask-wrap">
-      <button ref={btn} className={`tb-ask ${open ? 'on' : ''}`} onClick={() => (open ? close() : setOpen(true))} aria-expanded={open} aria-controls="ask-pop" aria-label="Ask CropLytics" data-testid="ask-btn">
-        <Icon name="story" size={16} /><span className="tb-ask-label">Ask</span>
+      <button ref={btn} className={`tb-ask ${open ? 'on' : ''}`} onClick={() => (open ? close() : setOpen(true))} aria-expanded={open} aria-controls="ask-pop" aria-label={t('ui.chat.ask')} data-testid="ask-btn">
+        <Icon name="story" size={16} /><span className="tb-ask-label">{t('ui.chat.askshort')}</span>
       </button>
       {open && (
-        <section id="ask-pop" className="ask-pop" role="dialog" aria-label="Ask CropLytics" data-testid="ask-pop">
+        <section id="ask-pop" className="ask-pop" role="dialog" aria-label={t('ui.chat.ask')} data-testid="ask-pop">
           <header className="ask-head">
-            <h2>Ask CropLytics</h2>
-            <button className="icon-btn ghost" onClick={close} aria-label="Close Ask CropLytics"><Icon name="close" size={20} /></button>
+            <h2>{t('ui.chat.ask')}</h2>
+            <button className="icon-btn ghost" onClick={close} aria-label={t('ui.chat.close')}><Icon name="close" size={20} /></button>
           </header>
-          <p className="ask-about">{fieldName ? <>About <b>{fieldName}</b></> : 'About the app. Pick a field to ask about its numbers.'}</p>
+          <p className="ask-about">{fieldName ? <>{t('ui.chat.about')} <b>{fieldName}</b></> : t('ui.chat.aboutapp')}</p>
 
-          <div ref={log} className="ask-log" role="log" aria-live="off" aria-label="Conversation">
+          <div ref={log} className="ask-log" role="log" aria-live="off" aria-label={t('ui.chat.conv')}>
             {turns.length === 0 && !busy && (
-              <div className="ask-suggest" role="group" aria-label="Suggested questions">
+              <div className="ask-suggest" role="group" aria-label={t('ui.chat.suggested')}>
                 {suggestions.map((s) => <button key={s} className="ask-chip" onClick={() => send(s)}>{s}</button>)}
               </div>
             )}
-            {turns.map((t, i) => (
-              t.role === 'user'
-                ? <p key={i} className="ask-msg user"><span className="sr-only">You asked: </span>{t.content}</p>
-                : <div key={i} className="ask-msg assistant"><p><span className="sr-only">CropLytics: </span>{t.content}</p>
-                    {sp.canSpeak && <button type="button" className="ask-play" onClick={() => { if (speaking === i) stopSpeech(); else { sp.prime(); say(t.content, i); } }} aria-label={speaking === i ? 'Stop reading this answer' : 'Read this answer aloud'}>
-                      <Icon name={speaking === i ? 'pause' : 'play'} size={16} />{speaking === i ? 'Stop' : 'Listen'}</button>}
+            {turns.map((turn, i) => (
+              turn.role === 'user'
+                ? <p key={i} className="ask-msg user"><span className="sr-only">{t('ui.chat.youasked')} </span>{turn.content}</p>
+                : <div key={i} className="ask-msg assistant"><p><span className="sr-only">CropLytics: </span>{turn.content}</p>
+                    {sp.canSpeak && <button type="button" className="ask-play" onClick={() => { if (speaking === i) stopSpeech(); else { sp.prime(); say(turn.content, i); } }} aria-label={speaking === i ? t('ui.chat.stopread') : t('ui.chat.readthis')}>
+                      <Icon name={speaking === i ? 'pause' : 'play'} size={16} />{speaking === i ? t('ui.chat.stop') : t('ui.chat.listen')}</button>}
                   </div>
             ))}
-            {busy && <p className="ask-msg assistant ask-busy" aria-hidden="true">Thinking…</p>}
+            {busy && <p className="ask-msg assistant ask-busy" aria-hidden="true">{t('ui.chat.thinking')}</p>}
             {err && <p className="ask-err">{err}</p>}
           </div>
           {/* one polite announcement per answer; the log itself stays silent so nothing is read twice */}
           <div className="sr-only" aria-live="polite" aria-atomic="true">{live}</div>
 
           <form className="ask-form" onSubmit={(e) => { e.preventDefault(); send(q); }}>
-            <label htmlFor="ask-q" className="sr-only">Your question</label>
-            <input id="ask-q" ref={input} value={q} onChange={(e) => setQ(e.target.value)} maxLength={300} placeholder={listening || rstate === 'recording' ? 'Listening…' : rstate === 'transcribing' ? 'Transcribing…' : 'Ask about this field or the app'} autoComplete="off" aria-busy={busy} />
-            {(SR || CAN_REC) && <button type="button" className={`icon-btn ${listening || rstate === 'recording' ? 'rec' : ''}`} onClick={listen} aria-pressed={listening || rstate === 'recording'} aria-label={listening || rstate === 'recording' ? 'Stop listening' : 'Ask by voice'} disabled={busy || rstate === 'transcribing'}><Icon name="mic" size={20} /></button>}
-            <button type="submit" className="icon-btn send" aria-label="Send question" disabled={busy || !q.trim()}><Icon name="send" size={20} /></button>
+            <label htmlFor="ask-q" className="sr-only">{t('ui.chat.yourq')}</label>
+            <input id="ask-q" ref={input} value={q} onChange={(e) => setQ(e.target.value)} maxLength={300} placeholder={listening || rstate === 'recording' ? t('ui.chat.listening') : rstate === 'transcribing' ? t('merge.transcribing') : t('ui.chat.placeholder')} autoComplete="off" aria-busy={busy} />
+            {(SR || CAN_REC) && <button type="button" className={`icon-btn ${listening || rstate === 'recording' ? 'rec' : ''}`} onClick={listen} aria-pressed={listening || rstate === 'recording'} aria-label={listening || rstate === 'recording' ? t('ui.chat.stoplisten') : t('ui.chat.byvoice')} disabled={busy || rstate === 'transcribing'}><Icon name="mic" size={20} /></button>}
+            <button type="submit" className="icon-btn send" aria-label={t('ui.chat.send')} disabled={busy || !q.trim()}><Icon name="send" size={20} /></button>
           </form>
           {rstate !== 'idle' && <p className="ask-rec" role="status" style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '4px 0', fontSize: 13 }}>
             {rstate === 'recording'
@@ -229,10 +230,10 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
           </p>}
           <div className="ask-foot">
             {sp.canSpeak && <button type="button" className="ask-speak" role="switch" aria-checked={speak} onClick={toggleSpeak}>
-              <span className="ask-switch" aria-hidden="true" />Read every answer aloud
+              <span className="ask-switch" aria-hidden="true" />{t('ui.chat.readall')}
             </button>}
-            <p className="ask-hint">{SR || CAN_REC ? 'Ask by voice with the microphone and the answer is spoken back.' : 'Use your keyboard\'s microphone to ask by voice.'}</p>
-            <p>AI answers from this field's data. Not advice. Questions go to DeepSeek; don't type personal details.</p>
+            <p className="ask-hint">{SR || CAN_REC ? t('merge.hintMic') : t('ui.chat.hint_kb')}</p>
+            <p>{t('ui.chat.disclaimer')}</p>
           </div>
         </section>
       )}

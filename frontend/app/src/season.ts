@@ -2,6 +2,7 @@
 // and the satellite calendar. Pure functions; every result says which season it describes and how "normal" was built.
 import type { Calendar, RotationStrategy } from './types';
 import { MONTHS, dekadOf, yearOf } from './lib';
+import { t as tl } from './i18n';
 
 export interface DailyRow { date: string; precip_mm: number | null; eto_mm: number | null; ncei_precip_mm: number | null; ncei_tmax_c: number | null; ncei_tmin_c: number | null; imerg_precip_mm?: number | null; grace_gw_pct?: number | null;
   /** BC: Environment and Climate Change Canada station values (the ncei_* columns are null there) */
@@ -54,14 +55,14 @@ function periodFor(daily: Daily, t: number, kind: 'water' | 'calendar'): Period 
   const cut = cutoffOf(t);
   const startY = kind === 'water' ? wyStart(cut) : +cut.slice(0, 4);
   const from = kind === 'water' ? `${startY}-10-01` : `${startY}-01-01`;
-  if (daily.last >= cut && daily.first <= from) return { label: kind === 'water' ? `since 1 Oct ${startY}` : `since 1 Jan ${startY}`, from, to: cut, current: true };
+  if (daily.last >= cut && daily.first <= from) return { label: tl('season.since', { d: `1 ${MONTHS[kind === 'water' ? 9 : 0]} ${startY}` }), from, to: cut, current: true };
   // the record stops inside the current season: count up to its last day and say so
-  if (daily.last >= from && daily.first <= from) return { label: `${kind === 'water' ? `1 Oct ${startY}` : `1 Jan ${startY}`} to ${fmtShort(daily.last).replace(/ \d{4}$/, '')}`, from, to: daily.last, current: true };
+  if (daily.last >= from && daily.first <= from) return { label: tl('season.range', { a: `1 ${MONTHS[kind === 'water' ? 9 : 0]} ${startY}`, b: fmtShort(daily.last).replace(/ \d{4}$/, '') }), from, to: daily.last, current: true };
   // fall back to the last complete season in the record
   const lastY = +daily.last.slice(0, 4);
-  if (kind === 'water') { const e = mmdd(daily.last) >= '09-30' ? lastY : lastY - 1; return { label: `last season, Oct ${e - 1} to Sep ${e}`, from: `${e - 1}-10-01`, to: `${e}-09-30`, current: false }; }
+  if (kind === 'water') { const e = mmdd(daily.last) >= '09-30' ? lastY : lastY - 1; return { label: tl('season.lastSeason', { a: e - 1, b: e }), from: `${e - 1}-10-01`, to: `${e}-09-30`, current: false }; }
   const e = mmdd(daily.last) >= '12-31' ? lastY : lastY - 1;
-  return { label: `last year, ${e}`, from: `${e}-01-01`, to: `${e}-12-31`, current: false };
+  return { label: tl('season.lastYear', { y: e }), from: `${e}-01-01`, to: `${e}-12-31`, current: false };
 }
 /** Same window in every earlier season with full data: the "normal" we compare against. */
 function normalOf(daily: Daily, p: Period, f: (r: DailyRow) => number | null, agg: 'sum' | 'count' = 'sum') {
@@ -139,8 +140,7 @@ export function cropWaterSoFar(all: Daily, base: RotationStrategy, t: number) {
 /** This winter's bare window from the satellite calendar (Nov to Mar), and how often a 1-inch rain day landed in it before. */
 export interface BareWindow { from: string; to: string; days: number; share: number; years: number[]; chance: number | null; winters: number; hits: number; avgDays: number | null }
 const WINTER = [30, 31, 32, 33, 34, 35, 0, 1, 2, 3, 4, 5, 6, 7, 8]; // early Nov .. late Mar, in 10-day steps
-const PART = ['early', 'mid', 'late'];
-const dekadName = (d: number) => `${PART[d % 3]} ${MONTHS[Math.floor(d / 3)]}`;
+const dekadName = (d: number) => tl(`season.dek${d % 3}`, { m: MONTHS[Math.floor(d / 3)] });
 export function bareWindow(cal: Calendar, daily: Daily | null, years: number[]): BareWindow | null {
   const ys = (cal?.years ?? []).filter((y) => years.includes(y.year) && y.rule.replace(/u/g, '').length > 6);
   if (!ys.length) return null;

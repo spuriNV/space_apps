@@ -1,5 +1,6 @@
 // First Nations lands (reserves and tribal lands): types and helpers shared by the map layer, the list and the Nation panel.
 // Data: GET /api/lands (backend/nation/fetch_lands.py). Boundaries are legal or statistical lines, not traditional territory.
+import { t, locale } from '../../i18n';
 export interface LandProps {
   id: string; name: string; nation: string; kind: 'reserve' | 'reservation' | 'trust'; area_ha: number;
   band_number?: string; province?: 'BC'; state?: 'CA'; centroid: [number, number];
@@ -12,13 +13,13 @@ export interface LandDetail {
   nearby_radius_km: number; source?: { title: string; url: string } | null;
 }
 export const regionOf = (p: LandProps) => (p.province === 'BC' ? 'BC' : 'CA') as 'BC' | 'CA';
-export const regionName = (r: 'BC' | 'CA') => (r === 'BC' ? 'British Columbia' : 'California');
-export const kindLabel = (k: string) => (k === 'reserve' ? 'Reserve' : 'Tribal land');
-const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
+export const regionName = (r: 'BC' | 'CA') => (r === 'BC' ? t('land.bc') : t('land.ca'));
+export const kindLabel = (k: string) => (k === 'reserve' ? t('land.reserve') : t('land.tribal'));
+const fmt = (n: number) => Math.round(n).toLocaleString(locale);
 /** "1,583 acres (641 ha)"; small lands show one decimal. */
 export function areaText(ha: number) {
   const ac = ha * 2.47105;
-  return `${ac < 100 ? ac.toFixed(1) : fmt(ac)} acres (${ha < 100 ? ha.toFixed(1) : fmt(ha)} ha)`;
+  return t('land.area', { ac: ac < 100 ? ac.toFixed(1) : fmt(ac), ha: ha < 100 ? ha.toFixed(1) : fmt(ha) });
 }
 export function boundsOf(f: LandFeature): [[number, number], [number, number]] {
   let w = 180, s = 90, e = -180, n = -90;

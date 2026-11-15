@@ -3,21 +3,22 @@
 import type { ISSPhoto } from '../../api';
 import type { NasaDataset } from '../../nasa';
 import { STATUS_WORDS } from '../../nasa';
+import { t } from '../../i18n';
 
 export function ISSFigure({ iss }: { iss: { photo: ISSPhoto; credit: string } | null }) {
   if (!iss) return null;
   const p = iss.photo;
   const [y, m] = p.date.split('-').map(Number);
-  const month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][m - 1];
+  const month = t(`ui.month.${m}`);
   return (
     <figure className="iss" data-testid="iss-photo">
-      <a href={p.page_url} target="_blank" rel="noreferrer" title="Open this photo at NASA">
-        <img src={p.url} alt={`Astronaut photo taken from the International Space Station, ${month} ${y}: ${p.features.toLowerCase()}`} loading="lazy" />
+      <a href={p.page_url} target="_blank" rel="noreferrer" title={t('ui.iss.open')}>
+        <img src={p.url} alt={t('ui.iss.alt', { month, y, features: p.features.toLowerCase() })} loading="lazy" />
       </a>
       <figcaption>
-        <b>Seen from the ISS near your field, {month} {y}</b>
-        <span>Centre of the photo about {Math.max(1, Math.round(p.miles))} miles from the field. {p.features.split(',').map((s) => s.trim().toLowerCase()).filter((s) => s !== 'agriculture').map((s) => s.replace(/\b\w/g, (c) => c.toUpperCase())).slice(0, 3).join(', ')}.</span>
-        <cite>{iss.credit}. Photo {p.photo_id}, eol.jsc.nasa.gov.</cite>
+        <b>{t('ui.iss.seen', { month, y })}</b>
+        <span>{t('ui.iss.centre', { n: Math.max(1, Math.round(p.miles)) })} {p.features.split(',').map((s) => s.trim().toLowerCase()).filter((s) => s !== 'agriculture').map((s) => s.replace(/\b\w/g, (c) => c.toUpperCase())).slice(0, 3).join(', ')}.</span>
+        <cite>{iss.credit}. {t('ui.iss.photo', { id: p.photo_id })}</cite>
       </figcaption>
     </figure>
   );
@@ -27,7 +28,7 @@ export function NasaList({ list }: { list: NasaDataset[] }) {
   const live = list.filter((d) => d.status === 'live').length;
   return (
     <details className="nasa-more">
-      <summary data-testid="nasa-toggle">All {list.length} NASA datasets: {live} live on this screen <small>(what each tells you, how coarse, status)</small></summary>
+      <summary data-testid="nasa-toggle">{t('ui.nasa.all', { n: list.length, live })} <small>{t('ui.nasa.all_sub')}</small></summary>
       <ul className="nasa" data-testid="nasa-list">
         {list.map((d) => (
           <li key={d.id} className={`ns-${d.status}`}>

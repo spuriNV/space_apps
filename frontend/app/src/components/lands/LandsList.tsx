@@ -2,6 +2,7 @@
 // grouped by province or state, then Nation. Nations are collapsed groups (keyboard: Tab, Enter) so 1,800 rows stay light.
 import { useMemo, useState } from 'react';
 import Icon from '../Icons';
+import { t, locale } from '../../i18n';
 import { areaText, kindLabel, regionName, regionOf, type LandFeature } from './lands';
 
 type Filter = 'all' | 'BC' | 'CA';
@@ -33,15 +34,15 @@ export function LandsList({ lands, activeId, onPick }: { lands: LandFeature[] | 
   return (
     <div className="ll" data-testid="lands-list">
       <div className="pk-filter">
-        <label className="pk-search"><Icon name="search" size={16} /><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by reserve, tribe or Nation" aria-label="Search First Nations lands" data-testid="lands-search" /></label>
-        <div className="chips" role="group" aria-label="Region">
-          {([['all', 'All', counts.BC + counts.CA], ['BC', 'British Columbia', counts.BC], ['CA', 'California', counts.CA]] as const).map(([k, label, n]) => (
-            <button key={k} className="chip" aria-pressed={f === k} onClick={() => setF(k)} data-testid={`lands-filter-${k}`}><Icon name="check" size={16} className="check" />{label} <span className="n">{n.toLocaleString('en-US')}</span></button>
+        <label className="pk-search"><Icon name="search" size={16} /><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('ll.ph')} aria-label={t('ll.aria')} data-testid="lands-search" /></label>
+        <div className="chips" role="group" aria-label={t('ll.region')}>
+          {([['all', t('ll.all'), counts.BC + counts.CA], ['BC', regionName('BC'), counts.BC], ['CA', regionName('CA'), counts.CA]] as const).map(([k, label, n]) => (
+            <button key={k} className="chip" aria-pressed={f === k} onClick={() => setF(k)} data-testid={`lands-filter-${k}`}><Icon name="check" size={16} className="check" />{label} <span className="n">{n.toLocaleString(locale)}</span></button>
           ))}
         </div>
       </div>
-      {!lands && <p className="loading-note">Loading the lands…</p>}
-      {lands && <p className="ll-count" role="status" aria-live="polite">{total.toLocaleString('en-US')} {total === 1 ? 'land' : 'lands'}{searching ? ' match' : ''}</p>}
+      {!lands && <p className="loading-note">{t('ll.loading')}</p>}
+      {lands && <p className="ll-count" role="status" aria-live="polite">{t(`ll.cnt${total === 1 ? '1' : 'n'}${searching ? 'm' : ''}`, { n: total.toLocaleString(locale) })}</p>}
       {groups.map((g) => (
         <section key={g.region} aria-label={regionName(g.region)}>
           <h2 className="pk-group">{regionName(g.region)}</h2>
@@ -51,7 +52,7 @@ export function LandsList({ lands, activeId, onPick }: { lands: LandFeature[] | 
               return (
                 <li key={key}>
                   <details open={isOpen} onToggle={(e) => { const o = (e.currentTarget as HTMLDetailsElement).open; if (o !== open.has(key)) setOpen((s) => { const t = new Set(s); if (o) t.add(key); else t.delete(key); return t; }); }}>
-                    <summary><b>{n.nation}</b><span>{n.rows.length} {n.rows.length === 1 ? 'land' : 'lands'}</span><Icon name="chevdown" size={18} /></summary>
+                    <summary><b>{n.nation}</b><span>{t(n.rows.length === 1 ? 'll.cnt1' : 'll.cntn', { n: n.rows.length })}</span><Icon name="chevdown" size={18} /></summary>
                     {isOpen && (
                       <ul className="ll-rows">
                         {n.rows.map((l) => {
@@ -75,8 +76,8 @@ export function LandsList({ lands, activeId, onPick }: { lands: LandFeature[] | 
           </ul>
         </section>
       ))}
-      {lands && !total && <p className="loading-note">No land matches. <button className="btn btn-outline btn-sm" onClick={() => { setQ(''); setF('all'); }}>Show all</button></p>}
-      <p className="ll-fine">Reserve and trust boundaries are legal or statistical lines, not traditional territory.</p>
+      {lands && !total && <p className="loading-note">{t('ll.none')} <button className="btn btn-outline btn-sm" onClick={() => { setQ(''); setF('all'); }}>{t('ll.showAll')}</button></p>}
+      <p className="ll-fine">{t('ll.fine')}</p>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { withLang } from '../../i18n';
+import { withLang, t } from '../../i18n';
 // Farm catalog: GET /api/catalog (about 190 real farms, one per place, as tappable pt_ points).
 // A light, clustered map layer (separate from the prepared fields) and the data the pick list group reads.
 import type maplibregl from 'maplibre-gl';
@@ -29,7 +29,7 @@ export const groupLetter = (g: string) => GROUP_LETTER[g] ?? g.charAt(0).toUpper
 export const groupColor = (g: string) => GROUP_COLOR[g] ?? '#8a8a80';
 export const landNote = (l: CatalogItem['land_status']) => {
   const kind = typeof l === 'string' ? l : l?.kind;
-  return kind && /reserve|reservation|trust|tribal/i.test(kind) ? 'On reserve or tribal land' : '';
+  return kind && /reserve|reservation|trust|tribal/i.test(kind) ? t('week.reserveNote') : '';
 };
 
 const SRC = 'catalog';

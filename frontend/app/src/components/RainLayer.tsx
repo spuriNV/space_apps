@@ -1,4 +1,5 @@
 import { motionOff, usePrefs } from './a11y/prefs';
+import { t, locale } from '../i18n';
 import { useEffect, useRef, useState } from 'react';
 import type maplibregl from 'maplibre-gl';
 
@@ -52,17 +53,17 @@ export default function RainLayer(p: { map: maplibregl.Map | null; ready: boolea
   }, [p.map]);
 
   if (!p.on) return null;
-  const label = new Date(days.current[idx] + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+  const label = new Date(days.current[idx] + 'T12:00:00Z').toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
   return (
     <div className="rain-box" style={{ left: p.leftInset + 16, bottom: p.bottomInset + 58 }} data-testid="rain-box">
       <div className="rain-row">
-        <button className="rain-btn" onClick={() => setPlaying(!playing)} aria-label={playing ? 'Pause rain animation' : 'Play rain animation'} data-testid="rain-play">{playing ? '❚❚' : '▶'}</button>
-        {reduced && !playing && <button className="rain-btn" onClick={() => setIdx((i) => (i + 1) % DAYS)} aria-label="Next day" data-testid="rain-step">Next</button>}
+        <button className="rain-btn" onClick={() => setPlaying(!playing)} aria-label={playing ? t('rain.pause') : t('rain.play')} data-testid="rain-play">{playing ? '❚❚' : '▶'}</button>
+        {reduced && !playing && <button className="rain-btn" onClick={() => setIdx((i) => (i + 1) % DAYS)} aria-label={t('rain.next')} data-testid="rain-step">{t('rain.nextBtn')}</button>}
         <b data-testid="rain-date" aria-live="off">{label}</b>
       </div>
       <div className="rain-bar" aria-hidden="true">{LEGEND.map((c) => <i key={c} style={{ background: c }} />)}</div>
       <div className="rain-ticks" aria-hidden="true">{LEGEND_LABELS.map((l) => <span key={l}>{l}</span>)}</div>
-      <small>Rain rate, mm/hour (daily snapshot, last 7 days)</small>
+      <small>{t('rain.rate')}</small>
       <small>NASA GPM IMERG via GIBS</small>
     </div>
   );

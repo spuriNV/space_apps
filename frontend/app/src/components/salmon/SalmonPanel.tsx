@@ -1,4 +1,4 @@
-import { withLang } from '../../i18n';
+import { withLang, t as tr, tx, locale } from '../../i18n';
 // "Salmon and the field" (BC field only). GET /api/locations/<id>/salmon: the Salmon River gauge, water temperature, when the
 // fish are in the river, and how much water this field's rotations would take in the same weeks.
 // Farmer default: a plain summary and the respect text. One local "More detail" opens the charts and tables.
@@ -39,16 +39,16 @@ export interface Salmon {
 }
 
 // ---------- small helpers ----------
-const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MON = Array.from({ length: 12 }, (_, i) => tr(`week.mon${i}`));
 const DAY = 864e5;
 const tOf = (s: string) => { const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d) / DAY; };
 const dOf = (t: number) => new Date(t * DAY);
-const label = (t: number) => `${MON[dOf(t).getUTCMonth()]} ${dOf(t).getUTCDate()}`;
+const label = (t: number) => tr('week.dateMD', { m: MON[dOf(t).getUTCMonth()], d: dOf(t).getUTCDate() });
 const doyOf = (t: number) => Math.min(365, Math.round(t - Date.UTC(dOf(t).getUTCFullYear(), 0, 1) / DAY) + 1);
 const CFS = 35.3147;
 const cfs = (m3s: number) => Math.round(m3s * CFS);
 const f2 = (n: number) => (n >= 10 ? n.toFixed(1) : n.toFixed(2));
-const num = (n: number) => Math.round(n).toLocaleString('en-CA');
+const num = (n: number) => Math.round(n).toLocaleString(locale);
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
 
 function useWidth<T extends HTMLElement>() {
@@ -71,8 +71,8 @@ const FISH_COL = '#b8412c';
 // ---------- flow chart ----------
 const FLOW_MAX = 3;
 const THRESH_NAME: Record<string, string> = {
-  order_2026_m311: '2026 order trigger', order_2023_m238: '2023 order trigger',
-  mad_20pct: '20% of average flow', mad_10pct: '10% of average flow', mad_5pct: '5% of average flow', aug_p10_reference: 'Low August, 1 year in 10',
+  order_2026_m311: tr('salmon.th2026'), order_2023_m238: tr('salmon.th2023'),
+  mad_20pct: tr('salmon.mad20'), mad_10pct: tr('salmon.mad10'), mad_5pct: tr('salmon.mad5'), aug_p10_reference: tr('salmon.augP10'),
 };
 const parenOf = (l: string) => /\(([^)]*)\)/.exec(l)?.[1]?.split(';')[0] ?? '';
 function Swatch({ kind }: { kind: Threshold['kind'] }) {
@@ -122,26 +122,26 @@ function FlowChart({ s }: { s: Salmon }) {
   };
   const pick = (d: FlowDay) => {
     const pp = s.flow.percentiles_by_doy[doyOf(tOf(d.date)) - 1];
-    return <>{label(tOf(d.date))}: <b>{f2(d.discharge_m3s)} m³/s</b> ({cfs(d.discharge_m3s)} cfs){pp ? <>. Normal for the day: {f2(pp.p50)} m³/s.</> : null}{d.approval !== 'approved' && ' Provisional.'}</>;
+    return <>{label(tOf(d.date))}: <b>{f2(d.discharge_m3s)} m³/s</b> ({cfs(d.discharge_m3s)} cfs){pp ? <>. {tr('salmon.normalDay', { n: f2(pp.p50) })}</> : null}{d.approval !== 'approved' && ` ${tr('salmon.provisional')}`}</>;
   };
   const crit = s.run_timing.critical_window;
   const cx0 = X(tOf(`${year}-${crit.from}`)), cx1 = X(tOf(`${year}-${crit.to}`) + 1);
   const ticks = [`${year}-08-01`, `${year}-09-01`, `${year}-10-01`, `${year}-11-01`].map(tOf);
   const groups: { name: string; kind: Threshold['kind'] }[] = [
-    { name: 'Orders (BC)', kind: 'official' }, { name: 'Drought-plan rules (BC)', kind: 'policy_rule' }, { name: 'Our reference', kind: 'our_reference' },
+    { name: tr('salmon.gOrders'), kind: 'official' }, { name: tr('salmon.gRules'), kind: 'policy_rule' }, { name: tr('salmon.gRef'), kind: 'our_reference' },
   ];
-  const ord = (e: OrderEvent) => (e.kind === 'rescission' ? 'Order lifted' : 'Order');
+  const ord = (e: OrderEvent) => (e.kind === 'rescission' ? tr('salmon.orderLifted') : tr('salmon.order'));
   return (
     <div className="sp-block" data-testid="salmon-flow">
       <div className="sp-head">
-        <h3>How low is the river?</h3>
-        <Seg label="Year" value={year} options={years.map((y) => ({ v: y, label: String(y) }))} onChange={(v) => { setYear(v); setHover(null); }} className="small" testid="salmon-year" />
+        <h3>{tr('salmon.howLow')}</h3>
+        <Seg label={tr('salmon.year')} value={year} options={years.map((y) => ({ v: y, label: String(y) }))} onChange={(v) => { setYear(v); setHover(null); }} className="small" testid="salmon-year" />
       </div>
-      <p className="sp-lede">August {year} averaged <b title={`${f2(oy.aug_mean.value)} m³/s = ${cfs(oy.aug_mean.value)} cfs`}>{f2(oy.aug_mean.value)} m³/s</b>, {Math.round(oy.aug_mean_pct_of_normal.value)}% of a normal August. {rankLine(oy)}</p>
-      <div className="sp-read" aria-live="off">{hd ? pick(hd) : <span className="muted">Tap or hover the chart for one day. Flow in m³/s (1 m³/s = {cfs(1)} cfs).</span>}</div>
+      <p className="sp-lede">{tr('salmon.augAvg', { year })} <b title={`${f2(oy.aug_mean.value)} m³/s = ${cfs(oy.aug_mean.value)} cfs`}>{f2(oy.aug_mean.value)} m³/s</b>{tr('salmon.augPct', { n: Math.round(oy.aug_mean_pct_of_normal.value) })} {rankLine(oy)}</p>
+      <div className="sp-read" aria-live="off">{hd ? pick(hd) : <span className="muted">{tr('salmon.tapFlow', { n: cfs(1) })}</span>}</div>
       <div ref={box} className="sp-chart">
         {W > 0 && (
-          <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Salmon River flow, ${year}, July 15 to November 15, with the order trigger levels`}
+          <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={tr('salmon.flowAria', { year })}
             onPointerMove={move} onPointerDown={move} onPointerLeave={() => setHover(null)} style={{ touchAction: 'pan-y' }}>
             <defs>
               <clipPath id="sp-clip"><rect x={ml} y={mt} width={pw} height={ph} /></clipPath>
@@ -151,7 +151,7 @@ function FlowChart({ s }: { s: Salmon }) {
             {[0, 1, 2, 3].map((v) => <g key={v}><line x1={ml} x2={W - mr} y1={Y(v)} y2={Y(v)} stroke="var(--line)" /><text x={ml - 6} y={Y(v) + 4} textAnchor="end">{v}</text></g>)}
             {ticks.map((t) => <text key={t} x={X(t)} y={H - 6} textAnchor="middle">{MON[dOf(t).getUTCMonth()]}</text>)}
             <g clipPath="url(#sp-clip)">
-              <path d={band} fill={FLOW_COL} opacity="0.16"><title>Usual range for the day: the middle 80% of days, 1991 to 2020</title></path>
+              <path d={band} fill={FLOW_COL} opacity="0.16"><title>{tr('salmon.bandTitle')}</title></path>
               {thresholds.map((t) => {
                 const mine = t.kind !== 'official' || t.id.includes(String(year));
                 const st = t.kind === 'official' ? { stroke: 'var(--bad)', strokeWidth: 2.5 } : t.kind === 'policy_rule' ? { stroke: 'var(--warn)', strokeWidth: 1.75, strokeDasharray: '7 4' } : { stroke: 'var(--text-2)', strokeWidth: 2.25, strokeDasharray: '1 4', strokeLinecap: 'round' as const };
@@ -159,7 +159,7 @@ function FlowChart({ s }: { s: Salmon }) {
               })}
               {segs.map((g, i) => <polyline key={i} points={g.pts.join(' ')} fill="none" stroke={FLOW_COL} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" opacity={g.prov ? 0.85 : 1} style={{ filter: 'brightness(0.78)' }} />)}
             </g>
-            {provStart && <rect x={X(tOf(provStart.date))} y={H - mb} width={Math.max(0, X(t1) - X(tOf(provStart.date)))} height="4" fill="url(#sp-hatch)" opacity="0.8"><title>Provisional readings: Water Survey of Canada may still revise them</title></rect>}
+            {provStart && <rect x={X(tOf(provStart.date))} y={H - mb} width={Math.max(0, X(t1) - X(tOf(provStart.date)))} height="4" fill="url(#sp-hatch)" opacity="0.8"><title>{tr('salmon.provTitle')}</title></rect>}
             {oy.orders.map((e) => {
               const x = X(tOf(e.date)); const lifted = e.kind === 'rescission';
               return <g key={e.date + e.kind}><line x1={x} x2={x} y1={mt - 4} y2={mt + ph} stroke="var(--text)" strokeWidth="1" opacity="0.35" />
@@ -172,16 +172,16 @@ function FlowChart({ s }: { s: Salmon }) {
               const x = X(tOf(last.date)), y = Y(nowV); const bw = 88, bx = Math.min(x + 4, W - mr) - bw;
               return <g data-testid="salmon-now"><circle cx={x} cy={y} r="5" fill="var(--panel)" stroke={FLOW_COL} strokeWidth="2.5" style={{ filter: 'brightness(0.78)' }} />
                 <line x1={x} x2={x} y1={y - 6} y2={y - 22} stroke="var(--text)" strokeWidth="1" />
-                <rect x={bx} y={y - 44} width={bw} height="22" rx="11" fill="var(--text)" /><text x={bx + bw / 2} y={y - 29} textAnchor="middle" fill="var(--panel)" style={{ fill: 'var(--panel)', fontWeight: 600 }}>Now {f2(nowV)}</text></g>;
+                <rect x={bx} y={y - 44} width={bw} height="22" rx="11" fill="var(--text)" /><text x={bx + bw / 2} y={y - 29} textAnchor="middle" fill="var(--panel)" style={{ fill: 'var(--panel)', fontWeight: 600 }}>{tr('salmon.now', { n: f2(nowV) })}</text></g>;
             })()}
           </svg>
         )}
       </div>
       <ul className="sp-key">
-        <li><i className="sp-sw band" /> Usual range for the day (most years)</li>
-        <li><i className="sp-sw crit" /> Aug and Sep, the critical weeks</li>
-        {oy.orders.length > 0 && <li><svg width="30" height="14" aria-hidden="true"><path d="M9,2L21,2L15,12Z" fill="var(--text)" /></svg> Order issued <span className="sp-sp" /><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="var(--panel)" stroke="var(--text)" strokeWidth="2" /></svg> lifted</li>}
-        {provStart && <li><i className="sp-sw hatch" /> Provisional: may be revised</li>}
+        <li><i className="sp-sw band" /> {tr('salmon.keyBand')}</li>
+        <li><i className="sp-sw crit" /> {tr('salmon.keyCrit')}</li>
+        {oy.orders.length > 0 && <li><svg width="30" height="14" aria-hidden="true"><path d="M9,2L21,2L15,12Z" fill="var(--text)" /></svg> {tr('salmon.keyOrder')} <span className="sp-sp" /><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="var(--panel)" stroke="var(--text)" strokeWidth="2" /></svg> {tr('salmon.keyLifted')}</li>}
+        {provStart && <li><i className="sp-sw hatch" /> {tr('salmon.keyProv')}</li>}
       </ul>
       {groups.map((g) => (
         <div key={g.kind} className="sp-tgroup">
@@ -191,17 +191,17 @@ function FlowChart({ s }: { s: Salmon }) {
           ))}
         </div>
       ))}
-      {oy.orders.length > 0 && <ul className="sp-orders">{oy.orders.map((e) => <li key={e.date + e.kind}><b>{label(tOf(e.date))}</b> <span>{ord(e)}. {e.title}{e.url && <> <a href={e.url} target="_blank" rel="noreferrer">Source</a></>}</span></li>)}</ul>}
+      {oy.orders.length > 0 && <ul className="sp-orders">{oy.orders.map((e) => <li key={e.date + e.kind}><b>{label(tOf(e.date))}</b> <span>{ord(e)}. {e.title}{e.url && <> <a href={e.url} target="_blank" rel="noreferrer">{tr('week.source')}</a></>}</span></li>)}</ul>}
       {s.flow.threshold_note && <p className="sp-note">{s.flow.threshold_note}</p>}
-      <cite className="sp-cite">Water Survey of Canada gauge {s.series_meta.flow_daily.station}, {s.river.split(',')[0].replace(/ \(.*\)/, '')} near Salmon Arm. Checked readings to {fullDate(s.series_meta.flow_daily.approved_to)}, provisional after. Chart cut off at {FLOW_MAX} m³/s.</cite>
+      <cite className="sp-cite">{tr('salmon.flowCite', { st: s.series_meta.flow_daily.station, river: s.river.split(',')[0].replace(/ \(.*\)/, ''), date: fullDate(s.series_meta.flow_daily.approved_to), max: FLOW_MAX })}</cite>
     </div>
   );
 }
-const fullDate = (d: string) => `${dOf(tOf(d)).getUTCDate()} ${MON[dOf(tOf(d)).getUTCMonth()]} ${d.slice(0, 4)}`;
+const fullDate = (d: string) => tr('salmon.fullDate', { d: dOf(tOf(d)).getUTCDate(), m: MON[dOf(tOf(d)).getUTCMonth()], y: d.slice(0, 4) });
 const ordinal = (n: number) => (n === 2 ? '2nd' : n === 3 ? '3rd' : `${n}th`);
 const rankLine = (o: OrderYear) => {
   const n = o.aug_rank_lowest.value, of = /among (\d+)/.exec(o.aug_rank_lowest.note ?? '')?.[1];
-  return `${n === 1 ? 'The lowest' : `The ${ordinal(n)} lowest`} of ${of ?? 'all'} Augusts on record.`;
+  return n === 1 ? tr('salmon.rankLowest', { of: of ?? tr('salmon.all') }) : tr('salmon.rankNth', { ord: ordinal(n), n, of: of ?? tr('salmon.all') });
 };
 
 // ---------- temperature ----------
@@ -235,15 +235,15 @@ function TempChart({ s }: { s: Salmon }) {
   return (
     <div className="sp-block" data-testid="salmon-temp">
       <div className="sp-head">
-        <h3>How warm is the water?</h3>
-        <Seg label="Year" value={year} options={years.map((y) => ({ v: y, label: String(y) }))} onChange={(v) => { setYear(v); setHover(null); }} className="small" />
+        <h3>{tr('salmon.howWarm')}</h3>
+        <Seg label={tr('salmon.year')} value={year} options={years.map((y) => ({ v: y, label: String(y) }))} onChange={(v) => { setYear(v); setHover(null); }} className="small" />
       </div>
-      <Seg label="Gauge" value={st} options={stations.map((x) => ({ v: x.station, label: x.role.startsWith('lower') ? 'Lower river' : 'Upper river', title: `${x.name}, gauge ${x.station}` }))} onChange={setSt} className="small sp-seg2" />
-      {sum && <p className="sp-lede">Water reached <b>{sum.peak.value.toFixed(1)} °C</b>. It topped 18 °C on {sum.days_max_ge_18.value} days and 20 °C on {sum.days_max_ge_20.value} days (June to September).</p>}
-      <div className="sp-read">{hd ? <>{label(tOf(hd.date))}: <b>{hd.max_c != null ? `${hd.max_c.toFixed(1)} °C` : 'no reading'}</b> at the warmest{hd.mean_c != null && <>, {hd.mean_c.toFixed(1)} °C on average</>}.</> : <span className="muted">Tap or hover the chart for one day. Water temperature in °C.</span>}</div>
+      <Seg label={tr('salmon.gauge')} value={st} options={stations.map((x) => ({ v: x.station, label: x.role.startsWith('lower') ? tr('salmon.lowerRiver') : tr('salmon.upperRiver'), title: tr('salmon.gaugeTitle', { name: x.name, st: x.station }) }))} onChange={setSt} className="small sp-seg2" />
+      {sum && <p className="sp-lede">{tr('salmon.reached')} <b>{sum.peak.value.toFixed(1)} °C</b>. {tr('salmon.topped', { a: sum.days_max_ge_18.value, b: sum.days_max_ge_20.value })}</p>}
+      <div className="sp-read">{hd ? <>{label(tOf(hd.date))}: <b>{hd.max_c != null ? `${hd.max_c.toFixed(1)} °C` : tr('salmon.noReading')}</b> {tr('salmon.atWarmest')}{hd.mean_c != null && <>, {tr('salmon.onAvg', { n: hd.mean_c.toFixed(1) })}</>}.</> : <span className="muted">{tr('salmon.tapTemp')}</span>}</div>
       <div ref={box} className="sp-chart">
         {W > 0 && (
-          <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Water temperature, ${year}, with the 18 and 20 degree lines`} onPointerMove={move} onPointerDown={move} onPointerLeave={() => setHover(null)} style={{ touchAction: 'pan-y' }}>
+          <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={tr('salmon.tempAria', { year })} onPointerMove={move} onPointerDown={move} onPointerLeave={() => setHover(null)} style={{ touchAction: 'pan-y' }}>
             {[0, 10, 20].map((v) => <g key={v}><line x1={ml} x2={W - mr} y1={Y(v)} y2={Y(v)} stroke="var(--line)" /><text x={ml - 6} y={Y(v) + 4} textAnchor="end">{v}</text></g>)}
             {ticks.map((t) => <text key={t} x={X(t) + 14} y={H - 6} textAnchor="middle">{MON[dOf(t).getUTCMonth()]}</text>)}
             {r18 && <g><line x1={ml} x2={W - mr} y1={Y(18)} y2={Y(18)} stroke="var(--warn)" strokeWidth="1.75" strokeDasharray="7 4" /><text x={W - mr - 2} y={Y(18) + 15} textAnchor="end" style={{ fill: 'var(--warn)', fontWeight: 600 }}>18 °C</text></g>}
@@ -256,15 +256,15 @@ function TempChart({ s }: { s: Salmon }) {
         )}
       </div>
       <ul className="sp-key">
-        <li><svg width="30" height="12" aria-hidden="true"><line x1="1" y1="6" x2="29" y2="6" stroke={TEMP_COL} strokeWidth="2.5" /></svg> Warmest of each day</li>
-        <li><svg width="30" height="12" aria-hidden="true"><line x1="1" y1="6" x2="29" y2="6" stroke={TEMP_COL} strokeWidth="1.5" opacity="0.5" /></svg> Average of each day</li>
+        <li><svg width="30" height="12" aria-hidden="true"><line x1="1" y1="6" x2="29" y2="6" stroke={TEMP_COL} strokeWidth="2.5" /></svg> {tr('salmon.keyWarmest')}</li>
+        <li><svg width="30" height="12" aria-hidden="true"><line x1="1" y1="6" x2="29" y2="6" stroke={TEMP_COL} strokeWidth="1.5" opacity="0.5" /></svg> {tr('salmon.keyAvg')}</li>
       </ul>
       <div className="sp-tgroup">
         {r18 && <div className="sp-trow"><svg width="30" height="12" aria-hidden="true"><line x1="1" y1="6" x2="29" y2="6" stroke="var(--warn)" strokeWidth="2" strokeDasharray="6 4" /></svg><span>18 °C <small>, {why(r18)}</small></span></div>}
         {r20 && <div className="sp-trow"><svg width="30" height="12" aria-hidden="true"><line x1="1" y1="6" x2="29" y2="6" stroke="var(--bad)" strokeWidth="2.5" /></svg><span>20 °C <small>, {why(r20)}</small></span></div>}
       </div>
-      <details className="sp-why"><summary>Why no satellite temperature?</summary><p>{s.temperature.satellite.reason}</p></details>
-      <cite className="sp-cite">Water Survey of Canada gauges {stations.map((x) => x.station).join(' and ')}, provisional, recorded since May 2025. Rules: DFO Fraser River Environmental Watch{rule(r20) && <> (<a href={rule(r20)} target="_blank" rel="noreferrer">report</a>)</>} and the BC water quality guideline.</cite>
+      <details className="sp-why"><summary>{tr('salmon.whySat')}</summary><p>{s.temperature.satellite.reason}</p></details>
+      <cite className="sp-cite">{tr('salmon.tempCite', { st: stations.map((x) => x.station).join(tr('salmon.and')) })}{rule(r20) && <> (<a href={rule(r20)} target="_blank" rel="noreferrer">{tr('salmon.report')}</a>)</>}{tr('salmon.tempCite2')}</cite>
     </div>
   );
 }
@@ -272,7 +272,7 @@ function TempChart({ s }: { s: Salmon }) {
 // ---------- run timing ----------
 const rowName = (sp: Species) => {
   const n = sp.species[0].toUpperCase() + sp.species.slice(1);
-  return sp.stage.startsWith('adults enter') || sp.stage.startsWith('adults arrive') ? `${n} arrive` : sp.stage.startsWith('spawn') ? `${n} spawn` : n;
+  return sp.stage.startsWith('adults enter') || sp.stage.startsWith('adults arrive') ? tr('salmon.arrive', { n }) : sp.stage.startsWith('spawn') ? tr('salmon.spawn', { n }) : n;
 };
 function RunTiming({ s }: { s: Salmon }) {
   const rt = s.run_timing;
@@ -281,24 +281,24 @@ function RunTiming({ s }: { s: Salmon }) {
   const cw = [Number(rt.critical_window.from.slice(0, 2)), Number(rt.critical_window.to.slice(0, 2))];
   return (
     <div className="sp-block" data-testid="salmon-timing">
-      <div className="sp-head"><h3>When are the fish in the river?</h3></div>
-      <div className="sp-strip" role="table" aria-label="Months when salmon are in the Salmon River and when the field is irrigated">
+      <div className="sp-head"><h3>{tr('salmon.whenFish')}</h3></div>
+      <div className="sp-strip" role="table" aria-label={tr('salmon.timingAria')}>
         <div className="sp-srow sp-shead" role="row"><span className="sp-slab" />{MON.map((m, i) => <span key={m} role="columnheader" aria-label={m} className={`sp-cell ${irr.has(i + 1) ? 'irr' : ''} ${i + 1 >= cw[0] && i + 1 <= cw[1] ? 'crit' : ''}`}>{m[0]}</span>)}</div>
-        <div className="sp-srow" role="row"><span className="sp-slab">Field irrigated</span>{MON.map((m, i) => <span key={m} role="cell" aria-label={irr.has(i + 1) ? `${m} irrigated` : ''} className={`sp-cell ${irr.has(i + 1) ? 'irr on' : ''} ${i + 1 >= cw[0] && i + 1 <= cw[1] ? 'crit' : ''}`} />)}</div>
+        <div className="sp-srow" role="row"><span className="sp-slab">{tr('salmon.fieldIrr')}</span>{MON.map((m, i) => <span key={m} role="cell" aria-label={irr.has(i + 1) ? tr('salmon.mIrr', { m }) : ''} className={`sp-cell ${irr.has(i + 1) ? 'irr on' : ''} ${i + 1 >= cw[0] && i + 1 <= cw[1] ? 'crit' : ''}`} />)}</div>
         {rows.map((sp, k) => (
           <div className="sp-srow" role="row" key={k} title={`${sp.common}. ${sp.stage}`}>
             <span className="sp-slab">{rowName(sp)}</span>
             {sp.months.length === 0
-              ? <span className="sp-nopub" role="cell">Months not published</span>
+              ? <span className="sp-nopub" role="cell">{tr('salmon.monthsNP')}</span>
               : MON.map((m, i) => <span key={m} role="cell" aria-label={sp.months.includes(i + 1) ? `${m}: ${rowName(sp)}` : ''} className={`sp-cell ${irr.has(i + 1) ? 'irr' : ''} ${i + 1 >= cw[0] && i + 1 <= cw[1] ? 'crit' : ''}`}>{sp.months.includes(i + 1) && <i className="sp-fish" style={{ background: FISH_COL }} />}</span>)}
           </div>
         ))}
       </div>
       <ul className="sp-key">
-        <li><i className="sp-sw irr" /> Months the field is irrigated</li>
-        <li><i className="sp-sw crit" /> Aug and Sep, the critical weeks</li>
+        <li><i className="sp-sw irr" /> {tr('salmon.keyIrrMonths')}</li>
+        <li><i className="sp-sw crit" /> {tr('salmon.keyCrit')}</li>
       </ul>
-      <p className="sp-note">Young Chinook and coho stay in the river all year. Months come from Salmon River sources where we found them.</p>
+      <p className="sp-note">{tr('salmon.timingNote')}</p>
     </div>
   );
 }
@@ -310,37 +310,37 @@ function WaterLeft({ s }: { s: Salmon }) {
   const rows = w.scale_up.rows.filter((r) => r.licences.value === Math.max(...w.scale_up.rows.map((x) => x.licences.value)));
   return (
     <div className="sp-block" data-testid="salmon-water">
-      <div className="sp-head"><h3>Water left for salmon</h3></div>
-      <p className="sp-lede">How much of a low August flow ({f2(low)} m³/s) this field would take in Aug and Sep, by rotation.</p>
+      <div className="sp-head"><h3>{tr('salmon.waterLeft')}</h3></div>
+      <p className="sp-lede">{tr('salmon.howMuch', { n: f2(low) })}</p>
       <ul className="sp-bars">
         {w.items.map((it) => {
           const pct = it.share_of_low_aug_flow_pct.value;
           return (
-            <li key={it.strategy_id} title={it.draw_aug_sep_m3.low != null ? `Between ${num(it.draw_aug_sep_m3.low)} and ${num(it.draw_aug_sep_m3.high ?? 0)} m³ over Aug and Sep` : undefined}>
+            <li key={it.strategy_id} title={it.draw_aug_sep_m3.low != null ? tr('salmon.between', { a: num(it.draw_aug_sep_m3.low), b: num(it.draw_aug_sep_m3.high ?? 0) }) : undefined}>
               <div className="sp-bar-top"><span>{it.short_name}</span><b>{pct === 0 ? '0%' : `${pct.toFixed(2).replace(/0$/, '')}%`}</b></div>
               <div className="sp-track" aria-hidden="true"><i style={{ width: `${clamp(pct, 0, 1) * 100}%` }} /></div>
-              <small>{it.irrigated_in_window ? `${it.draw_rate_l_s.value.toFixed(1)} L/s, ${num(it.draw_aug_sep_m3.value)} m³ over Aug and Sep` : 'No water taken in Aug and Sep'}</small>
+              <small>{it.irrigated_in_window ? tr('salmon.drawLine', { r: it.draw_rate_l_s.value.toFixed(1), v: num(it.draw_aug_sep_m3.value) }) : tr('salmon.noWater')}</small>
             </li>
           );
         })}
       </ul>
-      <p className="sp-scale"><span>0%</span><span>1% of a low August flow</span></p>
+      <p className="sp-scale"><span>0%</span><span>{tr('salmon.pctLow')}</span></p>
       <div className="sp-illus">
-        <h4><span className="status example">Illustration</span> {w.scale_up.label.replace(/^Illustration:\s*/, '').replace(/^./, (c) => c.toUpperCase())}</h4>
+        <h4><span className="status example">{tr('salmon.illustration')}</span> {w.scale_up.label.replace(/^Illustration:\s*/, '').replace(/^./, (c) => c.toUpperCase())}</h4>
         <div className="sp-table-wrap">
           <table className="sp-table">
-            <thead><tr><th scope="col">Licences</th><th scope="col">Each waters</th><th scope="col">Draw</th><th scope="col">Of a low August flow</th></tr></thead>
+            <thead><tr><th scope="col">{tr('salmon.thLic')}</th><th scope="col">{tr('salmon.thEach')}</th><th scope="col">{tr('salmon.thDraw')}</th><th scope="col">{tr('salmon.thOf')}</th></tr></thead>
             <tbody>
               {rows.map((r) => {
                 const p = r.share_of_low_aug_flow_pct.value;
-                return <tr key={r.assumed_ha_per_licence.value} className={p >= 100 ? 'over' : ''}><td>{num(r.licences.value)}</td><td>{r.assumed_ha_per_licence.value} ha</td><td>{num(r.draw_rate_l_s.value)} L/s</td><td><b>{Math.round(p)}%</b></td></tr>;
+                return <tr key={r.assumed_ha_per_licence.value} className={p >= 100 ? 'over' : ''}><td>{num(r.licences.value)}</td><td>{r.assumed_ha_per_licence.value} {tr('salmon.ha')}</td><td>{num(r.draw_rate_l_s.value)} L/s</td><td><b>{Math.round(p)}%</b></td></tr>;
               })}
             </tbody>
           </table>
         </div>
-        <p className="sp-note">{w.scale_up.note} Over 100% means more than a low August river carries.</p>
+        <p className="sp-note">{w.scale_up.note} {tr('salmon.over100')}</p>
       </div>
-      <cite className="sp-cite">CropLytics water-balance model, spread evenly over 61 days with 75% sprinkler efficiency (assumed). Licence counts: BC news release, 2026.</cite>
+      <cite className="sp-cite">{tr('salmon.waterCite')}</cite>
     </div>
   );
 }
@@ -349,37 +349,37 @@ function WaterLeft({ s }: { s: Salmon }) {
 function EarlyWarning({ s }: { s: Salmon }) {
   const ew = s.early_warning;
   const [open, setOpen] = useState(false);
-  const word = (p?: number) => (p == null ? 'n/a' : p <= 33 ? 'Dry' : p >= 67 ? 'Wet' : 'Middle');
+  const word = (p?: number) => (p == null ? tr('salmon.na') : p <= 33 ? tr('salmon.dry') : p >= 67 ? tr('salmon.wet') : tr('salmon.middle'));
   const table = [...ew.table].sort((a, b) => b.year - a.year);
   return (
     <div className="sp-block" data-testid="salmon-warning">
-      <div className="sp-head"><h3>Can a dry spring warn us?</h3></div>
-      <p className="sp-tag">{ew.label}</p>
+      <div className="sp-head"><h3>{tr('salmon.dryWarn')}</h3></div>
+      <p className="sp-tag">{tx(ew.label)}</p>
       <div className="sp-table-wrap">
         <table className="sp-table sp-ew">
-          <thead><tr><th scope="col">Spring sign</th><th scope="col">Low August after a dry one</th><th scope="col" title="0 = driest on record, 100 = wettest">How 2026 looked</th></tr></thead>
+          <thead><tr><th scope="col">{tr('salmon.thSign')}</th><th scope="col">{tr('salmon.thLowAug')}</th><th scope="col" title={tr('salmon.scaleTitle')}>{tr('salmon.how2026')}</th></tr></thead>
           <tbody>
             {ew.indicators.map((i) => (
               <tr key={i.indicator}>
-                <td>{i.label}<small>{i.n_years} years</small></td>
-                <td title={`Rank correlation ${i.spearman_r.value.toFixed(2)}`}><b>{i.driest_third_with_low_august.length} of {i.driest_third_years.length}</b><small>strength {i.spearman_r.value.toFixed(2)}</small></td>
-                <td title="0 = driest on record, 100 = wettest"><b>{word(i.pct_rank_2026?.value)}</b><small>{i.pct_rank_2026 ? `${Math.round(i.pct_rank_2026.value)} of 100` : ''}</small></td>
+                <td>{i.label}<small>{tr('salmon.nYears', { n: i.n_years })}</small></td>
+                <td title={tr('salmon.rankCorr', { n: i.spearman_r.value.toFixed(2) })}><b>{tr('salmon.xOfY', { a: i.driest_third_with_low_august.length, b: i.driest_third_years.length })}</b><small>{tr('salmon.strength', { n: i.spearman_r.value.toFixed(2) })}</small></td>
+                <td title={tr('salmon.scaleTitle')}><b>{word(i.pct_rank_2026?.value)}</b><small>{i.pct_rank_2026 ? tr('salmon.of100', { n: Math.round(i.pct_rank_2026.value) }) : ''}</small></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       {ew.note && <p className="sp-note">{ew.note}</p>}
-      <button type="button" className="btn btn-text btn-sm sp-yby" aria-expanded={open} onClick={() => setOpen(!open)} data-testid="salmon-yby">{open ? 'Hide year by year' : 'Show year by year'}</button>
+      <button type="button" className="btn btn-text btn-sm sp-yby" aria-expanded={open} onClick={() => setOpen(!open)} data-testid="salmon-yby">{open ? tr('salmon.hideYby') : tr('salmon.showYby')}</button>
       {open && (
         <div className="sp-table-wrap sp-scroll">
           <table className="sp-table">
-            <thead><tr><th scope="col">Year</th><th scope="col">August flow, m³/s</th><th scope="col">Snow in late Apr</th><th scope="col">Winter precip, mm</th></tr></thead>
+            <thead><tr><th scope="col">{tr('salmon.year')}</th><th scope="col">{tr('salmon.thAugFlow')}</th><th scope="col">{tr('salmon.thSnow')}</th><th scope="col">{tr('salmon.thPrecip')}</th></tr></thead>
             <tbody>{table.map((r) => <tr key={r.year} className={r.year === 2026 ? 'now' : ''}><td>{r.year}</td><td>{r.aug_mean_m3s != null ? f2(r.aug_mean_m3s) : '-'}</td><td>{r.snow_late_apr_frac != null ? `${Math.round(r.snow_late_apr_frac * 100)}%` : '-'}</td><td>{r.eccc_nov_mar_precip_mm != null ? Math.round(r.eccc_nov_mar_precip_mm) : '-'}</td></tr>)}</tbody>
           </table>
         </div>
       )}
-      <cite className="sp-cite">Water Survey of Canada, NASA MODIS snow cover, NASA GPM IMERG rain, Environment and Climate Change Canada stations.</cite>
+      <cite className="sp-cite">{tr('salmon.ewCite')}</cite>
     </div>
   );
 }
@@ -402,10 +402,10 @@ export function SalmonPanel({ locId }: { locId: string }) {
   const lead = [s.summary[0], s.summary[3], s.summary[4]].filter(Boolean);
   return (
     <section className="sp" data-testid="salmon">
-      <h2 className="fp-h">Salmon and the field</h2>
+      <h2 className="fp-h">{tr('salmon.title')}</h2>
       <div className="sp-summary">{lead.map((t) => <p key={t}>{t}</p>)}</div>
       <button className="more-detail" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="sp-more" data-testid="salmon-more">
-        <span><b>{open ? 'Less detail' : 'More detail'}</b><small>{open ? 'Back to the short version' : 'Flow, water temperature, run timing'}</small></span><Icon name="chevdown" size={20} />
+        <span><b>{open ? tr('salmon.lessDetail') : tr('week.moreDetail')}</b><small>{open ? tr('salmon.backShort') : tr('salmon.moreSub')}</small></span><Icon name="chevdown" size={20} />
       </button>
       <div className={`sp-more ${open ? 'on' : ''}`} id="sp-more"><div className="sp-more-in">
         <FlowChart s={s} />

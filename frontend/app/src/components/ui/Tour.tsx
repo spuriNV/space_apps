@@ -1,6 +1,7 @@
 // The example field's 4-stop guided tour: small anchored pop-cards, Next / Skip, a progress dot row.
 // Keyboard: focus moves into the card, Esc skips. Static cards only (no motion). Dismissal is remembered in localStorage.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { t } from '../../i18n';
 
 function usePhone() {
   const q = '(max-width: 640px)';
@@ -14,10 +15,10 @@ export const tourDismissed = () => { try { return localStorage.getItem(KEY) === 
 const remember = () => { try { localStorage.setItem(KEY, '1'); } catch { /* private mode: fine */ } };
 
 export const TOUR_STOPS: { step: 'now' | 'compare' | 'brief'; sel: string; title: string; text: string }[] = [
-  { step: 'now', sel: '[data-testid="this-week"]', title: 'This week', text: 'Rain, crop water use and whether you can get on the field, this week.' },
-  { step: 'now', sel: '[data-testid="step-year"]', title: 'See this field’s year (3D)', text: 'Replay ten years from orbit.' },
-  { step: 'compare', sel: '[data-testid="water-bars"]', title: 'Compare water', text: 'Switch rotation and see the water saved.' },
-  { step: 'brief', sel: '[data-testid="print"]', title: 'Print', text: 'One page for your adviser.' },
+  { step: 'now', sel: '[data-testid="this-week"]', title: t('tour.0.title'), text: t('tour.0.text') },
+  { step: 'now', sel: '[data-testid="step-year"]', title: t('tour.1.title'), text: t('tour.1.text') },
+  { step: 'compare', sel: '[data-testid="water-bars"]', title: t('tour.2.title'), text: t('tour.2.text') },
+  { step: 'brief', sel: '[data-testid="print"]', title: t('tour.3.title'), text: t('tour.3.text') },
 ];
 
 export default function Tour(p: { idx: number; go: (i: number) => void; canReplay: boolean; onReplay: () => void; onClose: () => void }) {
@@ -61,16 +62,16 @@ export default function Tour(p: { idx: number; go: (i: number) => void; canRepla
   });
 
   return (
-    <div ref={ref} className={`tour-card ${pos ? 'anch' : ''}`} role="dialog" aria-label={`Tour, stop ${p.idx + 1} of ${TOUR_STOPS.length}`} data-testid="tour" style={pos ? { top: pos.top, left: pos.left } : phone && bottom != null ? { bottom } : undefined}>
+    <div ref={ref} className={`tour-card ${pos ? 'anch' : ''}`} role="dialog" aria-label={t('tour.aria', { n: p.idx + 1, total: TOUR_STOPS.length })} data-testid="tour" style={pos ? { top: pos.top, left: pos.left } : phone && bottom != null ? { bottom } : undefined}>
       <b className="tour-h">{stop.title}</b>
       <p>{stop.text}</p>
       <div className="tour-row">
         <span className="tour-dots" aria-hidden="true">{TOUR_STOPS.map((_, i) => <i key={i} className={i === p.idx ? 'on' : ''} />)}</span>
         <span className="tour-act">
-          {p.idx === 1 && p.canReplay && <button className="btn btn-outline btn-sm" onClick={() => { p.onReplay(); }} data-testid="tour-replay">Start the replay</button>}
-          <button className="btn btn-text btn-sm" onClick={done} data-testid="tour-skip">{last ? 'Close' : 'Skip'}</button>
-          {!last && <button className="btn btn-primary btn-sm" data-tour-next onClick={() => p.go(p.idx + 1)} data-testid="tour-next">Next</button>}
-          {last && <button className="btn btn-primary btn-sm" data-tour-next onClick={done} data-testid="tour-done">Done</button>}
+          {p.idx === 1 && p.canReplay && <button className="btn btn-outline btn-sm" onClick={() => { p.onReplay(); }} data-testid="tour-replay">{t('tour.replay')}</button>}
+          <button className="btn btn-text btn-sm" onClick={done} data-testid="tour-skip">{last ? t('tour.close') : t('tour.skip')}</button>
+          {!last && <button className="btn btn-primary btn-sm" data-tour-next onClick={() => p.go(p.idx + 1)} data-testid="tour-next">{t('tour.next')}</button>}
+          {last && <button className="btn btn-primary btn-sm" data-tour-next onClick={done} data-testid="tour-done">{t('tour.done')}</button>}
         </span>
       </div>
     </div>
