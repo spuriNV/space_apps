@@ -22,6 +22,7 @@ import { DRAFT_ID, parseFieldHash, useMyFields } from './myFields';
 import { focusNationTools } from './components/week/NationTools';
 import { DetailCtx, useDetailState } from './components/ui/Detail';
 import { FLOW, ProvList, acres, fieldName, place, type FlowId, type Step } from './components/ui/shared';
+import { announce, onOtherOpen } from './overlays';
 import AskChat from './components/chat/AskChat';
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
@@ -50,6 +51,7 @@ export default function App() {
   const searchRef = useRef<HTMLInputElement>(null);
   const [plainLocations, setLocations] = useState<Location[]>([]);
   const [drawing, setDrawing] = useState<{ hideId: string | null } | null>(null); // a drawing session is open (taps and picks are off)
+  useEffect(() => onOtherOpen('layers', () => setLayersOpen(false)), []);
   const draw = useRef<DrawHostHandle>(null);
   const [locProv, setLocProv] = useState<Record<string, api.ProvMap>>({});
   const [live, setLive] = useState<boolean | null>(null);
@@ -392,7 +394,7 @@ export default function App() {
           {FLOW.map((f) => {
             const locked = f.id !== 'pick' && !selected;
             return (
-              <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} data-testid={`tab-${f.id}`} disabled={locked} title={locked ? 'Pick a field first' : f.does}>
+              <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} data-testid={`tab-${f.id}`} disabled={locked} title={locked ? 'Pick a field first' : f.does} aria-label={`Step ${f.n}: ${f.label}`}>
                 <i>{f.n}</i><span className="tb-long">{f.label}</span><span className="tb-short">{f.short}</span>
               </button>
             );
@@ -426,7 +428,7 @@ export default function App() {
               </div>
             )}
           </div>
-          <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => setLayersOpen(!layersOpen)} data-testid="layers-btn"><Icon name="layers" size={16} />Map layers</button>
+          <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} data-testid="layers-btn" aria-expanded={layersOpen}><Icon name="layers" size={16} />Map layers</button>
         </div>
       </header>
       <nav className="mob-tabs" aria-label="Steps">
@@ -480,7 +482,7 @@ export default function App() {
         </div>
       </div>
 
-      <DrawLayer ref={draw} getMap={() => map.current?.getMap() ?? null} mf={mf} rightInset={rightInset} onActive={(on, hideId) => setDrawing(on ? { hideId: hideId ?? null } : null)}
+      <DrawLayer ref={draw} getMap={() => map.current?.getMap() ?? null} mf={mf} rightInset={rightInset} onActive={(on, hideId) => { if (on) announce('draw'); setDrawing(on ? { hideId: hideId ?? null } : null); }}
         onSubmitting={onSubmitting} onSaved={onSaved} onDeleted={(id) => { if (selectedId === id) { setSelectedId(null); setPanel('none'); } }} onOpenShared={openMine} />
 
       {yearExpanded && selected && d?.cal && (

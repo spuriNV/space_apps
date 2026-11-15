@@ -1945,3 +1945,20 @@ button.res-legend:not(.on) { opacity: 0.85; } button.res-legend:not(.on) i { bac
 .skel-chart { height: 84px; width: 100%; border-radius: var(--r-md); }
 .skel, .wk-skel .skel { background: var(--tint-2); }
 .wk-skel[aria-label], .step-answer[aria-busy] { min-height: 40px; }
+
+/* ---------- a11y1: no black flash, top bar at 1440, nested "More detail", step crossfade ---------- */
+body { background: var(--app-bg); }
+.map-wrap, .map, .maplibregl-canvas-container { background: #d8d5c4; }
+.maplibregl-canvas { animation: fade-in 500ms var(--ease-std) backwards; }
+@media (max-width: 1500px) {
+  .tb-tabs .tb-short, .tb-tabs .tb-long { display: none !important; }
+  .tb-tabs button { padding: 0 8px; gap: 0; }
+  .tb-tabs button.on::after { left: 8px; right: 8px; }
+  .tb-tabs button i { width: 30px; height: 30px; font-size: var(--fs-body); }
+}
+.tw-more { margin-top: var(--s-2); }
+.tw-more > summary, .fp-more-in .more-detail { min-height: 44px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); background: transparent; border: 0; box-shadow: none; padding: var(--s-2) var(--s-2); margin: var(--s-2) 0 0; }
+.fp-more-in .more-detail b { font-size: var(--fs-small); font-weight: 600; color: var(--text-2); }
+.fp-more-in .more-detail small { display: none; }
+.fp-content { animation: step-fade 180ms var(--ease-std) backwards; }
+@keyframes step-fade { from { opacity: 0; } }

@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { askChat, chatStatus, type ChatTurn } from '../../api';
 import { Speaker } from './speech';
 import Icon from '../Icons';
+import { announce, onOtherOpen } from '../../overlays';
 
 interface Props { fieldId: string | null; fieldName: string | null; screen: string; date: string; waterLimit?: number | null }
 
@@ -42,7 +43,8 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
   const stopSpeech = () => { sp.stop(); setSpeaking(null); };
   const close = () => { setOpen(false); rec.current?.stop(); stopSpeech(); btn.current?.focus(); };
   useEffect(() => { chatStatus().then((s) => { serverVoice.current = s.tts; setEnabled(s.enabled); }); }, []);
-  useEffect(() => { if (open) input.current?.focus(); }, [open]);
+  useEffect(() => { if (open) { input.current?.focus(); announce('ask'); } }, [open]);
+  useEffect(() => onOtherOpen('ask', () => { setOpen(false); rec.current?.stop(); stopSpeech(); }), []); // eslint-disable-line react-hooks/exhaustive-deps
   // Escape closes from anywhere while open (focus may be on a chip or the switch, not only the box)
   useEffect(() => {
     if (!open) return;
