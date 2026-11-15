@@ -5,10 +5,11 @@ import { useState } from 'react';
 import type { Location } from '../../types';
 import { RouteProblem, SKEL, useRoute } from './useRoute';
 import './week.css';
+import { WeekChart } from './WeekChart';
 
 interface V { value: number | null }
-interface Day { date: string; weekday: string; rain_mm: V; tmax_c: V; tmin_c: V }
-interface IrrDay { date: string; need_mm?: V | null }
+interface Day { date: string; weekday: string; rain_mm: V; tmax_c: V; tmin_c: V; et0_mm?: V }
+interface IrrDay { date: string; need_mm?: V | null; kc?: V | null }
 interface Sec { status: 'ready' | 'fallback' | 'partial' | 'unavailable' | 'not_applicable'; reason?: string | null }
 interface Alert { event?: string; headline?: string; severity?: string; ends?: string; area?: string; url?: string }
 interface Access { date: string; status: 'ok' | 'marginal' | 'too_wet' | 'unknown'; why?: string[] }
@@ -32,7 +33,7 @@ const NAME = { ok: 'OK to work', marginal: 'Marginal', too_wet: 'Too wet', unkno
 const SRC: Record<string, string> = { power: 'NASA POWER surface soil wetness', grace: 'NASA GRACE-DA surface soil wetness', smap_l4: 'NASA SMAP surface soil moisture' };
 const ord = (n: number) => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] ?? 'th');
 
-export function ThisWeek({ loc }: { loc: Location }) {
+export function ThisWeek({ loc, compact }: { loc: Location; compact?: boolean }) {
   const sp = loc.spot;
   const st = useRoute<Week>(sp && sp.state !== 'ready' ? null : `/locations/${loc.id}/this_week`);
   const [pick, setPick] = useState<number | null>(null);
@@ -43,8 +44,25 @@ export function ThisWeek({ loc }: { loc: Location }) {
       <h3 className="tw-h">This week</h3>
       {st.kind === 'loading' && SKEL(3)}
       <RouteProblem st={st} what="The week ahead" reload={st.reload} />
-      {w && <Body w={w} pick={pick} setPick={setPick} />}
+      {w && (compact ? <Glance w={w} /> : <Body w={w} pick={pick} setPick={setPick} />)}
     </section>
+  );
+}
+
+/** Top of Now: the 7-day chart, the irrigation gauge and one plain line. The full card lives under More detail. */
+function Glance({ w }: { w: Week }) {
+  const S = w.sections, irr = w.irrigation, acc = w.field_access;
+  const showIrr = SHOW(S.irrigation), showFc = SHOW(S.forecast) && w.forecast.length > 0;
+  const showAcc = SHOW(S.field_access) && acc.days.some((d) => d.status !== 'unknown');
+  const acIn = irr.acre_in_per_acre?.value;
+  const gauge = showIrr && irr.kind === 'irrigate';
+  if (!showFc) return <p className="gap-line">{irr.verdict || 'The forecast is not available right now.'}</p>;
+  return (
+    <div className="tw-body">
+      <WeekChart forecast={w.forecast} irrDays={irr.days} access={showAcc ? acc.days : undefined} verdict={irr.verdict} needIn={gauge ? acIn ?? 0 : null} showGauge={gauge} />
+      {!gauge && showIrr && <p className="tw-verdict">{irr.verdict}</p>}
+      {showAcc && <p className="tw-sub">{acc.line}</p>}
+    </div>
   );
 }
 

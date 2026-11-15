@@ -12,6 +12,8 @@ import { CLASS_COLOR, RAIN_FED, isRainFed, mmToAfac } from '../../lib';
 import { fieldName, openetText } from '../ui/shared';
 import { HOT_F, hotBareDays, type Daily } from '../../season';
 import { SimRun } from './SimRun';
+import { WaterBars } from './WaterBars';
+import { acres as fieldAcres } from '../ui/shared';
 import type { SimMode } from '../ui/FieldTimeline';
 import { type Weather, WEATHER_LABEL, weatherLabels, waterOf as waterOfAf, scenarioBlurb, fitsLimit } from './weatherReplay';
 
@@ -214,6 +216,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
         <input id="alloc" type="range" min={0.5} max={6} step={0.1} value={p.allocation} onChange={(e) => p.setAllocation(+e.target.value)} data-testid="alloc" />
         <Seg className="small" label="Weather year for irrigation need" value={weather} onChange={setWeather} options={(Object.keys(wLabels) as Weather[]).map((w) => ({ v: w, label: wLabels[w], testid: `replay-${w}` }))} />
       </div>
+      <WaterBars strategies={strategies} selId={alt.id} todayId={today.id} weather={weather} allocation={p.allocation} acres={fieldAcres(p.loc)} />
       <p className="how scenario-sum" data-testid="scenario-summary" key={weather} role="status">{scenario}</p>
       <div className="gl-short">
         <div><h3 className="gain">You gain</h3>{gains.length ? <ul>{gains.slice(0, 3).map((r) => short(r, 'gain'))}</ul> : <p className="muted">Nothing clearly better than today.</p>}</div>

@@ -10,6 +10,7 @@ import type { Daily } from '../../season';
 import Icon from '../Icons';
 import { useEffect, useState } from 'react';
 import { AboutField, StepLine, Workflow, CROP_COL, EventLog, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
+import { ThisWeek } from '../week/ThisWeek';
 import { Answer, KeyFacts, StepShell, type Tone } from './StepShell';
 import { FirstNationsCard } from './FirstNations';
 import { SalmonPanel } from '../salmon/SalmonPanel';
@@ -83,6 +84,7 @@ export function FieldPanel(p: FieldPanelProps) {
         <p className="footnote">CropLytics helps the grower and adviser decide; it does not replace either.</p>
         {src && <SourcesSheet bc={isBC(loc)} onClose={() => setSrc(false)} />}
       </>}>
+      <ThisWeek loc={loc} compact />
       <KeyFacts facts={loading ? [] : [
         { label: 'Growing now', value: facts.stage ?? pend(p.dataState) },
         { label: 'Rain since 1 Oct', value: facts.rain ?? pend(p.dailyState), tone: facts.rainTone },
