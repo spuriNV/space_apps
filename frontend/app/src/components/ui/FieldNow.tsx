@@ -9,6 +9,7 @@ import { MONTHS, atT, latestAt, dataT, dekadOf, fieldState, isRainFed, lastDataT
 import { GapLine, SoilBar, Src, calSource, cropMapName, cropName, openetText, soilFacts, stationsName } from './shared';
 import { What } from './What';
 import { CountUp } from './motion';
+import { ThisWeek } from '../week/ThisWeek';
 
 const PART = ['early', 'mid', 'late'];
 const dk = (d: number) => `${PART[d % 3]} ${MONTHS[Math.floor(d / 3)]}`;
@@ -160,6 +161,7 @@ export function FieldNow(p: FieldNowProps) {
         )}
       </div>
     </div>
+    <ThisWeek loc={loc} />
     <dl className="answers">
       {sp ? <SpotCrop loc={loc} /> : (
       <div className="ans">
@@ -289,7 +291,7 @@ function SpotCrop({ loc }: { loc: Location }) {
           <b>{now} in {last}</b>
           <span>{now === 'Left fallow' ? `Left fallow in ${last}.` : `${now} in ${same} of the last ${ten.length} years.`}</span>
         </> : <span className="gap-line">{sec?.reason ?? 'No crop record for this spot.'}</span>}
-        <cite>USDA Cropland Data Layer, read at points inside the spot.</cite>
+        <cite>USDA Cropland Data Layer, read at points inside the {loc.mine ? 'outline' : 'spot'}.</cite>
       </dd>
     </div>
   );

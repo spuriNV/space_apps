@@ -212,7 +212,7 @@ fun CropMap(
             if (s.getImage(far) == null) s.addImage(far, PinIcons.pin(context, on))
             if (s.getImage(near) == null) s.addImage(near, PinIcons.pin(context, on, title = f.id.name, sub = "${f.id.acres ?: "?"} acres · ${f.id.latestCrop ?: "crop"} in ${f.id.latestCropYear ?: ""}"))
             Feature.fromGeometry(Point.fromLngLat(f.id.lon, f.id.lat)).apply { addStringProperty("id", f.id.id); addStringProperty("far", far); addStringProperty("near", near) }
-        } + BC.PLACES.mapIndexed { i, p ->
+        } + (if (content.fields.any { it.loc.isBC }) emptyList() else BC.PLACES).mapIndexed { i, p ->
             val far = "bc-far"; val near = "bc-near-$i"
             if (s.getImage(far) == null) s.addImage(far, PinIcons.pin(context, false, bc = true))
             if (s.getImage(near) == null) s.addImage(near, PinIcons.pin(context, false, bc = true, title = p.name, sub = "British Columbia · not set up yet"))

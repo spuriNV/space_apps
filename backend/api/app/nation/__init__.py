@@ -66,6 +66,16 @@ async def get_ctx(pid: str, req: Request, need_daily: bool = False) -> Ctx:
             c.strategies = []
         c.region_code = M.fieldreg.region(pid)
         c.source = "real"
+    elif pid.startswith("my_"):
+        from .. import myfields as MF  # lazy: user-drawn field; id carries name + outline, strategies come from the same analysis
+        try:
+            rec, _ = await MF._ensure(req, pid)
+        except MF.Busy as e:
+            raise A.Busy(e.retry_after, e.why)
+        except asyncio.TimeoutError:
+            raise HTTPException(504, "analysis took longer than 50 s; try again")
+        loc, c.strategies = rec["loc"], rec.get("items") or []
+        c.region_code, c.source = loc.get("region"), "live"
     else:
         pt = A.B.parse_id(pid) if pid.startswith("pt_") else None
         if pt is None:

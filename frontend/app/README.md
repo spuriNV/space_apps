@@ -46,6 +46,16 @@ The API's `region` ("ca" or "bc") drives the BC field (`bc_salmon_river_forage`)
 - **Hot days** = NOAA station highs of 104 °F (40 °C) or more (`season.ts` `HOT_C`). On Compare, hot days that land in months the rotation leaves the field bare.
 - **Water limit**: pre-filled example per field (Colusa 5.0, Kings 3.0 acre-ft/acre, `api.ts` `EXAMPLE_LIMIT`), labelled "example, change to yours" until the grower moves it.
 
+## My fields (draw a field)
+
+"Draw a field" (a pill at the top right of the map, and a button in the pick list's **My fields** group) outlines a field with `terra-draw` (pinned, lazy-loaded: a separate chunk, not in the first download). **Rectangle** (drag, or tap two corners) or **Shape** (tap each corner, tap the first point to finish); handles then let you reshape it, with live acres. **Name it** opens a rounded dialog with "My field N" filled in; saving shows the field panel at once in its skeleton state, then fills it from `POST /api/my-fields`. A 422 shows the API's `detail` verbatim with "Fix the outline"; 429, 504 and network errors show a message and "Try again".
+
+- **State:** `localStorage["myFields"] = [{id, name}]` (every read and write guarded). The id (`my_...`) is the field: it carries the name and the outline. `src/myFields.ts` holds the calls, the hook (`useMyFields`) and the `Location` conversion; the list and outlines come from one cheap `GET /api/my-fields?ids=...`, the full analysis from `GET /api/my-fields/{id}` when a field is picked.
+- **Panel:** header "Your field" and an **Options** menu (Rename, Redraw the outline, Copy share link, Delete with an in-page confirm). Rename and Redraw post again and swap the id. A drawn field reuses the tapped-spot sections (only `ready` parts show; `unavailable` gets one quiet line, which is what BC outlines get for now), plus a "This field spans..." line, the crop-map mix, the state map's overlapping fields (More detail) and the API's `simplified.reason` as a quiet note. Only `/locations/{id}`, `/strategies`, `/daily` and `POST /score` are called for `my_` ids.
+- **Map:** drawn fields have a solid light-green outline and tint ("yours"), presets keep their white lines.
+- **Share:** `#field=my_...` links. Opening one asks "Add this field to yours?" before it joins the list.
+- **Code:** `src/components/draw/` (`DrawLayer.tsx` the drawing session and dialogs, `terraDraw.ts` the library wiring, `MyFieldBits.tsx` panel and list pieces, `Modal.tsx`, `draw.css`). Screenshots: `node ../../design/tools/shoot-draw.mjs`.
+
 ## Data: what each part reads
 
 | Part | Route |

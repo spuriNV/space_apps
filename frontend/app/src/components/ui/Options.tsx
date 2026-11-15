@@ -13,8 +13,12 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type Pointer
 import { AboutField, Actions, CROP_COL, EventLog, NextSteps, PrimaryAction, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
 import { FirstNationsCard } from './FirstNations';
 import { SalmonPanel } from '../salmon/SalmonPanel';
+import { NationTools } from '../week/NationTools';
+import { CatalogGroup } from '../week/CatalogGroup';
+import type { Catalog, CatalogItem } from '../week/catalog';
 import { FieldNow, LastSeasons, whenT, type LoadState } from './FieldNow';
 import { MONTHS, TODAY_T } from '../../lib';
+import { MineFacts, MineHead, MineNotices, MyFieldsGroup, type MineAction } from '../draw/MyFieldBits';
 
 export interface FieldPanelProps {
   loc: Location; prov: ProvMap; cal: Calendar | null; regional: Regional | null; regionalLive: RegionalLive; strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; daily: Daily | null;
@@ -25,6 +29,8 @@ export interface FieldPanelProps {
   onSheet?: (visiblePx: number) => void;
   /** a tapped spot whose analysis failed: try again */
   onSpotRetry?: () => void;
+  /** a field the user drew: Rename, Redraw (also "Fix the outline") and Delete */
+  onMine?: (a: MineAction) => void;
 }
 
 export function FieldPanel(p: FieldPanelProps) {
@@ -60,7 +66,7 @@ export function FieldPanel(p: FieldPanelProps) {
         <div className="panel-scroll" ref={scrollRef} onScroll={onScroll}>
           <div className="fp-content" key={loc.id}>
             <header className="fp-head" ref={headRef}>
-              {sp && <p className="spot-label" data-testid="spot-label"><i className={`live-dot ${sp.state}`} />Tapped spot · live data</p>}
+              {loc.mine ? <MineHead loc={loc} onAction={(a) => p.onMine?.(a)} /> : sp && <p className="spot-label" data-testid="spot-label"><i className={`live-dot ${sp.state}`} />Tapped spot · live data</p>}
               <h1>{fieldName(loc)}</h1>
               {sp?.state === 'loading' ? <p className="fp-facts"><span className="skel skel-chip" /><span className="skel skel-chip" /><span className="skel skel-chip" /></p> : sp?.state === 'error' ? null : (
               <p className="fp-facts">
@@ -68,15 +74,18 @@ export function FieldPanel(p: FieldPanelProps) {
                 {now.year != null && Number.isFinite(now.year) && <span className="fact-chip"><i style={{ background: CROP_COL(crop) }} />{now.crop.charAt(0).toUpperCase() + now.crop.slice(1).toLowerCase()} in {now.year}</span>}
                 <span className="fact-chip">{place(loc)}</span>
               </p>)}
-              <p className="fp-id">{sp ? (sp.fallbackSquare || sp.state !== 'ready' ? '200 m square around your tap, not a field outline' : loc.dwr_id ? `State field no. ${loc.dwr_id}` : 'Field outline at your tap') : isBC(loc) ? 'British Columbia' : fieldCode(loc).replace('DWR ', 'State field no. ')}, {coords(loc)}</p>
+              <p className="fp-id">{loc.mine ? 'Drawn by you' : sp ? (sp.fallbackSquare || sp.state !== 'ready' ? '200 m square around your tap, not a field outline' : loc.dwr_id ? `State field no. ${loc.dwr_id}` : 'Field outline at your tap') : isBC(loc) ? 'British Columbia' : fieldCode(loc).replace('DWR ', 'State field no. ')}, {coords(loc)}</p>
             </header>
-            {sp?.state === 'error' && <div className="notice spot-notice" role="alert" data-testid="spot-error"><span>{sp.error}</span>{p.onSpotRetry && <button className="btn btn-outline btn-sm" onClick={p.onSpotRetry}>Try again</button>}</div>}
+            {loc.mine && <MineNotices loc={loc} onRetry={p.onSpotRetry} onFix={() => p.onMine?.('redraw')} />}
+            {sp?.state === 'error' && !loc.mine && <div className="notice spot-notice" role="alert" data-testid="spot-error"><span>{sp.error}</span>{p.onSpotRetry && <button className="btn btn-outline btn-sm" onClick={p.onSpotRetry}>Try again</button>}</div>}
             {sp?.state === 'ready' && sp.cropland === false && <div className="notice spot-notice" data-testid="spot-not-farm"><b>This may not be farmland.</b> The USDA crop map shows little or no cropping here, so the rotations below are a stand-in.</div>}
             <Actions onStep={p.onStep} />
             <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}</h2>
             <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
-            {isBC(loc) && <FirstNationsCard loc={loc} />}
-            {isBC(loc) && <SalmonPanel locId={loc.id} />}
+            {loc.mine && <MineFacts loc={loc} />}
+            {isBC(loc) && !loc.mine && <FirstNationsCard loc={loc} />}
+            {isBC(loc) && !loc.mine && <SalmonPanel locId={loc.id} />}
+            {!loc.mine && <NationTools loc={loc} />}{/* Nation tools, components/week */}
             <NextSteps onStep={p.onStep} />
             <MoreDetail what="Sources, past seasons, 3D" />
             <div className="fp-more">
@@ -195,7 +204,7 @@ function useSheet(onSheet?: (visiblePx: number) => void) {
 /** "Pick your field": one paper surface, one row per field with a satellite thumbnail (outline drawn), a 2023-2026 season strip,
  *  one line of facts in grower units and one line of what is notable. A BC field the API serves sits under its own
  *  "British Columbia" heading (and chip); without one, BC is a quiet "not set up yet" row at the bottom. */
-export function FieldPicker(p: { locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void }) {
+export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void }) {
   const thumbs = useThumbs();
   const [q, setQ] = useState('');
   const [fam, setFam] = useState<string | null>(null);
@@ -219,6 +228,7 @@ export function FieldPicker(p: { locations: Location[]; live: boolean | null; st
           </div>
         </div>
       )}
+      {p.onDraw && <MyFieldsGroup locs={p.mine ?? []} selectedId={p.selectedId} onSelect={p.onSelect} onDraw={p.onDraw} />}
       {p.live === false && <p className="notice offline-note" data-testid="offline-note">The CropLytics server is not answering, so every number is an example. Start the API (see the README) and reload for real data.</p>}
       {p.locations.length === 0 && <p className="loading-note">Loading the fields…</p>}
       {([['ca', shownCA], ['bc', shownBC]] as const).map(([rg, rows]) => rows.length > 0 && (
@@ -250,6 +260,7 @@ export function FieldPicker(p: { locations: Location[]; live: boolean | null; st
       </div>
       ))}
       {p.locations.length > 0 && !shown.length && <p className="loading-note">No field matches. <button className="btn btn-outline btn-sm" onClick={() => { setQ(''); setFam(null); }}>Show all</button></p>}
+      {p.catalog && p.onCatalogPick && p.setCatGroup && <CatalogGroup catalog={p.catalog} group={p.catGroup ?? null} setGroup={p.setCatGroup} onPick={p.onCatalogPick} />}
       {p.locations.length > 0 && !nBC && <button className="pk-bc" onClick={p.onBC}>British Columbia: not set up yet. <u>See why</u></button>}
     </section>
   );

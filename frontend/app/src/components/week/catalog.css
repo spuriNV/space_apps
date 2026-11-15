@@ -1,0 +1,12 @@
+/* Farm catalog group in the pick list. */
+.cg { padding: var(--s-3) var(--s-4) var(--s-4); border-top: 1px solid var(--line); margin-top: 4px; }
+.cg-more { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-4) var(--ease-enter); }
+.cg-more.on { grid-template-rows: 1fr; }
+.cg-in { min-height: 0; overflow: clip; opacity: 0; transform: translateY(-6px); visibility: hidden; transition: opacity var(--dur-3) var(--ease-std), transform var(--dur-3) var(--ease-enter), visibility 0s linear var(--dur-4); }
+.cg-more.on .cg-in { opacity: 1; transform: none; visibility: visible; transition-delay: 60ms, 60ms, 0s; }
+.cg-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: var(--s-3) 0 var(--s-2); }
+.cg-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex: none; box-shadow: 0 0 0 1.5px var(--panel), 0 0 0 2.5px var(--line); }
+.cg-chips .chip { white-space: nowrap; }
+.cg-row { align-items: center; gap: var(--s-3); }
+.cg-more-btn { margin: var(--s-2) 0; }
+.cg-note { margin: var(--s-2) 0 0; }

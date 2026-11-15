@@ -1,3 +1,4 @@
+import { addCatalogLayers, setCatalogData, type CatalogItem } from './components/week/catalog';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import maplibregl, { type GeoJSONSource, type StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -43,6 +44,9 @@ export interface MapHandle {
   toggle3D: () => void;
   /** a tapped spot: centre it beside the panel, zooming in only if the map is far out */
   focusSpot: (lat: number, lon: number) => void;
+  /** a field the user drew: fit its outline beside the panel (no zoom-out to the state view) */
+  fitField: (loc: Location) => void;
+  getMap: () => maplibregl.Map | null;
 }
 interface Props {
   locations: Location[]; bc: BCInfo | null; datasets: Dataset[];
@@ -52,6 +56,8 @@ interface Props {
   t: number; detector: 'rule' | 'ml'; metric: 'cover' | 'et'; layersOn: Record<string, boolean>; regionalLive: RegionalLive;
   leftInset: number; bottomInset: number; rightInset: number;
   onSelect: (id: string) => void; onBC: () => void;
+  /** farm catalog pins (clustered, light) and the crop group they are filtered to */
+  catalog?: CatalogItem[] | null; catGroup?: string | null; onCatalogPick?: (it: { id: string; lat: number; lon: number }) => void;
   /** a tap, click or long-press on open map (not on a field or a pin): analyse that spot */
   onTap?: (lat: number, lon: number) => void;
   onView: (v: { zoom: number; pitch: number; bearing: number; lat: number; lon: number }) => void;
@@ -95,6 +101,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.on('load', () => {
       el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
       for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves']) map.addSource(id, { type: 'geojson', data: fc() });
+      addCatalogLayers(map, (it) => live.current.onCatalogPick?.(it));
       // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
       map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(10,12,8,0.5)', 'line-width': 3.6 } });
       map.addLayer({ id: 'res-line', type: 'line', source: 'reserves', paint: { 'line-color': '#f1ecdd', 'line-opacity': 0.95, 'line-width': 2, 'line-dasharray': [3, 2] } });
@@ -102,9 +109,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       map.addLayer({ id: 'fp-line', type: 'line', source: 'fp', paint: { 'line-color': ['get', 'color'], 'line-width': 2, 'line-dasharray': [2, 1.5] } });
       map.addLayer({ id: 'fpgrid-line', type: 'line', source: 'fpgrid', minzoom: 11.5, paint: { 'line-color': ['get', 'color'], 'line-width': 1, 'line-opacity': 0.75 } });
       map.addLayer({ id: 'shadow', type: 'fill', source: 'shadow', minzoom: EXPLODE_Z0, paint: { 'fill-color': '#000', 'fill-opacity': ['interpolate', ['linear'], ['zoom'], EXPLODE_Z0, 0, EXPLODE_Z1, 0.42] } });
-      map.addLayer({ id: 'field-casing', type: 'line', source: 'field', paint: { 'line-color': 'rgba(0,0,0,0.65)', 'line-width': 5 } });
-      map.addLayer({ id: 'field-line', type: 'line', source: 'field', paint: { 'line-color': ['case', ['get', 'selected'], '#ffffff', 'rgba(255,255,255,0.75)'], 'line-width': 2 } });
-      map.addLayer({ id: 'field-hit', type: 'fill', source: 'field', paint: { 'fill-color': '#fff', 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.25, 11.5, 0.02] } });
+      map.addLayer({ id: 'field-casing', type: 'line', source: 'field', paint: { 'line-color': 'rgba(0,0,0,0.65)', 'line-width': ['case', ['get', 'mine'], 6, 5] } });
+      map.addLayer({ id: 'field-line', type: 'line', source: 'field', paint: { 'line-color': ['case', ['get', 'mine'], '#9be88a', ['get', 'selected'], '#ffffff', 'rgba(255,255,255,0.75)'], 'line-width': ['case', ['get', 'mine'], 3, 2] } }); // yours: a solid light-green line (presets are white)
+      map.addLayer({ id: 'field-hit', type: 'fill', source: 'field', paint: { 'fill-color': ['case', ['get', 'mine'], '#9be88a', '#fff'], 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, ['case', ['get', 'mine'], 0.16, 0.25], 11.5, ['case', ['get', 'mine'], ['case', ['get', 'selected'], 0.2, 0.12], 0.02]] } });
       const ext = (id: string, opacity: number, minzoom: number) => map.addLayer({ id, type: 'fill-extrusion', source: id, minzoom, paint: { 'fill-extrusion-color': ['get', 'col'], 'fill-extrusion-base': explodeExpr('b'), 'fill-extrusion-height': explodeExpr('h'), 'fill-extrusion-opacity': opacity, 'fill-extrusion-vertical-gradient': true } });
       ext('posts', 0.55, EXPLODE_Z0 + 0.4);
       ext('slab-grace', 0.86, EXPLODE_Z0 + 0.1);
@@ -116,7 +123,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const tap = (e: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
         const tgt = (e.originalEvent?.target as Element | null);
         if (tgt?.closest?.('.maplibregl-marker, .maplibregl-ctrl')) return;
-        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit'] }).length) return;
+        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit', 'cat-pt', 'cat-cluster'] }).length) return;
         if (Date.now() - lastTap < 700) return;
         lastTap = Date.now();
         live.current.onTap?.(e.lngLat.lat, e.lngLat.lng);
@@ -162,17 +169,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const ms: maplibregl.Marker[] = [];
     for (const loc of p.locations) {
       const d = document.createElement('button');
-      d.className = loc.spot ? 'pin site spot-pin' : 'pin site';
+      d.className = loc.mine ? 'pin site mine-pin' : loc.spot ? 'pin site spot-pin' : 'pin site';
       d.dataset.id = loc.id;
       const lc = latestCrop(loc);
       d.innerHTML = `${PIN_SVG}<span class="pin-text"><b></b><i></i></span>`;
-      d.querySelector('b')!.textContent = loc.spot ? (loc.spot.state === 'ready' ? fieldName(loc) : 'Tapped spot') : fieldName(loc);
-      d.querySelector('i')!.textContent = loc.spot && loc.spot.state !== 'ready' ? 'Analysing this spot…' : `${acres(loc)} acres${Number.isFinite(lc.year) ? ` · ${lc.crop} in ${lc.year}` : ''}`;
+      d.querySelector('b')!.textContent = loc.spot && !loc.mine ? (loc.spot.state === 'ready' ? fieldName(loc) : 'Tapped spot') : fieldName(loc);
+      d.querySelector('i')!.textContent = loc.mine ? `${acres(loc)} acres · yours` : loc.spot && loc.spot.state !== 'ready' ? 'Analysing this spot…' : `${acres(loc)} acres${Number.isFinite(lc.year) ? ` · ${lc.crop} in ${lc.year}` : ''}`;
       d.onclick = (ev) => { ev.stopPropagation(); live.current.onSelect(loc.id); };
       d.classList.toggle('on', live.current.selected?.id === loc.id);
       // the pin tip (14, 36 inside the 28 x 36 pin) sits on the field centroid; the label hangs to its right
       // a tapped spot's pin sits where the grower tapped, not on the outline's centre
-      ms.push(new maplibregl.Marker({ element: d, anchor: 'bottom-left', offset: [-14, 0] }).setLngLat(loc.spot ? [loc.spot.lon, loc.spot.lat] : [loc.centroid.lon, loc.centroid.lat]).addTo(map));
+      ms.push(new maplibregl.Marker({ element: d, anchor: 'bottom-left', offset: [-14, 0] }).setLngLat(loc.spot && !loc.mine ? [loc.spot.lon, loc.spot.lat] : [loc.centroid.lon, loc.centroid.lat]).addTo(map));
     }
     for (const pl of p.bc?.places ?? []) {
       const d = document.createElement('button');
@@ -185,6 +192,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   }, [p.locations, p.bc, ready]);
 
   useEffect(() => { document.querySelectorAll<HTMLElement>('.pin.site').forEach((el) => el.classList.toggle('on', el.dataset.id === p.selected?.id)); }, [p.selected, p.locations]);
+
+  useEffect(() => { const map = mapRef.current; if (map && ready && p.catalog) setCatalogData(map, p.catalog, p.catGroup ?? null); }, [ready, p.catalog, p.catGroup]);
 
   // ---------- reserve outlines (BC, context only) with paper label boxes ----------
   useEffect(() => {
@@ -225,7 +234,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    (map.getSource('field') as GeoJSONSource).setData(fc(p.locations.map((l) => ({ type: 'Feature', properties: { id: l.id, selected: l.id === p.selected?.id }, geometry: l.geometry }))));
+    (map.getSource('field') as GeoJSONSource).setData(fc(p.locations.map((l) => ({ type: 'Feature', properties: { id: l.id, selected: l.id === p.selected?.id, mine: !!l.mine }, geometry: l.geometry }))));
     const fps: unknown[] = [], grids: unknown[] = [], lbls: unknown[] = [];
     if (p.selected?.spot?.fallbackSquare) {
       const b = bbox(p.selected);
@@ -358,6 +367,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     zoomBy(d) { mapRef.current!.easeTo({ zoom: mapRef.current!.getZoom() + d, duration: 250 }); },
     resetNorth() { mapRef.current!.easeTo({ bearing: 0, duration: 300 }); },
     toggle3D() { const m = mapRef.current!; m.easeTo({ pitch: m.getPitch() > 5 ? 0 : 58, duration: 400 }); },
+    fitField(loc) {
+      const m = mapRef.current!, ring = loc.geometry.coordinates[0], xs = ring.map((q) => q[0]), ys = ring.map((q) => q[1]);
+      programmatic.current = true;
+      m.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: { ...pad(), top: 90, bottom: pad().bottom + 24, right: pad().right + 40, left: pad().left + 40 }, maxZoom: 16.2, pitch: 0, bearing: 0, duration: 900, easing: fly.easing });
+    },
+    getMap: () => mapRef.current,
     focusSpot(lat, lon) { const m = mapRef.current!; programmatic.current = true; m.easeTo({ center: [lon, lat], zoom: Math.max(m.getZoom(), 13.2), pitch: 0, bearing: 0, padding: pad(), duration: 900, easing: fly.easing }); },
   }));
 

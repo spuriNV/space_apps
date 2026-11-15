@@ -1,0 +1,83 @@
+/* "Draw a field" and "My fields": the map pill, the drawing bar, dialogs, the options menu and the pick-list group.
+   Tokens only (styles.css). Motion: opacity and transform, strong ease-out in, press = scale(0.97), hover only where hovering
+   exists; everything collapses under prefers-reduced-motion (the global rule in styles.css). */
+
+/* the pill on the map */
+.draw-btn { position: absolute; top: calc(var(--bar-h) + 3px + var(--s-4)); z-index: 16; display: inline-flex; align-items: center; gap: var(--s-2); min-height: var(--h-btn); padding: 0 var(--s-5) 0 var(--s-4);
+  border-radius: var(--r-full); background: var(--panel); color: var(--text); box-shadow: var(--e2); font: 600 var(--fs-body)/1.2 var(--font-ui);
+  transform-origin: right top; animation: draw-pop var(--dur-3) var(--ease-enter) backwards;
+  transition: background-color var(--dur-1) var(--ease-std), transform 160ms var(--ease-enter), right var(--dur-3) var(--ease-std); }
+.draw-btn svg { color: var(--accent); }
+.draw-btn:active { transform: scale(0.97); background: var(--panel-2); }
+@keyframes draw-pop { from { opacity: 0; transform: translateY(-4px) scale(0.96); } }
+
+/* the drawing bar */
+.draw-bar { position: absolute; z-index: 30; bottom: 28px; left: 50%; translate: -50% 0; width: min(560px, calc(100% - 32px)); padding: var(--s-4) var(--s-5) var(--s-5);
+  background: var(--panel); border-radius: var(--r-lg); box-shadow: var(--e2); animation: draw-bar-in var(--dur-4) var(--ease-enter) backwards; }
+@keyframes draw-bar-in { from { opacity: 0; transform: translateY(14px); } }
+.draw-top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.draw-top h2 { font: 600 var(--fs-head)/1.2 var(--font-head); }
+.draw-acres { display: inline-flex; align-items: baseline; gap: 5px; height: 32px; padding: 0 var(--s-3); align-items: center; border-radius: var(--r-full); background: var(--accent-container); color: var(--on-accent-container); font-size: var(--fs-small); font-weight: 600; white-space: nowrap; }
+.draw-acres b { font: 600 var(--fs-answer)/1 var(--font-head); }
+.draw-acres.bad { background: var(--warn-container); color: var(--on-warn-container); }
+.draw-hint { margin: var(--s-1) 0 var(--s-3); font-size: var(--fs-small); color: var(--text-2); min-height: 1.4em; }
+.draw-row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s-2); }
+.draw-row .seg button { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; }
+.draw-gap { flex: 1; }
+
+/* dialogs */
+.dlg-scrim { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: var(--s-4); background: rgba(25, 28, 22, 0.4); animation: fade-in var(--dur-2) var(--ease-std) backwards; }
+.dlg { width: min(420px, 100%); padding: var(--s-6); border-radius: var(--r-lg); background: var(--panel); box-shadow: var(--e3); animation: dlg-pop var(--dur-3) var(--ease-enter) backwards; }
+@keyframes dlg-pop { from { opacity: 0; transform: scale(0.94) translateY(6px); } }
+.dlg-title { font: 600 var(--fs-head)/1.2 var(--font-head); margin-bottom: var(--s-3); }
+.dlg-text { margin: 0 0 var(--s-4); font-size: var(--fs-body); color: var(--text-2); }
+.dlg-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--s-3); font-size: var(--fs-small); color: var(--text-2); }
+.dlg-field input { height: 48px; padding: 0 var(--s-4); border: 0; border-radius: var(--r-md); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--outline); font: 500 var(--fs-body)/1 var(--font-ui); color: var(--text); transition: box-shadow var(--dur-1) var(--ease-std), background-color var(--dur-1) var(--ease-std); }
+.dlg-field input:focus { outline: 0; background: var(--raised); box-shadow: inset 0 0 0 2px var(--accent); }
+.dlg-row { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
+.btn-danger { color: var(--bad); border-color: var(--bad); }
+.btn-danger:active:not(:disabled) { background: var(--state-pressed); }
+@media (hover: hover) and (pointer: fine) { .btn-danger:hover:not(:disabled) { background: var(--state-hover); } }
+
+/* the field panel: "Your field" label and the options menu */
+.mine-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); margin-bottom: var(--s-2); }
+.mine-head .spot-label { margin-bottom: 0; }
+.mine-menu { position: relative; }
+.mine-opt svg { margin-left: 2px; margin-right: -4px; }
+.mine-pop { position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 230px; padding: var(--s-2); border-radius: var(--r-lg); background: var(--panel); box-shadow: var(--e3);
+  transform-origin: top right; animation: pop-in var(--dur-2) var(--ease-enter) backwards; }
+.mine-pop button { display: flex; align-items: center; gap: var(--s-3); width: 100%; min-height: 44px; padding: 0 var(--s-3); border-radius: var(--r-md); text-align: left; font: 500 var(--fs-body)/1.2 var(--font-ui); color: var(--text); transition: background-color var(--dur-1) var(--ease-std); }
+.mine-pop button svg { width: 20px; height: 20px; color: var(--muted); flex: none; }
+.mine-pop button:active { background: var(--state-pressed); }
+.mine-pop button.danger, .mine-pop button.danger svg { color: var(--bad); }
+@media (hover: hover) and (pointer: fine) { .mine-pop button:hover { background: var(--state-hover); } }
+.mine-note { margin: var(--s-3) 0 0; padding: var(--s-3) var(--s-4); border-radius: var(--r-md); background: var(--panel-2); font-size: var(--fs-small); color: var(--text-2); }
+.mine-spans { margin: var(--s-3) 0 0; font-size: var(--fs-small); color: var(--text-2); }
+.mine-facts { margin-top: var(--s-4); }
+.mine-yr { display: inline; font-size: inherit; font-family: var(--font-ui); }
+.mine-dwr-row small { display: block; color: var(--muted); font-size: var(--fs-fine); }
+
+/* the pick list's top group */
+.mine-group { padding-bottom: var(--s-2); }
+.mine-group-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); padding: var(--s-2) var(--s-5) 0; }
+.pk-group-h { font: 600 var(--fs-head)/1.2 var(--font-head); }
+.mine-empty { margin: var(--s-2) var(--s-5) var(--s-3); font-size: var(--fs-small); color: var(--muted); }
+.mine-list { padding-top: var(--s-2); }
+.mine-list li { animation: mine-row-in var(--dur-3) var(--ease-enter) backwards; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes mine-row-in { from { opacity: 0; transform: translateX(-12px); } }
+.mine-row { align-items: center; }
+.mine-thumb { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: var(--r-sm); background: var(--panel-2); transition: box-shadow var(--dur-2) var(--ease-std); }
+.mine-row.on .mine-thumb { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--accent-outline); }
+.mine-thumb svg { width: 48px; height: 48px; overflow: visible; }
+.mine-thumb polygon { fill: rgba(155, 232, 138, 0.35); stroke: #3f8a3a; stroke-width: 2.4; stroke-linejoin: round; }
+.mine-group + .pk-group, .mine-group ~ div > .pk-list { margin-top: 0; }
+
+@media (max-width: 640px) {
+  .draw-btn { top: calc(var(--bar-h) + 3px + var(--s-3)); right: var(--s-3) !important; }
+  .draw-bar { bottom: calc(var(--tabs-h) + var(--s-3)); width: calc(100% - 16px); padding: var(--s-3) var(--s-4) var(--s-4); }
+  .draw-row .seg button { padding: 0 var(--s-3); }
+  .draw-row .btn, .draw-row .seg button { min-height: 44px; }
+  .draw-row .seg button { min-height: 40px; }
+  .dlg { padding: var(--s-5); }
+  .mine-pop { right: 0; }
+}

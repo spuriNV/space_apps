@@ -674,6 +674,15 @@ _nok(_r.status_code == 200 and not _bad and len(_r.json()["programs"]) >= 10, f"
 _r = client.get(f"/api/locations/{_lem}/nation/drought_rotation", headers={"X-Forwarded-For": "198.51.100.41"})
 _bad = _errs(_NV["DroughtRotation"], _r.json()) if _r.status_code == 200 else _r.text[:150]
 _nok(_r.status_code == 200 and not _bad and _r.json()["series_status"]["grace"]["status"] == "not_computed" and _r.json()["drought_history"], f"pt near Lemoore: drought_rotation (POWER only, others not_computed) {_bad or ''}")
+# user-drawn my_ field (Colusa rectangle): nation + this_week
+_mid = _mf.FID.encode("Nation rice", _rect(-122.03, 39.19, 640, 640))[0]
+for _suffix, _def in (("", "Summary"), ("/funding", "Funding")):
+    _r = client.get(f"/api/locations/{_mid}/nation{_suffix}", headers={"X-Forwarded-For": "198.51.100.42"})
+    _bad = _errs(_NV[_def], _r.json()) if _r.status_code == 200 else _r.text[:150]
+    _nok(_r.status_code == 200 and not _bad, f"my_ field: /nation{_suffix} 200, schema-valid {_bad or ''}")
+_r = client.get(f"/api/locations/{_mid}/this_week", headers={"X-Forwarded-For": "198.51.100.42"})
+_bad = _errs(validator("this_week.schema.json"), _r.json()) if _r.status_code == 200 else _r.text[:150]
+_nok(_r.status_code == 200 and not _bad, f"my_ field: /this_week 200, schema-valid {_bad or ''}")
 # ---- end nation tools =========================================================================================
 # ======================================================================================================
 # ---- this week + reach (app/week): live Open-Meteo / NWS / NASA POWER reads, cached 3 h. Self-contained block.

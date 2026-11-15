@@ -30,14 +30,14 @@ export const EXAMPLE_LIMIT: Record<string, number> = { car_colusa_rice: 5.0, caf
 export type Origin = 'api' | 'estimate' | 'file' | 'mock';
 export interface Prov { part: string; label: string; origin: Origin; detail: string }
 export type ProvMap = Record<string, Prov>;
-const P = (part: string, label: string, origin: Origin, detail: string): Prov => ({ part, label, origin, detail });
+export const P = (part: string, label: string, origin: Origin, detail: string): Prov => ({ part, label, origin, detail });
 export const isMock = (p?: Prov) => !p || p.origin === 'mock';
 /** 'estimate' when the API filled a region gap with an estimate (`_source: "estimate"`), else 'api'. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const orig = (b: any): Origin => (b?._source === 'estimate' ? 'estimate' : 'api');
 /** Real data, or the API's labelled estimate for a region gap (BC). Example files (`_source: "mock"`) are not. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const usable = (b: any) => b && (b._source === 'real' || b._source === 'estimate' || b._source === 'live' || b._source === undefined);
+const usable = (b: any) => b && (b._source === 'real' || b._source === 'estimate' || b._source === 'live' || b._source === 'catalog' || b._source === 'user' || b._source === undefined);
 
 // ---------- fetch helpers ----------
 async function getJSON(url: string, init?: RequestInit, ms = 20000) {
@@ -100,7 +100,7 @@ const KINGS = { short_name: 'Kings County forage', name: 'Kings County forage fi
 const COUNTY: Record<string, string> = { '011': 'Colusa', '031': 'Kings' };
 const EXTRA = (fieldExtra as unknown as { fields: ById<{ rma?: Location['rma'] }> }).fields;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: ProvMap } {
+export function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: ProvMap } {
   const prov: ProvMap = {
     outline: P('outline', 'Field outline', 'mock', 'placeholder square'),
     soil: P('soil', 'Soil (USDA soil survey)', 'mock', 'illustrative'),
@@ -144,7 +144,7 @@ function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: Prov
 const MOCK_IDS = new Set((mockLocations as unknown as Location[]).map((l) => l.id));
 export const templateId = (id: string, family?: string) => (MOCK_IDS.has(id) ? id : family === 'rice' || id.startsWith('car') ? 'car_colusa_rice' : 'caf_tulare_forage');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function baseFor(item: any): Location {
+export function baseFor(item: any): Location {
   const mocks = mockLocations as unknown as Location[];
   const m = mocks.find((l) => l.id === item.id);
   if (m) return m;
@@ -174,6 +174,10 @@ export async function getLocations(): Promise<{ locations: Location[]; prov: ByI
 // ---------- a spot tapped on the map (GET /api/analyze) ----------
 /** Tapped spots have `pt_` ids. Only /locations/{pid}, /strategies, /daily (NASA POWER columns) and POST /score answer for them. */
 export const isSpot = (id?: string | null) => !!id && id.startsWith('pt_');
+/** A field the user drew (`my_` id, or the `my_draft` stand-in while it is saved): src/myFields.ts. */
+export const isMine = (id?: string | null) => !!id && id.startsWith('my_');
+/** Ids that answer only /locations/{id}, /strategies, /daily and POST /score: tapped spots and drawn fields. */
+export const isLite = (id?: string | null) => isSpot(id) || isMine(id);
 const r4 = (v: number) => Math.round(v * 1e4) / 1e4;
 /** The API's id for a point: pt_<n|s><lat x 1e4>_<e|w><lon x 1e4>. */
 export const spotId = (lat: number, lon: number) => `pt_${lat >= 0 ? 'n' : 's'}${Math.round(Math.abs(lat) * 1e4)}_${lon >= 0 ? 'e' : 'w'}${Math.round(Math.abs(lon) * 1e4)}`;
@@ -467,7 +471,7 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', 'no real series served yet'),
     ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
   };
-  if (isSpot(id)) return getSpotField(loc, prov);
+  if (isLite(id)) return getSpotField(loc, prov);
   const reg0 = (regional as unknown as ById<Regional>)[mid];
   const used: Partial<Record<string, NasaStatus>> = loc.nasadem ? { nasadem: 'live' } : {};
   const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, { ...used, ...(soilExample() ? { smap: 'example' as const } : {}) }).list;
@@ -541,13 +545,13 @@ export async function getISS(loc: Location): Promise<{ photo: ISSPhoto; credit: 
 
 // ---------- daily weather (GET .../daily): NOAA station means + NASA POWER reference ET ----------
 export async function getDaily(id: string): Promise<{ daily: Daily | null; prov: Prov }> {
-  let b = await apiReal(`/api/locations/${id}/daily`, undefined, isSpot(id) ? 30000 : 12000);
+  let b = await apiReal(`/api/locations/${id}/daily`, undefined, isLite(id) ? 30000 : 12000);
   // a spot's record is built on its first read and may miss once while the analysis settles: one retry
-  if (!b?.rows?.length && isSpot(id)) { await new Promise((r) => setTimeout(r, 1500)); b = await apiReal(`/api/locations/${id}/daily`, undefined, 30000); }
+  if (!b?.rows?.length && isLite(id)) { await new Promise((r) => setTimeout(r, 1500)); b = await apiReal(`/api/locations/${id}/daily`, undefined, 30000); }
   if (!b?.rows?.length) return { daily: null, prov: P('daily', 'Rain (NASA GPM IMERG), heat and frost (NOAA stations)', 'mock', 'daily route not reachable') };
   const rows = b.rows as Daily['rows'];
   const net = b.station_network === 'ECCC' ? 'Environment Canada stations' : 'NOAA stations';
-  if (isSpot(id)) return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', 'Rain, heat and crop water demand (NASA POWER, this spot)', 'api', `daily record ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 7)}`) };
+  if (isLite(id)) return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', 'Rain, heat and crop water demand (NASA POWER, this spot)', 'api', `daily record ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 7)}`) };
   return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', `Rain (NASA GPM IMERG), heat and frost (${net})`, 'api', `daily record ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 7)}`) };
 }
 
