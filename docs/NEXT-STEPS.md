@@ -41,6 +41,7 @@ The user finds it busy: "a lot of things going on… see what is for what and cu
 - Uncommitted half-done speed work in the main checkout (backend/api/app/main.py, frontend/app/vite.config.ts): finish it (GZip middleware, Cache-Control, a maplibre chunk) or `git checkout --` them.
 - Mobile: check that the sheet snap points clear the tab bar, and that the draw and Nation tools cards fit at 390 px.
 - Wow animation: "Ten years from orbit" prototype in ui-research/wow (plan in WOW.md). Build it after the cleanup.
+- Speed: `/api/locations/pt_*/strategies` can take up to 45 s, which holds up the tap-anywhere panel. Make it faster: cache by the 50 km POWER cell, return the default-weights score first, compute the full ranges after.
 - Pitch: apply the gaps page (docs/past-winners/REPORT.md). Member names on slide 1, video ≤ 30 s.
 
 ## Hosting (done)
