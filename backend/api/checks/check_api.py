@@ -513,8 +513,7 @@ r = client.get(f"/api/analyze?lat={_PTS[0][1]}&lon={_PTS[0][2]}", headers={"X-Fo
 _ok(r.status_code == 200 and r.json()["analysis"]["cache"] == "hit", "cached spots are still served when the new-spot limit is reached")
 # ---- end analyse any location ================================================================================
 
-# ======================================================================================================
-# ---- my fields (app/myfields): user-drawn polygons. Self-contained ids (name + outline), optional disk cache.
+# ===============================================================================================# ---- my fields (app/myfields): user-drawn polygons. Self-contained ids (name + outline), optional disk cache.
 # ======================================================================================================
 import math as _m  # noqa: E402
 import app.myfields as _mf  # noqa: E402
@@ -611,5 +610,70 @@ rr = client.post("/api/my-fields", json={"name": "limit", "geometry": _rect(-122
 _mok(rr.status_code == 429, "concurrency bound -> 429")
 _mf.GUARD.active = _sv
 # ---- end my fields ===========================================================================================
+# ======================================================================================================
+# ---- Nation tools (app/nation): /api/locations/{pid}/nation[/drought_rotation|groundwater|land_season|funding|report.*]
+# For First Nations and tribal farm, lands and water staff. Presets + a tapped point near Lemoore, CA. Live lookups: BC reserve WFS,
+# Census AIANNH, FIRMS open CSV, NASA POWER (tapped point).
+# ======================================================================================================
+_NV = {k: validator("nation.schema.json", k) for k in ("Summary", "DroughtRotation", "Groundwater", "LandSeason", "Funding", "Report")}
+
+
+def _nok(cond, label):
+    global fails
+    fails += not cond
+    print(("PASS" if cond else "FAIL") + " nation " + label)
+    return cond
+
+
+print("\nnation tools:")
+_NROUTES = [("", "Summary"), ("/drought_rotation", "DroughtRotation"), ("/groundwater", "Groundwater"), ("/land_season", "LandSeason"),
+            ("/funding", "Funding"), ("/report.json", "Report")]
+for _pid in ("car_colusa_rice", "caf_tulare_forage", "bc_salmon_river_forage"):
+    for _suffix, _def in _NROUTES:
+        if _suffix == "/groundwater" and _pid.startswith("bc_"):
+            _r = client.get(f"/api/locations/{_pid}/nation/groundwater")
+            _nok(_r.status_code == 404 and len(_r.json().get("detail", "")) > 20, f"{_pid}: /groundwater -> 404 with a reason (BC)")
+            continue
+        _r = client.get(f"/api/locations/{_pid}/nation{_suffix}", headers={"X-Forwarded-For": "198.51.100.40"})
+        _bad = _errs(_NV[_def], _r.json()) if _r.status_code == 200 else _r.text[:120]
+        _nok(_r.status_code == 200 and not _bad and _r.headers.get("X-Data-Source") in ("real", "live"), f"{_pid}: /nation{_suffix} 200, schema-valid {_bad or ''}")
+    _r = client.get(f"/api/locations/{_pid}/nation/report.pdf")
+    _nok(_r.status_code == 200 and _r.content[:5] == b"%PDF-" and len(_r.content) < 300_000 and _r.headers["content-type"] == "application/pdf",
+         f"{_pid}: report.pdf is a PDF under 300 KB ({len(_r.content)} bytes)")
+_r = client.get("/api/locations/car_colusa_rice/nation/funding")
+_pg = _r.json()["programs"]
+_nok(len(_pg) >= 10 and all(p["url"].startswith("http") for p in _pg), f"funding has >= 10 programs, all with URLs ({len(_pg)})")
+_nok([p["status"] for p in _pg] == sorted((p["status"] for p in _pg), key=["open", "rolling", "unknown", "closed"].index), "funding: open programs first, closed last")
+_nok(all(p["matched_reason"] for p in _pg) and any("Subbasin" in p["matched_reason"] for p in _pg), "funding: matched_reason set for every program, subbasin named where it applies")
+_r = client.get("/api/locations/bc_salmon_river_forage/nation/funding")
+_nok(all(set(p["jurisdictions"]) & {"BC", "CAN"} for p in _r.json()["programs"]) and any(p["id"] == "fn_adapt" for p in _r.json()["programs"]), "funding: BC location gets BC/Canada programs only, incl. First Nation Adapt")
+_r = client.get("/api/locations/car_colusa_rice/nation/funding?jurisdiction=BC")
+_nok(_r.status_code == 200 and _r.json()["jurisdiction"] == "BC", "funding: ?jurisdiction=BC overrides the location")
+_nok(client.get("/api/locations/car_colusa_rice/nation/funding?jurisdiction=XX").status_code == 422, "funding: bad jurisdiction -> 422")
+_r = client.get("/api/locations/car_colusa_rice/nation/report.pdf?program=cdfa_tfs")
+_nok(_r.status_code == 200 and _r.content[:4] == b"%PDF", "report.pdf?program=cdfa_tfs")
+_nok(client.get("/api/locations/car_colusa_rice/nation/report.pdf?program=nope").status_code == 422, "report.pdf: unknown program -> 422")
+_r = client.get("/api/locations/car_colusa_rice/nation/drought_rotation?cutoff=07-01").json()
+_a = client.get("/api/locations/car_colusa_rice/nation/drought_rotation?cutoff=09-15").json()
+_nok(_r["cutoff_date"] == "07-01" and all(x["water_mm_after_cutoff"] > y["water_mm_after_cutoff"] for x, y in zip(_r["rotations"], _a["rotations"]) if x["water_mm_after_cutoff"]),
+     "drought_rotation: an earlier cutoff leaves more water after it")
+_nok(client.get("/api/locations/car_colusa_rice/nation/drought_rotation?cutoff=13-40").status_code == 422, "drought_rotation: bad cutoff -> 422")
+_r = client.get("/api/locations/bc_salmon_river_forage/nation").json()
+_nok(any(n["name"] == "Swawll Setatkwa" and n["source_url"].startswith("https://") for n in _r["place_names"]) and _r["nearest_nations"], "bc summary: place name with source, nearest Nations listed")
+_r = client.get("/api/locations/car_colusa_rice/nation/land_season").json()
+_nok(_r["phenology"]["peak_doy"] is not None and "proxy" in _r["phenology_note"] and "no harvest" in _r["harvest_rights_note"].lower().replace("stores no harvest", "no harvest"), "land_season: phenology with proxy caveat, harvest note")
+_nok(client.get("/api/locations/nope/nation").status_code == 404, "unknown location -> 404")
+# a tapped point near Lemoore, CA (cold analysis: live POWER, SSURGO, CDL, DWR)
+_lem = "pt_n363000_w1197800"
+_r = client.get(f"/api/locations/{_lem}/nation", headers={"X-Forwarded-For": "198.51.100.41"})
+_bad = _errs(_NV["Summary"], _r.json()) if _r.status_code == 200 else _r.text[:150]
+_nok(_r.status_code == 200 and not _bad and _r.json()["location"]["jurisdiction"] == "CA", f"pt near Lemoore: /nation 200, schema-valid, CA {_bad or ''}")
+_r = client.get(f"/api/locations/{_lem}/nation/funding", headers={"X-Forwarded-For": "198.51.100.41"})
+_bad = _errs(_NV["Funding"], _r.json()) if _r.status_code == 200 else _r.text[:150]
+_nok(_r.status_code == 200 and not _bad and len(_r.json()["programs"]) >= 10, f"pt near Lemoore: /nation/funding 200, schema-valid {_bad or ''}")
+_r = client.get(f"/api/locations/{_lem}/nation/drought_rotation", headers={"X-Forwarded-For": "198.51.100.41"})
+_bad = _errs(_NV["DroughtRotation"], _r.json()) if _r.status_code == 200 else _r.text[:150]
+_nok(_r.status_code == 200 and not _bad and _r.json()["series_status"]["grace"]["status"] == "not_computed" and _r.json()["drought_history"], f"pt near Lemoore: drought_rotation (POWER only, others not_computed) {_bad or ''}")
+# ---- end nation tools =========================================================================================
 print(f"\n{'ALL PASS' if not fails else str(fails) + ' FAIL'}")
 sys.exit(1 if fails else 0)

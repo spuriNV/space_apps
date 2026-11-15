@@ -148,6 +148,24 @@ Users draw a rectangle or polygon, name it, and get the tap-anywhere analysis ov
 Analysis: acres from the spherical (authalic radius) area of the polygon; CDL majority class per year over a grid of up to 25 sample points inside it (`crop_history`, `crop_history_purity` = share of points in that class, `user_field.crop_mix` top 3 per year); SSURGO via SDA polygon intersection, map units weighted by area inside it (`soil.map_units[].area_share`); county, SGMA subbasin, GSA, water district and POWER at the interior point nearest the centroid, with `user_field.spans = {counties, districts, gsas, subbasins}` listing everything the polygon touches (counties from the centroid plus up to 4 extreme sample points); `user_field.dwr_fields` = DWR/Land IQ 2023 fields intersecting the polygon (id, crop, class, acres; up to 100); engine strategies by family (rice -> CAR0-3, else CAF0-3). Non-California or non-US outlines get the section statuses anyloc uses (`unavailable`); there is no BC tier 1 in anyloc yet, so BC polygons get the same `unavailable` sections.
 
 Guards (env): `MYFIELDS_MAX_CONCURRENT=2`, `MYFIELDS_PER_IP_MIN=4`, `MYFIELDS_PER_IP_HOUR=30`, `MYFIELDS_GLOBAL_HOUR=300`, `MYFIELDS_READS_PER_MIN=120`. Cache hits only count against the read limit. `schemas/` accept `my_*` ids and `_source: "user"`.
+## Nation tools (`app/nation/`, data in `backend/nation/`)
+
+Features for First Nations and tribal farm, lands and water staff to use on their own land. They work for any location the API serves: presets (`car_colusa_rice`, `bc_salmon_river_forage`, ...) and tapped points (`pt_*`). Reserve and tribal land is treated like any other land. The router is included before the anyloc router in `main.py` (anyloc's `pt_*` catch-all would otherwise 404 these routes).
+
+| Route | What it returns |
+|---|---|
+| `GET /api/locations/{pid}/nation` | `land_status` (reserve/trust/fee/private/unknown, from the BC reserve WFS or Census AIANNH), nearest Nations/tribes with distances, `place_names[]` (source URL on each), links to the tools |
+| `.../nation/drought_rotation?cutoff=08-15` | per-rotation water (`water_mm_season`, `water_mm_after_cutoff`), erosion, soil cover, N scores, `cutoff_scenarios`, `drought_history` by water year (IMERG anomaly, SMAP, GRACE-DA, POWER ETo; `not_computed` where not cached, POWER only for `pt_*`) |
+| `.../nation/groundwater` | California only (404 elsewhere): Bulletin 118 subbasin, GSAs, SGMA status, GRACE-DA weekly percentile, pumping need per rotation, tribal links, GRACE caveat |
+| `.../nation/land_season` | weekly NDVI and green-up/peak/senescence DOY (a proxy, said so in `phenology_note`), MODIS snow-off DOY (Salmon River watershed), FIRMS fire detections within 10 km, burn-scar links, hunting-regulation links, `harvest_rights_note` |
+| `.../nation/funding?jurisdiction=CA\|BC\|US\|CAN` | programs from `backend/nation/programs.json`, filtered by the location, open first, with `matched_reason` |
+| `.../nation/report.json`, `report.pdf?program=<id>&cutoff=MM-DD` | one-page field report; with `program` it lists the sections that program asks for |
+
+Honesty rules: every program and claim carries its URL; `verified: false` marks items the research report could not read on a primary page; no harvest, hunting or cultural-site locations are stored or mapped; the tool never suggests recharge or flooding sites; Nations are named only as sourced facts, never as partners or users; the PDF has a blank "Prepared for" line to fill in.
+
+Updating programs: edit `backend/nation/programs.json` (or `build_programs.py`, which writes it). Place names: `backend/nation/place_names.json`. MODIS snow-off for the Salmon River: `cd backend/api && uv run python ../nation/snow_off.py` (reads the cached `modis_snow.parquet` from `backend/bc/fetch_snow.py`).
+
+FIRMS: the 365-day detections need a free MAP_KEY in `FIRMS_MAP_KEY` (not set here, so `fire_detections_365d` is `not_computed`); `fire_detections_7d` uses the open VIIRS 7-day CSVs. Schema: `schemas/nation.schema.json` (`#/$defs/Summary`, `DroughtRotation`, `Groundwater`, `LandSeason`, `Funding`, `Report`). The PDF uses `fpdf2` (built-in fonts, no images).
 
 ## Deploy (Render)
 
