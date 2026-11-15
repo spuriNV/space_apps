@@ -957,16 +957,6 @@ details.prov summary { cursor: pointer; font-size: var(--fs-body); color: var(--
   .tb-date small { display: none; }
   .tb-field { max-width: 260px; }
 }
-/* Field now: "What is the soil like?" (sand / silt / clay bar, plain facts, one rotation sentence) */
-.soilbar { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 2px; }
-.sb-track { display: flex; height: 16px; border: 1px solid var(--line); background: var(--panel); }
-.sb-track i { display: block; height: 100%; }
-.sb-track i + i { border-left: 2px solid #fff; }
-.ans .sb-key { display: flex; flex-wrap: wrap; gap: 2px 16px; font-size: var(--fs-small); color: var(--text-2); font-variant-numeric: tabular-nums; }
-.ans .sb-key span { display: inline-flex; align-items: center; gap: 6px; }
-.ans .sb-key i { width: 12px; height: 12px; border: 1px solid var(--line); }
-.ans .soil-facts { color: var(--text); }
-.ans .soil-rot { font-size: var(--fs-small); color: var(--text-2); border-left: 3px solid var(--line); padding-left: 8px; margin-top: 2px; }
 /* Compare: two columns below 1280 px (gain, give up); water against the limit moves under them */
 @media (max-width: 1279px) {
   .c2-body { grid-template-columns: 1fr 1fr; overflow-y: auto; }

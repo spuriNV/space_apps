@@ -4,7 +4,7 @@
 import type { Calendar, FieldEvent, Location, RotationStrategy } from '../../types';
 import { BARE_DEF, observedBare, usuallyBareMonths } from '../../bare';
 import type { ProvMap, Prov } from '../../api';
-import { SOIL_COLOR, dateToT, fmtDate, haToAc, yearOf, dekadOf } from '../../lib';
+import { dateToT, fmtDate, haToAc, yearOf, dekadOf } from '../../lib';
 const MONTHS_FULL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 import Icon from '../Icons';
 
@@ -75,58 +75,18 @@ export function Actions({ onStep }: { onStep: (s: Step) => void }) {
   );
 }
 
-/** Soil facts in plain words, from the location route's soil (SSURGO; BC from SoilGrids may lack some). Missing values return null. */
-export function soilFacts(soil: Location['soil'] | null | undefined) {
-  const s = soil ?? null;
-  const td = s?.texture_detail;
-  const ok = (x: unknown): x is number => typeof x === 'number' && isFinite(x);
-  const mix = td && ok(td.sand_pct) && ok(td.silt_pct) && ok(td.clay_pct) ? { sand: td.sand_pct, silt: td.silt_pct, clay: td.clay_pct } : null;
-  const texture = s?.texture_class ? s.texture_class.charAt(0).toUpperCase() + s.texture_class.slice(1).toLowerCase() : null;
-  const awc = s?.awc_mm_per_m?.value, inFt = ok(awc) ? (awc / 1000) * 12 : null;
-  const dc = (s?.drainage_class ?? '').toLowerCase(), hg = (s?.hydrologic_group ?? '').toUpperCase().charAt(0);
-  const drain: 'slow' | 'fast' | 'well' | null = !dc && !hg ? null : hg === 'D' || /poorly/.test(dc) ? 'slow' : /excessive/.test(dc) || hg === 'A' ? 'fast' : 'well';
-  const ec = ok(s?.ec_ds_per_m) ? s!.ec_ds_per_m! : null, salty = ec != null && ec >= 4;
-  const clayey = (mix ? mix.clay >= 35 : false) || /clay/.test(texture?.toLowerCase() ?? '') && !/sandy clay loam/.test(texture?.toLowerCase() ?? '');
-  const sandy = (mix ? mix.sand >= 60 : /sand/.test(texture?.toLowerCase() ?? ''));
-  const rotation = salty ? 'Salt hurts some crops more than others; check the crop’s salt tolerance with your adviser.'
-    : clayey && (hg === 'C' || hg === 'D') && drain === 'slow' ? 'Clay holds water and drains slowly, so it suits flooded rice; slow drainage limits how much a rotation can improve infiltration.'
-    : sandy && inFt != null && inFt < 1.4 ? 'Sandy soil holds little water, so crops that need steady moisture take more irrigation here, and flooded rice would lose water downward.'
-    : null;
-  return {
-    mix, texture,
-    holds: inFt == null ? null : `Holds ${inFt.toFixed(1)} in of water per foot.${inFt < 1.4 ? ' Low.' : ''}`,
-    drains: drain == null ? null : drain === 'slow' ? 'Drains slowly.' : drain === 'fast' ? 'Drains fast.' : 'Drains well.',
-    salt: ec == null ? null : salty ? `Salty: ${ec.toFixed(1)} dS/m.` : 'Salt is low.',
-    rotation,
-    source: /soilgrids/i.test(s?.awc_mm_per_m?.source?.id ?? '') || (!s?.drainage_class && mix) ? 'SoilGrids global soil model (ISRIC), 800 ft squares' : 'USDA soil survey (SSURGO), top 3 feet',
-  };
-}
-/** Sand / silt / clay as one stacked bar with a key underneath. */
-export function SoilBar({ mix }: { mix: { sand: number; silt: number; clay: number } }) {
-  const tot = mix.sand + mix.silt + mix.clay || 1;
-  const parts = (['sand', 'silt', 'clay'] as const).map((k) => ({ k, w: (mix[k] / tot) * 100, pct: Math.round(mix[k]) }));
-  return (
-    <span className="soilbar" data-testid="soil-bar">
-      <span className="sb-track" role="img" aria-label={parts.map((x) => `${x.k} ${x.pct}%`).join(', ')}>
-        {parts.map((x) => <i key={x.k} style={{ width: `${x.w}%`, background: SOIL_COLOR[x.k] }} />)}
-      </span>
-      <span className="sb-key">{parts.map((x) => <span key={x.k}><i style={{ background: SOIL_COLOR[x.k] }} />{x.k.charAt(0).toUpperCase() + x.k.slice(1)} {x.pct}%</span>)}</span>
-    </span>
-  );
-}
-
 const when = (t: number) => { const d = dekadOf(t); return `${['early', 'mid', 'late'][d % 3]} ${MONTHS_FULL[Math.floor(d / 3)]}`; };
 export function AboutField({ loc, prov, cal, insurance }: { loc: Location; prov: ProvMap; cal: Calendar | null; insurance: Location['rma'] | null }) {
   const rma = insurance;
   const ob = observedBare(cal), when = usuallyBareMonths(cal), dem = loc.nasadem;
-  const s = loc.soil ?? ({} as Partial<Location['soil']>), saline = (s.ec_ds_per_m ?? 0) >= 4;
-  const awc = s.awc_mm_per_m?.value, inFt = awc != null ? (awc / 1000) * 12 : null;
+  const s = loc.soil, saline = (s.ec_ds_per_m ?? 0) >= 4;
+  const inFt = (s.awc_mm_per_m.value / 1000) * 12;
   return (
     <dl className="facts">
-      {(s.muname || s.texture_class) && <div><dt>Soil</dt><dd>{s.muname ? s.muname.split(',')[0] : ''}{s.texture_class ? `${s.muname ? ', ' : ''}${s.texture_class.toLowerCase()}` : ''} <cite><Src p={prov.soil} /></cite></dd></div>}
-      {inFt != null && <div><dt>Holds</dt><dd>{inFt.toFixed(1)} in of water per foot of soil{inFt < 1.4 ? ' (low: needs frequent, short irrigations)' : inFt > 2 ? ' (high)' : ''}</dd></div>}
-      {(s.drainage_class || s.hydrologic_group) && <div><dt>Drainage</dt><dd>{s.drainage_class ?? ''}{s.hydrologic_group ? `${s.drainage_class ? '; ' : ''}runoff group ${s.hydrologic_group}` : ''}</dd></div>}
-      {s.ec_ds_per_m != null && <div><dt>Salt</dt><dd className={saline ? 'warn' : ''}>{saline ? 'Salty soil; limits salt-sensitive crops' : 'Low salt'}<small> (EC {s.ec_ds_per_m.toFixed(1)} dS/m)</small></dd></div>}
+      <div><dt>Soil</dt><dd>{s.muname.split(',')[0]}{s.texture_class ? `, ${s.texture_class.toLowerCase()}` : ''} <cite><Src p={prov.soil} /></cite></dd></div>
+      <div><dt>Holds</dt><dd>{inFt.toFixed(1)} in of water per foot of soil{inFt < 1.4 ? ' (low: needs frequent, short irrigations)' : inFt > 2 ? ' (high)' : ''}</dd></div>
+      <div><dt>Drainage</dt><dd>{s.drainage_class}{s.hydrologic_group ? `; runoff group ${s.hydrologic_group}` : ''}</dd></div>
+      <div><dt>Salt</dt><dd className={saline ? 'warn' : ''}>{s.ec_ds_per_m == null ? 'Not in the soil survey' : saline ? 'Salty soil; limits salt-sensitive crops' : 'Low salt'}{s.ec_ds_per_m != null && <small> (EC {s.ec_ds_per_m.toFixed(1)} dS/m)</small>}</dd></div>
       <div><dt>Water</dt><dd>{loc.water.source === 'surface' ? 'Surface water' : 'Groundwater (wells)'}{loc.water_real ? `, ${loc.water.district}${loc.water.sgma_subbasin ? `; ${loc.water.sgma_subbasin} subbasin` : ''}` : <small className="na-line">; water district not looked up yet</small>}</dd></div>
       {dem?.slope_mean_pct != null && <div><dt>Slope</dt><dd>{dem.slope_mean_pct < 2 ? 'Nearly flat' : dem.slope_mean_pct < 5 ? 'Gentle slope' : 'Sloping'}, about {dem.slope_mean_pct.toFixed(1)}% on average{dem.low_spot_fraction ? `; low spots on about ${Math.round(dem.low_spot_fraction * 100)}% of the field, where water ponds and frost settles` : ''}. <cite>NASA NASADEM elevation, 100 ft squares; radar elevation reads 1 to 2% on a levelled field. <Src p={prov.terrain} /></cite></dd></div>}
       {rma && <div><dt>Crop insurance</dt><dd>{usd(rma.total_usd)} paid out on {rma.scope} {rma.crop.replace('_forage', '').replace(/_/g, ' ')}, {rma.from}–{rma.to}; {usd(rma.top_usd)} in {rma.top_year} alone.{rma.share_drought >= 0.3 ? ` ${Math.round(rma.share_drought * 100)}% of it for drought or failed irrigation water.` : ''} <cite>USDA Risk Management Agency, county totals, not this farm. <Src p={prov.rma} /></cite></dd></div>}

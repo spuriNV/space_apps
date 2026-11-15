@@ -64,7 +64,7 @@ no hex in components except data colours.
 - **Extension bulletin:** paper `#f7f6f0`, black ink `#191c16`, one spot green `#2f5d34` (header band, primary action, links,
   "live"), brown `#8a5a00` only for "example numbers" and "over the limit", red `#a12a1c` for problems.
 - **Data colours are fixed** (`lib.ts`): bare soil `#a8703f`, partial `#b7d77a`, covered `#2f9e4b`, water `#3d97e8`, no clear
-  view = hatched grey. Soil texture (`SOIL_COLOR`): sand `#d9b46a`, silt `#e9e3d3`, clay `#7a4a2b`. Crop record: rice blue, alfalfa green, corn yellow, fallow tan. Never reuse a data colour for chrome.
+  view = hatched grey. Crop record: rice blue, alfalfa green, corn yellow, fallow tan. Never reuse a data colour for chrome.
 - **Contrast:** body text >= 7:1 on its panel, muted text >= 4.5:1 (muted 6.1:1; example-data brown 5.6:1). Never put text
   straight on imagery: map labels sit in a solid paper label box with a 1px ink border and a 1-2px shadow. Field selection on
   imagery is yellow `#ffd166` corner ticks with a dark drop shadow; footprints are dashed outlines, not fills.
@@ -99,8 +99,8 @@ no hex in components except data colours.
 
 ## 5b. Farmer default, adviser detail
 
-- Each screen opens on the decision: Field now = visual summary + 5 short answers (what's growing, rain vs normal, water
-  need vs limit, soil and groundwater, what the soil is like: sand/silt/clay bar, three plain facts, one rotation sentence); Coming season = 3 sentences (winter rain, water supply, next season's need); Compare =
+- Each screen opens on the decision: Field now = visual summary + 4 one-sentence answers (what's growing, rain vs normal, water
+  need vs limit, soil and groundwater); Coming season = 3 sentences (winter rain, water supply, next season's need); Compare =
   today vs the top 2 alternatives in acre-feet and days.
 - Everything else (NASA list and sources, ML comparison, stress weeks, standing water, 3D, percentiles and ranges, glossary,
   insurance, earlier years, every rotation, priorities and what-ifs) sits behind one inline "More detail" disclosure at the

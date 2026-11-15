@@ -75,8 +75,6 @@ if (want('field-now-kings') || want('kings')) {
   await page.waitForFunction(() => window.__app?.ready, null, { timeout: 30000 });
   await page.waitForTimeout(1500);
   await shot('field-now-kings.png');
-  await page.evaluate(() => document.querySelector('[data-testid="soil-answer"]')?.scrollIntoView({ block: 'center' }));
-  await shot('field-now-kings-soil.png', false);
 }
 if (want('phone')) {
   const ph = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });

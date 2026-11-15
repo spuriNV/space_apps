@@ -6,7 +6,7 @@ import { TODAY_T } from '../../lib';
 import type { Daily } from '../../season';
 import { HOT_F, cropWaterSoFar, fmtIn, fmtShort, heatFrost, rainSoFar, type RainSoFar } from '../../season';
 import { MONTHS, atT, latestAt, dataT, dekadOf, fieldState, lastDataT, mmToAfac, ordinal, yearOf } from '../../lib';
-import { SoilBar, Src, calSource, cropName, openetText, soilFacts } from './shared';
+import { Src, calSource, cropName, openetText } from './shared';
 import { What } from './What';
 
 const PART = ['early', 'mid', 'late'];
@@ -112,7 +112,6 @@ export function FieldNow(p: FieldNowProps) {
   const behindNote = dt < t ? ` Latest clear view ${whenT(dt)}${agoText}${yearOf(dt) < yr ? `; ${yr} imagery not processed yet` : ''}.` : '';
   const limit = p.allocation ?? null, needAf = need ? mmToAfac(need.value) : null;
   const y26 = cal?.years.find((y) => y.year === yr);
-  const soil = soilFacts(loc.soil);
   return (
     <>
     <div className="glance" data-testid="glance">
@@ -208,18 +207,6 @@ export function FieldNow(p: FieldNowProps) {
           <cite>{p.regionalLive.soilSource === 'grace_da' ? 'NASA GRACE-FO' : 'NASA SMAP and GRACE-FO'}. <Src p={p.prov.regional} /></cite>
         </dd>
       </div>
-      {soil.mix || soil.texture || soil.holds || soil.drains || soil.salt ? (
-        <div className="ans" data-testid="soil-answer">
-          <dt>What is the soil like?</dt>
-          <dd>
-            {soil.texture && <b>{soil.texture}</b>}
-            {soil.mix && <SoilBar mix={soil.mix} />}
-            {(soil.holds || soil.drains || soil.salt) && <span className="soil-facts">{[soil.holds, soil.drains, soil.salt].filter(Boolean).join(' ')}</span>}
-            {soil.rotation && <span className="soil-rot">{soil.rotation}</span>}
-            <cite>{soil.source}. <Src p={p.prov.soil} /></cite>
-          </dd>
-        </div>
-      ) : null}
       <div className="ans d-only">
         <dt>Has the crop been stressed, or the field under water? <What k="stress" /></dt>
         <dd>

@@ -1,5 +1,5 @@
 {
- "about": "CropLytics field registry. One entry per real field (DWR / Land IQ 2023 outline, CDL-checked). Read with backend/fields/fieldreg.py. family picks the rotation set (rice -> CAR0-CAR3 from car_colusa_rice, forage -> CAF0-CAF3 from caf_tulare_forage) and the trained ML calendar model (template). weather_point is the POWER/NOAA request point (null = polygon centroid). ncei_stations null = chosen by backend/regional fetch_ncei.py (nearest 3 with >=70% coverage) and written back here. reservoirs are the CDEC storage stations shown for the field. water is filled by backend/fields/water_sources.py from public boundary layers.",
+ "about": "CropLytics field registry. One entry per real field (DWR / Land IQ 2023 outline, CDL-checked). Read with backend/fields/fieldreg.py. family picks the rotation set (rice -> CAR0-CAR3 from car_colusa_rice, forage -> CAF0-CAF3 from caf_tulare_forage) and the trained ML calendar model (template). weather_point is the POWER/NOAA request point (null = polygon centroid). ncei_stations null = chosen by backend/regional fetch_ncei.py (nearest 3 with >=70% coverage) and written back here. reservoirs are the CDEC storage stations shown for the field. water is filled by backend/fields/water_sources.py from public boundary layers. fields_other_regions holds fields outside California (region 'bc'), read only when asked for (fieldreg region=None or 'bc', or FIELDSHIFT_FIELDS); they carry not_available reasons instead of the California-only lookups.",
  "fields": [
   {
    "id": "car_colusa_rice",
@@ -1919,6 +1919,69 @@
       ]
      }
     }
+   }
+  }
+ ],
+ "fields_other_regions": [
+  {
+   "id": "bc_salmon_river_forage",
+   "region": "bc",
+   "name": "Salmon River valley forage field (Shuswap, BC)",
+   "farmer_name": "Hay field in the Salmon River valley, 10 km southwest of downtown Salmon Arm",
+   "family": "forage",
+   "county": {
+    "fips": "5939",
+    "name": "Columbia-Shuswap",
+    "kind": "regional district",
+    "code_system": "Statistics Canada SGC census division (59 = BC)",
+    "province": "BC"
+   },
+   "usdm_counties": [],
+   "dwr_unique_id": null,
+   "centroid": {
+    "lon": -119.382594,
+    "lat": 50.643441
+   },
+   "area_ha": 21.51,
+   "acres": 53.2,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": null,
+   "ncei_stations": null,
+   "eccc_stations": [
+    "116FRMN",
+    "1167337"
+   ],
+   "reservoirs": [],
+   "slope_pct": null,
+   "why": "BC example: the lower Salmon River was under the 16 Aug 2023 fish population protection order that stopped about 398 licence holders irrigating forage. AAFC classes this outline Pasture / Forages in every mapped year 2014-2025. Built on non-reserve farmland (6.5 km from the nearest reserve); see docs/bc-first-nations.md.",
+   "selected_by": "backend/bc/select_field.py",
+   "template": "bc_salmon_river_forage",
+   "polygon": "backend/field/polygons/bc_salmon_river_forage.geojson",
+   "original": false,
+   "water": null,
+   "water_context": {
+    "watershed": "Salmon River (Shuswap), lower reach; Bessette Creek is the other 2023 order area",
+    "orders": [
+     {
+      "date": "2023-08-16",
+      "title": "Fish population protection orders M0238_2023 (lower Salmon River) and M0239_2023 (Bessette Creek): about 398 licence holders to stop using water for forage crops",
+      "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+      "verified": true
+     }
+    ],
+    "note": "No California-style water district or SGMA basin. Surface and groundwater licences are issued by the Province under the Water Sustainability Act; this field's licence is not looked up (the lookup would identify an owner)."
+   },
+   "not_available": {
+    "openet": "OpenET covers the western United States only; there is no field-scale measured water use for BC.",
+    "cimis": "CIMIS is California's station network; BC has two ECCC climate stations near this field (one closed in 2021).",
+    "insurance": "USDA RMA crop-insurance records cover the United States only; BC Production Insurance loss data is not public at field or county level.",
+    "sgma": "SGMA, water districts and CDEC reservoirs are California institutions; BC water licensing is not integrated.",
+    "cdl": "No USDA Cropland Data Layer in Canada; AAFC's Annual Crop Inventory is used instead (one Pasture / Forages class, no alfalfa class).",
+    "soil_survey": "No field-scale soil API in BC like SSURGO; SoilGrids v2 (a 250 m global model) is used instead.",
+    "outlook": "The coming-season outlooks (NOAA CPC, US Drought Monitor, CDEC) are US products; not built for BC.",
+    "ml_calendar": "The machine-learning calendar and stress models were trained on California fields and were not run here."
    }
   }
  ]
