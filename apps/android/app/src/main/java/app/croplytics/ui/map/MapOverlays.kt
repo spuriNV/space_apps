@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.croplytics.domain.Map3D
@@ -136,17 +137,22 @@ fun FootprintLabels(handle: MapHandle, tick: MutableState<Int>, footprints: List
         footprints.forEach { fp ->
             val p = m.projection.toScreenLocation(LatLng(fp.labelAt.second, fp.labelAt.first))
             if (p.x < 0 || p.y < 0 || p.x > maxW || p.y > maxH) return@forEach
-            val wPx = with(density) { 200.dp.toPx() }
+            val gap = with(density) { 6.dp.toPx() }; val edge = with(density) { 8.dp.toPx() }
             Row(
                 Modifier
-                    .offset { IntOffset((p.x - wPx - with(density) { 6.dp.toPx() }).roundToInt().coerceAtLeast(4), (p.y + with(density) { 6.dp.toPx() }).roundToInt()) }
-                    .widthIn(max = 200.dp)
+                    // Measured width, so the label sits left of its point and always stays inside the screen.
+                    .layout { measurable, c ->
+                        val pl = measurable.measure(c.copy(maxWidth = minOf(c.maxWidth, 200.dp.roundToPx(), (maxW - 2 * edge).toInt().coerceAtLeast(0))))
+                        layout(pl.width, pl.height) {
+                            pl.place((p.x - pl.width - gap).coerceIn(edge, (maxW - pl.width - edge).coerceAtLeast(edge)).roundToInt(), (p.y + gap).coerceIn(edge, (maxH - pl.height - edge).coerceAtLeast(edge)).roundToInt())
+                        }
+                    }
                     .height(IntrinsicSize.Min)
                     .background(PAPER)
                     .border(1.dp, INK),
             ) {
                 Box(Modifier.width(4.dp).fillMaxHeight().background(hexColor(fp.color)))
-                Text(fp.label, Modifier.padding(horizontal = 6.dp, vertical = 3.dp), fontSize = 11.sp, lineHeight = 13.sp, color = INK)
+                Text(fp.label, Modifier.padding(horizontal = 8.dp, vertical = 6.dp), fontSize = 11.sp, lineHeight = 14.sp, color = INK)
             }
         }
     }
@@ -206,7 +212,10 @@ fun ReserveLabels(handle: MapHandle, tick: MutableState<Int>, reserves: List<app
             val box = android.graphics.RectF(p.x, p.y - 30, p.x + 360, p.y + 30)
             if (placed.any { android.graphics.RectF.intersects(it, box) }) return@forEach
             placed += box
-            Column(Modifier.offset { IntOffset(p.x.roundToInt() + 12, p.y.roundToInt() - 28) }.widthIn(max = 180.dp).background(PAPER).border(1.dp, INK).padding(horizontal = 6.dp, vertical = 3.dp)) {
+            Column(Modifier.layout { measurable, c ->
+                val pl = measurable.measure(c.copy(maxWidth = minOf(c.maxWidth, 180.dp.roundToPx())))
+                layout(pl.width, pl.height) { pl.place((p.x.roundToInt() + 12).coerceAtMost((maxW - pl.width - 8).coerceAtLeast(0)), p.y.roundToInt() - 28) }
+            }.background(PAPER).border(1.dp, INK).padding(horizontal = 8.dp, vertical = 5.dp)) {
                 Text(app.croplytics.domain.BcLogic.reserveName(r.name), fontSize = 11.sp, lineHeight = 13.sp, color = INK, fontWeight = FontWeight.SemiBold)
                 Text(r.nation, fontSize = 10.sp, lineHeight = 12.sp, color = MUTED)
             }

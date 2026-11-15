@@ -50,6 +50,10 @@ interface FieldRepository {
     fun glossary(force: Boolean = false): Flow<LoadState<GlossaryDto>>
     /** BC: the First Nations card; reserve outlines near the field (context only). */
     fun firstNations(id: String): Flow<LoadState<app.croplytics.data.remote.dto.FirstNationsDto>>
+    /** Nation tools: one small JSON route under /locations/{id}/ (404 becomes NotAvailable). `path` is relative, such as "nation/funding?jurisdiction=BC". */
+    fun route(id: String, path: String): Flow<LoadState<kotlinx.serialization.json.JsonObject>>
+    /** BC: the salmon route, cut down to what the phone shows (the full reply carries 4,000 daily rows). */
+    fun salmon(id: String): Flow<LoadState<kotlinx.serialization.json.JsonObject>>
     fun reserves(id: String): Flow<LoadState<List<app.croplytics.domain.Reserve>>>
 
     /** Re-scores the rotations (POST /score) for a water limit, the grower's priorities and a rain / heat what-if. Cached per request. */

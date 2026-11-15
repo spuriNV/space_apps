@@ -117,6 +117,8 @@ class DefaultFieldRepository(
     override fun stress(id: String, force: Boolean) = cached("stress/$id", StressDto.serializer(), force) { api.stress(id) }
     override fun insurance(id: String, force: Boolean) = cached("insurance/$id", InsuranceDto.serializer(), force) { api.insurance(id) }
     override fun firstNations(id: String) = cached("first_nations/$id", app.croplytics.data.remote.dto.FirstNationsDto.serializer(), false) { api.firstNations(id) }
+    override fun route(id: String, path: String) = cached("route/$id/$path", kotlinx.serialization.json.JsonObject.serializer(), false) { api.file("locations/$id/$path") }
+    override fun salmon(id: String) = cached("salmon/$id", kotlinx.serialization.json.JsonObject.serializer(), false) { app.croplytics.domain.NationLogic.trimSalmon(api.file("locations/$id/salmon")) }
     override fun reserves(id: String) = cached("reserves/$id", ListSerializer(app.croplytics.domain.Reserve.serializer()), false, blobs) { app.croplytics.domain.Parsers.reserveList(api.reserves(id)) }
     override fun glossary(force: Boolean) = cached("glossary", GlossaryDto.serializer(), force) { api.glossary() }
 

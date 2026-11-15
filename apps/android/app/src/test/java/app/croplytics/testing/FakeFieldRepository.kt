@@ -60,6 +60,8 @@ class FakeFieldRepository : FieldRepository {
     override fun iss(id: String): Flow<LoadState<IssPhoto?>> = flowOf(ready(null))
     override fun glossary(force: Boolean): Flow<LoadState<GlossaryDto>> = flowOf(ready(GlossaryDto()))
     override fun firstNations(id: String): Flow<LoadState<app.croplytics.data.remote.dto.FirstNationsDto>> = missing()
+    override fun route(id: String, path: String): Flow<LoadState<kotlinx.serialization.json.JsonObject>> = missing()
+    override fun salmon(id: String): Flow<LoadState<kotlinx.serialization.json.JsonObject>> = missing()
     override fun reserves(id: String): Flow<LoadState<List<app.croplytics.domain.Reserve>>> = missing()
 
     override fun score(id: String, limitAfAc: Double, weights: Map<String, Double>?, scenario: ScenarioDto?): Flow<LoadState<List<StrategyDto>>> {

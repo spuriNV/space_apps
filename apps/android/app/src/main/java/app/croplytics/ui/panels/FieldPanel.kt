@@ -135,8 +135,10 @@ fun LazyListScope.fieldNowPanel(state: MainUiState, data: FieldData, view: Field
         }
     }
     if (data.item.loc.isBC) item(key = "fn-first-nations") { FirstNationsSection(data, detail) }
+    item(key = "fn-nation") { NationToolsSection(data.item.loc.id, data.item.loc.isBC) }
     item(key = "fn-more") { MoreDetailButton(detail, "Sources, past seasons, 3D", a.toggleDetail) }
     if (detail) {
+        if (data.item.loc.isBC) item(key = "fn-salmon") { SalmonCard(data.item.loc.id) }
         item(key = "fn-nasa") { Box(Modifier.animateItem()) { NasaSection(data, nasa) } }
         item(key = "fn-about") {
             val c = CropLyticsTheme.colors
