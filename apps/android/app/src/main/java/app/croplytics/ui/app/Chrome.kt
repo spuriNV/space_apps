@@ -161,7 +161,7 @@ fun BottomTabs(selected: Tab?, enabled: Boolean, onTab: (Tab) -> Unit) {
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        t.short, Modifier.clip(CircleShape).background(bg).padding(horizontal = 10.dp, vertical = 6.dp), softWrap = false,
+                        t.short, Modifier.clip(CircleShape).background(bg).padding(horizontal = 6.dp, vertical = 6.dp), softWrap = false,
                         style = MaterialTheme.typography.labelMedium, maxLines = 1,
                         color = when { !enabled -> c.muted.copy(alpha = 0.45f); on -> c.onAccentContainer; else -> c.text2 },
                     )
