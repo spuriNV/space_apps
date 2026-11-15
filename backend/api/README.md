@@ -40,12 +40,15 @@ Paths are relative to the repo root; first existing file wins. `{id}` is `car_co
 | `GET .../validation` | `validation.json` | `backend/api/out/{id}/validation.json`, `backend/regional/out/{id}/validation.json`, `backend/field/out/{id}/validation.json`, `data/cache/{id}/validation.json` |
 | `GET /api/bc/news` | `bc_news.json` | `backend/news/out/bc_opener.json`, `backend/news/out/bc_news.json`, `data/cache/bc/news.json` |
 | `GET /api/bc/signal` | `bc_signal.json` | `backend/api/out/bc_signal.json` (from `data/cache/bc/signal_raw.parquet`), `backend/regional/out/bc_signal.json`, `data/cache/bc/signal.json` |
-| `GET /api/glossary` | `glossary.json` | `backend/engine/out/glossary.json`, `data/cache/glossary.json` |
+| `GET /api/glossary` | `glossary.json` | `backend/api/glossary.json` (17 plain-language entries, <= 60 words, one source URL each), `backend/engine/out/glossary.json`, `data/cache/glossary.json` |
 | `GET /api/crops/{cid}` | `crops/{cid}.json` | `backend/engine/out/crops/{cid}.json`, or the entry with that `id` in `backend/engine/crops.json` (`{"crops": [...]}`) |
 | `GET .../calendar?year=&source=` | none (404 if not built) | `source=s2_landsat` (default): `backend/field/out/{id}/calendar.json`; `source=hls`: `backend/nasa/out/{id}/calendar_hls.json` (same detector on NASA HLS only); both + `crop_history.json` |
 | `GET .../openet?from&to` | none | `data/cache/{id}/openet.parquet`: monthly measured ET (mm and inches) plus annual totals |
 | `GET .../nasa_now?date=` | none | `backend/api/out/{id}/nasa_series.json`: NASA readings for the 10-day step containing `date` (default today) |
 | `GET .../nasa_series?from&to` | none | same file, one row per 10-day step (1st/11th/21st) |
+| `GET .../water_seen?from&to` | none | `backend/api/out/{id}/water_seen.json` (built from `data/cache/{id}/dswx.parquet`); `from/to` filter `scenes` |
+| `GET .../insurance` | none | `backend/ground/out/{id}/rma_profile.json` (USDA RMA cause of loss), served as is |
+| `GET .../stress` | none | `backend/ai/out/{id}/stress_weekly.json` + API-computed `summary.by_year`, + `stress_summary`/`stress_eval(uation)` if backend/ai writes them |
 | `GET .../grid?layer=` | none (404 if backend/field has not run) | `backend/field/out/{id}/grid.geojson` |
 | `GET /api/health` | | not in spec; shows root and presets |
 
@@ -59,7 +62,7 @@ Paths are relative to the repo root; first existing file wins. `{id}` is `car_co
 
 | Route | Source | Notes |
 |---|---|---|
-| `GET /api/locations`, `/api/locations/{id}` | real | as before, plus: **`nasa_datasets`** (list: `id, name, tells_you` (plain words), `resolution, date_range, rows, status` live/pending/blocked, `used_in, source_url, note`) for the "NASA data behind this field" panel; `terrain.*` now **NASADEM** (smoothed slope, elevation, low-spot fraction) from backend/nasa_open; `datasets.*` statuses updated (`real` for IMERG, GRACE, HLS, DEM, OpenET once cached) |
+| `GET /api/locations`, `/api/locations/{id}` | real | as before, plus: `dwr_unique_id` (DWR/Land IQ field ID from backend/field/polygons); `soil.ec_ds_per_m` and `soil.texture_detail` (SSURGO, data/cache/<id>/soil.json); **`nasa_datasets`** (list: `id, name, tells_you` (plain words), `resolution, date_range, rows, status` live/pending/blocked, `used_in, source_url, note`) for the "NASA data behind this field" panel; `terrain.*` now **NASADEM** (smoothed slope, elevation, low-spot fraction) from backend/nasa_open; `datasets.*` statuses updated (`real` for IMERG, GRACE, HLS, DEM, OpenET once cached) |
 | `GET .../daily?from&to` | real | **2015-01-01 to the latest POWER near-real-time day (2026-11-11)**. New columns: `imerg_precip_mm` + `imerg_run` (GPM IMERG Final, Late after 2025-09-30; to 2026-11-13), `smap_sm_pct` (SMAP L4 root-zone percentile), `smap_rootzone_m3m3`, `smap_l3_sm_m3m3`, `grace_gw_pct` (weekly), `power_run` (`archive`/`nrt`), `cover_source` (`s2_landsat` or `hls`). NCEI station columns stay null after the station cache ends |
 | `GET .../features/weekly` | real | weeks through 2026; `imerg_7d_mm`, `smap_sm`, `smap_sm_pct`, `grace_*_pct`, `modis_ndvi_anomaly`, `esi` filled where the dataset is cached |
 | `GET .../trends?layer=&year=` | real for all 7 layers once SMAP/MODIS are cached | `grace_gw_pct` (annual mean GRACE-DA groundwater percentile, 2003-2026), `smap_anomaly` (SMAP L4 root-zone standardized anomaly, sd), `modis_ndvi_anomaly` (MOD13Q1 NDVI minus 2000-2025 same-period mean). Still one cell (`row 0, col 0`) |
@@ -71,7 +74,11 @@ Paths are relative to the repo root; first existing file wins. `{id}` is `car_co
 | `POST .../score` | real | items now carry `water.etc_vs_openet_pct` and `water.openet_et_mm_season` (copied from GET /strategies; default weather, not recomputed per scenario) |
 | `GET .../strategies`, `zones`, `calendar`, `grid`, `news`, `crops` | real | unchanged |
 | `GET /api/bc/signal` | real once `fetch_bc_signal.py` finishes | SMAP L4 root-zone percentile, GRACE-DA groundwater percentile and POWER Tmax at 50.62 N -119.33 W, Mar-Oct 2023, weekly; markers from the spec with `lead_days` (rule ours, U) |
-| `GET .../models`, `GET /api/glossary` | fixture | no producer |
+| `GET .../water_seen` | real (new) | OPERA DSWx per scene: `water_frac` (open + partial), `open_water_frac`, `partial_water_frac`, `cloud_snow_frac`, `clear` (>= 80% clear); `seasons` (Colusa: winters Nov-Apr; Kings: spring 2023) with `clear_scenes`, `max_water_frac`, `scenes_over_half_water`, first/last wet date; `summary` in plain words |
+| `GET .../insurance` | real (new) | RMA 2010-2024 county profile by peril group; keeps `share_peril_unattributed` (forage/alfalfa indemnity RMA does not tie to a peril) |
+| `GET .../stress` | real (new) | weekly in-season stress flags (z-score, isolation forest) per crop year, with `summary.by_year` counts |
+| `GET /api/glossary` | real (new) | `backend/api/glossary.json`: ETo, ETc/Kc, ET, soil-moisture percentile, NDVI, bare/partial/covered, frost, heat days, water balance, acre-foot vs mm, GRACE groundwater, SGMA, pixel size, OpenET, rule vs ML detector, IMERG, DSWx |
+| `GET .../models` | real | backend/ai |
 
 Known data caveats the UI should not hide: POWER overstates rain vs the NCEI stations (+54% CAR, +68% CAF in monthly totals) and runs warm in summer (JJA Tmax about +3.4 C CAR, +3.8 C CAF), so `heatwave_days`, `severe_heat_40c` and the engine's heat/dry-day counts are high-biased. See `backend/regional/README.md`.
 

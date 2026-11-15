@@ -212,7 +212,7 @@ def build_location(x: Ctx):
             datasets[k]["also"] = f"data/cache/{p}/hls_lpdaac.parquet (NASA LP DAAC, 2016-2019 and 2026)"
     ch = {k: v for k, v in x.hist["by_year"].items()}
     loc = {
-        "id": p, "name": NAMES[p], "region_adapter": "ca", "regime": fix["regime"], "state_fips": "06", "county_fips": COUNTY[p],
+        "id": p, "name": NAMES[p], "dwr_unique_id": bs.get("dwr_unique_id"), "region_adapter": "ca", "regime": fix["regime"], "state_fips": "06", "county_fips": COUNTY[p],
         "geometry": x.poly["geometry"], "centroid": props["centroid"], "area_ha": area, "crs_working": "EPSG:32610",
         "soil": soil, "terrain": terrain, "water": fix["water"], "market_preference": fix["market_preference"],
         "stations": stations,
@@ -463,6 +463,9 @@ def openet_check(x: Ctx):
 # ------------------------------------------------------------------ nasa series + bc
 def build_nasa_series(x: Ctx):
     write(x.p, "nasa_series.json", NB.nasa_series(x.p, x.nasa))
+    ws = NB.water_seen(x.p, x.nasa)
+    if ws:
+        write(x.p, "water_seen.json", ws)
 
 
 # ------------------------------------------------------------------ zones

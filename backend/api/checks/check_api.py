@@ -32,8 +32,8 @@ SOURCES = {}  # route label (preset id replaced by {id}) -> set of X-Data-Source
 EXPECT_REAL = ["/api/locations", "/api/locations/{id}", "/daily", "/features/weekly", "/strategies", "/score", "/zones",
                "/trends?layer=heatwave_days", "/trends?layer=precip_anomaly", "/trends?layer=usdm_d2_weeks", "/trends?layer=reservoir_storage", "/trends?layer=grace_gw_pct", "/news", "/validation", "/calendar", "/grid", "/api/bc/news", "/api/crops/{cid}"]
 EXPECT_FIXTURE_OK = {"/models": "no producer (AI workstream)", "/api/bc/signal": "SMAP/GRACE need Earthdata (blocked)",
-                     "/api/glossary": "no producer"}
-EXPECT_REAL += ["/openet", "/nasa_now", "/nasa_series"]
+                     }
+EXPECT_REAL += ["/openet", "/nasa_now", "/nasa_series", "/insurance", "/stress", "/water_seen", "/api/glossary"]
 # NASA AppEEARS layers: must be real once their cache exists for both presets (backend/nasa); fixture is allowed only before that
 for _layer, _ds in (("smap_anomaly", "smap_l4"), ("modis_ndvi_anomaly", "modis")):
     if all((ROOT / "data" / "cache" / _p / f"{_ds}.parquet").exists() for _p in PRESETS):
@@ -106,6 +106,19 @@ for p in PRESETS:
     if ro is not None and ro.status_code == 200:
         ok = len(ro.json()["rows"]) == 12
         fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /openet 2023 has 12 monthly rows")
+    check("GET", L + "/insurance", ANY)
+    rst = check("GET", L + "/stress", ANY)
+    rw = check("GET", L + "/water_seen", ANY)
+    if rw is not None and rw.status_code == 200:
+        j = rw.json()
+        ok = len(j["scenes"]) > 0 and bool(j["summary"]) and all(0 <= s_["water_frac"] <= 1 for s_ in j["scenes"] if s_["water_frac"] is not None)
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /water_seen has {len(j['scenes'])} scenes and a summary")
+    ri = client.get(L + "/insurance").json()
+    ok = "share_peril_unattributed" in json.dumps(ri) or p == "car_colusa_rice"
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /insurance keeps share_peril_unattributed")
+    ok = loc_ok = client.get(L).json()
+    ok = bool(ok.get("dwr_unique_id")) and "ec_ds_per_m" in ok["soil"] and "texture_detail" in ok["soil"] and (ok["terrain"]["slope_mean_pct"]["value"] is not None)
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} location has dwr_unique_id, soil EC/texture, NASADEM slope")
     rn = check("GET", L + "/nasa_now", ANY)
     check("GET", L + "/nasa_now?date=2022-08-01", ANY)
     check("GET", L + "/nasa_series?from=2023-01-01&to=2023-03-31", ANY)
@@ -127,7 +140,11 @@ for p in PRESETS:
 check("GET", "/api/locations/nope", ANY, expect=404)
 check("GET", "/api/bc/news", validator("responses.schema.json", "News"))
 check("GET", "/api/bc/signal", validator("responses.schema.json", "BcSignal"))
-check("GET", "/api/glossary", validator("responses.schema.json", "Glossary"))
+rg = check("GET", "/api/glossary", validator("responses.schema.json", "Glossary"))
+if rg is not None and rg.status_code == 200:
+    its = rg.json()["items"]
+    ok = len(its) >= 15 and all(len(i["short"].split()) <= 60 and i.get("source_url") for i in its)
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" glossary: {len(its)} entries, each <= 60 words with a source URL")
 # real vs fixture report
 print("\nroute data source (X-Data-Source over both presets):")
 for k in sorted(SOURCES):

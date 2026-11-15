@@ -30,7 +30,10 @@ LOOKUP = {
     "validation": ["backend/api/out/{p}/validation.json", "backend/regional/out/{p}/validation.json", "backend/field/out/{p}/validation.json", "data/cache/{p}/validation.json"],
     "bc_news": ["backend/news/out/bc_opener.json", "backend/news/out/bc_news.json", "data/cache/bc/news.json"],
     "bc_signal": ["backend/api/out/bc_signal.json", "backend/regional/out/bc_signal.json", "data/cache/bc/signal.json"],
-    "glossary": ["backend/engine/out/glossary.json", "data/cache/glossary.json"],
+    "glossary": ["backend/api/glossary.json", "backend/engine/out/glossary.json", "data/cache/glossary.json"],
+    "insurance": ["backend/ground/out/{p}/rma_profile.json"],
+    "stress": ["backend/ai/out/{p}/stress_weekly.json"],
+    "water_seen": ["backend/api/out/{p}/water_seen.json"],
     "crop": ["backend/engine/out/crops/{c}.json"],
     "calendar": ["backend/field/out/{p}/calendar.json"],
     "calendar_hls": ["backend/nasa/out/{p}/calendar_hls.json"],
@@ -410,6 +413,48 @@ def nasa_series(pid: str, resp: Response, from_: str | None = Query(None, alias=
     d = _real_only("nasa_series", pid)
     d["location_id"] = pid
     return send(resp, filter_dates(d, "rows", from_, to), "real")
+
+
+@app.get("/api/locations/{pid}/insurance")
+def insurance(pid: str, resp: Response):
+    """USDA RMA crop-insurance cause-of-loss profile for the county and crop (backend/ground). Real only.
+    Kept as published, including `share_peril_unattributed` (forage/alfalfa indemnity that RMA does not tie to a peril)."""
+    check_preset(pid)
+    d = _real_only("insurance", pid)
+    d["location_id"] = pid
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/stress")
+def stress(pid: str, resp: Response):
+    """Weekly in-season crop-stress flags (backend/ai: z-score and isolation forest). Real only. Adds `summary` per crop year
+    (weeks evaluated / flagged) and any backend/ai stress summary or evaluation file that exists."""
+    check_preset(pid)
+    d = _real_only("stress", pid)
+    by = {}
+    for w in d.get("weeks", []):
+        y = by.setdefault(str(w.get("iso_year")), {"crop": w.get("crop"), "weeks": 0, "evaluated": 0, "flag_zscore": 0, "flag_iforest": 0, "water": 0})
+        y["weeks"] += 1
+        y["evaluated"] += bool(w.get("evaluated"))
+        y["flag_zscore"] += bool(w.get("flag_zscore"))
+        y["flag_iforest"] += bool(w.get("flag_iforest"))
+        y["water"] += bool(w.get("water"))
+    d["summary"] = {"by_year": by, "note": "counts of season weeks; computed by the API from `weeks`"}
+    for name in ("stress_summary", "stress_eval", "stress_evaluation"):
+        f = ROOT / "backend" / "ai" / "out" / pid / f"{name}.json"
+        if f.is_file():
+            d[name] = _read(f)
+    d["location_id"] = pid
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/water_seen")
+def water_seen(pid: str, resp: Response, from_: str | None = Query(None, alias="from"), to: str | None = None):
+    """NASA OPERA DSWx: share of the field under water per satellite scene, per-season summary and a plain-language line."""
+    check_preset(pid)
+    d = _real_only("water_seen", pid)
+    d["location_id"] = pid
+    return send(resp, filter_dates(d, "scenes", from_, to), "real")
 
 
 @app.get("/api/locations/{pid}/calendar_ml")
