@@ -393,3 +393,17 @@ def other(pid: str, rest: str):
     decode_or_400(pid)
     raise HTTPException(404, f"{rest} is not computed for user-drawn fields (only the location, daily, strategies and score are); "
                              "see `sections` for why")
+
+
+def week_resolver(pid: str) -> dict | None:
+    """Resolver for app/week (register_resolver): decode the id, centroid for lat/lon, family from the cached analysis else forage."""
+    if not isinstance(pid, str) or not pid.startswith(FID.PREFIX):
+        return None
+    name, poly, ha = FID.decode(pid)
+    cx, cy = G.centroid(poly["coordinates"][0])
+    hit = cache_get(pid)
+    loc = (hit or {}).get("loc") or {}
+    cb, bb = B.CA_BOX, (-139.1, 48.2, -114.0, 60.0)
+    region = "ca" if cb[0] <= cx <= cb[2] and cb[1] <= cy <= cb[3] else ("bc" if bb[0] <= cx <= bb[2] and bb[1] <= cy <= bb[3] and cy > 49.0 else "other")
+    return {"id": pid, "lat": cy, "lon": cx, "region": loc.get("region") or region, "family": loc.get("family") or "forage",
+            "acres": ha * 2.47105, "name": name}

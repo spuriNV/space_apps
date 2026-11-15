@@ -72,6 +72,9 @@ app.include_router(nation_router)  # before anyloc: its pt_* catch-all would 404
 app.include_router(week_router)  # before anyloc: its pt_* catch-all would swallow /this_week
 app.include_router(anyloc_router)  # before the preset routes: /api/analyze and /api/locations/pt_* (other ids fall through)
 app.include_router(myfields_router)  # my_* ids and /api/my-fields
+from .week import register_resolver as _week_register  # noqa: E402
+from .myfields import week_resolver as _my_week_resolver  # noqa: E402
+_week_register(_my_week_resolver)  # this_week for my_* ids
 
 
 def _read(path: Path) -> Any:
