@@ -50,6 +50,8 @@ const explodeExpr = (key: string) => ['interpolate', ['linear'], ['zoom'], EXPLO
 export interface MapHandle {
   flyToField: (loc: Location, mode: 'card' | 'drill' | 'story' | 'year') => void;
   flyHome: () => void;
+  /** the whole US and Canada (the farm catalog's extent) */
+  flyContinent: () => void;
   flyTo: (lat: number, lon: number, zoom: number) => void;
   zoomBy: (d: number) => void;
   resetNorth: () => void;
@@ -732,6 +734,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       programmatic.current = true;
       map.fitBounds(b, { padding: pad(), maxZoom: 13, pitch: 0, bearing: 0, duration: 900 });
     },
+    flyContinent() { programmatic.current = true; mapRef.current!.flyTo({ center: [-98, 45], zoom: 2.9, pitch: 0, bearing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
     flyHome() { programmatic.current = true; mapRef.current!.flyTo({ ...HOME, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
     flyTo(lat, lon, zoom) { programmatic.current = true; mapRef.current!.flyTo({ center: [lon, lat], zoom, pitch: 0, bearing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
     zoomBy(d) {

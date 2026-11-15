@@ -108,6 +108,13 @@ export const getDatasets = () => Promise.resolve(datasets as Dataset[]);
 export const getBC = () => Promise.resolve(bc as BCInfo);
 
 // ---------- regions (BC) ----------
+/** A tapped farm's water / SGMA sections say they are unavailable (outside California, Canada outside BC): the farmer-friendly reason, else null. */
+export const sectionGap = (l?: Location | null): string | null => {
+  const s = l?.spot?.sections; const x = s?.water ?? s?.sgma;
+  if (!x || x.status === 'ready' || x.status === 'not_computed') return null;
+  const r = typeof x.reason === 'string' ? x.reason.trim() : '';
+  return r ? `${r.charAt(0).toUpperCase()}${r.slice(1)}${/[.!?]$/.test(r) ? '' : '.'}` : 'Not available here.';
+};
 export const isBC = (l?: Location | null) => l?.region === 'bc';
 /** A BC field's data gap by id (`data_gaps` on the location route), or null for a California field. */
 export const bcGap = (l: Location | null | undefined, id: string): DataGap | null => (isBC(l) ? l!.data_gaps?.find((g) => g.id === id) ?? null : null);
@@ -161,7 +168,7 @@ export function realLocation(base: Location, apiLoc?: any): { loc: Location; pro
     soil: { ...loc.soil, ...a.soil },
     crop_history: a.crop_history ?? loc.crop_history, nasa_datasets: a.nasa_datasets, datasets: a.datasets, terrain: a.terrain ?? loc.terrain,
     nasadem: a.terrain?.slope_mean_pct?.value != null ? { slope_mean_pct: a.terrain.slope_mean_pct.value, slope_p90_pct: a.terrain.slope_p90_pct?.value, low_spot_fraction: a.terrain.low_spot_fraction?.value } : undefined,
-    region: a.region === 'bc' || a.region === 'other' ? a.region : 'ca', state_code: a.state_code ?? null, county_kind: a.county_kind, data_gaps: a.data_gaps, water_context: a.water_context, first_nations: a.first_nations };
+    region: a.region === 'bc' || a.region === 'other' ? a.region : /^(us|can)-/.test(a.region ?? '') ? 'other' : 'ca', state_code: a.state_code ?? null, county_kind: a.county_kind, data_gaps: a.data_gaps, water_context: a.water_context, first_nations: a.first_nations };
   if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', 'api', 'NASA JPL elevation, 30 m');
   // water district / GSA: use the API's only when it is looked up or verified (status from lookup / verified, not text markers); a looked-up field may have no district
   const w = a.water;

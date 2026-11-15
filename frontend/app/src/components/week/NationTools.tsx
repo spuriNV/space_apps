@@ -5,7 +5,7 @@ import { motionOff } from '../a11y/prefs';
 // Neutral and factual: Nations are named only as sourced facts, never as partners or endorsers. Cards load when opened.
 import { useState } from 'react';
 import type { Location } from '../../types';
-import { API_BASE } from '../../api';
+import { API_BASE, sectionGap } from '../../api';
 import { t, locale } from '../../i18n';
 import Icon from '../Icons';
 import { RouteProblem, SKEL, useRoute } from './useRoute';
@@ -148,12 +148,13 @@ function Tools({ loc, s }: { loc: Location; s: Summary }) {
   const base = `/locations/${loc.id}/nation`;
   const [cutoff, setCutoff] = useState('08-15');
   const bc = loc.region === 'bc';
+  const gap = bc ? null : sectionGap(loc);
   return (
     <div className="nt-cards">
       <Drought base={base} cutoff={cutoff} setCutoff={setCutoff} />
-      {bc ? <BcWater id={loc.id} /> : <Groundwater base={base} />}
+      {bc ? <BcWater id={loc.id} /> : gap ? <Card title="Groundwater" id="groundwater"><p className="gap-line">Not available here. {gap}</p></Card> : <Groundwater base={base} />}
       <LandSeason base={base} />
-      <FundingCard base={base} id={loc.id} jur={bc || s.location?.jurisdiction === 'BC' ? 'BC' : 'CA'} cutoff={cutoff} />
+      {!gap && <FundingCard base={base} id={loc.id} jur={bc || s.location?.jurisdiction === 'BC' ? 'BC' : 'CA'} cutoff={cutoff} />}
     </div>
   );
 }

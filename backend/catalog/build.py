@@ -53,13 +53,18 @@ def validator():
     return Draft202012Validator({"$ref": "https://fieldshift.local/schemas/location.schema.json"}, registry=reg)
 
 
+def _outline(f):
+    o = f.get("outline")
+    return {"type": "Polygon", "coordinates": [o]} if o and f["region"] not in ("ca", "bc") else None
+
+
 async def build_one(f, sem, V):
     lon, lat = f["pt"]
     async with sem:
         for attempt in range(3):
             t = time.time()
             try:
-                loc, _daily, items, info = await asyncio.wait_for(B.analyse(lat, lon, STORE), 150)
+                loc, _daily, items, info = await asyncio.wait_for(B.analyse(lat, lon, STORE, outline=_outline(f)), 150)
             except Exception as e:  # noqa: BLE001
                 print(f"  {f['id']} attempt {attempt + 1} failed: {type(e).__name__} {str(e)[:120]}")
                 await asyncio.sleep(5 * (attempt + 1))
@@ -77,7 +82,9 @@ async def build_one(f, sem, V):
     loc["farmer_name"] = f["name"]
     loc["why_chosen"] = (f"Part of the CropLytics farm catalog ({region_name}, {f['crop_group_label'].lower()}): picked from "
                          + ("the DWR / Land IQ 2023 crop map, checked against the 2023 Cropland Data Layer. " if f["region"] == "ca" else
-                            "the AAFC Annual Crop Inventory 2025 inside a ParcelMap BC parcel in the Agricultural Land Reserve. ")
+                               "the USDA Crop Sequence Boundaries (field outline and crop history). " if f["region"].startswith("us-") else
+                               "the AAFC Annual Crop Inventory 2025 (field outline from a single-crop patch). " if f["region"].startswith("can-") else
+                               "the AAFC Annual Crop Inventory 2025 inside a ParcelMap BC parcel in the Agricultural Land Reserve. ")
                          + loc["why_chosen"].removeprefix("You tapped this spot on the map. "))
     errs = [e.message[:160] for e in V.iter_errors(loc)]
     built = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
@@ -105,7 +112,8 @@ def write_index(fields):
         loc = json.loads(p.read_text())
         idx.append({"id": f["id"], "name": f["name"], "lat": f["pt"][1], "lon": f["pt"][0], "region": f["region"], "area": f["area"],
                     "crop_group": f["crop_group"], "crop_group_label": f["crop_group_label"],
-                    "county": loc.get("county_name") or f["county"], "acres": loc.get("acres"), "family": loc.get("family"),
+                    "country": f.get("country") or "CA" if f["region"] == "bc" else f.get("country") or "US", "state": f.get("state") or ("BC" if f["region"] == "bc" else "CA"),
+                    "county": f["county"] if f.get("country") else loc.get("county_name") or f["county"], "acres": loc.get("acres"), "family": loc.get("family"),
                     "template": loc.get("template"), "land_status": (loc.get("land_status") or {}).get("kind"),
                     "strategies": (OUT / f["id"] / "strategies.json.gz").exists()})
     (OUT / "index.json").write_text(json.dumps(idx, indent=0, separators=(",", ":")) + "\n")

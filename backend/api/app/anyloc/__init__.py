@@ -596,21 +596,26 @@ async def point_score(pid: str, body: ScoreRequest, req: Request, resp: Response
 
 
 @router.get("/api/catalog")
-def catalog(resp: Response, region: str | None = Query(None, description="ca | bc"),
-            crop_group: str | None = Query(None, description="e.g. rice, forage, grain, nuts, grapes, citrus, vegetables, cotton, orchard, canola"),
+def catalog(resp: Response, region: str | None = Query(None, description="ca | bc | us-midwest | us-plains | us-delta | us-southeast | us-northwest | us-mountain | us-southwest | us-northeast | us-florida | us-greatlakes | can-prairies | can-east"),
+            country: str | None = Query(None, description="US | CA (Canada)"),
+            state: str | None = Query(None, description="2-letter state or province code, e.g. IA, AB"),
+            crop_group: str | None = Query(None, description="e.g. rice, forage, grain, soy, nuts, grapes, citrus, vegetables, cotton, orchard, canola, peanuts, potatoes, hops, sorghum, pulses"),
             area: str | None = Query(None, description="catalog area, e.g. 'San Joaquin Valley', 'Okanagan'")):
-    """The farm catalog: real fields across California and BC with pre-built tier-1 payloads. Open one with
+    """The farm catalog: real fields across the US and Canada (California, BC, ten US farm regions, the Prairies, Ontario / Quebec) with pre-built tier-1 payloads. Open one with
     GET /api/locations/{id} (served from the committed outputs, `_source: "catalog"`)."""
     items = catalog_index()
     out = [x for x in items if (not region or x["region"] == region.lower()) and (not crop_group or x["crop_group"] == crop_group.lower())
-           and (not area or x["area"].lower() == area.lower())]
+           and (not area or x["area"].lower() == area.lower()) and (not country or x.get("country") == country.upper())
+           and (not state or x.get("state") == state.upper())]
     resp.headers["Cache-Control"] = "public, max-age=3600"
     resp.headers["X-Data-Source"] = "catalog"
     groups: dict = {}
     for x in items:
         groups.setdefault(x["crop_group"], {"label": x["crop_group_label"], "count": 0})["count"] += 1
-    return {"count": len(out), "total": len(items), "filters": {"region": region, "crop_group": crop_group, "area": area},
+    return {"count": len(out), "total": len(items), "filters": {"region": region, "crop_group": crop_group, "area": area, "country": country, "state": state},
             "regions": sorted({x["region"] for x in items}), "areas": sorted({x["area"] for x in items}),
+            "countries": sorted({x["country"] for x in items if x.get("country")}),
+            "states": sorted({x["state"] for x in items if x.get("state")}),
             "crop_groups": groups, "items": out, "_source": "catalog"}
 
 

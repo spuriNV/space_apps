@@ -450,7 +450,7 @@ def main():
     rng = random.Random(a.seed)
     h = Http()
     prev = json.loads(OUT.read_text())["fields"] if OUT.exists() else []
-    keep = [p for p in prev if a.only and p["region"] != a.only]
+    keep = [p for p in prev if (a.only and p["region"] != a.only) or p["region"] not in ("ca", "bc")]
     taken = [tuple(p["pt"]) for p in keep]
     new = []
     if a.only in (None, "ca"):

@@ -4,7 +4,7 @@
 import type { Calendar, DataGap, FieldEvent, Location, RotationStrategy, WaterOrder } from '../../types';
 import { linkOf } from '../../types';
 import { BARE_DEF, observedBare, usuallyBareMonths } from '../../bare';
-import type { ProvMap, Prov } from '../../api';
+import { sectionGap, type ProvMap, type Prov } from '../../api';
 import { SOIL_COLOR, dateToT, fmtDate, haToAc, yearOf, dekadOf } from '../../lib';
 import { t, tx, isEs, locale } from '../../i18n';
 import Icon from '../Icons';
@@ -15,11 +15,11 @@ export const stateFieldNo = (l: Location) => fieldCode(l).replace('DWR ', `${t('
 export const coords = (l: Location) => `${Math.abs(l.centroid.lat).toFixed(4)}° ${l.centroid.lat >= 0 ? t('ui.dir.N') : t('ui.dir.S')}, ${Math.abs(l.centroid.lon).toFixed(4)}° ${l.centroid.lon < 0 ? t('ui.dir.W') : t('ui.dir.E')}`;
 export const county = (l: Location) => l.county_name ?? l.county ?? (l.id === 'car_colusa_rice' ? 'Colusa' : 'Kings');
 /** "Kings County" in California; "Columbia-Shuswap, BC" (a regional district) in British Columbia. */
-export const place = (l: Location) => (l.spot ? spotPlace(l) : l.region === 'bc' ? `${county(l)}, BC` : t('ui.place.county', { name: county(l) }));
+export const place = (l: Location) => (l.spot ? spotPlace(l) : l.region === 'bc' ? `${county(l)}, BC` : `${t('ui.place.county', { name: county(l) })}${l.state_code && l.state_code !== 'CA' ? `, ${l.state_code}` : ''}`);
 /** A tapped spot's place: its county (and state outside California), or the coordinates when no US county was found. */
 const spotPlace = (l: Location) => (l.region === 'bc'
   ? `${(l as { regional_district?: string | null }).regional_district || l.county_name || t('ui.place.bc')}, BC`
-  : l.county_name ? `${t('ui.place.county', { name: l.county_name })}${l.state_code && l.state_code !== 'CA' ? `, ${l.state_code}` : ''}` : l.spot?.state === 'ready' ? t('ui.place.outside') : t('ui.place.finding'));
+  : l.county_name ? `${t('ui.place.county', { name: l.county_name })}${l.state_code && l.state_code !== 'CA' ? `, ${l.state_code}` : ''}` : l.spot?.state === 'ready' ? (l.state_code ?? t('ui.place.outside')) : t('ui.place.finding'));
 /** The weather stations behind heat, frost and station rain. */
 export const stationsName = (l: Location) => (l.region === 'bc' ? t('ui.stations.bc') : t('ui.stations.ca'));
 /** The yearly crop map. */
@@ -227,6 +227,8 @@ export const orderText = (o: WaterOrder) => o.kind === 'rescission' ? t('ui.orde
 export function WaterLine({ loc }: { loc: Location }) {
   const w = loc.water;
   const wc = loc.water_context;
+  const gap = sectionGap(loc);
+  if (gap) return <small className="na-line">Not available here. {gap}</small>;
   if (loc.region === 'bc') {
     // BC: no water district or groundwater basin; the watershed and the Province's irrigation orders instead
     if (!wc) return <small className="na-line">{t('ui.water.nows')}</small>;
