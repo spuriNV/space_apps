@@ -18,6 +18,10 @@ settings:
     SWIFT_STRICT_CONCURRENCY: complete
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
+packages:
+  MapLibre:
+    url: https://github.com/maplibre/maplibre-gl-native-distribution
+    from: 7.0.0
 targets:
   CropLytics:
     type: application
@@ -35,6 +39,9 @@ targets:
       - path: CropLytics/Resources/Fixtures
         type: folder
         buildPhase: resources
+    dependencies:
+      - package: MapLibre
+        product: MapLibre
     info:
       path: CropLytics/Info.plist
       properties:

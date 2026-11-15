@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04CF8E37F949E9FEEB852501 /* MapLibre in Frameworks */ = {isa = PBXBuildFile; productRef = 740AB663BB8C346A78282A4B /* MapLibre */; };
 		075B518AC40E44283B9998CC /* YearPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 145B8A6E1560C4090B51FEF3 /* YearPanel.swift */; };
 		0CE45865EDE3810C1B6F6B80 /* LibreFranklin-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5901EBA931C36BFBAC8A3033 /* LibreFranklin-Regular.ttf */; };
 		1044A18BF289633B5EDF16D0 /* ServerStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D661431803F367635911C1 /* ServerStatus.swift */; };
@@ -15,6 +16,7 @@
 		1AC542D02AAEC66236AD38EC /* SeasonCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F234A2C0EC457E2576DACBC /* SeasonCalendar.swift */; };
 		215E178FB00543A73FF2C255 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2B9303D86A4D421B28925819 /* PrivacyInfo.xcprivacy */; };
 		24CFBBD0013704AB58FD6E71 /* FieldNaming.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3677002700C2232B7A7F038 /* FieldNaming.swift */; };
+		25687E80B3A0C87AE544FC9E /* MapPinchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02299C5E48A3F2B89EB91F5 /* MapPinchUITests.swift */; };
 		273D66BB26A48E73A9518808 /* Charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132E32F8192EEF4FF140BA25 /* Charts.swift */; };
 		3326B1F972B28987EE1BF3DC /* BCCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22882C4307E5AAB8083C9653 /* BCCards.swift */; };
 		34E096E398683939420956AB /* LibreFranklin-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = D561ACF6B0D6AFDF5898B08A /* LibreFranklin-OFL.txt */; };
@@ -30,6 +32,7 @@
 		5F680AB9D409051F49312FF2 /* ViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE62B6FE8846F0DCDA5C3317 /* ViewModelTests.swift */; };
 		5F8AE1BF7E3B527A7565631D /* LibreFranklin-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 87154FFCAEC0F687C2626E6C /* LibreFranklin-Bold.ttf */; };
 		6186D708FB203B37D1B02F55 /* FieldSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFE6444907EC6356935176A /* FieldSession.swift */; };
+		6399E76800C6A01C79EECC2F /* MapLibreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C85B9151F7DF2CA93E3156A9 /* MapLibreView.swift */; };
 		6534B45FE4F07FA6271EB5F1 /* Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB21AD3395FC56977897D65 /* Presentation.swift */; };
 		6E506A9E976150C3D8551599 /* ThumbnailStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EF804917F52503492B439F9 /* ThumbnailStore.swift */; };
 		7B890EE0472B793CAA539ABC /* BottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23A627ED6111E266C0B62852 /* BottomSheet.swift */; };
@@ -52,11 +55,12 @@
 		B34C2C8E8B5A62B54577FC5D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C99416C5592951B01BDD301 /* Theme.swift */; };
 		B6847FE88A8C6061CFC963FA /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF977283E110F05B33D12BCB /* Typography.swift */; };
 		B9C7F53768ED23121711E072 /* ZillaSlab-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7A2471E56234549FADE5A1A3 /* ZillaSlab-SemiBold.ttf */; };
+		B9CD433E29671053A0A7F857 /* Map3DTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB4646A1AC02FBD5DE4828E /* Map3DTests.swift */; };
 		BB7F01EE404A02E422F072D3 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ED624D14D2E9189670A56CF /* Endpoint.swift */; };
 		C07FE86CEE03F96A54460FAB /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D544820F2F783A70737F8604 /* APIClient.swift */; };
 		C137801FC24882095368EAF1 /* AppIcon60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 23C685CFCC00607D80F715EE /* AppIcon60x60@3x.png */; };
-		C86BAC9FC1609E1EEF1B76B1 /* DrillDownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA688D49CCA7AE023A210AE /* DrillDownView.swift */; };
 		C9B9978BC4269D2AFEDE9B3C /* RepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C3B8526264CE3139D850AEE /* RepositoryTests.swift */; };
+		CFBD069CF8038C3B39D5CCED /* Map3D.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF40A2CFD44935814C83647B /* Map3D.swift */; };
 		D08FC399E6AFA2BC4317F0B5 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC744AA985E35DCCECD2483A /* AppError.swift */; };
 		D31E9C5EBB4C83D31620529E /* LoadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38930ED446ED35BB98FDF8 /* LoadState.swift */; };
 		D687AF22A25F0A62DCB53E6A /* FieldNowBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DF95C62D4FACFF950B6AFC /* FieldNowBuilder.swift */; };
@@ -66,6 +70,7 @@
 		ECAAF95431840D0DC7FFC8CF /* APIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B7416BCAE9863EBC231716 /* APIClientTests.swift */; };
 		ECAD5D327DC49CFB93E156A7 /* Chrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8434768DEAAEF2088ED51556 /* Chrome.swift */; };
 		EE63615A13D9CFD79E8CEC5A /* WaterLimitStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDB1042C707D9F25D29C62E /* WaterLimitStore.swift */; };
+		F3C158CDE686C8788B1DCAB5 /* MapStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A387950DB5A9A34AFEBE1AA1 /* MapStyle.swift */; };
 		F56745C087546711EF91180D /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60512A3BDB542D44CD544487 /* AppModel.swift */; };
 		F602A194DF40759DEF901D2B /* FieldRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00BEFDF4E6009E2BB5A5132 /* FieldRepository.swift */; };
 		F8167D785B7CAC74DD004749 /* DomainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591102160C12344976BB3437 /* DomainTests.swift */; };
@@ -124,6 +129,7 @@
 		701DC4D82F7E2350765C554A /* SourcedNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourcedNumber.swift; sourceTree = "<group>"; };
 		72FF753AD8CDF1437C18328E /* CropLytics.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CropLytics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A2471E56234549FADE5A1A3 /* ZillaSlab-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ZillaSlab-SemiBold.ttf"; sourceTree = "<group>"; };
+		7CB4646A1AC02FBD5DE4828E /* Map3DTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map3DTests.swift; sourceTree = "<group>"; };
 		8434768DEAAEF2088ED51556 /* Chrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chrome.swift; sourceTree = "<group>"; };
 		87154FFCAEC0F687C2626E6C /* LibreFranklin-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibreFranklin-Bold.ttf"; sourceTree = "<group>"; };
 		8BC49039B62CB61C0C651133 /* SummaryPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryPage.swift; sourceTree = "<group>"; };
@@ -131,18 +137,20 @@
 		8D54B970BD42650A3BBC790C /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		9C3B8526264CE3139D850AEE /* RepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryTests.swift; sourceTree = "<group>"; };
 		9D3CDAFF6A13B215543B5519 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A02299C5E48A3F2B89EB91F5 /* MapPinchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPinchUITests.swift; sourceTree = "<group>"; };
 		A3677002700C2232B7A7F038 /* FieldNaming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNaming.swift; sourceTree = "<group>"; };
+		A387950DB5A9A34AFEBE1AA1 /* MapStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapStyle.swift; sourceTree = "<group>"; };
 		AD5D08B9A4F85038E752D134 /* MoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreData.swift; sourceTree = "<group>"; };
 		ADDB1042C707D9F25D29C62E /* WaterLimitStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterLimitStore.swift; sourceTree = "<group>"; };
 		AE62B6FE8846F0DCDA5C3317 /* ViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelTests.swift; sourceTree = "<group>"; };
 		B00BEFDF4E6009E2BB5A5132 /* FieldRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldRepository.swift; sourceTree = "<group>"; };
 		B15895FBF8AF6041A14F6A61 /* PickerPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerPanel.swift; sourceTree = "<group>"; };
 		BC744AA985E35DCCECD2483A /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
-		BDA688D49CCA7AE023A210AE /* DrillDownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrillDownView.swift; sourceTree = "<group>"; };
 		BE38930ED446ED35BB98FDF8 /* LoadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadState.swift; sourceTree = "<group>"; };
 		BF977283E110F05B33D12BCB /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		C0F5AA96335C3EB5862EDC09 /* Fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fixtures; path = CropLytics/Resources/Fixtures; sourceTree = SOURCE_ROOT; };
 		C12F202C24E3613F7EA825E0 /* Sheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheets.swift; sourceTree = "<group>"; };
+		C85B9151F7DF2CA93E3156A9 /* MapLibreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLibreView.swift; sourceTree = "<group>"; };
 		CC957B1F81E2066A43C7213C /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		CDDAD9A7427156425B974781 /* DailyAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyAnalysis.swift; sourceTree = "<group>"; };
 		D281F4E7082E74D2CFA0B2DD /* ZillaSlab-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ZillaSlab-OFL.txt"; sourceTree = "<group>"; };
@@ -156,11 +164,23 @@
 		E3CF78CE816DB7B2C0881677 /* DetailSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailSections.swift; sourceTree = "<group>"; };
 		E69951941A54F7FF9ED09473 /* Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls.swift; sourceTree = "<group>"; };
 		E935222C0E699FE3C1B9162B /* ComparePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparePanel.swift; sourceTree = "<group>"; };
+		EF40A2CFD44935814C83647B /* Map3D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map3D.swift; sourceTree = "<group>"; };
 		EFA8CA59461CE26FF1DF0303 /* CropLyticsUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CropLyticsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F164048270CF9DB1153AA5EF /* Outlook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outlook.swift; sourceTree = "<group>"; };
 		F3AEE1EBABDB1A927487A614 /* LibreFranklin-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibreFranklin-SemiBold.ttf"; sourceTree = "<group>"; };
 		FAD35DDB70193ABAB7278921 /* ZillaSlab-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ZillaSlab-Medium.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BB68EF2BBD00B8AC3534F388 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04CF8E37F949E9FEEB852501 /* MapLibre in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		0050CBFF17CECB308DA76933 /* Print */ = {
@@ -224,6 +244,7 @@
 			isa = PBXGroup;
 			children = (
 				63054F6258BAC9E2CE7F29BC /* CropLyticsUITests.swift */,
+				A02299C5E48A3F2B89EB91F5 /* MapPinchUITests.swift */,
 			);
 			path = CropLyticsUITests;
 			sourceTree = "<group>";
@@ -238,14 +259,6 @@
 				701DC4D82F7E2350765C554A /* SourcedNumber.swift */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		3CD7E9BF3D16641342311A95 /* DrillDown */ = {
-			isa = PBXGroup;
-			children = (
-				BDA688D49CCA7AE023A210AE /* DrillDownView.swift */,
-			);
-			path = DrillDown;
 			sourceTree = "<group>";
 		};
 		419C985943762DB32D2F0979 /* Compare */ = {
@@ -272,6 +285,7 @@
 			children = (
 				14B7416BCAE9863EBC231716 /* APIClientTests.swift */,
 				591102160C12344976BB3437 /* DomainTests.swift */,
+				7CB4646A1AC02FBD5DE4828E /* Map3DTests.swift */,
 				9C3B8526264CE3139D850AEE /* RepositoryTests.swift */,
 				3589558BD8E0412393CCF8D0 /* TestSupport.swift */,
 				AE62B6FE8846F0DCDA5C3317 /* ViewModelTests.swift */,
@@ -310,6 +324,8 @@
 				23A627ED6111E266C0B62852 /* BottomSheet.swift */,
 				8434768DEAAEF2088ED51556 /* Chrome.swift */,
 				1D96C65FB06965E2C3244075 /* FieldsMap.swift */,
+				C85B9151F7DF2CA93E3156A9 /* MapLibreView.swift */,
+				A387950DB5A9A34AFEBE1AA1 /* MapStyle.swift */,
 				C12F202C24E3613F7EA825E0 /* Sheets.swift */,
 			);
 			path = Shell;
@@ -323,6 +339,7 @@
 				CDDAD9A7427156425B974781 /* DailyAnalysis.swift */,
 				A3677002700C2232B7A7F038 /* FieldNaming.swift */,
 				63DF95C62D4FACFF950B6AFC /* FieldNowBuilder.swift */,
+				EF40A2CFD44935814C83647B /* Map3D.swift */,
 				DAB21AD3395FC56977897D65 /* Presentation.swift */,
 				6F234A2C0EC457E2576DACBC /* SeasonCalendar.swift */,
 				8D54B970BD42650A3BBC790C /* Timeline.swift */,
@@ -345,7 +362,6 @@
 			children = (
 				78E0257E101393EC5382395E /* ComingSeason */,
 				419C985943762DB32D2F0979 /* Compare */,
-				3CD7E9BF3D16641342311A95 /* DrillDown */,
 				305BE0B0AC4B2AD32EFCE232 /* FieldNow */,
 				208426D56551BBEB1BD7072B /* Picker */,
 				0050CBFF17CECB308DA76933 /* Print */,
@@ -464,6 +480,7 @@
 			buildPhases = (
 				F2B67F17E86A4119AB1F0AE5 /* Sources */,
 				EF9A9DE7461C545DA8DC2B2E /* Resources */,
+				BB68EF2BBD00B8AC3534F388 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -471,6 +488,7 @@
 			);
 			name = CropLytics;
 			packageProductDependencies = (
+				740AB663BB8C346A78282A4B /* MapLibre */,
 			);
 			productName = CropLytics;
 			productReference = 72FF753AD8CDF1437C18328E /* CropLytics.app */;
@@ -520,6 +538,9 @@
 			);
 			mainGroup = C419D9E1FC824CE27CBA545C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D10EB804857344036E18F353 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CB07D4150F54113D747B9843 /* Products */;
 			projectDirPath = "";
@@ -560,6 +581,7 @@
 			files = (
 				ECAAF95431840D0DC7FFC8CF /* APIClientTests.swift in Sources */,
 				F8167D785B7CAC74DD004749 /* DomainTests.swift in Sources */,
+				B9CD433E29671053A0A7F857 /* Map3DTests.swift in Sources */,
 				C9B9978BC4269D2AFEDE9B3C /* RepositoryTests.swift in Sources */,
 				7D622A6C3536FCBEAE5497BA /* TestSupport.swift in Sources */,
 				5F680AB9D409051F49312FF2 /* ViewModelTests.swift in Sources */,
@@ -571,6 +593,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AE92140B9B4C4204571CB8C0 /* CropLyticsUITests.swift in Sources */,
+				25687E80B3A0C87AE544FC9E /* MapPinchUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -594,7 +617,6 @@
 				FA4321274633DC4A3351D34C /* CropLyticsApp.swift in Sources */,
 				490CF38328645CD7583DDA6D /* DailyAnalysis.swift in Sources */,
 				4A61FD4801750483D80668C5 /* DetailSections.swift in Sources */,
-				C86BAC9FC1609E1EEF1B76B1 /* DrillDownView.swift in Sources */,
 				BB7F01EE404A02E422F072D3 /* Endpoint.swift in Sources */,
 				81917E3D67237725D88BCAF3 /* FieldData.swift in Sources */,
 				9CA248452F8C507ADC942552 /* FieldLocation.swift in Sources */,
@@ -605,6 +627,9 @@
 				6186D708FB203B37D1B02F55 /* FieldSession.swift in Sources */,
 				FCE3F37997D8C22BEEDD60AA /* FieldsMap.swift in Sources */,
 				D31E9C5EBB4C83D31620529E /* LoadState.swift in Sources */,
+				CFBD069CF8038C3B39D5CCED /* Map3D.swift in Sources */,
+				6399E76800C6A01C79EECC2F /* MapLibreView.swift in Sources */,
+				F3C158CDE686C8788B1DCAB5 /* MapStyle.swift in Sources */,
 				D981228AE53AD1D68FBD554B /* MoreData.swift in Sources */,
 				FACADCAB0E205A9BC6CD0A2B /* Outlook.swift in Sources */,
 				51BCC567EAC0060F911206E8 /* PickerPanel.swift in Sources */,
@@ -920,6 +945,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D10EB804857344036E18F353 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maplibre/maplibre-gl-native-distribution";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		740AB663BB8C346A78282A4B /* MapLibre */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D10EB804857344036E18F353 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
+			productName = MapLibre;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D1D66ECE0080BE7AA6A56D90 /* Project object */;
 }

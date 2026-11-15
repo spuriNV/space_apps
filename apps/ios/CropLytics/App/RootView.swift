@@ -45,9 +45,6 @@ struct RootView: View {
         .sheet(isPresented: $app.dateOpen) { DateSheet().presentationDetents([.medium, .large]).presentationCornerRadius(Radius.xl) }
         .sheet(isPresented: $app.layersOpen) { LayersSheet().presentationDetents([.medium]).presentationCornerRadius(Radius.xl) }
         .sheet(isPresented: $app.sourcesOpen) { SourcesSheet(bc: app.selectedField?.isBC ?? false).presentationDetents([.large]).presentationCornerRadius(Radius.xl) }
-        .fullScreenCover(isPresented: $app.drillOpen) {
-            if let s = app.session { DrillDownView(session: s) }
-        }
     }
 }
 
