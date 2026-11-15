@@ -139,7 +139,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       map.addLayer({ id: 'rain-fill', type: 'fill', source: 'rain', layout: { visibility: 'none' }, paint: { 'fill-color': RAIN_COLOR as unknown as maplibregl.ExpressionSpecification, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 5, 0.72, 11, 0.5, 14, 0.3] } });
       map.addLayer({ id: 'rain-line', type: 'line', source: 'rain', layout: { visibility: 'none' }, paint: { 'line-color': 'rgba(255,255,255,0.45)', 'line-width': 0.6 } });
       map.addSource('drought', { type: 'geojson', data: fc() });
-      map.addLayer({ id: 'drought-fill', type: 'fill', source: 'drought', layout: { visibility: 'none' }, paint: { 'fill-color': DROUGHT_COLOR as unknown as maplibregl.ExpressionSpecification, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 5, 0.7, 11, 0.45, 14, 0.28] } });
+      map.addLayer({ id: 'drought-fill', type: 'fill', source: 'drought', layout: { visibility: 'none' }, paint: { 'fill-color': DROUGHT_COLOR as unknown as maplibregl.ExpressionSpecification, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.62, 11, 0.5, 14, 0.35] } });
       map.addLayer({ id: 'drought-line', type: 'line', source: 'drought', layout: { visibility: 'none' }, paint: { 'line-color': 'rgba(255,255,255,0.4)', 'line-width': 0.6 } });
       // hover readout (Windy's picker): the rain band or drought category under the pointer, desktop only
       const tip = new maplibregl.Popup({ closeButton: false, closeOnClick: false, className: 'wx-tip', offset: 14 });
@@ -418,8 +418,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const map = mapRef.current; if (!ready || !map) return;
     const reg = p.droughtRegion ?? null;
     const show = (id: string, on: boolean) => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none'); };
-    show('drought-ca', reg === 'na'); show('drought-gl', reg === 'gl');
-    const op = ['interpolate', ['linear'], ['zoom'], 5, 0.75, 11, 0.55, 14, 0.4] as unknown as maplibregl.ExpressionSpecification;
+    show('drought-ca', reg === 'na'); show('drought-gl', reg !== null);
+    const op = ['interpolate', ['linear'], ['zoom'], 3, 0.62, 11, 0.5, 14, 0.35] as unknown as maplibregl.ExpressionSpecification;
     if (reg === 'na' && !map.getSource('drought-ca')) {
       const CDM = 'https://agriculture.canada.ca/imagery-images/rest/services/canadian_drought_monitor/ImageServer';
       const add = (time: number | null) => {
@@ -429,10 +429,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       };
       fetch(`${CDM}/query?where=1%3D1&outFields=dateEnd&orderByFields=dateEnd+desc&resultRecordCount=1&returnGeometry=false&f=json`).then((r) => r.json()).then((j) => add(j?.features?.[0]?.attributes?.dateEnd ?? null)).catch(() => add(null));
     }
-    if (reg === 'gl' && !map.getSource('drought-gl')) {
+    if (reg !== null && !map.getSource('drought-gl')) { // NASA soil moisture under everything, so no part of the world is blank; the monitors sit on top
       const d = new Date(Date.now() - 5 * 86400e3).toISOString().slice(0, 10);
       map.addSource('drought-gl', { type: 'raster', tileSize: 256, maxzoom: 6, attribution: 'Soil moisture: NASA SMAP L4 via GIBS', tiles: [`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/SMAP_L4_Analyzed_Root_Zone_Soil_Moisture/default/${d}/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png`] });
-      map.addLayer({ id: 'drought-gl', type: 'raster', source: 'drought-gl', paint: { 'raster-opacity': op } }, 'rain-fill');
+      map.addLayer({ id: 'drought-gl', type: 'raster', source: 'drought-gl', paint: { 'raster-opacity': 0.55 } }, 'rain-fill');
     }
   }, [ready, p.droughtRegion]);
 

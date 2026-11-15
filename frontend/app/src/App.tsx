@@ -597,7 +597,6 @@ export default function App() {
         </div>
       )}
 
-      {!drawing && !listOpen && <button className="list-btn btn btn-secondary" onClick={() => { announce('draw'); setListOpen(true); }} data-testid="list-btn" style={{ right: 16 + rightInset + 176 }}><Icon name="fields" size={18} />List</button>}
       {listOpen && <MapList locations={locations} catalog={catalog?.items ?? []} reserves={reserveRows} onClose={() => setListOpen(false)}
         onField={(id) => { setListOpen(false); select(id); }} onFarm={(it) => { setListOpen(false); pickCatalog(it); }}
         onReserve={(r) => { setListOpen(false); map.current?.flyTo(r.lat, r.lon, 11); }} onFind={(lat, lon) => { setListOpen(false); tapSpot(lat, lon); }} />}
@@ -635,7 +634,13 @@ export default function App() {
         </div>
       </div>
 
-      {!drawing && <WeatherControl on={wxOn} setOn={setWxOn} layer={wxLayer} setLayer={setWxLayer} mode={rainMode} setMode={setRainMode} days={rainDays} setDays={setRainDays} rain={rainNow ?? (rainHourly ? steps.find(Boolean) ?? null : null)} drought={droughtNow} region={dRegion} state={rainState} right={16 + rightInset} />}
+      {!drawing && (
+        <div className="map-tools" style={{ right: 16 + rightInset }} role="toolbar" aria-label="Map tools">
+          {!listOpen && <button className="map-tool" onClick={() => { announce('draw'); setListOpen(true); }} data-testid="list-btn" title="List of fields" aria-label="List of fields"><Icon name="fields" size={18} /><span>List</span></button>}
+          <button className="map-tool" onClick={() => draw.current?.start()} data-testid="draw-btn" title="Draw a field" aria-label="Draw a field"><Icon name="draw" size={18} /><span>Draw a field</span></button>
+          <WeatherControl on={wxOn} setOn={setWxOn} layer={wxLayer} setLayer={setWxLayer} mode={rainMode} setMode={setRainMode} days={rainDays} setDays={setRainDays} rain={rainNow ?? (rainHourly ? steps.find(Boolean) ?? null : null)} drought={droughtNow} region={dRegion} state={rainState} retry={() => { api.retryDroughtNow().then(setDrought); setDrought(undefined); }} />
+        </div>
+      )}
       {rainHourly && !sim && <RainTimeline step={rainStep} setStep={setRainStep} playing={rainPlaying} setPlaying={setRainPlaying} steps={steps} loaded={stepsDone} left={phone ? '50%' : `calc(50% + ${(leftInset - rightInset) / 2}px)`} />}
       <DrawLayer ref={draw} getMap={() => map.current?.getMap() ?? null} mf={mf} rightInset={rightInset} onActive={(on, hideId) => { if (on) announce('draw'); setDrawing(on ? { hideId: hideId ?? null } : null); }}
         onSubmitting={onSubmitting} onSaved={onSaved} onDeleted={(id) => { if (selectedId === id) { setSelectedId(null); setPanel('none'); } }} onOpenShared={openMine} />

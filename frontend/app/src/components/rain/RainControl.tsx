@@ -38,18 +38,19 @@ export const stepWords = (f: RainForecast | null) => { const a = utc(f?.valid_fr
 export function WeatherControl(p: {
   on: boolean; setOn: (v: boolean) => void; layer: WxLayer; setLayer: (l: WxLayer) => void;
   mode: RainMode; setMode: (m: RainMode) => void; days: RainDays; setDays: (d: RainDays) => void;
-  rain: RainForecast | null; drought: DroughtNow | null; region: 'na' | 'gl'; state: 'idle' | 'loading' | 'ready' | 'error'; right: number;
+  rain: RainForecast | null; drought: DroughtNow | null; region: 'na' | 'gl'; state: 'idle' | 'loading' | 'ready' | 'error'; retry: () => void;
 }) {
   const issued = utc(p.rain?.issued), to = utc(p.rain?.valid_to);
   const last = to ? new Date(to.getTime() - 1) : null; // valid_to is midnight UTC: the day before, locally
   return (
-    <div className="rain-ctl" style={{ right: p.right }} data-testid="rain-ctl">
-      <button className={`rain-btn ${p.on ? 'on' : ''}`} onClick={() => p.setOn(!p.on)} aria-pressed={p.on} aria-expanded={p.on} data-testid="rain-btn">
-        <Icon name="drop" size={18} />Rain &amp; drought
+    <div className="rain-ctl" data-testid="rain-ctl">
+      <button className={`map-tool rain-btn ${p.on ? 'on' : ''}`} onClick={() => p.setOn(!p.on)} aria-pressed={p.on} aria-expanded={p.on} aria-label="Rain and drought" title="Rain and drought" data-testid="rain-btn">
+        <Icon name="drop" size={18} /><span>Rain &amp; drought</span>
       </button>
       {p.on && (
-        <section className="rain-card" aria-label="Rain and drought map" data-testid="rain-card">
-          <Seg label="Map layer" value={p.layer} onChange={p.setLayer} options={[{ v: 'rain', label: 'Rain forecast', testid: 'wx-rain' }, { v: 'drought', label: 'Drought now', testid: 'wx-drought' }, { v: 'past', label: 'Past rain', testid: 'wx-past' }]} />
+        <section className="rain-card" aria-label="Rain and drought map" data-testid="rain-card" onKeyDown={(e) => { if (e.key === 'Escape') p.setOn(false); }}>
+          <button className="rain-x" onClick={() => p.setOn(false)} aria-label="Close rain and drought" title="Close" data-testid="rain-close"><Icon name="close" size={18} /></button>
+          <Seg className="rain-layers" label="Map layer" value={p.layer} onChange={p.setLayer} options={[{ v: 'rain', label: 'Forecast', testid: 'wx-rain' }, { v: 'drought', label: 'Drought', testid: 'wx-drought' }, { v: 'past', label: 'Past rain', testid: 'wx-past' }]} />
           {p.layer === 'rain' ? <>
             <div className="rain-row">
               <Seg className="small" label="How to show rain" value={p.mode} onChange={p.setMode} options={[{ v: 'total', label: 'Total', testid: 'rain-total' }, { v: 'hourly', label: 'Hour by hour', testid: 'rain-hourly' }]} />
@@ -72,7 +73,7 @@ export function WeatherControl(p: {
               {DROUGHT_STEPS.map((s) => <li key={s.dm}><i style={{ background: s.color }} /><b>{s.label}</b><span>{s.name}{s.dm > 0 ? ' drought' : ''}</span></li>)}
             </ol>
             <p className="rain-src" role="status">
-              {p.state === 'loading' ? 'Loading the Drought Monitor map…' : <>United States: U.S. Drought Monitor{p.drought?.map_date ? `, map of ${when(new Date(p.drought.map_date + 'T12:00:00'), { month: 'short', day: 'numeric' })}` : ' (not reachable right now)'}, updated Thursdays. Canada: Canadian Drought Monitor (Agriculture and Agri-Food Canada), updated monthly. Same D0 to D4 scale. No colour means no drought.</>}
+              {p.state === 'loading' ? 'Loading the Drought Monitor map…' : p.state === 'error' ? <>The Drought Monitor is not reachable right now. <button className="rain-retry" onClick={p.retry} data-testid="drought-retry">Try again</button></> : <>United States: U.S. Drought Monitor{p.drought?.map_date ? `, map of ${when(new Date(p.drought.map_date + 'T12:00:00'), { month: 'short', day: 'numeric' })}` : ' (not reachable right now)'}, updated Thursdays. Canada: Canadian Drought Monitor (Agriculture and Agri-Food Canada), updated monthly. Same D0 to D4 scale. No colour means no drought.</>}
             </p></> : <>
             <p className="rain-src">Yellow and orange are drier soil, green and blue are wetter. NASA SMAP root-zone soil moisture, about 9 km pixels, a few days behind. Pan to North America for the official drought monitors.</p>
             <p className="rain-src">Source: NASA SMAP L4 via GIBS.</p></>}

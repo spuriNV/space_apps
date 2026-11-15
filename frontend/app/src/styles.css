@@ -1984,8 +1984,6 @@ body { background: var(--app-bg); }
 .mi-switch input:checked + .mi-track { background: var(--accent); border-color: var(--accent); }
 .mi-switch input:checked + .mi-track::after { transform: translateX(20px); background: #fff; }
 .mi-switch input:focus-visible + .mi-track { box-shadow: var(--focus-ring); }
-.list-btn { position: absolute; top: calc(var(--bar-h) + 3px + var(--s-4)); z-index: 16; min-height: 48px; gap: var(--s-2); }
-@media (max-width: 640px) { .list-btn { top: calc(var(--bar-h) + 3px + var(--s-3)); right: 184px !important; } }
 .map-list { position: absolute; z-index: 70; top: calc(var(--bar-h) + 3px + var(--s-3)); left: var(--s-3); width: min(520px, calc(100% - 24px)); bottom: var(--s-3); background: var(--panel); border-radius: var(--r-lg); box-shadow: var(--e3); display: flex; flex-direction: column; padding: var(--s-4); gap: var(--s-2); overflow: hidden; }
 @media (max-width: 640px) { .map-list { left: 0; right: 0; width: auto; bottom: var(--tabs-h); top: calc(var(--bar-h) + 3px); border-radius: 0; } }
 .map-list header { display: flex; justify-content: space-between; align-items: center; }
@@ -2089,13 +2087,11 @@ html[data-outdoor="1"] .btn small, html[data-outdoor="1"] .btn-primary small { c
 @media (min-width: 641px) { .tb-tour { display: none; } }
 
 /* ---------- Rain forecast on the map (components/rain/RainControl.tsx) ---------- */
-.rain-ctl { position: absolute; top: calc(var(--bar-h) + 3px + var(--s-4) + var(--h-btn) + var(--s-2)); z-index: 16; display: flex; flex-direction: column; align-items: flex-end; gap: var(--s-2); transition: right 0.2s; }
-.rain-btn { display: inline-flex; align-items: center; gap: var(--s-2); min-height: var(--h-btn); padding: 0 var(--s-5) 0 var(--s-4); border-radius: var(--r-full); background: var(--panel); color: var(--text); box-shadow: var(--e2);
-  font: 600 var(--fs-body)/1 var(--font-ui); transition: background-color var(--dur-1) var(--ease-std), transform 160ms var(--ease-enter); }
+.rain-ctl { position: relative; display: flex; }
 .rain-btn svg { color: #2a6fbf; }
 .rain-btn:active { transform: scale(0.97); }
 .rain-btn.on { background: var(--accent-container); color: var(--on-accent-container); }
-.rain-card { width: 300px; padding: var(--s-4); border-radius: var(--r-lg); background: var(--panel); box-shadow: var(--e3); animation: pop-in var(--dur-2) var(--ease-enter) backwards; transform-origin: top right; }
+.rain-card { position: absolute; top: calc(100% + var(--s-2)); right: 0; width: 320px; max-width: calc(100vw - 32px); max-height: calc(100dvh - var(--bar-h) - 3px - var(--s-4) - 48px - var(--s-2) - 372px); min-height: 220px; overflow-y: auto; overscroll-behavior: contain; z-index: 2; padding: var(--s-4); border-radius: var(--r-lg); background: var(--panel); box-shadow: var(--e3); animation: pop-in var(--dur-2) var(--ease-enter) backwards; transform-origin: top right; }
 .rain-card .seg { width: 100%; }
 .rain-title { margin: var(--s-3) 0 var(--s-2); font-weight: 600; font-size: var(--fs-small); }
 .rain-title small { display: block; font-weight: 400; color: var(--muted); }
@@ -2106,11 +2102,6 @@ html[data-outdoor="1"] .btn small, html[data-outdoor="1"] .btn-primary small { c
 .rain-legend span { font-size: var(--fs-fine); color: var(--text-2); font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
 .rain-src { margin: var(--s-3) 0 0; font-size: var(--fs-fine); color: var(--muted); line-height: 1.4; }
 @media (hover: hover) and (pointer: fine) { .rain-btn:hover:not(.on) { background: var(--panel-2); } }
-@media (max-width: 640px) {
-  .rain-ctl { top: calc(var(--bar-h) + 3px + var(--s-3) + var(--h-btn) + var(--s-2)); right: var(--s-3) !important; }
-  .rain-card { width: min(300px, calc(100vw - 24px)); }
-}
-.rain-card > .seg { width: 100%; }
 .rain-row { margin-top: var(--s-3); margin-bottom: var(--s-2); }
 .rain-legend.drought { grid-template-columns: repeat(5, 1fr); }
 .rain-legend.drought span { white-space: normal; line-height: 1.25; }
@@ -2133,19 +2124,8 @@ html[data-outdoor="1"] .btn small, html[data-outdoor="1"] .btn-primary small { c
   .rain-tl { bottom: calc(var(--tabs-h) + var(--s-2)); width: calc(100vw - 16px); min-width: 0; border-radius: var(--r-lg); }
 }
 @media (max-width: 640px) {
-  /* a round drop icon in the space the drill hint leaves on the right; the text stays the accessible name */
-  .rain-btn { width: 44px; min-height: 44px; padding: 0; justify-content: center; font-size: 0; gap: 0; }
-  .rain-btn svg { width: 20px; height: 20px; }
-}
-.drought-legend { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
-.drought-legend li { display: grid; grid-template-columns: 28px 28px 1fr; align-items: center; gap: var(--s-2); font-size: var(--fs-small); }
-.drought-legend i { height: 14px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(25, 28, 22, 0.18); }
-.drought-legend b { font-variant-numeric: tabular-nums; }
-.drought-legend span { color: var(--text-2); }
-@media (max-width: 640px) {
   /* while the rain & drought card is open, the step sheet drops to a peek so the map, card and timeline show */
   .app.wx-open .fpanel { --sheet-off: calc(100% - 96px) !important; }
-  .app.wx-open .rain-card { position: relative; z-index: 24; }
   .rain-tl { z-index: 22; }
   .rain-card .rain-title small { display: none; }
 }
@@ -2309,3 +2289,37 @@ html[data-bigtext="1"] .next-step b, html[data-bigtext="1"] .next-step small { w
   html[data-bigtext="1"] .tb-datepop { position: static; width: 100%; margin-top: 6px; box-shadow: none; }
 }
 html[data-bigtext="1"] .step-foot .btn { border-radius: var(--r-lg); }
+
+
+/* ---------- one toolbar for the floating map buttons: List, Draw a field, Rain & drought ---------- */
+.map-tools { position: absolute; top: calc(var(--bar-h) + 3px + var(--s-4)); z-index: 16; display: flex; align-items: center; justify-content: flex-end; gap: var(--s-2); transition: right 0.2s; }
+.map-tool { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); height: 48px; min-width: 48px; padding: 0 var(--s-4); border-radius: var(--r-full); background: var(--panel); color: var(--text); box-shadow: var(--e2);
+  font: 600 var(--fs-body)/1 var(--font-ui); white-space: nowrap; transition: background-color var(--dur-1) var(--ease-std), transform 160ms var(--ease-enter); }
+.map-tool svg { flex: none; color: var(--accent); }
+.map-tool.rain-btn svg { color: #2a6fbf; }
+.map-tool:active { transform: scale(0.97); background: var(--panel-2); }
+.map-tool.on { background: var(--accent-container); color: var(--on-accent-container); }
+.map-tool:focus-visible, .rain-x:focus-visible, .rain-retry:focus-visible { outline: none; box-shadow: var(--e2), var(--focus-ring); }
+@media (hover: hover) and (pointer: fine) { .map-tool:hover:not(.on) { background: var(--panel-2); } }
+.rain-card { padding-top: var(--s-4); }
+.rain-x { position: absolute; top: var(--s-2); right: var(--s-2); width: 32px; height: 32px; display: grid; place-items: center; border-radius: var(--r-full); color: var(--muted); z-index: 1; }
+.rain-x:hover { background: var(--panel-2); color: var(--text); }
+.rain-card .rain-layers { display: grid; grid-template-columns: repeat(3, 1fr); width: calc(100% - 28px); border-radius: var(--r-lg); }
+.rain-card .rain-layers button { min-width: 0; padding: 0 var(--s-2); justify-content: center; }
+.rain-card .seg.small { width: 100%; }
+.rain-card .seg.small button { flex: 1 1 0; min-width: 0; padding: 0 var(--s-2); }
+.drought-legend { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-1) var(--s-3); margin: 0; padding: 0; list-style: none; font-size: var(--fs-small); }
+.drought-legend li { display: flex; align-items: center; gap: var(--s-2); min-width: 0; }
+.drought-legend i { flex: none; width: 14px; height: 14px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(25, 28, 22, 0.25); }
+.drought-legend b { font-variant-numeric: tabular-nums; }
+.drought-legend span { color: var(--text-2); font-size: var(--fs-fine); line-height: 1.2; }
+.rain-retry { margin-left: var(--s-1); padding: var(--s-1) var(--s-3); border-radius: var(--r-full); background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.rain-card .rain-src { padding-top: var(--s-2); border-top: 1px solid var(--line-soft); }
+@media (max-width: 900px) { .map-tool span { display: none; } .map-tool { padding: 0; width: 48px; } }
+@media (max-width: 640px) {
+  .map-tools { top: calc(var(--bar-h) + 3px + var(--s-3)); right: var(--s-3) !important; }
+  .rain-ctl { position: static; }
+  .rain-card { position: fixed; left: var(--s-2); right: var(--s-2); top: calc(var(--bar-h) + 3px + var(--s-3) + 48px + var(--s-2)); bottom: auto; width: auto; max-width: none; min-height: 0; max-height: calc(100dvh - var(--bar-h) - 3px - var(--s-3) - 48px - var(--s-2) - 96px - var(--tabs-h) - var(--s-3)); z-index: 60; }
+  .rain-card .rain-layers { width: calc(100% - 40px); }
+  .drought-legend { grid-template-columns: 1fr 1fr; }
+}

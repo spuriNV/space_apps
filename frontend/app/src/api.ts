@@ -881,8 +881,20 @@ const stepCache: Record<number, Promise<RainForecast | null>> = {};
 export const getRainStep = (k: number) => (stepCache[k] ??= get(`/api/rain_forecast?step=${k}`, undefined, 40000).catch(() => { delete stepCache[k]; return null; }));
 export interface DroughtNow extends GeoJSON.FeatureCollection { map_date: string; stale?: boolean }
 let droughtP: Promise<DroughtNow | null> | null = null;
-/** U.S. Drought Monitor, current weekly map, clipped to California (backend app/rain). */
-export const getDroughtNow = () => (droughtP ??= get('/api/drought_now', undefined, 60000).catch(() => { droughtP = null; return null; }));
+/** Esri's live copy of the weekly U.S. Drought Monitor (whole country, CORS open); the backend's California clip is the fallback. */
+const USDM_URL = 'https://services9.arcgis.com/RHVPKKiFTONKtxq3/arcgis/rest/services/US_Drought_Intensity_v1/FeatureServer/3/query?where=1%3D1&outFields=dm,ddate&outSR=4326&geometryPrecision=2&maxAllowableOffset=0.02&f=geojson';
+const usdmEsri = async (): Promise<DroughtNow> => {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 10000);
+  try {
+    const r = await fetch(USDM_URL, { signal: ctl.signal }); if (!r.ok) throw new Error(String(r.status));
+    const j = await r.json(); if (!j?.features?.length) throw new Error('empty');
+    const ms = Number(j.features[0]?.properties?.ddate);
+    return { ...j, map_date: Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : '' } as DroughtNow;
+  } finally { clearTimeout(t); }
+};
+/** U.S. Drought Monitor, current weekly map. Gives up after about 10 s (the card then offers a retry). */
+export const getDroughtNow = () => (droughtP ??= usdmEsri().catch(() => get('/api/drought_now', undefined, 10000) as Promise<DroughtNow>).catch(() => { droughtP = null; return null; }));
+export const retryDroughtNow = () => { droughtP = null; return getDroughtNow(); };
 /** The forecast band at one point ("1.5 to 1.75 in"), read from NOAA's full-detail shapes. */
 export const getRainAt = (lat: number, lon: number, days: RainDays = 7): Promise<RainAt | null> => get(`/api/rain_forecast/at?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&days=${days}`, undefined, 25000).catch(() => null);
 /** NOAA times are UTC ("2026-11-15 17:54:40"). */
