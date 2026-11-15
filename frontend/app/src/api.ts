@@ -647,3 +647,23 @@ function fromOutlookFile(j: any, exAlloc: any, origin: Origin): Outlook {
   base.prov.alloc = P('outlook_alloc', 'Water allocations (Reclamation CVP table; SWP via ACWA)', origin, 'backend/outlook');
   return base;
 }
+
+// ---------- Ask CropLytics chat (backend app/chat) ----------
+export interface ChatTurn { role: 'user' | 'assistant'; content: string }
+let chatOn: Promise<boolean> | null = null;
+/** true when the API has a chat key; the Ask button hides otherwise. Cached for the session. */
+export const chatEnabled = () => (chatOn ??= get('/api/chat/status', undefined, 8000).then((b) => !!b?.enabled).catch(() => false));
+/** One question. Returns the answer, or throws an Error whose message is safe to show (the API's own wording). */
+export async function askChat(body: { question: string; history: ChatTurn[]; field_id: string | null; screen: string; date: string; water_limit?: number | null }): Promise<string> {
+  const ctl = new AbortController();
+  const h = setTimeout(() => ctl.abort(), 40000);
+  try {
+    const r = await fetch(`${API_BASE}/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl.signal });
+    const b = await r.json().catch(() => null);
+    if (!r.ok) throw new Error(typeof b?.detail === 'string' ? b.detail : 'The assistant could not answer. Please try again.');
+    return String(b?.answer ?? '');
+  } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError') throw new Error('The assistant took too long. Please try again.');
+    throw e instanceof Error ? e : new Error('The assistant could not answer. Please try again.');
+  } finally { clearTimeout(h); }
+}

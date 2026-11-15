@@ -20,3 +20,6 @@ services:
         sync: false
       - key: AMS_API_KEY
         sync: false
+      # Ask CropLytics chat (backend/api/app/chat). Without it the Ask button is hidden.
+      - key: DEEPSEEK_API_KEY
+        sync: false
