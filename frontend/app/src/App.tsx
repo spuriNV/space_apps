@@ -15,6 +15,8 @@ import RotationBrief from './components/brief/RotationBrief';
 import { BCCard, LayersDrawer } from './components/Panels';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
 import { setGlossary } from './components/ui/What';
+import { DrawLayer, type DrawHostHandle } from './components/draw/DrawLayer';
+import { DRAFT_ID, parseFieldHash, useMyFields } from './myFields';
 import { DetailCtx, useDetailState } from './components/ui/Detail';
 import { ProvList, acres, fieldName, place, type Step } from './components/ui/shared';
 
@@ -45,16 +47,23 @@ const TABS: { id: Tab; label: string; short?: string; tiny?: string }[] = [
   { id: 'brief', label: 'Print for your adviser', short: 'Print' },
 ];
 
+const noop = () => {};
+
 export default function App() {
   const [detail, setDetail] = useDetailState();
   const map = useRef<MapHandle>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const [locations, setLocations] = useState<Location[]>([]);
+  const [plainLocations, setLocations] = useState<Location[]>([]);
+  const [drawing, setDrawing] = useState<{ hideId: string | null } | null>(null); // a drawing session is open (taps and picks are off)
+  const draw = useRef<DrawHostHandle>(null);
   const [locProv, setLocProv] = useState<Record<string, api.ProvMap>>({});
   const [live, setLive] = useState<boolean | null>(null);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [bc, setBC] = useState<BCInfo | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // fields the user drew join the list: pins, outlines, switcher and the panel treat them like any other field
+  const mf = useMyFields(selectedId);
+  const locations = useMemo(() => [...plainLocations, ...mf.locs], [plainLocations, mf.locs]);
   const [data, setData] = useState<api.FieldBundle | null>(null);
   const [t, setT] = useState(TODAY_T);
   const [showEarlier, setShowEarlier] = useState(false);
@@ -95,6 +104,7 @@ export default function App() {
     api.getGlossary().then(setGlossary);
     api.getBC().then(setBC);
   }, []);
+  useEffect(() => setAllocation((a) => (mf.locs.every((l) => l.id in a) ? a : { ...a, ...Object.fromEntries(mf.locs.filter((l) => !(l.id in a)).map((l) => [l.id, l.water.allocation_input.value])) })), [mf.locs]);
   const selected = useMemo(() => locations.find((l) => l.id === selectedId) ?? null, [locations, selectedId]);
   // a real BC field replaces the old "Why not BC yet" row, pins and card
   const hasBC = locations.some(api.isBC);
@@ -110,7 +120,7 @@ export default function App() {
   useEffect(() => {
     if (!selected || live == null) { setData(null); return; }
     // a tapped spot: nothing to fetch until GET /api/analyze has answered; then only the routes that answer for spots
-    const spot = api.isSpot(selected.id);
+    const spot = api.isLite(selected.id);
     if (spot && selected.spot?.state !== 'ready') { setData(null); return; }
     let ok = true;
     setTimedOut(null);
@@ -150,7 +160,7 @@ export default function App() {
   const regional = d?.regional ?? null;
   const regionalLive: api.RegionalLive = d?.regionalLive ?? { smap: false, grace: false, soilSource: null };
   const exampleLimit = !!selected && allocation[selected.id] === api.EXAMPLE_LIMIT[selected.id];
-  const prov: api.ProvMap = { ...(selected ? locProv[selected.id] : {}), ...(d?.prov ?? {}), ...(dl ? { daily: dl.prov } : {}), ...(ol ? { outlook_cpc: ol.prov.cpc, outlook_water: ol.prov.water, outlook_alloc: ol.prov.alloc } : {}) };
+  const prov: api.ProvMap = { ...(selected ? locProv[selected.id] ?? mf.prov[selected.id] : {}), ...(d?.prov ?? {}), ...(dl ? { daily: dl.prov } : {}), ...(ol ? { outlook_cpc: ol.prov.cpc, outlook_water: ol.prov.water, outlook_alloc: ol.prov.alloc } : {}) };
 
   const select = useCallback((id: string) => {
     const loc = locations.find((l) => l.id === id);
@@ -158,7 +168,7 @@ export default function App() {
     if (!api.isSpot(id)) dropSpot();
     setSelectedId(id); setCardOpen(true); setBcOpen(false);
     setPanel((p) => (p === 'fields' ? 'none' : p));
-    map.current?.flyToField(loc, 'card');
+    if (loc.mine) map.current?.fitField(loc); else map.current?.flyToField(loc, 'card');
   }, [locations]);
 
   // ---------- tap anywhere: a pin, the panel in its loading state at once, then GET /api/analyze fills it ----------
@@ -214,6 +224,19 @@ export default function App() {
     if (pt) tapSpot(pt.lat, pt.lon);
   }, [live, tapSpot]);
 
+  // ---------- my fields: a drawing session, saving (the panel shows at once in its skeleton state), the #field= link ----------
+  const onSubmitting = () => { dropSpot(); setSelectedId(DRAFT_ID); setCardOpen(true); setPanel('none'); setYearOpen(false); setBriefOpen(false); setBcOpen(false); setTimeout(() => { const l = locsRef.current.find((x) => x.id === DRAFT_ID); if (l) map.current?.fitField(l); }, 80); };
+  const onSaved = (id: string | null) => { if (id) { setSelectedId((cur) => (cur === DRAFT_ID ? id : cur)); setTimeout(() => { const l = locsRef.current.find((x) => x.id === id); if (l && locsRef.current.length) map.current?.fitField(l); }, 80); } };
+  const openMine = (id: string) => { setSelectedId(id); setCardOpen(true); setPanel('none'); setTimeout(() => { const l = locsRef.current.find((x) => x.id === id); if (l) map.current?.fitField(l); }, 120); };
+  useEffect(() => { if (!selectedId && mf.draft?.error) mf.dropDraft(); else if (mf.draft?.error && selectedId !== DRAFT_ID) mf.dropDraft(); }, [selectedId, mf.draft]);
+  const hashInit = useRef(false);
+  useEffect(() => {
+    if (!hashInit.current) { hashInit.current = true; if (parseFieldHash()) return; }
+    const mine = api.isMine(selectedId) && selectedId !== DRAFT_ID;
+    if (mine) history.replaceState(null, '', `${location.pathname}${location.search}#field=${selectedId}`);
+    else if (location.hash.startsWith('#field=') && !mf.shared) history.replaceState(null, '', location.pathname + location.search);
+  }, [selectedId, mf.shared]);
+
   const openPanel = (id: Panel) => {
     if (id !== 'fields' && !selected) { setPanel('fields'); return; }
     if (id === 'none') { setPanel('none'); setCardOpen(true); setYearOpen(false); return; }
@@ -234,12 +257,12 @@ export default function App() {
   const yearExpanded = yearOpen && !!selected && panel !== 'compare' && panel !== 'season';
   // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
   const toolPanel = panel === 'fields' ? panel : null;
-  const leftPanel = yearExpanded ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
+  const leftPanel = yearExpanded || drawing ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
   const phone = usePhone();
   const leftInset = phone ? 0 : leftPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
   const rightInset = layersOpen ? 396 : 0;
   const bottomInset = phone ? 64 + (leftPanel === 'card' ? sheetPx : leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
-  const drilled = !!selected && view.zoom > 13.4;
+  const drilled = !!selected && !selected.spot && view.zoom > 13.4; // no 3D stack for a tapped spot or a drawn field
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;
 
@@ -273,15 +296,15 @@ export default function App() {
   return (
     <DetailCtx.Provider value={{ on: detail, set: setDetail }}>
     <div className={`app ${detail ? 'detail-on' : 'detail-off'}`}>
-      <MapView ref={map} locations={locations} bc={hasBC ? null : bc} reserves={reservesFc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
+      <MapView ref={map} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
-        onSelect={select} onBC={goBC} onView={setView} onTap={tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} />
+        onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} />
 
       <header className="topbar" data-testid="topbar">
         <button className="tb-brand" onClick={goHome} title="Back to all of California">CropLytics</button>
         <div className={`tb-switch ${switchOpen ? 'open' : ''}`}>
           <button className="tb-field" onClick={() => { setSwitchOpen(!switchOpen); setTimeout(() => searchRef.current?.focus(), 0); }} data-testid="field-switch" aria-expanded={switchOpen}>
-            <span><small>{selected ? (selected.spot?.state === 'loading' ? 'Analysing this spot…' : `${place(selected)}, ${acres(selected)} acres`) : 'No field picked'}</small><b>{selected ? fieldName(selected) : 'Pick your field'}</b></span>
+            <span><small>{selected ? (selected.spot?.state === 'loading' ? (selected.mine ? 'Analysing your field…' : 'Analysing this spot…') : `${place(selected)}, ${acres(selected)} acres`) : 'No field picked'}</small><b>{selected ? fieldName(selected) : 'Pick your field'}</b></span>
             <Icon name="down" size={18} />
           </button>
           {switchOpen && (
@@ -336,11 +359,11 @@ export default function App() {
       </nav>
       {t !== TODAY_T && panel !== 'season' && panel !== 'compare' && !briefOpen && <div className="date-banner" data-testid="date-banner" role="status" style={phone ? undefined : { left: `calc(50% + ${(leftInset - rightInset) / 2}px)` }}><span>Showing <b>{tLabel(t)}</b></span><button className="btn btn-secondary btn-sm" onClick={() => { setT(TODAY_T); setPlaying(false); }}>Back to today</button></div>}
 
-      {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
+      {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.mine ? () => mf.retry(selected.id) : selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} onMine={(a) => draw.current?.[a === 'delete' ? 'del' : a](selected)} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldPicker catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id))} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
-      {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
+      {leftPanel === 'fields' && <FieldPicker mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {selected && !leftPanel && !yearExpanded && !drawing && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
       {panel === 'season' && selected && d && <ComingSeason nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}
       {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} daily={dl?.daily ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} live={!!live} cal={d.cal} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
@@ -369,6 +392,9 @@ export default function App() {
           <button onClick={() => map.current?.zoomBy(-1)} title="Zoom out"><Icon name="minus" size={18} /></button>
         </div>
       </div>
+
+      <DrawLayer ref={draw} getMap={() => map.current?.getMap() ?? null} mf={mf} rightInset={rightInset} onActive={(on, hideId) => setDrawing(on ? { hideId: hideId ?? null } : null)}
+        onSubmitting={onSubmitting} onSaved={onSaved} onDeleted={(id) => { if (selectedId === id) { setSelectedId(null); setPanel('none'); } }} onOpenShared={openMine} />
 
       {yearExpanded && selected && d?.cal && (
         <div className="year-dock" data-testid="year-dock">

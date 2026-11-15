@@ -291,7 +291,7 @@ function SpotCrop({ loc }: { loc: Location }) {
           <b>{now} in {last}</b>
           <span>{now === 'Left fallow' ? `Left fallow in ${last}.` : `${now} in ${same} of the last ${ten.length} years.`}</span>
         </> : <span className="gap-line">{sec?.reason ?? 'No crop record for this spot.'}</span>}
-        <cite>USDA Cropland Data Layer, read at points inside the spot.</cite>
+        <cite>USDA Cropland Data Layer, read at points inside the {loc.mine ? 'outline' : 'spot'}.</cite>
       </dd>
     </div>
   );

@@ -15,6 +15,20 @@ export interface SpotSection { status: 'ready' | 'not_computed' | 'unavailable' 
 /** A spot tapped on the map. `loading` while GET /api/analyze runs (the panel shows skeletons), then `ready` or `error`. */
 export interface SpotInfo { state: 'loading' | 'ready' | 'error'; lat: number; lon: number; sections?: Record<string, SpotSection>; fallbackSquare?: boolean; cropland?: boolean; error?: string }
 
+/** What the API says about a drawn field (`user_field`) plus the client's own flags. */
+export interface MineInfo {
+  name: string;
+  /** a stand-in while the field is saved (skeleton panel) or the list item before the full payload arrives */
+  draft?: boolean;
+  spans?: { counties?: string[]; districts?: string[]; gsas?: string[]; subbasins?: string[] };
+  dwr_fields?: { id: string; crop: string; class?: string; acres: number }[];
+  crop_mix?: Record<string, { crop: string; share: number }[]>;
+  simplified?: { reason?: string } | null;
+  idNote?: string | null;
+  lastCrop?: string | null;
+  /** why the save or load failed (`invalid` = the API rejected the outline) */
+  errorKind?: 'invalid' | 'busy' | 'timeout' | 'network' | 'failed';
+}
 export interface Location {
   id: string; name: string; short_name: string; valley: string; ground_data: string; headline: string;
   geometry: { type: 'Polygon'; coordinates: number[][][] };
@@ -44,6 +58,8 @@ export interface Location {
   region?: 'ca' | 'bc' | 'other'; county_kind?: string; state_code?: string | null;
   /** a spot tapped on the map (`pt_...` id): built live by GET /api/analyze; see SpotInfo */
   spot?: SpotInfo;
+  /** a field the user drew (`my_` id): see src/myFields.ts. Its `spot` is set too, so the panel reuses the tapped-spot sections. */
+  mine?: MineInfo;
   /** BC: what California data this field lacks, why, and what fills the gap (GET /api/locations/{id}) */
   data_gaps?: DataGap[];
   /** BC: the watershed and the irrigation orders, in place of a California water district */
