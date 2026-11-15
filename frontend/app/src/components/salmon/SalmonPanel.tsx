@@ -1,3 +1,4 @@
+import { withLang } from '../../i18n';
 // "Salmon and the field" (BC field only). GET /api/locations/<id>/salmon: the Salmon River gauge, water temperature, when the
 // fish are in the river, and how much water this field's rotations would take in the same weeks.
 // Farmer default: a plain summary and the respect text. One local "More detail" opens the charts and tables.
@@ -390,7 +391,7 @@ export function SalmonPanel({ locId }: { locId: string }) {
   useEffect(() => {
     let ok = true; setS(null);
     const ctl = new AbortController(), h = setTimeout(() => ctl.abort(), 30000);
-    fetch(`${API_BASE}/locations/${locId}/salmon`, { signal: ctl.signal })
+    fetch(`${API_BASE}${withLang(`/locations/${locId}/salmon`)}`, { signal: ctl.signal })
       .then((r) => (r.ok ? r.json() : null))
       .then((b) => { if (ok && b?.flow?.daily && b.summary) setS(b as Salmon); })
       .catch(() => { /* no salmon page for this field: render nothing */ })

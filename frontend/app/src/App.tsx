@@ -26,6 +26,7 @@ import { focusNationTools } from './components/week/NationTools';
 import { DetailCtx, useDetailState } from './components/ui/Detail';
 import { FLOW, ProvList, acres, fieldName, place, type FlowId, type Step } from './components/ui/shared';
 import { announce, onOtherOpen } from './overlays';
+import LangToggle from './i18n/LangToggle';
 import { MenuItems } from './components/a11y/MenuItems';
 import { AccessibilityPage } from './components/a11y/AccessibilityPage';
 import { MapList, type ReserveRow } from './components/a11y/MapList';
@@ -509,6 +510,7 @@ export default function App() {
           date={t === TODAY_T ? `Today, ${tLabel(t)}` : tLabel(t)} waterLimit={selected ? allocation[selected.id] : null} />
         <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} aria-haspopup="true" data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
         <div className={`tb-right ${menuOpen ? 'open' : ''}`}>
+          <LangToggle />
           <button className="btn btn-text btn-sm tb-tour" onClick={() => openExample(true)} data-testid="take-tour">Take the tour</button>
           <div className="tb-date-wrap">
             <button className={`tb-date ${dateOpen ? 'open' : ''}`} onClick={() => setDateOpen(!dateOpen)} data-testid="date-control" aria-expanded={dateOpen}>

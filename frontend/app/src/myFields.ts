@@ -1,3 +1,4 @@
+import { withLang } from './i18n';
 // "My fields": fields the user drew. The id (`my_...`) is the field: it carries the name and the outline, so any server can
 // rebuild it. This file holds the client side: the saved list (localStorage["myFields"] = [{id, name}]), the calls to
 // /api/my-fields, and a hook that gives App the drawn fields as ordinary `Location`s (with `spot` and `mine` set, so the
@@ -64,7 +65,7 @@ async function call<T>(path: string, init: RequestInit | undefined, ms: number):
   const ctl = new AbortController();
   const h = setTimeout(() => ctl.abort(), ms);
   try {
-    const r = await fetch(`${API_BASE}${path}`, { ...init, signal: ctl.signal });
+    const r = await fetch(`${API_BASE}${withLang(path)}`, { ...init, signal: ctl.signal });
     if (r.ok) return { ok: true, body: await r.json() };
     let detail = '';
     try {

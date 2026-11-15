@@ -1,3 +1,4 @@
+import { withLang } from '../../i18n';
 // Small fetch hook shared by "This week" and "Nation tools": one route, friendly states.
 // 404 = this place has no such data, 429 = busy (Retry-After, one automatic retry when it is short), anything else = failed.
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
@@ -32,7 +33,7 @@ export function useRoute<T>(path: string | null, ms = 30000): RouteState<T> & { 
     };
     const go = () => {
     ctl = new AbortController(); timer = setTimeout(() => ctl.abort(), ms);
-    fetch(`${API_BASE}${path}`, { signal: ctl.signal })
+    fetch(`${API_BASE}${withLang(path)}`, { signal: ctl.signal })
       .then(async (r) => {
         if (!live) return;
         if (r.status === 404) return setSt({ kind: 'missing' });

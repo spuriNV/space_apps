@@ -2149,3 +2149,10 @@ html[data-outdoor="1"] .btn small, html[data-outdoor="1"] .btn-primary small { c
   .rain-tl { z-index: 22; }
   .rain-card .rain-title small { display: none; }
 }
+/* language switch */
+.lang-toggle { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--ink-3, #667); }
+.lang-toggle button { background: none; border: 0; padding: 6px 4px; font: inherit; color: inherit; cursor: pointer; border-radius: 6px; min-height: 32px; }
+.lang-toggle button.on { font-weight: 700; color: var(--ink, #111); text-decoration: underline; text-underline-offset: 4px; }
+.lang-toggle button:focus-visible { outline: 2px solid var(--focus, #1a73e8); outline-offset: 1px; }
+.tb-right .lang-toggle { margin: 0 8px; }
+@media (max-width: 760px) { .tb-right .lang-toggle { margin: 8px 16px; font-size: 15px; } }

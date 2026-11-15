@@ -1,3 +1,4 @@
+import { withLang, lang } from './i18n';
 // Single data-access seam (CONTRACT.md).
 // Everything real comes from the CropLytics API at VITE_API_BASE: http://localhost:8000/api in dev, same-origin /api in a
 // production build (the backend serves the built app and the API from one origin). Anything the API does not answer falls
@@ -63,7 +64,7 @@ async function getJSON(url: string, init?: RequestInit, ms = 20000) {
   }
 }
 /** `route` is written as the API path (`/api/locations/...`); API_BASE replaces the `/api` prefix. */
-const get = (route: string, init?: RequestInit, ms?: number) => getJSON(`${API_BASE}${route.replace(/^\/api/, '')}`, init, ms);
+const get = (route: string, init?: RequestInit, ms?: number) => getJSON(`${API_BASE}${withLang(route.replace(/^\/api/, ''))}`, init, ms);
 let health: Promise<boolean> | null = null;
 /** true when the API answers. Cached for the session. */
 export const apiLive = () => (health ??= get('/api/health').then((b) => !!b?.ok).catch(() => false));
@@ -72,7 +73,7 @@ export const apiLive = () => (health ??= get('/api/health').then((b) => !!b?.ok)
 async function apiRealOr404(route: string): Promise<{ body: any; missing: boolean }> { // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!(await apiLive())) return { body: null, missing: false };
   try {
-    const r = await fetch(`${API_BASE}${route.replace(/^\/api/, '')}`);
+    const r = await fetch(`${API_BASE}${withLang(route.replace(/^\/api/, ''))}`);
     if (r.status === 404) return { body: null, missing: true };
     if (!r.ok) return { body: null, missing: false };
     const b = await r.json();
@@ -313,7 +314,7 @@ export async function analyzeSpot(lat: number, lon: number): Promise<SpotResult>
   const ctl = new AbortController();
   const h = setTimeout(() => ctl.abort(), 55000);
   try {
-    const r = await fetch(`${API_BASE}/analyze?lat=${r4(lat).toFixed(4)}&lon=${r4(lon).toFixed(4)}`, { signal: ctl.signal });
+    const r = await fetch(`${API_BASE}${withLang(`/analyze?lat=${r4(lat).toFixed(4)}&lon=${r4(lon).toFixed(4)}`)}`, { signal: ctl.signal });
     if (r.status === 429) { const s = +(r.headers.get('Retry-After') ?? '') || undefined; return { kind: 'error', message: 'Busy, try again in a moment.', retryAfter: s }; }
     if (r.status === 422) return { kind: 'error', message: 'That spot cannot be analysed (the coordinates are out of range).' };
     if (r.status === 504) return { kind: 'error', message: 'No answer after 45 seconds. Try again.' };
@@ -825,7 +826,7 @@ export async function askChat(body: { question: string; history: ChatTurn[]; fie
   const ctl = new AbortController();
   const h = setTimeout(() => ctl.abort(), 40000);
   try {
-    const r = await fetch(`${API_BASE}/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl.signal });
+    const r = await fetch(`${API_BASE}/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, lang }), signal: ctl.signal });
     const b = await r.json().catch(() => null);
     if (!r.ok) throw new Error(typeof b?.detail === 'string' ? b.detail : 'The assistant could not answer. Please try again.');
     return String(b?.answer ?? '');

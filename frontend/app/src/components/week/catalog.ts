@@ -1,3 +1,4 @@
+import { withLang } from '../../i18n';
 // Farm catalog: GET /api/catalog (about 190 real farms, one per place, as tappable pt_ points).
 // A light, clustered map layer (separate from the prepared fields) and the data the pick list group reads.
 import type maplibregl from 'maplibre-gl';
@@ -13,7 +14,7 @@ export interface Catalog { count: number; total: number; items: CatalogItem[]; c
 let cached: Promise<Catalog | null> | null = null;
 /** One fetch per session (the API caches it for an hour). null when the API does not have it. */
 export function getCatalog(): Promise<Catalog | null> {
-  cached ??= fetch(`${API_BASE}/catalog`).then((r) => (r.ok ? r.json() : null)).then((b) => (b && Array.isArray(b.items) ? (b as Catalog) : null)).catch(() => null);
+  cached ??= fetch(`${API_BASE}${withLang('/catalog')}`).then((r) => (r.ok ? r.json() : null)).then((b) => (b && Array.isArray(b.items) ? (b as Catalog) : null)).catch(() => null);
   return cached;
 }
 
