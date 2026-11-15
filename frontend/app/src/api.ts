@@ -37,7 +37,7 @@ export const isMock = (p?: Prov) => !p || p.origin === 'mock';
 const orig = (b: any): Origin => (b?._source === 'estimate' ? 'estimate' : 'api');
 /** Real data, or the API's labelled estimate for a region gap (BC). Example files (`_source: "mock"`) are not. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const usable = (b: any) => b && (b._source === 'real' || b._source === 'estimate' || b._source === undefined);
+const usable = (b: any) => b && (b._source === 'real' || b._source === 'estimate' || b._source === 'live' || b._source === undefined);
 
 // ---------- fetch helpers ----------
 async function getJSON(url: string, init?: RequestInit, ms = 20000) {
@@ -120,7 +120,7 @@ function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: Prov
     soil: { ...loc.soil, ...a.soil },
     crop_history: a.crop_history ?? loc.crop_history, nasa_datasets: a.nasa_datasets, datasets: a.datasets, terrain: a.terrain ?? loc.terrain,
     nasadem: a.terrain?.slope_mean_pct?.value != null ? { slope_mean_pct: a.terrain.slope_mean_pct.value, slope_p90_pct: a.terrain.slope_p90_pct?.value, low_spot_fraction: a.terrain.low_spot_fraction?.value } : undefined,
-    region: a.region === 'bc' ? 'bc' : 'ca', county_kind: a.county_kind, data_gaps: a.data_gaps, water_context: a.water_context, first_nations: a.first_nations };
+    region: a.region === 'bc' || a.region === 'other' ? a.region : 'ca', state_code: a.state_code ?? null, county_kind: a.county_kind, data_gaps: a.data_gaps, water_context: a.water_context, first_nations: a.first_nations };
   if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', 'api', 'NASA JPL elevation, 30 m');
   // water district / GSA: use the API's only when it is looked up or verified (status from lookup / verified, not text markers); a looked-up field may have no district
   const w = a.water;
@@ -169,6 +169,73 @@ export async function getLocations(): Promise<{ locations: Location[]; prov: ByI
   const one = live ? await Promise.all(items.map((x) => (x.geometry && x.nasa_datasets ? x : apiReal(`/api/locations/${x.id}`)))) : [];
   const out = items.map((x, i) => realLocation(baseFor(one[i] ?? x), one[i]?.geometry ? one[i] : x.geometry ? x : undefined));
   return { locations: out.map((o) => o.loc), prov: Object.fromEntries(out.map((o) => [o.loc.id, o.prov])), live: live && !!real };
+}
+
+// ---------- a spot tapped on the map (GET /api/analyze) ----------
+/** Tapped spots have `pt_` ids. Only /locations/{pid}, /strategies, /daily (NASA POWER columns) and POST /score answer for them. */
+export const isSpot = (id?: string | null) => !!id && id.startsWith('pt_');
+const r4 = (v: number) => Math.round(v * 1e4) / 1e4;
+/** The API's id for a point: pt_<n|s><lat x 1e4>_<e|w><lon x 1e4>. */
+export const spotId = (lat: number, lon: number) => `pt_${lat >= 0 ? 'n' : 's'}${Math.round(Math.abs(lat) * 1e4)}_${lon >= 0 ? 'e' : 'w'}${Math.round(Math.abs(lon) * 1e4)}`;
+/** The point back from a spot id (for a shared #spot= link). */
+export function spotPoint(id: string): { lat: number; lon: number } | null {
+  const m = /^pt_([ns])(\d+)_([ew])(\d+)$/.exec(id);
+  if (!m) return null;
+  const lat = (m[1] === 's' ? -1 : 1) * +m[2] / 1e4, lon = (m[3] === 'w' ? -1 : 1) * +m[4] / 1e4;
+  return Math.abs(lat) <= 90 && Math.abs(lon) <= 180 ? { lat, lon } : null;
+}
+/** A 200 m square around a point, as a field outline. */
+function square200(lat: number, lon: number) {
+  const dLat = 100 / 111320, dLon = 100 / (111320 * Math.cos((lat * Math.PI) / 180));
+  return { type: 'Polygon' as const, coordinates: [[[lon - dLon, lat - dLat], [lon + dLon, lat - dLat], [lon + dLon, lat + dLat], [lon - dLon, lat + dLat], [lon - dLon, lat - dLat]]] };
+}
+/** The panel's stand-in while the spot is analysed: the point, a 200 m square, no data (the panel shows skeletons). */
+export function spotPlaceholder(lat: number, lon: number): Location {
+  const id = spotId(lat, lon);
+  const base = baseFor({ id });
+  return { ...base, id, name: 'Tapped spot', short_name: 'Tapped spot', farmer_name: 'Tapped spot', county: undefined, county_name: null, family: 'other', region: 'ca', dwr_id: undefined,
+    geometry: square200(lat, lon), centroid: { lat, lon }, area_ha: { value: 4, low: null, high: null, unit: 'ha', method: 'assumed' }, crop_history: {}, events: [],
+    water: { ...base.water, allocation_input: { unit: 'acre-ft/acre', value: 3.0 } }, spot: { state: 'loading', lat, lon } };
+}
+export type SpotResult = { kind: 'ok'; loc: Location; prov: ProvMap } | { kind: 'preset'; id: string } | { kind: 'error'; message: string; retryAfter?: number };
+/** GET /api/analyze?lat=&lon= (4 decimals). Cold 2-5 s (up to about 8, more on a sleeping server), cached instantly. */
+export async function analyzeSpot(lat: number, lon: number): Promise<SpotResult> {
+  const ctl = new AbortController();
+  const h = setTimeout(() => ctl.abort(), 55000);
+  try {
+    const r = await fetch(`${API_BASE}/analyze?lat=${r4(lat).toFixed(4)}&lon=${r4(lon).toFixed(4)}`, { signal: ctl.signal });
+    if (r.status === 429) { const s = +(r.headers.get('Retry-After') ?? '') || undefined; return { kind: 'error', message: 'Busy, try again in a moment.', retryAfter: s }; }
+    if (r.status === 422) return { kind: 'error', message: 'That spot cannot be analysed (the coordinates are out of range).' };
+    if (r.status === 504) return { kind: 'error', message: 'No answer after 45 seconds. Try again.' };
+    if (!r.ok) return { kind: 'error', message: 'The analysis did not work this time. Try again.' };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const b: any = await r.json();
+    if (b?.analysis?.matches_preset) return { kind: 'preset', id: b.analysis.matches_preset };
+    if (!b?.geometry || !b?.id) return { kind: 'error', message: 'The analysis came back empty. Try again.' };
+    const { loc, prov } = realLocation(baseFor(b), b);
+    const sec = (b.sections ?? {}) as Record<string, { status: string; reason?: string; fallback?: string; cropland?: boolean }>;
+    const fallbackSquare = sec.boundary?.fallback === 'square_200m';
+    prov.outline = P('outline', 'Spot outline', 'api', fallbackSquare ? '200 m square around your tap, not a field outline' : 'DWR / Land IQ 2023 field outline at your tap');
+    const spot: Location['spot'] = { state: 'ready', lat: b.analysis?.point?.lat ?? lat, lon: b.analysis?.point?.lon ?? lon, sections: b.sections, fallbackSquare, cropland: sec.family?.cropland !== false };
+    return { kind: 'ok', loc: { ...loc, events: [], spot, county_name: b.county_name ?? null, county: b.county_name ?? undefined }, prov };
+  } catch {
+    return { kind: 'error', message: ctl.signal.aborted ? 'No answer after 45 seconds. Try again.' : 'Could not reach the CropLytics server, or it is busy. Try again in a moment.' };
+  } finally { clearTimeout(h); }
+}
+/** A spot's field view: only the routes that answer for tapped points (strategies here; daily through getDaily). Everything
+ *  else (satellite calendar, soil moisture, groundwater, 3D squares, news) is not computed for a spot, so it stays empty
+ *  instead of borrowing the example field's numbers. */
+async function getSpotField(loc: Location, prov: ProvMap): Promise<FieldBundle> {
+  const id = loc.id;
+  const strat = await apiReal(`/api/locations/${id}/strategies`, undefined, 45000);
+  const strategies: RotationStrategy[] = strat?.items?.length ? strat.items.map(normStrategy) : [];
+  const nc = (part: string, label: string) => P(part, label, 'api', 'not computed for a tapped spot');
+  Object.assign(prov, { calendar: nc('calendar', 'Bare / green / flooded calendar'), grid: nc('grid', '100 ft squares in the 3D view'), news: nc('news', 'News headlines'), regional: nc('regional', 'Soil moisture and groundwater'), ml: nc('ml', 'Machine-learning calendar') });
+  prov.strategies = strategies.length ? P('strategies', 'Rotations, water need and scores', 'api', 'rotation model, NASA POWER weather for this spot') : nc('strategies', 'Rotations, water need and scores');
+  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[templateId(id, loc.family)]);
+  const cal: Calendar = { ...mCal, years: YEARS.map((y) => blankYear(y, loc.crop_history[y] ?? 'Not on record')), real: false };
+  const nasa = nasaList(loc.nasa_datasets, loc.datasets, { power: 'live' }).list;
+  return { id, regional: null, cells: null, cal, strategies, news: [], ml: null, nasa, regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, extras: { openet: null, stress: null, insurance: null, water: null }, prov };
 }
 
 // ---------- satellite calendar (backend/field/out/<id>/calendar.json) -> 10-day steps ----------
@@ -381,7 +448,7 @@ function extrasOf(oet: any, st: any, ins: any, w: any, ns: any, prov: ProvMap, u
 }
 
 // ---------- everything the field view needs ----------
-export interface FieldBundle { id: string; cells: CellGrid | null; cal: Calendar; regional: Regional; strategies: RotationStrategy[]; news: NewsItem[]; ml: MLInfo | null; nasa: NasaDataset[]; regionalLive: RegionalLive; nasaNow: NasaNow | null; extras: Extras; prov: ProvMap }
+export interface FieldBundle { id: string; cells: CellGrid | null; cal: Calendar; regional: Regional | null; strategies: RotationStrategy[]; news: NewsItem[]; ml: MLInfo | null; nasa: NasaDataset[]; regionalLive: RegionalLive; nasaNow: NasaNow | null; extras: Extras; prov: ProvMap }
 /** GET .../nasa_now: today's NASA readings. Rain since 1 Oct from GPM IMERG and its 2001-2025 normal (mm). */
 export interface NasaNow { rainWyMm: number | null; rainWyNormalMm: number | null; rainDate: string | null; dswxWater: number | null; dswxDate: string | null }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -400,6 +467,7 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', 'no real series served yet'),
     ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
   };
+  if (isSpot(id)) return getSpotField(loc, prov);
   const reg0 = (regional as unknown as ById<Regional>)[mid];
   const used: Partial<Record<string, NasaStatus>> = loc.nasadem ? { nasadem: 'live' } : {};
   const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, { ...used, ...(soilExample() ? { smap: 'example' as const } : {}) }).list;
@@ -473,10 +541,13 @@ export async function getISS(loc: Location): Promise<{ photo: ISSPhoto; credit: 
 
 // ---------- daily weather (GET .../daily): NOAA station means + NASA POWER reference ET ----------
 export async function getDaily(id: string): Promise<{ daily: Daily | null; prov: Prov }> {
-  const b = await apiReal(`/api/locations/${id}/daily`);
+  let b = await apiReal(`/api/locations/${id}/daily`, undefined, isSpot(id) ? 30000 : 12000);
+  // a spot's record is built on its first read and may miss once while the analysis settles: one retry
+  if (!b?.rows?.length && isSpot(id)) { await new Promise((r) => setTimeout(r, 1500)); b = await apiReal(`/api/locations/${id}/daily`, undefined, 30000); }
   if (!b?.rows?.length) return { daily: null, prov: P('daily', 'Rain (NASA GPM IMERG), heat and frost (NOAA stations)', 'mock', 'daily route not reachable') };
   const rows = b.rows as Daily['rows'];
   const net = b.station_network === 'ECCC' ? 'Environment Canada stations' : 'NOAA stations';
+  if (isSpot(id)) return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', 'Rain, heat and crop water demand (NASA POWER, this spot)', 'api', `daily record ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 7)}`) };
   return { daily: { rows, first: rows[0].date, last: rows[rows.length - 1].date }, prov: P('daily', `Rain (NASA GPM IMERG), heat and frost (${net})`, 'api', `daily record ${rows[0].date.slice(0, 4)}–${rows[rows.length - 1].date.slice(0, 7)}`) };
 }
 

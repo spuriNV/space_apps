@@ -138,6 +138,21 @@ if ((want('bc') || !only.length) && (await page.evaluate(() => window.__app && d
     }
   }
 }
+// Tap anywhere (needs an API with GET /api/analyze, e.g. APP_URL pointing at a build that talks to the Render API):
+// a tap on open map near Colusa drops a pin and opens the "Tapped spot" panel with live data
+if (only.includes('spot')) {
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => window.__map && window.__map.loaded() && document.querySelector('[data-testid="fields-panel"]'), null, { timeout: 90000 });
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => window.__map.jumpTo({ center: [-122.03, 39.19], zoom: 13.2 }));
+  await idle(400);
+  const pt = await page.evaluate(() => window.__map.project([-122.0276, 39.1894]));
+  await page.mouse.click(pt.x, pt.y);
+  await page.waitForSelector('[data-testid="spot-label"]', { timeout: 10000 });
+  await page.waitForFunction(() => window.__app?.ready && document.querySelector('.fpanel .m-val'), null, { timeout: 90000 }).catch(() => console.log('  (spot data did not arrive)'));
+  await page.waitForTimeout(2500);
+  await shot('spot-tapped.png');
+}
 if (want('phone')) {
   const ph = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
   ph.on('pageerror', (e) => console.log('PAGE ERROR (phone)', e.message));

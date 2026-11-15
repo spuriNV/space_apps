@@ -108,13 +108,18 @@ export default function App() {
   const reservesFc = wantReserves && reserves?.id === selected?.id ? reserves.fc : null;
   useEffect(() => {
     if (!selected || live == null) { setData(null); return; }
+    // a tapped spot: nothing to fetch until GET /api/analyze has answered; then only the routes that answer for spots
+    const spot = api.isSpot(selected.id);
+    if (spot && selected.spot?.state !== 'ready') { setData(null); return; }
     let ok = true;
     setTimedOut(null);
     const to = setTimeout(() => ok && setTimedOut(selected.id), 15000);
     api.getField(selected, live, (b) => ok && setData(b)).then((b) => ok && setData(b));
     api.getDaily(selected.id).then((r) => ok && setDaily({ id: selected.id, ...r }));
-    api.getOutlook(selected.id, live).then((o) => ok && setOutlook({ id: selected.id, o }));
-    api.getISS(selected).then((v) => ok && setISS({ id: selected.id, v }));
+    if (!spot) {
+      api.getOutlook(selected.id, live).then((o) => ok && setOutlook({ id: selected.id, o }));
+      api.getISS(selected).then((v) => ok && setISS({ id: selected.id, v }));
+    }
     return () => { ok = false; clearTimeout(to); };
   }, [selected, live]);
   // re-score through POST /score when the water allocation changes (engine applies the allocation check)
@@ -149,10 +154,59 @@ export default function App() {
   const select = useCallback((id: string) => {
     const loc = locations.find((l) => l.id === id);
     if (!loc) return;
+    if (!api.isSpot(id)) dropSpot();
     setSelectedId(id); setCardOpen(true); setBcOpen(false);
     setPanel((p) => (p === 'fields' ? 'none' : p));
     map.current?.flyToField(loc, 'card');
   }, [locations]);
+
+  // ---------- tap anywhere: a pin, the panel in its loading state at once, then GET /api/analyze fills it ----------
+  const tapSeq = useRef(0);
+  const locsRef = useRef(locations);
+  locsRef.current = locations;
+  /** forget the tapped spot (another field picked, or back to California) and its #spot= link */
+  const dropSpot = () => {
+    tapSeq.current++;
+    setLocations((ls) => (ls.some((l) => api.isSpot(l.id)) ? ls.filter((l) => !api.isSpot(l.id)) : ls));
+    if (location.hash.startsWith('#spot=')) history.replaceState(null, '', location.pathname + location.search);
+  };
+  const tapSpot = useCallback(async (lat0: number, lon0: number) => {
+    const lat = Math.round(lat0 * 1e4) / 1e4, lon = Math.round(lon0 * 1e4) / 1e4;
+    const seq = ++tapSeq.current;
+    const ph = api.spotPlaceholder(lat, lon);
+    setLocations((ls) => [...ls.filter((l) => !api.isSpot(l.id)), ph]);
+    setSelectedId(ph.id); setCardOpen(true); setBcOpen(false); setYearOpen(false); setBriefOpen(false);
+    setPanel((p) => (p === 'season' || p === 'compare' ? p : 'none'));
+    history.replaceState(null, '', `#spot=${ph.id}`);
+    map.current?.focusSpot(lat, lon);
+    const r = await api.analyzeSpot(lat, lon);
+    if (seq !== tapSeq.current) return; // another tap, or the spot was closed, while this one ran
+    if (r.kind === 'preset') {
+      // the tap fell inside one of the prepared fields: open that field instead
+      const pre = locsRef.current.find((l) => l.id === r.id);
+      dropSpot();
+      if (pre) { setSelectedId(pre.id); map.current?.flyToField(pre, 'card'); } else setSelectedId(null);
+      return;
+    }
+    if (r.kind === 'error') {
+      setLocations((ls) => ls.map((l) => (l.id === ph.id ? { ...l, spot: { ...l.spot!, state: 'error', error: r.message } } : l)));
+      return;
+    }
+    const loc = r.loc;
+    setLocProv((p) => ({ ...p, [loc.id]: r.prov }));
+    setAllocation((a) => ({ ...a, [loc.id]: loc.water.allocation_input.value }));
+    setLocations((ls) => [...ls.filter((l) => !api.isSpot(l.id)), loc]);
+    if (loc.id !== ph.id) { setSelectedId(loc.id); history.replaceState(null, '', `#spot=${loc.id}`); }
+  }, []);
+  // a shared link (#spot=pt_...) opens that spot once the field list is in
+  const hashDone = useRef(false);
+  useEffect(() => {
+    if (hashDone.current || live == null) return;
+    hashDone.current = true;
+    const m = /^#spot=(pt_[nsew\d_]+)$/.exec(location.hash);
+    const pt = m ? api.spotPoint(m[1]) : null;
+    if (pt) tapSpot(pt.lat, pt.lon);
+  }, [live, tapSpot]);
 
   const openPanel = (id: Panel) => {
     if (id !== 'fields' && !selected) { setPanel('fields'); return; }
@@ -160,7 +214,7 @@ export default function App() {
     setPanel((p) => (p === id ? 'none' : id));
     setYearOpen(false);
   };
-  const goHome = () => { setSelectedId(null); setPanel('none'); setYearOpen(false); setBcOpen(false); setBriefOpen(false); map.current?.flyHome(); };
+  const goHome = () => { dropSpot(); setSelectedId(null); setPanel('none'); setYearOpen(false); setBcOpen(false); setBriefOpen(false); map.current?.flyHome(); };
   const goBC = () => { setBcOpen(true); setPanel('none'); setYearOpen(false); map.current?.flyTo(49.9, -121.0, 6.4); };
   const onStep = (s: Step) => {
     if (!selected) return;
@@ -192,7 +246,7 @@ export default function App() {
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     const items = [
-      ...locations.map((l) => ({ key: l.id, title: fieldName(l), sub: `${place(l)} · ${acres(l)} acres${l.dwr_id ? ' · state field no. ' + l.dwr_id : ''}`, icon: 'fields', go: () => select(l.id) })),
+      ...locations.filter((l) => !api.isSpot(l.id)).map((l) => ({ key: l.id, title: fieldName(l), sub: `${place(l)} · ${acres(l)} acres${l.dwr_id ? ' · state field no. ' + l.dwr_id : ''}`, icon: 'fields', go: () => select(l.id) })),
       ...(hasBC ? [] : [{ key: 'bc', title: 'Sumas Prairie, British Columbia', sub: 'Not set up yet: why', icon: 'info', go: goBC }]),
       { key: 'ca', title: 'California', sub: 'Back to the whole state', icon: 'home', go: goHome },
     ];
@@ -215,13 +269,13 @@ export default function App() {
     <div className={`app ${detail ? 'detail-on' : 'detail-off'}`}>
       <MapView ref={map} locations={locations} bc={hasBC ? null : bc} reserves={reservesFc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
-        onSelect={select} onBC={goBC} onView={setView} />
+        onSelect={select} onBC={goBC} onView={setView} onTap={tapSpot} />
 
       <header className="topbar" data-testid="topbar">
         <button className="tb-brand" onClick={goHome} title="Back to all of California">CropLytics</button>
         <div className={`tb-switch ${switchOpen ? 'open' : ''}`}>
           <button className="tb-field" onClick={() => { setSwitchOpen(!switchOpen); setTimeout(() => searchRef.current?.focus(), 0); }} data-testid="field-switch" aria-expanded={switchOpen}>
-            <span><small>{selected ? `${place(selected)}, ${acres(selected)} acres` : 'No field picked'}</small><b>{selected ? fieldName(selected) : 'Pick your field'}</b></span>
+            <span><small>{selected ? (selected.spot?.state === 'loading' ? 'Analysing this spot…' : `${place(selected)}, ${acres(selected)} acres`) : 'No field picked'}</small><b>{selected ? fieldName(selected) : 'Pick your field'}</b></span>
             <Icon name="down" size={18} />
           </button>
           {switchOpen && (
@@ -276,10 +330,10 @@ export default function App() {
       </nav>
       {t !== TODAY_T && panel !== 'season' && panel !== 'compare' && !briefOpen && <div className="date-banner" data-testid="date-banner" role="status" style={phone ? undefined : { left: `calc(50% + ${(leftInset - rightInset) / 2}px)` }}><span>Showing <b>{tLabel(t)}</b></span><button className="btn btn-secondary btn-sm" onClick={() => { setT(TODAY_T); setPlaying(false); }}>Back to today</button></div>}
 
-      {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
+      {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldPicker locations={locations} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {leftPanel === 'fields' && <FieldPicker locations={locations.filter((l) => !api.isSpot(l.id))} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
       {panel === 'season' && selected && d && <ComingSeason nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}

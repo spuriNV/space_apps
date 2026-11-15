@@ -10,10 +10,12 @@ const MONTHS_FULL = ['January', 'February', 'March', 'April', 'May', 'June', 'Ju
 import Icon from '../Icons';
 
 export const fieldCode = (l: Location) => (l.dwr_id ? `DWR ${l.dwr_id}` : l.id.toUpperCase());
-export const coords = (l: Location) => `${l.centroid.lat.toFixed(4)}° N, ${Math.abs(l.centroid.lon).toFixed(4)}° W`;
+export const coords = (l: Location) => `${Math.abs(l.centroid.lat).toFixed(4)}° ${l.centroid.lat >= 0 ? 'N' : 'S'}, ${Math.abs(l.centroid.lon).toFixed(4)}° ${l.centroid.lon < 0 ? 'W' : 'E'}`;
 export const county = (l: Location) => l.county_name ?? l.county ?? (l.id === 'car_colusa_rice' ? 'Colusa' : 'Kings');
 /** "Kings County" in California; "Columbia-Shuswap, BC" (a regional district) in British Columbia. */
-export const place = (l: Location) => (l.region === 'bc' ? `${county(l)}, BC` : `${county(l)} County`);
+export const place = (l: Location) => (l.spot ? spotPlace(l) : l.region === 'bc' ? `${county(l)}, BC` : `${county(l)} County`);
+/** A tapped spot's place: its county (and state outside California), or the coordinates when no US county was found. */
+const spotPlace = (l: Location) => (l.county_name ? `${l.county_name} County${l.state_code && l.state_code !== 'CA' ? `, ${l.state_code}` : ''}` : l.spot?.state === 'ready' ? 'Outside the US counties' : 'Finding the county');
 /** The weather stations behind heat, frost and station rain. */
 export const stationsName = (l: Location) => (l.region === 'bc' ? 'Environment Canada (ECCC) weather stations near the field' : 'NOAA weather stations near the field');
 /** The yearly crop map. */

@@ -75,19 +75,22 @@ function normalOf(daily: Daily, p: Period, f: (r: DailyRow) => number | null, ag
   return { mean: vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null, n: vals.length, first: y0 - vals.length };
 }
 
-export interface RainSoFar { period: Period; inches: number; normal: number | null; nSeasons: number; pct: number | null; source: 'imerg' | 'stations' }
+export interface RainSoFar { period: Period; inches: number; normal: number | null; nSeasons: number; pct: number | null; source: 'imerg' | 'stations' | 'power' }
 /** Rain so far this season: NASA GPM IMERG over the field (runs to this week), normal = the same dates in earlier seasons of IMERG.
  *  Falls back to the NOAA stations when IMERG is missing. */
 export function rainSoFar(all: Daily, t: number): RainSoFar | null {
   const im = only(all, 'imerg_precip_mm');
-  const daily = im ?? onlyBy(all, stPrecip);
+  const st = im ? null : onlyBy(all, stPrecip);
+  // a tapped spot has neither IMERG nor stations: NASA POWER's daily rain for the area
+  const pw = im || st ? null : only(all, 'precip_mm');
+  const daily = im ?? st ?? pw;
   if (!daily) return null;
-  const f = (r: DailyRow) => (im ? r.imerg_precip_mm ?? null : stPrecip(r));
+  const f = (r: DailyRow) => (im ? r.imerg_precip_mm ?? null : st ? stPrecip(r) : r.precip_mm ?? null);
   const p = periodFor(daily, t, 'water');
   const { s } = sumWhere(daily.rows, p.from, p.to, f);
   const nm = normalOf(daily, p, f);
   const inches = inch(s), normal = nm.mean == null ? null : inch(nm.mean);
-  return { period: p, inches, normal, nSeasons: nm.n, pct: normal ? (inches / normal) * 100 : null, source: im ? 'imerg' : 'stations' };
+  return { period: p, inches, normal, nSeasons: nm.n, pct: normal ? (inches / normal) * 100 : null, source: im ? 'imerg' : st ? 'stations' : 'power' };
 }
 
 export interface HeatFrost { period: Period; hot: number; hotNormal: number | null; frost: number; frostNormal: number | null; frostPeriod: Period; nSeasons: number }

@@ -41,6 +41,8 @@ export interface MapHandle {
   zoomBy: (d: number) => void;
   resetNorth: () => void;
   toggle3D: () => void;
+  /** a tapped spot: centre it beside the panel, zooming in only if the map is far out */
+  focusSpot: (lat: number, lon: number) => void;
 }
 interface Props {
   locations: Location[]; bc: BCInfo | null; datasets: Dataset[];
@@ -50,6 +52,8 @@ interface Props {
   t: number; detector: 'rule' | 'ml'; metric: 'cover' | 'et'; layersOn: Record<string, boolean>; regionalLive: RegionalLive;
   leftInset: number; bottomInset: number; rightInset: number;
   onSelect: (id: string) => void; onBC: () => void;
+  /** a tap, click or long-press on open map (not on a field or a pin): analyse that spot */
+  onTap?: (lat: number, lon: number) => void;
   onView: (v: { zoom: number; pitch: number; bearing: number; lat: number; lon: number }) => void;
 }
 interface StackLabel { key: string; ax: number; ay: number; color: string; tag: string; title: string; value: string; note: string }
@@ -107,6 +111,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       ext('slab-smap', 0.84, EXPLODE_Z0 + 0.1);
       ext('cells', 0.97, 11.2);
       map.on('click', 'field-hit', (e) => { const id = e.features?.[0]?.properties?.id; if (id) live.current.onSelect(id); });
+      // tap anywhere: a click or tap on open map, a right-click, or a long-press (touch) drops a pin and analyses the spot
+      let lastTap = 0;
+      const tap = (e: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
+        const tgt = (e.originalEvent?.target as Element | null);
+        if (tgt?.closest?.('.maplibregl-marker, .maplibregl-ctrl')) return;
+        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit'] }).length) return;
+        if (Date.now() - lastTap < 700) return;
+        lastTap = Date.now();
+        live.current.onTap?.(e.lngLat.lat, e.lngLat.lng);
+      };
+      map.on('click', tap);
+      map.on('contextmenu', (e) => { e.preventDefault(); tap(e); });
+      let press: ReturnType<typeof setTimeout> | null = null;
+      map.on('touchstart', (e) => { if (press) clearTimeout(press); press = e.originalEvent.touches.length === 1 ? setTimeout(() => tap(e), 550) : null; });
+      for (const ev of ['touchend', 'touchmove', 'touchcancel', 'movestart'] as const) map.on(ev, () => { if (press) { clearTimeout(press); press = null; } });
       map.on('mouseenter', 'field-hit', () => (map.getCanvas().style.cursor = 'pointer'));
       map.on('mouseleave', 'field-hit', () => (map.getCanvas().style.cursor = ''));
       setReady(true);
@@ -143,13 +162,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const ms: maplibregl.Marker[] = [];
     for (const loc of p.locations) {
       const d = document.createElement('button');
-      d.className = 'pin site';
+      d.className = loc.spot ? 'pin site spot-pin' : 'pin site';
       d.dataset.id = loc.id;
-      d.innerHTML = `${PIN_SVG}<span class="pin-text"><b>${fieldName(loc)}</b><i>${acres(loc)} acres · ${latestCrop(loc).crop} in ${latestCrop(loc).year}</i></span>`;
+      const lc = latestCrop(loc);
+      d.innerHTML = `${PIN_SVG}<span class="pin-text"><b></b><i></i></span>`;
+      d.querySelector('b')!.textContent = loc.spot ? (loc.spot.state === 'ready' ? fieldName(loc) : 'Tapped spot') : fieldName(loc);
+      d.querySelector('i')!.textContent = loc.spot && loc.spot.state !== 'ready' ? 'Analysing this spot…' : `${acres(loc)} acres${Number.isFinite(lc.year) ? ` · ${lc.crop} in ${lc.year}` : ''}`;
       d.onclick = (ev) => { ev.stopPropagation(); live.current.onSelect(loc.id); };
       d.classList.toggle('on', live.current.selected?.id === loc.id);
       // the pin tip (14, 36 inside the 28 x 36 pin) sits on the field centroid; the label hangs to its right
-      ms.push(new maplibregl.Marker({ element: d, anchor: 'bottom-left', offset: [-14, 0] }).setLngLat([loc.centroid.lon, loc.centroid.lat]).addTo(map));
+      // a tapped spot's pin sits where the grower tapped, not on the outline's centre
+      ms.push(new maplibregl.Marker({ element: d, anchor: 'bottom-left', offset: [-14, 0] }).setLngLat(loc.spot ? [loc.spot.lon, loc.spot.lat] : [loc.centroid.lon, loc.centroid.lat]).addTo(map));
     }
     for (const pl of p.bc?.places ?? []) {
       const d = document.createElement('button');
@@ -204,7 +227,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     if (!map || !ready) return;
     (map.getSource('field') as GeoJSONSource).setData(fc(p.locations.map((l) => ({ type: 'Feature', properties: { id: l.id, selected: l.id === p.selected?.id }, geometry: l.geometry }))));
     const fps: unknown[] = [], grids: unknown[] = [], lbls: unknown[] = [];
-    if (p.selected) {
+    if (p.selected?.spot?.fallbackSquare) {
+      const b = bbox(p.selected);
+      lbls.push({ type: 'Feature', properties: { color: '#ffd166', label: '200 m square around your tap, not a field outline' }, geometry: { type: 'Point', coordinates: [b.e, b.s] } });
+    }
+    if (p.selected && !p.selected.spot) {
       const loc = p.selected, m = mPerDeg(loc.centroid.lat), b = bbox(loc);
       for (const ds of p.datasets) {
         if (!p.layersOn[ds.id]) continue;
@@ -331,6 +358,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     zoomBy(d) { mapRef.current!.easeTo({ zoom: mapRef.current!.getZoom() + d, duration: 250 }); },
     resetNorth() { mapRef.current!.easeTo({ bearing: 0, duration: 300 }); },
     toggle3D() { const m = mapRef.current!; m.easeTo({ pitch: m.getPitch() > 5 ? 0 : 58, duration: 400 }); },
+    focusSpot(lat, lon) { const m = mapRef.current!; programmatic.current = true; m.easeTo({ center: [lon, lat], zoom: Math.max(m.getZoom(), 13.2), pitch: 0, bearing: 0, padding: pad(), duration: 900, easing: fly.easing }); },
   }));
 
   // de-overlap labels vertically, anchored right of the stack

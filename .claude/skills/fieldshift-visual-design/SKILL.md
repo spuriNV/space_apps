@@ -245,3 +245,7 @@ inside a table, the filter-chip row and the sheet's action row.
   reasons in `docs/ui-redesign-spec.md`, tokens and component CSS with every state in `docs/ui-redesign/mock/`.
   Segmented control: `components/ui/Seg.tsx`; count-up and reduced-motion check: `components/ui/motion.tsx`.
 - Native mapping (Compose `colorScheme` roles, `Shapes`, SwiftUI assets, sheet detents): `docs/ui-redesign-spec.md` section 3.8.
+- Tap anywhere (`pt_` ids, `api.analyzeSpot`, `components/ui/FieldNow.tsx` spot mode): a tap, click or long-press on open
+  map drops a pin and opens the field panel at once with skeletons, labelled "Tapped spot · live data". Only `ready`
+  sections show data; `not_computed` parts are hidden (no example numbers borrowed); `unavailable` gets one quiet line.
+  A 200 m square says so on the map and in the id line; non-farmland gets one notice. `#spot=<id>` links reopen it.

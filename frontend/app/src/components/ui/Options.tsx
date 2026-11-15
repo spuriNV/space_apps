@@ -22,6 +22,8 @@ export interface FieldPanelProps {
   onStep: (s: Step) => void; onClose: () => void;
   /** phone: how much of the sheet shows above the tab bar, so the map keeps the field in view */
   onSheet?: (visiblePx: number) => void;
+  /** a tapped spot whose analysis failed: try again */
+  onSpotRetry?: () => void;
 }
 
 export function FieldPanel(p: FieldPanelProps) {
@@ -45,6 +47,7 @@ export function FieldPanel(p: FieldPanelProps) {
   // below full the sheet's content does not scroll: bring it back to the top
   useEffect(() => { if (sheet.snap !== 'full') scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); }, [sheet.snap]);
   const now = latestCrop(loc);
+  const sp = loc.spot;
   const isToday = p.t === TODAY_T;
   const crop = cropName(now.crop);
   return (
@@ -56,14 +59,18 @@ export function FieldPanel(p: FieldPanelProps) {
         <div className="panel-scroll" ref={scrollRef} onScroll={onScroll}>
           <div className="fp-content" key={loc.id}>
             <header className="fp-head" ref={headRef}>
+              {sp && <p className="spot-label" data-testid="spot-label"><i className={`live-dot ${sp.state}`} />Tapped spot · live data</p>}
               <h1>{fieldName(loc)}</h1>
+              {sp?.state === 'loading' ? <p className="fp-facts"><span className="skel skel-chip" /><span className="skel skel-chip" /><span className="skel skel-chip" /></p> : sp?.state === 'error' ? null : (
               <p className="fp-facts">
                 <span className="fact-chip"><b>{acres(loc)}</b> acres</span>
-                <span className="fact-chip"><i style={{ background: CROP_COL(crop) }} />{now.crop.charAt(0).toUpperCase() + now.crop.slice(1).toLowerCase()} in {now.year}</span>
+                {now.year != null && Number.isFinite(now.year) && <span className="fact-chip"><i style={{ background: CROP_COL(crop) }} />{now.crop.charAt(0).toUpperCase() + now.crop.slice(1).toLowerCase()} in {now.year}</span>}
                 <span className="fact-chip">{place(loc)}</span>
-              </p>
-              <p className="fp-id">{isBC(loc) ? 'British Columbia' : fieldCode(loc).replace('DWR ', 'State field no. ')}, {coords(loc)}</p>
+              </p>)}
+              <p className="fp-id">{sp ? (sp.fallbackSquare || sp.state !== 'ready' ? '200 m square around your tap, not a field outline' : loc.dwr_id ? `State field no. ${loc.dwr_id}` : 'Field outline at your tap') : isBC(loc) ? 'British Columbia' : fieldCode(loc).replace('DWR ', 'State field no. ')}, {coords(loc)}</p>
             </header>
+            {sp?.state === 'error' && <div className="notice spot-notice" role="alert" data-testid="spot-error"><span>{sp.error}</span>{p.onSpotRetry && <button className="btn btn-outline btn-sm" onClick={p.onSpotRetry}>Try again</button>}</div>}
+            {sp?.state === 'ready' && sp.cropland === false && <div className="notice spot-notice" data-testid="spot-not-farm"><b>This may not be farmland.</b> The USDA crop map shows little or no cropping here, so the rotations below are a stand-in.</div>}
             <Actions onStep={p.onStep} />
             <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}</h2>
             <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
@@ -77,8 +84,8 @@ export function FieldPanel(p: FieldPanelProps) {
                 {p.nasa ? <NasaList list={p.nasa} /> : <p className="muted">Loading…</p>}
                 <h2 className="fp-h">About the ground<button className="btn btn-text btn-sm" onClick={() => p.onStep('drill')} data-testid="step-drill"><Icon name="cube" />Look under the field in 3D</button></h2>
                 <AboutField loc={loc} prov={p.prov} cal={p.cal} insurance={p.extras.insurance ?? loc.rma ?? null} insGap={bcGap(loc, 'insurance')} />
-                <h2 className="fp-h">The last 3 seasons</h2>
-                <LastSeasons loc={loc} cal={p.cal} t={p.t} />
+                {!sp && <><h2 className="fp-h">The last 3 seasons</h2>
+                <LastSeasons loc={loc} cal={p.cal} t={p.t} /></>}
                 {p.events.length > 0 && <><h2 className="fp-h">What happened around here</h2><p className="fp-sub">Click one to move the timeline.</p><EventLog events={p.events} setT={p.setT} /></>}
                 <button className="btn btn-text sources-link" onClick={() => setSrc(true)} data-testid="sources-link">Sources</button>
               </div>

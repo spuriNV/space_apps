@@ -1531,3 +1531,22 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 .fp-more-in { overflow: clip; }
 .c2-ctl .seg button { white-space: normal; line-height: 1.15; min-width: 0; text-align: center; }
 .hud { top: calc(var(--bar-h) + 3px + 64px); }
+
+/* ---------- a spot tapped on the map ---------- */
+.spot-label { display: inline-flex; align-items: center; gap: 8px; margin-bottom: var(--s-2); padding: 0 12px 0 10px; height: 28px; border-radius: var(--r-full);
+  background: var(--accent-container); color: var(--on-accent-container); font-size: var(--fs-small); font-weight: 600; }
+.live-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+.live-dot.loading::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; animation: live-ping 1.2s var(--ease-enter) infinite; }
+.live-dot.error { background: var(--warn); }
+@keyframes live-ping { 0% { opacity: 0.7; transform: scale(0.5); } 100% { opacity: 0; transform: scale(1.4); } }
+.skel-chip { display: inline-block; width: 92px; height: 28px; margin: 0; }
+.spot-notice { margin: var(--s-3) 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.spot-notice span { flex: 1 1 200px; }
+.spot-notice .btn-outline { border-color: currentColor; color: var(--on-warn-container); }
+.gl-grid.spot { margin-top: 0; padding-top: 0; border-top: 0; }
+.maplibregl-canvas { cursor: crosshair; }
+.maplibregl-canvas:active { cursor: grabbing; }
+/* the tapped spot's pin stays visible close in (other pins give way to their outlines); its label hides there */
+.zoom-near .pin.spot-pin { opacity: 1 !important; pointer-events: auto; }
+.zoom-near .pin.spot-pin .pin-text, .zoom-mid .pin.spot-pin .pin-text i { display: none; }
+.zoom-mid .pin.spot-pin .pin-svg, .zoom-near .pin.spot-pin .pin-svg { visibility: visible; }
