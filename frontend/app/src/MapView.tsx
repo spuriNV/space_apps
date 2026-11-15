@@ -142,7 +142,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     // Use setPitch/setBearing (MapLibre 4 ignores writing transform.pitch directly, so zoom stayed flat).
     map.on('zoom', () => {
       const sel = live.current.selected;
-      if (!sel || programmatic.current || sel.spot) return;
+      if (!sel || programmatic.current) return;
       const c = map.getCenter();
       if (Math.abs(c.lat - sel.centroid.lat) > 0.06 || Math.abs(c.lng - sel.centroid.lon) > 0.08) return;
       const f = clamp((map.getZoom() - (EXPLODE_Z0 - 0.3)) / (EXPLODE_Z1 - EXPLODE_Z0), 0, 1);
@@ -241,7 +241,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const b = bbox(p.selected);
       lbls.push({ type: 'Feature', properties: { color: '#ffd166', label: '200 m square around your tap, not a field outline' }, geometry: { type: 'Point', coordinates: [b.e, b.s] } });
     }
-    if (p.selected && !p.selected.spot) {
+    if (p.selected) {
       const loc = p.selected, m = mPerDeg(loc.centroid.lat), b = bbox(loc);
       for (const ds of p.datasets) {
         if (!p.layersOn[ds.id]) continue;
@@ -369,7 +369,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const m = mapRef.current!, sel = live.current.selected;
       const z = Math.min(18, Math.max(3, m.getZoom() + d));
       // zoom controls also drive the explode pitch when centred on the picked field
-      if (sel && !sel.spot) {
+      if (sel) {
         const c = m.getCenter();
         if (Math.abs(c.lat - sel.centroid.lat) <= 0.06 && Math.abs(c.lng - sel.centroid.lon) <= 0.08) {
           const f = clamp((z - (EXPLODE_Z0 - 0.3)) / (EXPLODE_Z1 - EXPLODE_Z0), 0, 1);
@@ -384,7 +384,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const m = mapRef.current!, sel = live.current.selected;
       if (m.getPitch() > 5) { m.easeTo({ pitch: 0, bearing: 0, duration: 400 }); return; }
       // with a field picked, tilt into the stack at drill zoom so the slabs read as 3D
-      if (sel && !sel.spot) {
+      if (sel) {
         programmatic.current = true;
         const small = sel.area_ha.value < 45;
         m.easeTo({ center: [sel.centroid.lon, sel.centroid.lat - (small ? 0.0006 : 0.001)], zoom: Math.max(m.getZoom(), small ? 14.8 : 14.2), pitch: 58, bearing: -22, padding: pad(), duration: 500, easing: fly.easing });

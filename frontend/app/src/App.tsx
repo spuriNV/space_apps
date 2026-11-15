@@ -119,13 +119,14 @@ export default function App() {
     let ok = true;
     setTimedOut(null);
     const to = setTimeout(() => ok && setTimedOut(selected.id), 15000);
-    api.getField(selected, live, (b) => ok && setData(b)).then((b) => ok && setData(b));
+    const caPresets = locations.filter((l) => !api.isLite(l.id) && l.region !== 'bc');
+    api.getField(selected, live, (b) => ok && setData(b), caPresets).then((b) => ok && setData(b));
     api.getDaily(selected.id).then((r) => ok && setDaily({ id: selected.id, ...r }));
     // always resolve outlook (presets load the file; tapped/drawn fields get a quiet "not built yet" so Coming season never spins)
     api.getOutlook(selected.id, live).then((o) => ok && setOutlook({ id: selected.id, o }));
     if (!spot) api.getISS(selected).then((v) => ok && setISS({ id: selected.id, v }));
     return () => { ok = false; clearTimeout(to); };
-  }, [selected, live]);
+  }, [selected, live, locations]);
   // re-score through POST /score when the water allocation changes (engine applies the allocation check)
   const alloc = selected ? allocation[selected.id] : undefined;
   useEffect(() => {
@@ -263,7 +264,8 @@ export default function App() {
   const leftInset = phone ? 0 : leftPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
   const rightInset = layersOpen ? 396 : 0;
   const bottomInset = phone ? 64 + (leftPanel === 'card' ? sheetPx : leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
-  const drilled = !!selected && !selected.spot && view.zoom > 13.4; // no 3D stack for a tapped spot or a drawn field
+  const stackField = !!selected && (!selected.spot || selected.spot.state === 'ready');
+  const drilled = stackField && view.zoom > 13.4;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;
 
@@ -387,7 +389,7 @@ export default function App() {
 
       {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} reserves={!!selected && api.isBC(selected)} onClose={() => setLayersOpen(false)} />}
 
-      {selected && !selected.spot && !drilled && panel !== 'compare' && panel !== 'season' && view.zoom > 9.5 && view.zoom <= 13.4 && (
+      {stackField && !drilled && panel !== 'compare' && panel !== 'season' && view.zoom > 9.5 && view.zoom <= 13.4 && (
         <button className="hud glass drill-hint" data-testid="drill-hint" onClick={() => onStep('drill')}>
           <span className="hud-title"><Icon name="cube" size={16} />Scroll in (or tap) to look under the field</span>
         </button>
@@ -396,7 +398,9 @@ export default function App() {
         <div className="hud glass" data-testid="hud">
           <span className="hud-title"><Icon name="cube" size={16} />Under the field</span>
           <div className="hud-legend">
-            {(['b', 'p', 'c', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{({ b: 'Bare', p: 'Thin', c: 'Crop', w: 'Flooded' } as Record<string, string>)[c]}</span>)}
+            <span><i style={{ background: '#7ee081' }} />Cover</span>
+            <span><i style={{ background: '#5ab0ff' }} />Soil moisture</span>
+            <span><i style={{ background: '#ff7eb6' }} />Groundwater</span>
             <span className="hud-note">taller = greener</span>
           </div>
         </div>

@@ -178,6 +178,44 @@ export const isSpot = (id?: string | null) => !!id && id.startsWith('pt_');
 export const isMine = (id?: string | null) => !!id && id.startsWith('my_');
 /** Ids that answer only /locations/{id}, /strategies, /daily and POST /score: tapped spots and drawn fields. */
 export const isLite = (id?: string | null) => isSpot(id) || isMine(id);
+const MOCK_LOCS = mockLocations as unknown as Location[];
+const haversineKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const r = 6371, p = Math.PI / 180, dLat = (lat2 - lat1) * p, dLon = (lon2 - lon1) * p;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * p) * Math.cos(lat2 * p) * Math.sin(dLon / 2) ** 2;
+  return 2 * r * Math.asin(Math.sqrt(a));
+};
+/** Nearest prepared California field: borrow regional NASA series and 30 m grid when pt_/my_ has no own routes yet. */
+export function nearestCaPreset(loc: Location, presets: Location[] = MOCK_LOCS): string {
+  let best = templateId(loc.id, loc.family), bestKm = 1e99;
+  for (const p of presets) {
+    if (isLite(p.id) || p.region === 'bc' || !p.centroid) continue;
+    const km = haversineKm(loc.centroid.lat, loc.centroid.lon, p.centroid.lat, p.centroid.lon);
+    if (km < bestKm) { bestKm = km; best = p.id; }
+  }
+  return best;
+}
+function presetCentroid(presetId: string, presets: Location[]): Location['centroid'] | null {
+  return presets.find((p) => p.id === presetId)?.centroid ?? MOCK_LOCS.find((p) => p.id === presetId)?.centroid ?? null;
+}
+function shiftGrid(g: CellGrid, dLon: number, dLat: number): CellGrid {
+  const shiftPoly = (coords: number[][][]) => coords.map((ring) => ring.map(([x, y]) => [x + dLon, y + dLat]));
+  return {
+    ...g,
+    features: g.features.map((f) => {
+      const geom = f.geometry;
+      if (geom.type !== 'Polygon') return f;
+      return { ...f, geometry: { type: 'Polygon', coordinates: shiftPoly(geom.coordinates as number[][][]) } };
+    }),
+  };
+}
+function gridAt(loc: Location, presetId: string): CellGrid | null {
+  const raw = (mockCells as unknown as ById<CellGrid>)[presetId];
+  if (!raw) return null;
+  const from = MOCK_LOCS.find((l) => l.id === presetId);
+  if (!from) return raw;
+  return shiftGrid(raw, loc.centroid.lon - from.centroid.lon, loc.centroid.lat - from.centroid.lat);
+}
+const calFor = (cal: Calendar, id: string) => ({ ...cal, location_id: id });
 const r4 = (v: number) => Math.round(v * 1e4) / 1e4;
 /** The API's id for a point: pt_<n|s><lat x 1e4>_<e|w><lon x 1e4>. */
 export const spotId = (lat: number, lon: number) => `pt_${lat >= 0 ? 'n' : 's'}${Math.round(Math.abs(lat) * 1e4)}_${lon >= 0 ? 'e' : 'w'}${Math.round(Math.abs(lon) * 1e4)}`;
@@ -226,22 +264,6 @@ export async function analyzeSpot(lat: number, lon: number): Promise<SpotResult>
     return { kind: 'error', message: ctl.signal.aborted ? 'No answer after 45 seconds. Try again.' : 'Could not reach the CropLytics server, or it is busy. Try again in a moment.' };
   } finally { clearTimeout(h); }
 }
-/** A spot's field view: only the routes that answer for tapped points (strategies here; daily through getDaily). Everything
- *  else (satellite calendar, soil moisture, groundwater, 3D squares, news) is not computed for a spot, so it stays empty
- *  instead of borrowing the example field's numbers. */
-async function getSpotField(loc: Location, prov: ProvMap): Promise<FieldBundle> {
-  const id = loc.id;
-  const strat = await apiReal(`/api/locations/${id}/strategies`, undefined, 45000);
-  const strategies: RotationStrategy[] = strat?.items?.length ? strat.items.map(normStrategy) : [];
-  const nc = (part: string, label: string) => P(part, label, 'api', 'not computed for a tapped spot');
-  Object.assign(prov, { calendar: nc('calendar', 'Bare / green / flooded calendar'), grid: nc('grid', '100 ft squares in the 3D view'), news: nc('news', 'News headlines'), regional: nc('regional', 'Soil moisture and groundwater'), ml: nc('ml', 'Machine-learning calendar') });
-  prov.strategies = strategies.length ? P('strategies', 'Rotations, water need and scores', 'api', 'rotation model, NASA POWER weather for this spot') : nc('strategies', 'Rotations, water need and scores');
-  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[templateId(id, loc.family)]);
-  const cal: Calendar = { ...mCal, years: YEARS.map((y) => blankYear(y, loc.crop_history[y] ?? 'Not on record')), real: false };
-  const nasa = nasaList(loc.nasa_datasets, loc.datasets, { power: 'live' }).list;
-  return { id, regional: null, cells: null, cal, strategies, news: [], ml: null, nasa, regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, extras: { openet: null, stress: null, insurance: null, water: null }, prov };
-}
-
 // ---------- satellite calendar (backend/field/out/<id>/calendar.json) -> 10-day steps ----------
 const CLS: Record<string, CoverClass> = { bare: 'b', partial: 'p', covered: 'c', water: 'w', unknown: 'u' };
 const doy = (y: number, m: number, d: number) => Math.round((Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 0)) / 864e5);
@@ -460,9 +482,11 @@ const nowOf = (b: any): NasaNow | null => { const r = b?.readings; if (!r) retur
 /** Which soil-moisture / groundwater readings are real. soilSource says whose soil reading it is. */
 export interface RegionalLive { smap: boolean; grace: boolean; soilSource?: 'smap' | 'grace_da' | null }
 /** Everything the field view needs. Resolves as soon as the answers' data is in; the 3D grid and the news arrive later through onLate. */
-export async function getField(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void): Promise<FieldBundle> {
-  const id = loc.id, mid = templateId(id, loc.family); // mid: the bundled example used until the API answers
-  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[mid]);
+export async function getField(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void, caPresets?: Location[]): Promise<FieldBundle> {
+  const id = loc.id, lite = isLite(id), presets = caPresets ?? MOCK_LOCS, borrow = lite ? nearestCaPreset(loc, presets) : id;
+  const mid = templateId(id, loc.family); // mid: the bundled example used until the API answers
+  const dataId = lite ? borrow : id;
+  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? borrow : mid]);
   const prov: ProvMap = {
     calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', 'illustrative'),
     grid: P('grid', '100 ft squares in the 3D view', 'mock', 'illustrative'),
@@ -471,41 +495,56 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', 'no real series served yet'),
     ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
   };
-  if (isLite(id)) return getSpotField(loc, prov);
-  const reg0 = (regional as unknown as ById<Regional>)[mid];
+  const reg0 = (regional as unknown as ById<Regional>)[lite ? borrow : mid];
   const used: Partial<Record<string, NasaStatus>> = loc.nasadem ? { nasadem: 'live' } : {};
   const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, { ...used, ...(soilExample() ? { smap: 'example' as const } : {}) }).list;
   let soilShown: 'smap' | 'grace_da' | null = null;
   const soilExample = () => soilShown == null; // the soil answer shows SMAP example numbers when no real soil series came back
-  if (!live) return { id, regional: reg0, cells: (mockCells as unknown as ById<CellGrid>)[mid], cal: mCal, strategies: mockStrats(mid), news: (mockNews as unknown as ById<NewsItem[]>)[mid], ml: null, nasa: nasa().map((d) => (d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)), regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, extras: { openet: null, stress: null, insurance: null, water: null }, prov };
-  const lateP = Promise.all([apiReal(`/api/locations/${id}/grid`, undefined, 30000), apiReal(`/api/locations/${id}/news`)]);
+  const borrowNote = lite ? `nearest prepared field (${borrow})` : '';
+  if (!live) {
+    const cells = lite ? (gridAt(loc, borrow) ?? gridAt(loc, 'car_colusa_rice')) : (mockCells as unknown as ById<CellGrid>)[mid];
+    return {
+      id, regional: reg0, cells, cal: calFor(mCal, id), strategies: lite ? [] : mockStrats(mid), news: lite ? [] : (mockNews as unknown as ById<NewsItem[]>)[mid],
+      ml: null, nasa: nasa().map((d) => (d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)),
+      regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null, extras: { openet: null, stress: null, insurance: null, water: null }, prov,
+    };
+  }
+  const fetchGrid = async () => {
+    const own = await apiReal(`/api/locations/${id}/grid`, undefined, 30000);
+    if (own?.features) return { grid: own, shifted: false };
+    if (!lite) return { grid: null, shifted: false };
+    const near = await apiReal(`/api/locations/${borrow}/grid`, undefined, 30000);
+    return { grid: near, shifted: !!near?.features };
+  };
+  const lateP = Promise.all([fetchGrid(), lite ? Promise.resolve(null) : apiReal(`/api/locations/${id}/news`)]);
   const [cal, hls, strat, mlCal, models, ns, now, oet, stressB, insB, waterB] = await Promise.all([
-    apiReal(`/api/locations/${id}/calendar`),
-    apiReal(`/api/locations/${id}/calendar?source=hls`),
-    apiReal(`/api/locations/${id}/strategies`),
-    apiReal(`/api/locations/${id}/calendar_ml`),
-    apiReal(`/api/locations/${id}/models`),
-    apiReal(`/api/locations/${id}/nasa_series`),
-    apiReal(`/api/locations/${id}/nasa_now`),
-    apiReal(`/api/locations/${id}/openet`),
-    apiReal(`/api/locations/${id}/stress`),
-    apiReal(`/api/locations/${id}/insurance`),
-    apiReal(`/api/locations/${id}/water_seen`),
+    apiReal(`/api/locations/${dataId}/calendar`),
+    apiReal(`/api/locations/${dataId}/calendar?source=hls`),
+    apiReal(`/api/locations/${id}/strategies`, undefined, lite ? 45000 : 12000),
+    lite ? apiReal(`/api/locations/${borrow}/calendar_ml`) : apiReal(`/api/locations/${id}/calendar_ml`),
+    lite ? apiReal(`/api/locations/${borrow}/models`) : apiReal(`/api/locations/${id}/models`),
+    apiReal(`/api/locations/${dataId}/nasa_series`),
+    lite ? null : apiReal(`/api/locations/${id}/nasa_now`),
+    lite ? null : apiReal(`/api/locations/${id}/openet`),
+    lite ? null : apiReal(`/api/locations/${id}/stress`),
+    lite ? null : apiReal(`/api/locations/${id}/insurance`),
+    lite ? null : apiReal(`/api/locations/${id}/water_seen`),
   ]);
-  // live: no stand-in squares in the 3D view while the real 30 m grid is still loading
-  let c = mCal, cells: CellGrid | null = null, strategies = mockStrats(mid), nws = id === mid ? (mockNews as unknown as ById<NewsItem[]>)[mid] : [];
+  // presets: no stand-in squares while the real grid loads; freeform shows a shifted nearest grid until the API answers
+  let c = calFor(mCal, id), cells: CellGrid | null = lite ? (gridAt(loc, borrow) ?? gridAt(loc, 'car_colusa_rice')) : null, strategies = mockStrats(mid), nws = id === mid ? (mockNews as unknown as ById<NewsItem[]>)[mid] : [];
   // NASA first: the HLS calendar wins when the API serves it (it says so in its sources)
   const isHls = !!hls?.years && /hls/i.test(JSON.stringify(hls.source ?? hls.sources ?? hls.calendar_source ?? hls.method ?? ''));
   const calSrc = isHls ? hls : cal;
   const ml = mlInfo(models, mlCal);
   if (calSrc?.years) {
-    c = convertCalendar(calSrc, mCal, loc.crop_history, mlCal?.years ? mlCal : null);
-    prov.calendar = P('calendar', 'Bare / green / flooded calendar', 'api', isHls ? 'NASA/USGS HLS, greenness rule' : 'Landsat (NASA/USGS) and Sentinel-2, greenness rule');
+    c = calFor(convertCalendar(calSrc, mCal, loc.crop_history, mlCal?.years ? mlCal : null), id);
+    prov.calendar = P('calendar', 'Bare / green / flooded calendar', 'api', `${isHls ? 'NASA/USGS HLS, greenness rule' : 'Landsat (NASA/USGS) and Sentinel-2, greenness rule'}${borrowNote ? ` · ${borrowNote}` : ''}`);
     used.landsat = 'live';
     if (isHls) used.hls = 'live';
   }
   if (mlCal?.years) prov.ml = P('ml', 'Machine-learning calendar (comparison)', orig(mlCal), `${ml?.model ?? 'random forest'}, Sentinel-2`);
-  if (strat?.items?.length) { strategies = strat.items.map(normStrategy); prov.strategies = P('strategies', 'Rotations, water need and scores', orig(strat), 'rotation model, NASA POWER weather'); used.power = 'live'; }
+  if (strat?.items?.length) { strategies = strat.items.map(normStrategy); prov.strategies = P('strategies', 'Rotations, water need and scores', orig(strat), lite ? 'rotation model, NASA POWER weather for this field' : 'rotation model, NASA POWER weather'); used.power = 'live'; }
+  else if (lite) prov.strategies = P('strategies', 'Rotations, water need and scores', 'mock', 'still loading or unavailable');
   let reg = reg0;
   // GET .../nasa_series: SMAP root-zone percentile when cached; otherwise NASA's GRACE-FO data-assimilation root-zone percentile
   const smapS = seriesOf(ns, 'smap_rootzone_pct'), gdaSoil = seriesOf(ns, 'grace_rootzone_pct');
@@ -517,14 +556,26 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     if (smapS) used.smap = 'live';
     if (gr || gdaSoil) used.grace = 'live';
     if (/imerg/.test(JSON.stringify(ns?.sources ?? ''))) used.imerg = 'live'; // rain so far this season reads IMERG from the daily record
-    prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', sm && gr ? 'api' : 'mock', `${soilSource === 'smap' ? 'SMAP' : soilSource === 'grace_da' ? 'GRACE-FO data assimilation (SMAP not cached yet)' : 'soil: example numbers'}; ${gr ? 'GRACE-FO groundwater' : 'groundwater: example numbers'}`);
+    prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', sm && gr ? 'api' : 'mock', `${soilSource === 'smap' ? 'SMAP' : soilSource === 'grace_da' ? 'GRACE-FO data assimilation (SMAP not cached yet)' : 'soil: example numbers'}; ${gr ? 'GRACE-FO groundwater' : 'groundwater: example numbers'}${borrowNote ? ` · ${borrowNote}` : ''}`);
+  } else if (lite && reg0) {
+    reg = reg0;
+    prov.regional = P('regional', 'Soil moisture and groundwater (NASA SMAP / GRACE-FO)', 'mock', `example numbers · ${borrowNote}`);
   }
-  const extras = extrasOf(oet, stressB, insB, waterB, ns, prov, used);
+  const extras = lite ? { openet: null, stress: null, insurance: null, water: null } : extrasOf(oet, stressB, insB, waterB, ns, prov, used);
   const first: FieldBundle = { id, regional: reg, cells, cal: c, strategies, news: nws, ml, nasa: nasa(), regionalLive: { smap: !!sm, grace: !!gr, soilSource }, nasaNow: nowOf(now), extras, prov };
-  lateP.then(([grid, news]) => {
+  lateP.then(([gridRes, news]) => {
     const p2 = { ...prov };
     let cells2: CellGrid | null = cells, nws2 = nws;
-    if (grid?.features) { cells2 = convertGrid(grid); p2.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells2!.features.length} squares, Sentinel-2 greenness`); }
+    const grid = gridRes?.grid;
+    if (grid?.features) {
+      let g = convertGrid(grid);
+      if (gridRes.shifted) {
+        const bc = presetCentroid(borrow, presets) ?? loc.centroid;
+        g = shiftGrid(g, loc.centroid.lon - bc.lon, loc.centroid.lat - bc.lat);
+      }
+      cells2 = g;
+      p2.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells2.features.length} squares, Sentinel-2 greenness${gridRes.shifted ? ` · shifted from ${borrow}` : ''}`);
+    }
     if (news?.items?.length) { nws2 = news.items.map(normNews); p2.news = P('news', 'News headlines', 'api', `${news.items.length} saved headlines`); }
     // after the caller has stored `first` (a late result must not be overwritten by the early one)
     if (cells2 !== cells || nws2 !== nws) setTimeout(() => onLate?.({ ...first, cells: cells2, news: nws2, prov: p2 }), 0);
