@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -23,8 +25,23 @@ android {
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
     }
 
+    // Release signing: reads a keystore.properties outside git (path in CROPLYTICS_KEYSTORE_PROPS,
+    // default ~/.croplytics/keystore.properties). Without it, release builds are left unsigned.
+    val keystorePropsFile = file(System.getenv("CROPLYTICS_KEYSTORE_PROPS")
+        ?: "${System.getProperty("user.home")}/.croplytics/keystore.properties")
+    val releaseSigning = if (keystorePropsFile.exists()) {
+        val props = Properties().apply { keystorePropsFile.inputStream().use { load(it) } }
+        signingConfigs.create("release") {
+            storeFile = file(props.getProperty("storeFile"))
+            storePassword = props.getProperty("storePassword")
+            keyAlias = props.getProperty("keyAlias")
+            keyPassword = props.getProperty("keyPassword")
+        }
+    } else null
+
     buildTypes {
         release {
+            releaseSigning?.let { signingConfig = it }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
