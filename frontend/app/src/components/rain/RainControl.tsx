@@ -46,7 +46,7 @@ export function WeatherControl(p: {
   const last = to ? new Date(to.getTime() - 1) : null; // valid_to is midnight UTC: the day before, locally
   return (
     <div className="rain-ctl" data-testid="rain-ctl">
-      <button className={`map-tool rain-btn ${p.on ? 'on' : ''}`} onClick={() => p.setOn(!p.on)} aria-pressed={p.on} aria-expanded={p.on} aria-label={t('merge2.rainAria')} title={t('merge2.rainAria')} data-testid="rain-btn">
+      <button className={`map-tool rain-btn ${p.on ? 'on' : ''}`} onClick={() => p.setOn(!p.on)} aria-pressed={p.on} aria-expanded={p.on} title={t('merge2.rainAria')} data-testid="rain-btn">
         <Icon name="drop" size={18} /><span>{t('merge.rain.btn')}</span>
       </button>
       {p.on && (

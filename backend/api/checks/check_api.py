@@ -878,12 +878,14 @@ _lca = [f for f in _lj["features"] if f["properties"].get("state") == "CA"]
 _lus = [f for f in _lj["features"] if f["properties"].get("country") == "US"]
 _lcan = [f for f in _lj["features"] if f["properties"].get("country") == "CAN"]
 _ok(_lr.status_code == 200 and "max-age=86400" in _lr.headers.get("cache-control", "") and len(_lbc) > 1500 and len(_lca) > 50 and len(_lus) > 600 and len(_lcan) > 3000, f"/api/lands: 200, cacheable 1 day, {len(_lus)} US lands ({len(_lca)} in CA), {len(_lcan)} Canada ({len(_lbc)} in BC)")
-_ok(len(_lr.content) < 6_500_000 and _lj["properties"].get("fetched") and len(_lj["properties"].get("sources", [])) == 3, f"/api/lands: {len(_lr.content) / 1e6:.2f} MB, fetch date and 3 sources recorded")
+_ok(len(_lr.content) < 8_000_000 and _lj["properties"].get("fetched") and len(_lj["properties"].get("sources", [])) == 3, f"/api/lands: {len(_lr.content) / 1e6:.2f} MB, fetch date and 3 sources recorded")
 _ok(all({"id", "name", "nation", "kind", "area_ha", "centroid", "country", "bbox"} <= set(f["properties"]) for f in _lj["features"]), "/api/lands: every land has id, name, nation, kind, area, centroid, country, bbox")
 _ok(any("Tule River" in f["properties"]["name"] for f in _lca) and any(f["properties"]["nation"] == "Splatsin" for f in _lbc), "/api/lands: Tule River (CA) and Splatsin (BC) present")
 _ov = client.get("/api/lands/overview")
 _ovj = _ov.json() if _ov.status_code == 200 else {"rows": []}
 _ok(_ov.status_code == 200 and len(_ovj["rows"]) == len(_lj["features"]) and len(_ov.content) < 1_500_000, f"/api/lands/overview: {len(_ovj['rows'])} lands, {len(_ov.content) / 1e3:.0f} KB raw")
+import gzip as _gz  # noqa: E402
+_ok(len(_gz.compress(_ov.content)) < 250_000, f"/api/lands/overview gzip {len(_gz.compress(_ov.content)) / 1e3:.0f} KB (< 250 KB)")
 _bx = client.get("/api/lands?bbox=-111,35,-108,37").json()
 _ok(any(f["properties"]["nation"] == "Navajo Nation" for f in _bx["features"]) and 0 < _bx["properties"]["returned"] < len(_lj["features"]) and all(f["properties"]["country"] == "US" for f in _bx["features"]), f"/api/lands?bbox= (Four Corners): {_bx['properties']['returned']} lands incl. Navajo Nation")
 _ok(all(f["properties"].get("province") == "SK" for f in client.get("/api/lands?country=CAN&province=SK").json()["features"]) and client.get("/api/lands?country=XX").status_code == 422 and client.get("/api/lands?bbox=1,2").status_code == 422, "/api/lands: province filter, bad country and bbox -> 422")
@@ -904,6 +906,11 @@ for _lf, _jur in _cases:
 _fj = client.get(_cases[2][0] and client.get(f"/api/lands/{_cases[2][0]['properties']['id']}").json()["tools"]["funding"]).json() if _cases[2][0] else {}
 _fids = {p["id"] for p in _fj.get("programs", [])}
 _ok(bool(_fj.get("programs")) and all(set(p["jurisdictions"]) & {"CAN"} for p in _fj["programs"]) and _fj.get("location_jurisdiction") == "CAN", f"Saskatchewan reserve funding: {len(_fids)} Canada programs, location jurisdiction CAN")
+for _lab, _pr in (("Nunavut Inuit Owned Land", lambda p: p.get("province") == "NU" and p["kind"] == "inuit_land" and p["nation"].startswith("Nunavut Tunngavik")), ("Inuvialuit land", lambda p: p["nation"] == "Inuvialuit" and p["kind"] == "inuit_land")):
+    _f = _pick(_lj["features"], _pr)
+    _d = client.get(f"/api/lands/{_f['properties']['id']}") if _f else None
+    _dj = _d.json() if _d is not None and _d.status_code == 200 else {}
+    _ok(bool(_dj) and _dj["jurisdiction"] == "CAN" and _dj["kind"] == "inuit_land" and _dj["kind_label"] == "Inuit land" and _dj["area_acres"] > 0 and _dj["nation"] and _dj["tools"]["funding"].startswith("/api/locations/pt_") and _dj.get("source"), f"{_lab}: /api/lands/{{id}} 200, schema-valid ('{_dj.get('name')}', {_dj.get('nation')})")
 _ok(client.get("/api/lands/nope").status_code == 404, "/api/lands/nope -> 404")
 # ---- end lands ================================================================================================
 # ---- Farming with a disability help ============================================================================

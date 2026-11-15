@@ -1,5 +1,5 @@
 /* First Nations lands: the Nation panel, the pick list and the map legend chip. Tokens only (docs/ui-redesign-spec.md). */
-:root { --land: #b4521f; --land-ink: #6e2f0e; --land-wash: #f6e4d6; }
+:root { --settle: #2f6f73; --settle-wash: #dcecec; --land: #b4521f; --land-ink: #6e2f0e; --land-wash: #f6e4d6; }
 
 /* the map legend chip (also the on/off toggle) */
 .lands-legend { position: absolute; z-index: 3; display: grid; grid-template-columns: auto 1fr; column-gap: var(--s-2); align-items: center; text-align: left; min-height: 44px; padding: 6px var(--s-4) 6px var(--s-3);
@@ -94,3 +94,8 @@
 .ll-region { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-2) var(--s-5) 0; font-size: var(--fs-small); color: var(--muted); }
 .ll-region select { flex: 1; min-height: 44px; border: 1px solid var(--line, #d8d2c6); border-radius: var(--r-md); padding: 0 var(--s-3); font: inherit; color: var(--ink, inherit); background: var(--surface, #fff); }
 .ll-dot.other { background: transparent; border: 2px solid var(--land); }
+
+/* Inuit and settlement lands: dusk teal, dashed outline */
+.ll-dot.inuit_land, .ll-dot.settlement_land { border: 2px dashed var(--settle); background: rgba(47, 111, 115, 0.2); }
+.lp-pill.inuit_land, .lp-pill.settlement_land { background: var(--settle-wash); border-color: var(--settle); color: #1d4649; }
+.lp-pill.inuit_land i, .lp-pill.settlement_land i { border: 2px dashed var(--settle); background: rgba(47, 111, 115, 0.3); }

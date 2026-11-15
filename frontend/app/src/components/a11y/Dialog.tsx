@@ -5,7 +5,7 @@ import { t } from '../../i18n';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, summary, [tabindex]:not([tabindex="-1"])';
 
-export function Dialog({ title, onClose, children, testid }: { title: string; onClose: () => void; children: ReactNode; testid?: string }) {
+export function Dialog({ title, onClose, children, testid, wide }: { title: string; onClose: () => void; children: ReactNode; testid?: string; wide?: boolean }) {
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null;
@@ -23,7 +23,7 @@ export function Dialog({ title, onClose, children, testid }: { title: string; on
   };
   return (
     <div className="dlg-back" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }} onKeyDown={onKey}>
-      <div className="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-title" ref={box} data-testid={testid}>
+      <div className={wide ? 'dlg wide' : 'dlg'} role="dialog" aria-modal="true" aria-labelledby="dlg-title" ref={box} data-testid={testid}>
         <header><h2 id="dlg-title">{title}</h2><button className="icon-btn" onClick={onClose} aria-label={t('ui.close')} data-autofocus><Icon name="close" size={20} /></button></header>
         <div className="dlg-body">{children}</div>
       </div>

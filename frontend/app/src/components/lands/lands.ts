@@ -1,13 +1,13 @@
-// First Nations lands (reserves and tribal lands): types and helpers shared by the map layer, the list and the Nation panel.
+// Indigenous lands (reserves, tribal, Inuit and settlement lands): types and helpers shared by the map layer, the list and the Nation panel.
 // Data: GET /api/lands (backend/nation/fetch_lands.py). Boundaries are legal or statistical lines, not traditional territory.
 import { t, locale, isEs } from '../../i18n';
 export interface LandProps {
-  id: string; name: string; nation: string; kind: 'reserve' | 'reservation' | 'trust' | 'other'; area_ha: number;
+  id: string; name: string; nation: string; kind: 'reserve' | 'reservation' | 'trust' | 'other' | 'inuit_land' | 'settlement_land'; area_ha: number;
   band_number?: string; country: 'US' | 'CAN'; province?: string; state?: string; centroid: [number, number]; bbox?: [number, number, number, number];
 }
 /** Polygon or MultiPolygon from the viewport route; a Point (at the centroid) from the light overview the list and the zoomed-out map use. */
 export type LandFeature = GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon | GeoJSON.Point, LandProps>;
-const KINDS = ['reserve', 'reservation', 'trust', 'other'] as const;
+const KINDS = ['reserve', 'reservation', 'trust', 'other', 'inuit_land', 'settlement_land'] as const;
 /** GET /api/lands/overview rows -> point features (one per land, no outlines). */
 export function fromOverview(b: { rows: (string | number)[][] }): LandFeature[] {
   return b.rows.map((r) => {
@@ -29,7 +29,10 @@ const STATES_ES: Record<string, string> = { GA: 'Georgia', HI: 'Hawái', LA: 'Lu
 /** State or province code of a land ("SK", "AZ"). */
 export const regionOf = (p: LandProps) => (p.province ?? p.state ?? '') as string;
 export const regionName = (r: string) => (isEs ? STATES_ES[r] : undefined) ?? STATES[r] ?? r;
-export const kindLabel = (k: string) => (k === 'reserve' ? t('land.reserve') : k === 'other' ? t('merge2.tribalArea') : t('land.tribal'));
+export const kindLabel = (k: string) => (k === 'reserve' ? t('land.reserve') : k === 'other' ? t('merge2.tribalArea') : k === 'inuit_land' ? t('land.inuit') : k === 'settlement_land' ? t('land.settlement') : t('land.tribal'));
+/** List filter groups: Reserves / Tribal / Inuit & settlement. */
+export type KindGroup = 'all' | 'reserves' | 'tribal' | 'inuit';
+export const kindGroup = (k: string): Exclude<KindGroup, 'all'> => (k === 'reserve' ? 'reserves' : k === 'inuit_land' || k === 'settlement_land' ? 'inuit' : 'tribal');
 const fmt = (n: number) => Math.round(n).toLocaleString(locale);
 /** "1,583 acres (641 ha)"; small lands show one decimal. */
 export function areaText(ha: number) {

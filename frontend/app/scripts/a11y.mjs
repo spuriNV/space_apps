@@ -49,6 +49,10 @@ for (const [label, w, h, prefs] of RUNS) {
     await page.click('[data-testid=shortcuts-btn]');
     await check(`${label} / Shortcuts dialog`, page);
   }
+  await page.evaluate(() => { location.hash = '#accessibility'; });
+  await page.waitForSelector('[data-testid=a11y-page]', { timeout: 10000 });
+  await page.waitForTimeout(800);
+  await check(`${label} / Accessibility page`, page);
   await ctx.close();
 }
 await browser.close();
