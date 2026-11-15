@@ -10,10 +10,17 @@ import type { Location, MineInfo } from './types';
 export const DRAFT_ID = 'my_draft';
 export interface MyRef { id: string; name: string }
 export type Polygon = { type: 'Polygon'; coordinates: number[][][] };
+export type MultiPolygon = { type: 'MultiPolygon'; coordinates: number[][][][] };
+/** What the API takes and returns: one outline (holes allowed) or several parts. */
+export type Geom = Polygon | MultiPolygon;
+/** Every part as its rings (shell first, then holes). */
+export const partsOf = (g: Geom): number[][][][] => (g.type === 'Polygon' ? [g.coordinates] : g.coordinates);
+/** Area in hectares: parts minus holes. */
+export const geomAreaHa = (g: Geom) => partsOf(g).reduce((a, rings) => a + rings.reduce((b, r, i) => b + (i === 0 ? 1 : -1) * ringAreaM2(openRing(r)), 0), 0) / 1e4;
 /** Why a call failed: `invalid` is a 422 whose `message` is the API's farmer-readable detail, shown as written. */
 export interface Failure { kind: 'invalid' | 'busy' | 'timeout' | 'network' | 'failed'; message: string; retryAfter?: number }
-export interface Submit { name: string; geometry: Polygon; /** a rename or redraw: this id is forgotten once the new one is saved */ replaceId?: string }
-interface ListItem { id: string; name: string; acres: number; area_ha: number; centroid: { lon: number; lat: number }; bbox: number[]; geometry: Polygon; computed?: boolean; family?: string; county_name?: string | null; last_crop?: string | null }
+export interface Submit { name: string; geometry: Geom; /** a rename or redraw: this id is forgotten once the new one is saved */ replaceId?: string }
+interface ListItem { id: string; name: string; acres: number; area_ha: number; centroid: { lon: number; lat: number }; bbox: number[]; geometry: Geom; computed?: boolean; family?: string; county_name?: string | null; last_crop?: string | null }
 
 // ---------- the saved list (every read and write guarded: storage can be blocked or full) ----------
 const KEY = 'myFields';
@@ -49,7 +56,7 @@ export function openRing(ring: number[][]): number[][] {
   if (out.length > 1 && out[0][0] === out[out.length - 1][0] && out[0][1] === out[out.length - 1][1]) out.pop();
   return out;
 }
-const centroidOf = (g: Polygon) => { const r = openRing(g.coordinates[0]); return { lon: r.reduce((a, p) => a + p[0], 0) / r.length, lat: r.reduce((a, p) => a + p[1], 0) / r.length }; };
+const centroidOf = (g: Geom) => { const r = partsOf(g).flatMap((p) => p[0]); const xs = r.map((p) => p[0]), ys = r.map((p) => p[1]); return { lon: (Math.min(...xs) + Math.max(...xs)) / 2, lat: (Math.min(...ys) + Math.max(...ys)) / 2 }; };
 
 // ---------- calls ----------
 type Ok<T> = { ok: true; body: T } | { ok: false; err: Failure };
@@ -72,7 +79,7 @@ async function call<T>(path: string, init: RequestInit | undefined, ms: number):
     return { ok: false, err: ctl.signal.aborted ? { kind: 'timeout', message: 'No answer after 50 seconds. Try again.' } : { kind: 'network', message: 'Could not reach the CropLytics server, or it is busy. Try again in a moment.' } };
   } finally { clearTimeout(h); }
 }
-export const createField = (name: string, geometry: Polygon) => call<Record<string, any>>('/my-fields', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, geometry }) }, 55000); // eslint-disable-line @typescript-eslint/no-explicit-any
+export const createField = (name: string, geometry: Geom) => call<Record<string, any>>('/my-fields', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, geometry }) }, 55000); // eslint-disable-line @typescript-eslint/no-explicit-any
 export const getField = (id: string) => call<Record<string, any>>(`/my-fields/${id}`, undefined, 55000); // eslint-disable-line @typescript-eslint/no-explicit-any
 async function listFields(ids: string[]): Promise<{ items: ListItem[]; invalid: string[] }> {
   const items: ListItem[] = [], invalid: string[] = [];
@@ -85,25 +92,26 @@ async function listFields(ids: string[]): Promise<{ items: ListItem[]; invalid: 
 
 // ---------- API payloads as Locations ----------
 const mineInfo = (name: string, b: Record<string, any> | null, extra?: Partial<MineInfo>): MineInfo => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
-  name, spans: b?.user_field?.spans, dwr_fields: b?.user_field?.dwr_fields, crop_mix: b?.user_field?.crop_mix, simplified: b?.user_field?.simplified ?? null, idNote: b?.id_note ?? null, ...extra });
+  name, geometry: b?.geometry, parts: b?.user_field?.parts, spans: b?.user_field?.spans, dwr_fields: b?.user_field?.dwr_fields, crop_mix: b?.user_field?.crop_mix, simplified: b?.user_field?.simplified ?? null, idNote: b?.id_note ?? null, ...extra });
 /** The full payload (POST or GET /api/my-fields/{id}) as a Location and its provenance. */
 export function fromPayload(b: Record<string, any>): { loc: Location; prov: ProvMap } { // eslint-disable-line @typescript-eslint/no-explicit-any
   const { loc, prov } = realLocation(baseFor(b), b);
   const name: string = b.name ?? b.farmer_name ?? 'My field';
   const sec = (b.sections ?? {}) as Record<string, { cropland?: boolean }>;
   prov.outline = P('outline', 'Your outline', 'api', 'The outline you drew');
-  return { prov, loc: { ...loc, events: [], farmer_name: name, name, short_name: name, county_name: b.county_name ?? null, county: b.county_name ?? undefined,
+  const first = b.geometry?.type === 'MultiPolygon' ? { type: 'Polygon' as const, coordinates: b.geometry.coordinates[0] } : b.geometry;
+  return { prov, loc: { ...loc, geometry: first ?? loc.geometry, events: [], farmer_name: name, name, short_name: name, county_name: b.county_name ?? null, county: b.county_name ?? undefined,
     spot: { state: 'ready', lat: b.centroid.lat, lon: b.centroid.lon, sections: b.sections, fallbackSquare: false, cropland: sec.family?.cropland !== false }, mine: mineInfo(name, b) } };
 }
 /** A drawn field before its analysis is in: its outline and name, the panel in its skeleton state. */
-function stub(id: string, name: string, g: Polygon, extra: { areaHa?: number; family?: string; county?: string | null; lastCrop?: string | null; error?: Failure | null }): Location {
+function stub(id: string, name: string, g: Geom, extra: { areaHa?: number; family?: string; county?: string | null; lastCrop?: string | null; error?: Failure | null }): Location {
   const base = baseFor({ id, farmer_name: name, family: extra.family ?? 'forage', county_name: extra.county ?? undefined });
-  const c = centroidOf(g), ha = extra.areaHa ?? ringAreaM2(openRing(g.coordinates[0])) / 1e4;
+  const c = centroidOf(g), ha = extra.areaHa ?? geomAreaHa(g);
   return { ...base, id, name, short_name: name, farmer_name: name, headline: '', events: [], county: extra.county ?? undefined, county_name: extra.county ?? null, family: extra.family ?? 'other', region: 'ca', dwr_id: undefined,
-    geometry: g, centroid: c, area_ha: { value: ha, low: null, high: null, unit: 'ha', method: 'computed' }, crop_history: {},
+    geometry: { type: 'Polygon', coordinates: partsOf(g)[0] }, centroid: c, area_ha: { value: ha, low: null, high: null, unit: 'ha', method: 'computed' }, crop_history: {},
     water: { ...base.water, allocation_input: { unit: 'acre-ft/acre', value: extra.family === 'rice' ? 5.0 : 3.0 } },
     spot: extra.error ? { state: 'error', lat: c.lat, lon: c.lon, error: extra.error.message } : { state: 'loading', lat: c.lat, lon: c.lon },
-    mine: { name, draft: true, lastCrop: extra.lastCrop ?? null, errorKind: extra.error?.kind } };
+    mine: { name, draft: true, geometry: g, lastCrop: extra.lastCrop ?? null, errorKind: extra.error?.kind } };
 }
 
 // ---------- the hook ----------

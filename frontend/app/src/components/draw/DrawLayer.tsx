@@ -7,8 +7,8 @@ import './draw.css';
 import Icon from '../Icons';
 import { Seg } from '../ui/Seg';
 import { Modal } from './Modal';
-import type { DrawHandle, DrawKind } from './terraDraw';
-import { DRAFT_ID, nextName, openRing, ringAcres, type MyFields, type Polygon, type Submit } from '../../myFields';
+import type { DrawHandle, DrawKind, DrawRole, Shape } from './terraDraw';
+import { DRAFT_ID, nextName, openRing, ringAcres, type Geom, type MyFields, type Submit } from '../../myFields';
 import { acres as acresOf, county } from '../ui/shared';
 import type { Location } from '../../types';
 
@@ -28,7 +28,7 @@ interface Props {
   onOpenShared: (id: string) => void;
 }
 type Phase = 'off' | 'draw' | 'edit';
-type Dlg = { t: 'name'; mode: 'new' | 'rename'; geometry: Polygon; loc?: Location } | { t: 'delete'; loc: Location };
+type Dlg = { t: 'name'; mode: 'new' | 'rename'; geometry: Geom; loc?: Location } | { t: 'delete'; loc: Location };
 const MIN_AC = 1.24, MAX_AC = 4942; // 0.5 ha and 2,000 ha: the API's limits, shown as hints while drawing
 const phoneNow = () => window.matchMedia('(max-width: 640px)').matches;
 const fmtAc = (a: number) => (a < 10 ? a.toFixed(1) : Math.round(a).toLocaleString('en-US'));
@@ -38,6 +38,9 @@ export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p,
   const [phase, setPhase] = useState<Phase>('off');
   const [kind, setKind] = useState<DrawKind>('rect');
   const [acres, setAcres] = useState<number | null>(null);
+  const [role, setRole] = useState<DrawRole>('part');
+  const [count, setCount] = useState(0); // shapes on the map
+  const [err, setErr] = useState<string | null>(null);
   const [redraw, setRedraw] = useState<{ name: string; replaceId?: string } | null>(null);
   const [dlg, setDlg] = useState<Dlg | null>(null);
   const draw = useRef<DrawHandle | null>(null);
@@ -45,7 +48,7 @@ export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p,
   const live = useRef(p);
   live.current = p;
 
-  const begin = async (k: DrawKind, load?: Polygon) => {
+  const begin = async (k: DrawKind, load?: Geom) => {
     const map = live.current.getMap();
     if (!map) return;
     const my = ++token.current;
@@ -54,31 +57,31 @@ export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p,
     draw.current?.destroy();
     try {
       draw.current = mod.createDraw(map, {
-        onRing: (r) => { const o = r ? openRing(r) : []; setAcres(o.length >= 3 ? ringAcres(o) : null); },
+        onShapes: (ss: Shape[]) => { setCount(ss.length); const a = ss.reduce((t, s) => { const o = openRing(s.ring); return o.length >= 3 ? t + (s.hole ? -1 : 1) * ringAcres(o) : t; }, 0); setAcres(ss.length && a > 0 ? a : null); },
         onFinished: () => setPhase('edit'),
       });
-      if (load) draw.current.load(load); else draw.current.mode(k);
+      if (load) draw.current.load(load); else draw.current.mode(k, 'part');
     } catch { setPhase('off'); live.current.onActive(false); }
   };
-  const end = () => { token.current++; draw.current?.destroy(); draw.current = null; setPhase('off'); setAcres(null); setRedraw(null); setDlg(null); };
+  const end = () => { token.current++; draw.current?.destroy(); draw.current = null; setPhase('off'); setAcres(null); setRedraw(null); setDlg(null); setCount(0); setErr(null); setRole('part'); };
   const cancel = () => { end(); p.onActive(false); };
   useEffect(() => () => { token.current++; draw.current?.destroy(); }, []);
 
   const save = (a: Submit) => { end(); p.onActive(false); p.onSubmitting(); mf.submit(a).then(p.onSaved); };
   const start = () => {
     const k: DrawKind = phoneNow() ? 'shape' : 'rect';
-    setKind(k); setPhase('draw'); setAcres(null); setRedraw(null); p.onActive(true); begin(k);
+    setKind(k); setRole('part'); setPhase('draw'); setAcres(null); setErr(null); setRedraw(null); p.onActive(true); begin(k);
   };
   useImperativeHandle(ref, () => ({
     start,
     redraw(loc) {
       const replaceId = loc.id === DRAFT_ID ? mf.draft?.args.replaceId : loc.id;
       if (loc.id === DRAFT_ID) mf.dropDraft();
-      setRedraw({ name: loc.mine?.name ?? 'My field', replaceId }); setPhase('edit'); setAcres(null);
+      setRedraw({ name: loc.mine?.name ?? 'My field', replaceId }); setPhase('edit'); setAcres(null); setErr(null); setRole('part');
       p.onActive(true, replaceId ?? null);
-      begin(kind, loc.geometry);
+      begin(kind, loc.mine?.geometry ?? loc.geometry);
     },
-    rename(loc) { setDlg({ t: 'name', mode: 'rename', geometry: loc.geometry, loc }); },
+    rename(loc) { setDlg({ t: 'name', mode: 'rename', geometry: loc.mine?.geometry ?? loc.geometry, loc }); },
     del(loc) { setDlg({ t: 'delete', loc }); },
   }));
 
@@ -96,13 +99,15 @@ export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p,
   useEffect(() => { if (sh?.known && sh.loc) { mf.declineShared(); p.onOpenShared(sh.id); } /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [sh]);
 
   const next = () => {
-    const g = draw.current?.polygon();
-    if (!g) return;
-    if (redraw) save({ name: redraw.name, geometry: g, replaceId: redraw.replaceId });
-    else setDlg({ t: 'name', mode: 'new', geometry: g });
+    const r = draw.current?.geometry();
+    if (!r) return;
+    setErr(r.error ?? null);
+    if (!r.geom) return;
+    if (redraw) save({ name: redraw.name, geometry: r.geom, replaceId: redraw.replaceId });
+    else setDlg({ t: 'name', mode: 'new', geometry: r.geom });
   };
-  const hint = phase === 'edit' ? 'Drag a corner to reshape it. Drag a small dot to add a corner.'
-    : kind === 'rect' ? 'Drag across the field, or tap two opposite corners.' : 'Tap each corner of the field. Tap the first point to finish.';
+  const HINT: Record<DrawKind, string> = { rect: 'Drag across the field, or tap two opposite corners.', circle: 'Drag out from the middle of the field.', shape: 'Tap each corner of the field. Tap the first point to finish.', free: 'Draw around the field with your finger or the mouse.' };
+  const hint = phase === 'edit' ? 'Drag a corner to reshape it. Drag a small dot to add a corner.' : role === 'hole' ? `Draw a hole inside a shape. ${HINT[kind]}` : count ? `Another shape for the same field. ${HINT[kind]}` : HINT[kind];
   const size = acres == null ? null : acres < MIN_AC ? `Too small: the smallest field is ${MIN_AC.toFixed(1)} acres.` : acres > MAX_AC ? 'Too big: the largest field is about 5,000 acres.' : null;
 
   return (
@@ -114,12 +119,20 @@ export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p,
             <h2>{redraw ? `Redraw ${redraw.name}` : 'Draw a field'}</h2>
             {acres != null && <p className={`draw-acres ${size ? 'bad' : ''}`} aria-live="polite" data-testid="draw-acres"><b className="tnum">{fmtAc(acres)}</b> acres</p>}
           </div>
-          <p className="draw-hint">{size ?? hint}</p>
+          <p className="draw-hint" data-testid="draw-hint">{err ?? size ?? hint}</p>
+          {phase === 'draw' && (
+            <div className="draw-row">
+              <Seg label="Drawing tool" value={kind} onChange={(k) => { setKind(k); draw.current?.mode(k, role); }} testid="draw-kind" className="draw-seg"
+                options={[{ v: 'rect', label: <><Icon name="rect" size={18} />Rectangle</>, testid: 'draw-rect' }, { v: 'circle', label: <><Icon name="circle" size={18} />Circle</>, testid: 'draw-circle' },
+                  { v: 'shape', label: <><Icon name="shape" size={18} />Shape</>, testid: 'draw-shape' }, { v: 'free', label: <><Icon name="free" size={18} />Freehand</>, testid: 'draw-free' }]} />
+            </div>
+          )}
           <div className="draw-row">
-            {phase === 'draw' && !redraw
-              ? <Seg label="Drawing tool" value={kind} onChange={(k) => { setKind(k); setAcres(null); draw.current?.mode(k); }} testid="draw-kind"
-                  options={[{ v: 'rect', label: <><Icon name="rect" size={18} />Rectangle</>, testid: 'draw-rect' }, { v: 'shape', label: <><Icon name="shape" size={18} />Shape</>, testid: 'draw-shape' }]} />
-              : <button className="btn btn-outline" onClick={() => { setPhase('draw'); setAcres(null); setRedraw(null); draw.current?.mode(kind); }} data-testid="draw-again">Start over</button>}
+            {phase === 'edit' && <button className="btn btn-secondary" onClick={() => { setRole('part'); setPhase('draw'); draw.current?.mode(kind, 'part'); }} data-testid="draw-add"><Icon name="plus" />Add another shape</button>}
+            {phase === 'edit' && <button className="btn btn-secondary" onClick={() => { setRole('hole'); setPhase('draw'); draw.current?.mode(kind, 'hole'); }} data-testid="draw-hole"><Icon name="minus" />Cut a hole</button>}
+            {phase === 'edit' && count > 1 && <button className="btn btn-outline" onClick={() => draw.current?.removeSelected()} data-testid="draw-remove"><Icon name="trash" />Remove shape</button>}
+            {phase === 'draw' && count > 0 && <button className="btn btn-outline" onClick={() => { setRole('part'); draw.current?.edit(); }} data-testid="draw-back">Back to editing</button>}
+            {(phase === 'edit' || count > 0) && <button className="btn btn-outline" onClick={() => { setPhase('draw'); setAcres(null); setRedraw(null); setErr(null); setRole('part'); draw.current?.clear(); draw.current?.mode(kind, 'part'); }} data-testid="draw-again">Start over</button>}
             <span className="draw-gap" />
             <button className="btn btn-outline" onClick={cancel} data-testid="draw-cancel">Cancel</button>
             {phase === 'edit' && <button className="btn btn-primary" onClick={next} data-testid="draw-next">{redraw ? 'Save shape' : 'Name it'}</button>}

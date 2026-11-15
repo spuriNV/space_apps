@@ -90,9 +90,17 @@ export function MineFacts({ loc }: { loc: Location }) {
   const years = Object.keys(m.crop_mix ?? {}).map(Number).sort((a, b) => b - a);
   const mixText = (y: number) => (m.crop_mix![y] ?? []).map((c) => `${cropName(c.crop)} ${Math.round(c.share * 100)}%`).join(', ');
   const dwr = m.dwr_fields ?? [], dwrAc = dwr.reduce((a, f) => a + (f.acres ?? 0), 0);
-  if (!years.length && !dwr.length) return null;
+  const parts = m.parts?.items ?? [];
+  const showParts = parts.length > 1 || parts.some((x) => x.holes > 0);
+  if (!years.length && !dwr.length && !showParts) return null;
   return (
     <dl className="answers mine-facts" data-testid="mine-facts">
+      {showParts && (
+        <div className="ans" data-testid="mine-parts">
+          <dt>Parts of this field</dt>
+          <dd>{parts.map((x) => <span key={x.part}><b className="mine-yr">Part {x.part}</b> {x.acres >= 10 ? Math.round(x.acres) : x.acres.toFixed(1)} acres{x.holes ? `, ${x.holes} hole${x.holes === 1 ? '' : 's'}` : ''}</span>)}</dd>
+        </div>
+      )}
       {years.length > 0 && (
         <div className="ans" data-testid="mine-mix">
           <dt>What is growing inside the outline?</dt>
@@ -122,12 +130,15 @@ export function MineFacts({ loc }: { loc: Location }) {
 
 /** A small outline of the field (no satellite picture exists for a field the user drew). */
 function Outline({ loc }: { loc: Location }) {
-  const ring = loc.geometry.coordinates[0];
+  const g = loc.mine?.geometry ?? loc.geometry;
+  const polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
   const k = Math.cos((loc.centroid.lat * Math.PI) / 180);
-  const xs = ring.map((p) => p[0] * k), ys = ring.map((p) => -p[1]);
+  const all = polys.flatMap((p) => p[0]);
+  const xs = all.map((p) => p[0] * k), ys = all.map((p) => -p[1]);
   const x0 = Math.min(...xs), y0 = Math.min(...ys), w = Math.max(...xs) - x0 || 1e-6, h = Math.max(...ys) - y0 || 1e-6, s = 40 / Math.max(w, h);
   const ox = (48 - w * s) / 2, oy = (48 - h * s) / 2;
-  return <svg viewBox="0 0 48 48" aria-hidden="true"><polygon points={ring.map((_, i) => `${((xs[i] - x0) * s + ox).toFixed(1)},${((ys[i] - y0) * s + oy).toFixed(1)}`).join(' ')} /></svg>;
+  const d = polys.map((rings) => rings.map((r) => 'M' + r.map((p) => `${((p[0] * k - x0) * s + ox).toFixed(1)},${((-p[1] - y0) * s + oy).toFixed(1)}`).join('L') + 'Z').join('')).join('');
+  return <svg viewBox="0 0 48 48" aria-hidden="true"><path d={d} fillRule="evenodd" /></svg>;
 }
 
 /** "My fields" at the top of the pick list: one row per drawn field (name, acres, last crop) and the way to draw another. */

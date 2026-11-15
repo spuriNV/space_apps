@@ -33,6 +33,8 @@ const P: Record<string, string> = {
   copy: 'M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z',
   rect: 'M4 6h16v12H4V6zm2 2v8h12V8H6z',
   shape: 'M12 3 21 9.5 17.5 20h-11L3 9.5 12 3zm0 2.5L5.6 10.2 8 18h8l2.4-7.8L12 5.5z',
+  circle: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z',
+  free: 'M3 17c3-8 5-9 7-5s3 4 5-1c1-2 3-3 6-3v2c-2 0-3 1-4 3-2 5-5 5-7 1-1-2-2-1-4 5l-3-2z',
   warn: 'M12 3 1.5 21h21L12 3zm-1 7h2v5h-2v-5zm0 7h2v2h-2v-2z',
 };
 export default function Icon({ name, size = 20, className }: { name: keyof typeof P | string; size?: number; className?: string }) {

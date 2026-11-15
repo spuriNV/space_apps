@@ -69,7 +69,7 @@
 .mine-thumb { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: var(--r-sm); background: var(--panel-2); transition: box-shadow var(--dur-2) var(--ease-std); }
 .mine-row.on .mine-thumb { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--accent-outline); }
 .mine-thumb svg { width: 48px; height: 48px; overflow: visible; }
-.mine-thumb polygon { fill: rgba(155, 232, 138, 0.35); stroke: #3f8a3a; stroke-width: 2.4; stroke-linejoin: round; }
+.mine-thumb path, .mine-thumb polygon { fill: rgba(155, 232, 138, 0.35); stroke: #3f8a3a; stroke-width: 2.4; stroke-linejoin: round; }
 .mine-group + .pk-group, .mine-group ~ div > .pk-list { margin-top: 0; }
 
 @media (max-width: 640px) {
@@ -81,3 +81,8 @@
   .dlg { padding: var(--s-5); }
   .mine-pop { right: 0; }
 }
+
+.draw-row + .draw-row { margin-top: var(--s-2); }
+.draw-seg { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.draw-seg button { flex: none; }
+@media (max-width: 640px) { .draw-seg button svg { display: none; } .draw-row .btn { padding: 0 var(--s-4); } }

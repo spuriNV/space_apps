@@ -18,6 +18,9 @@ export interface SpotInfo { state: 'loading' | 'ready' | 'error'; lat: number; l
 /** What the API says about a drawn field (`user_field`) plus the client's own flags. */
 export interface MineInfo {
   name: string;
+  /** the full outline: a Polygon, or a MultiPolygon when the field has several parts (`geometry` of the Location is its first part) */
+  geometry?: { type: 'Polygon'; coordinates: number[][][] } | { type: 'MultiPolygon'; coordinates: number[][][][] };
+  parts?: { count: number; items: { part: number; area_ha: number; acres: number; holes: number }[] };
   /** a stand-in while the field is saved (skeleton panel) or the list item before the full payload arrives */
   draft?: boolean;
   spans?: { counties?: string[]; districts?: string[]; gsas?: string[]; subbasins?: string[] };

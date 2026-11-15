@@ -234,7 +234,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    (map.getSource('field') as GeoJSONSource).setData(fc(p.locations.map((l) => ({ type: 'Feature', properties: { id: l.id, selected: l.id === p.selected?.id, mine: !!l.mine }, geometry: l.geometry }))));
+    (map.getSource('field') as GeoJSONSource).setData(fc(p.locations.map((l) => ({ type: 'Feature', properties: { id: l.id, selected: l.id === p.selected?.id, mine: !!l.mine }, geometry: l.mine?.geometry ?? l.geometry }))));
     const fps: unknown[] = [], grids: unknown[] = [], lbls: unknown[] = [];
     if (p.selected?.spot?.fallbackSquare) {
       const b = bbox(p.selected);
@@ -368,7 +368,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     resetNorth() { mapRef.current!.easeTo({ bearing: 0, duration: 300 }); },
     toggle3D() { const m = mapRef.current!; m.easeTo({ pitch: m.getPitch() > 5 ? 0 : 58, duration: 400 }); },
     fitField(loc) {
-      const m = mapRef.current!, ring = loc.geometry.coordinates[0], xs = ring.map((q) => q[0]), ys = ring.map((q) => q[1]);
+      const g = loc.mine?.geometry ?? loc.geometry, ring = (g.type === 'Polygon' ? [g.coordinates[0]] : g.coordinates.map((x) => x[0])).flat(), m = mapRef.current!, xs = ring.map((q) => q[0]), ys = ring.map((q) => q[1]);
       programmatic.current = true;
       m.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: { ...pad(), top: 90, bottom: pad().bottom + 24, right: pad().right + 40, left: pad().left + 40 }, maxZoom: 16.2, pitch: 0, bearing: 0, duration: 900, easing: fly.easing });
     },
