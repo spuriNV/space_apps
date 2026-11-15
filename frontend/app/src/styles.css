@@ -1920,3 +1920,21 @@ button.res-legend:not(.on) { opacity: 0.85; } button.res-legend:not(.on) i { bac
 @media (max-width: 700px) and (min-width: 641px) { .tb-field { max-width: 136px; } .tb-brand { padding: 0 10px; } }
 @media (max-width: 660px) and (min-width: 641px) { .tb-field { max-width: 126px; } }
 .lc-step output small { white-space: nowrap; } .limit-ctl .lc-row label { min-width: 0; flex: 1; }
+
+/* ---------- a11y1: Pick is a draggable sheet on a phone (peek 35%), scroller clears the tab bar ---------- */
+.picker2 { display: flex; flex-direction: column; overflow: hidden; }
+.pk-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--tint-2) transparent; }
+@media (max-width: 640px) {
+  .picker2.pick-sheet { left: 0; right: 0; width: auto; top: auto; bottom: var(--tabs-h); max-height: none;
+    height: calc(100% - var(--bar-h) - 3px - var(--tabs-h) - 8px); border-radius: var(--r-xl) var(--r-xl) 0 0; box-shadow: var(--e-sheet);
+    transform: translateY(var(--sheet-off, 65%)); transition: transform var(--dur-4) var(--ease-spring); animation: sheet-up 420ms var(--ease-drawer) backwards; touch-action: none; }
+  .picker2.dragging { transition: none; }
+  .picker2:not(.sheet-full) .pk-scroll { overflow: hidden; touch-action: none; }
+  .picker2.sheet-full .pk-scroll { touch-action: pan-y; }
+  .pk-head { padding-top: var(--s-1); }
+  .picker2 .fp-grab { display: grid; }
+  .pk-scroll, .fpanel .panel-scroll { padding-bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom, 0px)); }
+  .mob-tabs { background: var(--panel); z-index: 60; }
+}
+:root { --ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1); }
+@media (max-width: 640px) { .fpanel:not(.dragging) { transition: transform 420ms var(--ease-spring); } }

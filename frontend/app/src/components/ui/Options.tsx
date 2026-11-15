@@ -11,7 +11,7 @@ import Icon from '../Icons';
 import { useEffect, useRef, useState } from 'react';
 import { AboutField, StepLine, Workflow, CROP_COL, rotName, waterGap, EventLog, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
 import { ThisWeek } from '../week/ThisWeek';
-import { Answer, KeyFacts, LimitControl, StepShell, type Tone } from './StepShell';
+import { Answer, KeyFacts, LimitControl, StepShell, useSheet, type Tone } from './StepShell';
 import { useDetail } from './Detail';
 import { FirstNationsCard } from './FirstNations';
 import { SalmonPanel } from '../salmon/SalmonPanel';
@@ -165,7 +165,8 @@ function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategi
  *  "British Columbia" heading (and chip); without one, BC is a quiet "not set up yet" row at the bottom. */
 /** Torres-Martinez Reservation farm field (check_api): opens Nation tools with tribal land status. */
 export const NATION_EXAMPLE = { lat: 33.51, lon: -116.12, label: 'Nation tools example', sub: 'Torres-Martinez Reservation farm field · tribal land · live tap' };
-export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onNationsExample?: () => void; onNationExample?: () => void }) {
+export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onNationsExample?: () => void; onNationExample?: () => void; onSheet?: (visiblePx: number) => void }) {
+  const sheet = useSheet(p.onSheet, { initial: 'peek', peek: () => Math.round(window.innerHeight * 0.35) });
   const thumbs = useThumbs();
   const [q, setQ] = useState('');
   const [fam, setFam] = useState<string | null>(null);
@@ -176,7 +177,9 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
   const shownCA = p.locations.filter((l) => !isBC(l) && hit(l)), shownBC = p.locations.filter((l) => isBC(l) && hit(l));
   const shown = [...shownCA, ...shownBC];
   return (
-    <section className="picker2" data-testid="fields-panel">
+    <section ref={sheet.ref} className={`picker2 pick-sheet sheet-${sheet.snap}`} data-testid="fields-panel" aria-label="Pick your field" {...sheet.handlers}>
+      <button className="fp-grab" onClick={sheet.cycle} onKeyDown={sheet.onKey} aria-label="Resize the panel" data-testid="grab"><i /></button>
+      <div className="pk-scroll">
       <header className="pk-head">
         <h1>Pick your field</h1>
         {p.onClose && <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={20} /></button>}
@@ -241,6 +244,7 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
         <summary>How CropLytics works <small>optional reading</small></summary>
         <Workflow />
       </details>
+      </div>
     </section>
   );
 }

@@ -135,15 +135,16 @@ const PHONE = '(max-width: 640px)';
  *  transform only; on release it goes to the nearest snap point, or to the next one in the direction of a fling
  *  (faster than 0.5 px/ms). Tap the handle to cycle; arrow keys on the handle step. Content scrolls only at full;
  *  below that, a drag anywhere on the sheet moves the sheet (the Google Maps behaviour). */
-export function useSheet(onSheet?: (visiblePx: number) => void) {
+export function useSheet(onSheet?: (visiblePx: number) => void, opts?: { initial?: Snap; peek?: () => number }) {
   const ref = useRef<HTMLElement>(null);
-  const [snap, setSnap] = useState<Snap>('half');
+  const [snap, setSnap] = useState<Snap>(opts?.initial ?? 'half');
+  const peekPx = () => opts?.peek?.() ?? 128;
   const drag = useRef<{ id: number; y0: number; off0: number; last: number; t: number; v: number; on: boolean } | null>(null);
   const dragged = useRef(false);
   const phone = () => window.matchMedia(PHONE).matches;
   const offOf = (s: Snap) => {
     const h = ref.current?.offsetHeight ?? 0;
-    return s === 'full' ? 0 : Math.max(0, h - (s === 'half' ? Math.round(window.innerHeight * 0.52) : 128));
+    return s === 'full' ? 0 : Math.max(0, h - (s === 'half' ? Math.round(window.innerHeight * 0.52) : peekPx()));
   };
   const curOff = () => { const el = ref.current; return el ? new DOMMatrixReadOnly(getComputedStyle(el).transform).m42 : 0; };
   const go = useCallback((s: Snap) => {
@@ -164,7 +165,7 @@ export function useSheet(onSheet?: (visiblePx: number) => void) {
   }, [snap]);
   const onPointerDown = (e: RPointerEvent) => {
     if (!phone() || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    const handle = (e.target as Element).closest('.fp-grab, .fp-bar, .fp-head');
+    const handle = (e.target as Element).closest('.fp-grab, .fp-bar, .fp-head, .pk-head');
     if (snap === 'full' && !handle) return; // at full the content scrolls; the handle and header still move the sheet
     drag.current = { id: e.pointerId, y0: e.clientY, off0: curOff(), last: e.clientY, t: e.timeStamp, v: 0, on: false };
     // a mouse drag from the handle or header keeps its moves even when it leaves the sheet (touch has implicit capture)
