@@ -132,6 +132,8 @@ function useSheet(onSheet?: (visiblePx: number) => void) {
     const handle = (e.target as Element).closest('.fp-grab, .fp-bar, .fp-head');
     if (snap === 'full' && !handle) return; // at full the content scrolls; the handle and header still move the sheet
     drag.current = { id: e.pointerId, y0: e.clientY, off0: curOff(), last: e.clientY, t: e.timeStamp, v: 0, on: false };
+    // a mouse drag from the handle or header keeps its moves even when it leaves the sheet (touch has implicit capture)
+    if (handle && e.pointerType === 'mouse') (handle as HTMLElement).setPointerCapture(e.pointerId);
   };
   const onPointerMove = (e: RPointerEvent) => {
     const d = drag.current, el = ref.current;
@@ -140,7 +142,7 @@ function useSheet(onSheet?: (visiblePx: number) => void) {
     if (!d.on) {
       if (Math.abs(dy) < 6) return;
       if (snap === 'full' && dy < 0) { drag.current = null; return; } // already at the top: let the content scroll
-      d.on = true; el.setPointerCapture(e.pointerId); el.classList.add('dragging');
+      d.on = true; if (!el.hasPointerCapture(e.pointerId) && !(e.target as Element).hasPointerCapture?.(e.pointerId)) el.setPointerCapture(e.pointerId); el.classList.add('dragging');
     }
     const max = offOf('peek');
     let off = d.off0 + dy;

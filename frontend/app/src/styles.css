@@ -1393,6 +1393,10 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 .ys-play:active { transform: scale(0.97); background: var(--accent-pressed); }
 .yr-row.cur { border-radius: 6px; }
 
+.c2-ctl .seg { display: flex; }
+.c2-ctl .seg button { flex: 1 1 auto; padding: 0 8px; }
+.ys-md .more-detail { min-height: 44px; margin: 0; padding: 6px 12px; }
+
 /* ---------- map layers drawer ---------- */
 .drawer { right: var(--s-3); top: calc(var(--bar-h) + 3px + var(--s-3)); border: 0; border-radius: var(--r-lg); box-shadow: var(--e2); transform-origin: right center; animation: panel-in-right var(--dur-4) var(--ease-enter) backwards; }
 .layer { border-radius: var(--r-md); transition: background-color var(--dur-1) var(--ease-std); }
@@ -1518,3 +1522,8 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
   .reopen { bottom: calc(var(--tabs-h) + 10px); }
   .icon-btn { width: 44px; height: 44px; }
 }
+.fpanel .panel-scroll { scroll-padding-top: 72px; }
+.nasa-more { border: 0; border-radius: var(--r-md); background: var(--panel-2); }
+.nasa-more summary { border-radius: var(--r-md); }
+.nasa-more[open] summary { border-bottom-color: var(--line); border-radius: var(--r-md) var(--r-md) 0 0; }
+.iss img { border: 0; border-radius: var(--r-sm); }

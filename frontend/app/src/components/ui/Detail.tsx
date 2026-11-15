@@ -19,7 +19,7 @@ export function MoreDetail({ what }: { what: string }) {
   const d = useDetail();
   return (
     <button className={`more-detail ${d.on ? 'on' : ''}`} onClick={() => d.set(!d.on)} aria-expanded={d.on} data-testid="more-detail">
-      <span><b>{d.on ? 'Less detail' : 'More detail'}</b><small>{d.on ? 'Back to the short version' : what}</small></span><Icon name="down" size={20} />
+      <span><b>{d.on ? 'Less detail' : 'More detail'}</b><small>{d.on ? 'Back to the short version' : what}</small></span><Icon name="chevdown" size={20} />
     </button>
   );
 }
