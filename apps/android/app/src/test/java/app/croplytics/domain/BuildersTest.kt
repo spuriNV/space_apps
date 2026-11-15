@@ -23,7 +23,7 @@ class BuildersTest {
         assertEquals("5.2 acre-ft/acre", s.waterNeed!!.value)
         assertTrue(s.waterNeed!!.warn)
         assertEquals("Short by about 0.2 acre-feet per acre", s.answers[2].headline)
-        assertTrue(s.answers[2].detail.contains("example limit"))
+        assertTrue(s.answers[2].detail.contains("Example, change it on Compare"))
         // greenness from NASA HLS and the percentile track from GRACE-FO
         assertEquals("0.22", s.greenness!!.value)
         assertEquals(53, s.soil!!.groundwater)
@@ -48,15 +48,15 @@ class BuildersTest {
     }
 
     @Test
-    fun `coming season is exactly three items, outlooks not forecasts`() {
+    fun `coming season is exactly three items, an outlook not a forecast`() {
         val s = ComingSeasonBuilder.build(Fixtures.outlook, 5.0, true, CompareBuilder::shortName)
         assertEquals(3, s.items.size)
-        assertEquals("NOAA's outlook leans wetter than normal this winter", s.items[0].headline)
+        assertEquals("Wetter than normal this winter", s.items[0].headline)
         assertEquals("Reservoirs a little below average for the date", s.items[1].headline)
         assertTrue(s.items[1].detail.contains("Shasta 92% of average"))
         assertTrue(s.items[2].headline.startsWith("About 5.2 acre-feet per acre"))
-        assertTrue(s.items[2].detail.contains("Dry-year safflower would need about 1.9"))
-        assertTrue(s.lede.contains("not forecasts"))
+        assertTrue(s.items[2].detail.contains("Dry-year safflower: 1.9"))
+        assertTrue(s.lede.contains("not a forecast"))
         assertNotNull(s.bareWindow)
     }
 

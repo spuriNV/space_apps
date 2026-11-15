@@ -143,7 +143,7 @@ object FieldNowBuilder {
             val g = gwR?.value?.roundToInt()
             PercentileReading(
                 soil = s, groundwater = g,
-                note = "soil ${s?.let(Fmt::ordinal) ?: "–"}, groundwater ${g?.let(Fmt::ordinal) ?: "–"}; 50 is normal",
+                note = "Soil ${s?.let(Fmt::ordinal) ?: "–"}, groundwater ${g?.let(Fmt::ordinal) ?: "–"}",
                 spoken = "Soil moisture ${s?.let { Fmt.ordinal(it) + " percentile" } ?: "not available"}, groundwater ${g?.let { Fmt.ordinal(it) + " percentile" } ?: "not available"}; 50 is normal",
             )
         } else null
@@ -167,7 +167,7 @@ object FieldNowBuilder {
                     question = "What is growing, and how far along?",
                     headline = stateText ?: "No clear satellite view yet",
                     detail = (cropLine + sub).trim(),
-                    cite = "NASA/USGS HLS, Landsat and Sentinel-2 satellites, 100 ft squares; crop from the USDA Cropland Data Layer." +
+                    cite = "NASA/USGS HLS satellites; crop from the USDA Cropland Data Layer." +
                         (latest?.let { " Latest clear view ${Fmt.date(it.date)}." } ?: ""),
                     glossaryIds = listOf("cover_classes", "ndvi"),
                 ),
@@ -178,10 +178,8 @@ object FieldNowBuilder {
                     Answer(
                         question = "How much rain so far this season?",
                         headline = rainPct?.let { "So far ${vsNormal(it, "wetter than normal", "drier than normal")}" } ?: "${Fmt.one(inches)} inches so far",
-                        detail = "${Fmt.one(inches)} inches since 1 Oct" +
-                            (normalMm?.let { "; normal is ${Fmt.one(Units.mmToInches(it))} inches" } ?: "") +
-                            (rainPct?.let { " (${it.roundToInt()}% of normal)" } ?: "") + ".",
-                        cite = "NASA GPM IMERG satellite rain over the field (one reading for a 6-mile square), to ${Fmt.date(rainObs)}; normal = the same dates in water years 2001 to 2025.",
+                        detail = "${Fmt.one(inches)} in since 1 Oct." + (normalMm?.let { " Normal: ${Fmt.one(Units.mmToInches(it))} in." } ?: ""),
+                        cite = "NASA GPM IMERG, to ${Fmt.date(rainObs)}; normal = water years 2001 to 2025.",
                         glossaryIds = listOf("imerg"),
                     ),
                 )
@@ -199,10 +197,10 @@ object FieldNowBuilder {
                             over -> "Short by about ${Fmt.one(needV - limit)} acre-feet per acre"
                             else -> "Fits your limit in a typical year"
                         },
-                        detail = "Today's rotation needs about ${Fmt.one(needV)} acre-feet per acre a year$rangeText" +
-                            (limit?.let { "; the limit is ${Fmt.one(it)}" } ?: "") + "." +
-                            (if (limitIsExample && limit != null) " ${Fmt.one(limit)} is an example limit; change it to yours on Compare." else ""),
-                        cite = "Rotation model with NASA POWER weather: crop water use minus rain, typical year 2015 to 2025.",
+                        detail = "Needs ${Fmt.one(needV)} acre-ft/acre a year$rangeText." +
+                            (limit?.let { " Limit: ${Fmt.one(it)}." } ?: "") +
+                            (if (limitIsExample && limit != null) " Example, change it on Compare." else ""),
+                        cite = "Rotation model with NASA POWER weather, 2015 to 2025.",
                         glossaryIds = listOf("water_balance", "allocation"),
                         warn = over,
                     ),
@@ -214,16 +212,15 @@ object FieldNowBuilder {
                 val soilWords = s?.let { band(it, "Soil wetter than usual", "Soil about normal", "Soil drier than usual") } ?: "No soil reading"
                 val gwWords = g?.let { band(it, "more groundwater than usual", "groundwater about normal", "less groundwater than usual") } ?: "no groundwater reading"
                 val details = listOfNotNull(
-                    s?.let { "Root-zone soil moisture ${Fmt.ordinal(it.roundToInt())} percentile (latest ${Fmt.roughly(soilR.obsDate)}); 50 is normal for the date." },
-                    g?.let { "Groundwater ${Fmt.ordinal(it.roundToInt())} percentile (latest ${Fmt.roughly(gwR.obsDate)}), whole basin, not your own well." },
+                    s?.let { "Soil ${Fmt.ordinal(it.roundToInt())} percentile; 50 is normal." },
+                    g?.let { "Groundwater ${Fmt.ordinal(it.roundToInt())}, whole basin, not your well." },
                 )
                 add(
                     Answer(
                         question = "Is the soil wetter or drier than usual? And the groundwater?",
                         headline = "$soilWords; $gwWords",
                         detail = details.joinToString(" "),
-                        cite = (if (soilFromSmap) "Soil: NASA SMAP satellite, one reading for a 6-mile square. " else "Soil: NASA GRACE-FO with a land model, root zone, one reading for a 17-mile square. ") +
-                            "Groundwater: NASA GRACE-FO satellites, weekly.",
+                        cite = (if (soilFromSmap) "NASA SMAP and GRACE-FO" else "NASA GRACE-FO") + ", latest ${Fmt.roughly(soilR?.obsDate ?: gwR?.obsDate)}.",
                         glossaryIds = listOf("soil_moisture_pct", "groundwater_grace", "grace"),
                     ),
                 )

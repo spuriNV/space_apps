@@ -88,14 +88,10 @@ fun CompareContent(
     }
     val summary = s!!
     val first = summary.top.firstOrNull()
-    val lede = first?.let { o ->
-        val gain = o.gains.firstOrNull()?.let { "${it.title.lowercase()}, ${it.amount}" } ?: "nothing clear"
-        val give = o.giveUps.firstOrNull()?.let { "${it.title.lowercase()}, ${it.amount}" } ?: "nothing clear"
-        "${o.name} against what you do now (${summary.today.name.lowercase()}): you'd gain $gain. You'd give up $give."
-    }
+    val title = first?.let { "${it.name} vs ${summary.today.name.substringBefore(" +").lowercase()} today" } ?: "Your rotation today"
     LazyColumn(Modifier.fillMaxSize().testTag("compare"), contentPadding = app.croplytics.ui.components.pageContentPadding()) {
         state.offlineSavedAt?.let { item { OfflineNote(it) } }
-        item { HeadBand("If you switched, what would you gain and give up?", lede) }
+        item { HeadBand(title, null) }
         item { LimitControl(state, onLimitChange) }
         item {
             Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {

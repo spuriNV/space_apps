@@ -120,7 +120,7 @@ fun Meter(reading: BarReading?, label: String, modifier: Modifier = Modifier, un
                     }
                 }
                 Text(
-                    reading.note + (reading.markLabel?.let { " · line = $it" } ?: ""),
+                    reading.note,
                     style = MaterialTheme.typography.labelSmall,
                     color = c.muted,
                 )

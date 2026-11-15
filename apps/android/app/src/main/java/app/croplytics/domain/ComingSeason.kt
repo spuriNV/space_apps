@@ -56,9 +56,9 @@ object ComingSeasonBuilder {
         val dryLeans = winter.count { it.precipitation?.category?.startsWith("below") == true }
         val rainHeadline = when {
             winter.isEmpty() -> "No rain outlook published yet"
-            wetLeans > dryLeans -> "NOAA's outlook leans wetter than normal this winter"
-            dryLeans > wetLeans -> "NOAA's outlook leans drier than normal this winter"
-            else -> "No clear lean, wetter or drier, this winter"
+            wetLeans > dryLeans -> "Wetter than normal this winter"
+            dryLeans > wetLeans -> "Drier than normal this winter"
+            else -> "No clear lean this winter"
         }
         val usdm = o.drought?.usDroughtMonitor
         val droughtNow = usdm?.worstCategoryCode?.let { code ->
@@ -73,7 +73,7 @@ object ComingSeasonBuilder {
             headline = rainHeadline,
             detail = (winter.joinToString(" ") { "${seasonMonths(it.season)}: rain ${rainLean(it)}." } + " " +
                 listOfNotNull(droughtNow, droughtOutlook).joinToString(" ")).trim(),
-            cite = "NOAA Climate Prediction Center 3-month outlooks${o.cpc?.issued?.let { ", issued ${Fmt.date(it)}" } ?: ""}; US Drought Monitor. Outlooks, not forecasts: they tilt the odds.",
+            cite = "NOAA 3-month outlooks${o.cpc?.issued?.let { ", issued ${Fmt.date(it)}" } ?: ""}; US Drought Monitor.",
         )
 
         // 2. water supply
@@ -110,7 +110,7 @@ object ComingSeasonBuilder {
             question = "How much water is in storage?",
             headline = supplyHeadline,
             detail = listOf(resLine.takeIf { it.isNotBlank() }?.let { "$it." }, allocLine.takeIf { it.isNotBlank() }).filterNotNull().joinToString(" "),
-            cite = "California Data Exchange Center (CDEC)${reportDate?.let { ", ${Fmt.date(it)}" } ?: ""}; \"average\" is CDEC's own for the date. Reclamation (CVP) and DWR (SWP) announcements.",
+            cite = "CDEC${reportDate?.let { ", ${Fmt.date(it)}" } ?: ""}; Reclamation and DWR allocations.",
             warn = avg != null && avg < 85,
         )
 
@@ -134,10 +134,10 @@ object ComingSeasonBuilder {
                     append("Today's rotation, with this winter's outlook")
                     if (lo != null && hi != null) append(", likely ${Fmt.one(lo)} to ${Fmt.one(hi)}")
                     append(". ")
-                    if (limit != null) append("Your limit: ${Fmt.one(limit)}${if (limitIsExample) " (example, change to yours on Compare)" else ""}. ")
-                    lowest?.let { append("${shortName(it.id, it.name)} would need about ${Fmt.one(it.irrigationNeedAfAc!!.value!!)}.") }
+                    if (limit != null) append("Limit ${Fmt.one(limit)}${if (limitIsExample) " (example)" else ""}. ")
+                    lowest?.let { append("${shortName(it.id, it.name)}: ${Fmt.one(it.irrigationNeedAfAc!!.value!!)}.") }
                 }.trim(),
-                cite = "Rotation model driven by NASA POWER sun, wind and humidity, weather 2015 to 2025, shifted by NOAA's outlook.",
+                cite = "Rotation model with NASA POWER weather, shifted by NOAA's outlook.",
                 glossaryIds = listOf("water_balance"),
                 warn = over,
             )
@@ -165,7 +165,7 @@ object ComingSeasonBuilder {
                 (chanceOutlook?.let { "; about $it% with this winter's outlook." } ?: ".") + " $BARE_DEFINITION"
         }
         return ComingSeasonSummary(
-            lede = "Outlooks, not forecasts: they tilt the odds, they don't say what will happen.",
+            lede = "An outlook, not a forecast.",
             items = listOf(rainItem, supplyItem, needItem),
             outlookRows = rows,
             bareWindow = bareWindow,
