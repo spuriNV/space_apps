@@ -13,6 +13,7 @@ import time
 
 import numpy as np
 
+from . import bc as BC
 from . import fetch as F
 
 STATUSES = ("ready", "not_computed", "unavailable", "error")
@@ -24,6 +25,8 @@ FORAGE = {"36", "37", "1", "225", "205", "28", "4", "21", "24", "226", "27", "58
 FALLOW = "61"
 NON_CROP = {"111", "112", "121", "122", "123", "124", "131", "141", "142", "143", "152", "176", "190", "195", "63", "64", "65", "83", "87", "88", "92"}
 TEMPLATES = {"rice": "car_colusa_rice", "forage": "caf_tulare_forage", "other": "caf_tulare_forage"}
+BC_TEMPLATE = "bc_salmon_river_forage"   # BC rotation set BC0-BC3 (backend/engine strategies.json), for every BC point
+MAX_OUTLINE_HA = 400                      # a BC parcel / ALR piece bigger than this is not used as the field outline
 DAILY_FROM = "2015-01-01"
 CONUS = {"AL", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI",
          "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX",
@@ -63,6 +66,51 @@ def sn(v, unit, source, note, method="computed", low=None, high=None):
 
 def src(sid, title, url, today, verified=True):
     return {"id": sid, "title": title, "url": url, "accessed": today, "verified": verified}
+
+
+def engine_entry(pid: str, name: str, family: str, region: str, centroid: dict) -> dict:
+    """Virtual registry entry for engine_bridge: rice -> CAR0-3, forage/other -> CAF0-3 in California; BC points reuse the BC
+    field's rotation set (BC0-BC3) and its region post-pass (rotation_engine/bc.py)."""
+    if region == "bc":
+        na = {}
+        try:
+            import fieldreg  # noqa: PLC0415
+            na = dict(fieldreg.get(BC_TEMPLATE).get("not_available") or {})
+        except Exception:  # noqa: BLE001
+            pass
+        na["cimis"] = "CIMIS is California's station network; in BC the nearest ECCC climate stations are listed instead."
+        return {"id": pid, "name": name, "family": "forage", "template": BC_TEMPLATE, "region": "bc", "centroid": centroid,
+                "slope_pct": 1.0, "not_available": na}
+    return {"id": pid, "name": name, "family": "rice" if family == "rice" else "forage", "template": TEMPLATES[family],
+            "region": "ca", "centroid": centroid, "slope_pct": 0.0 if family == "rice" else 0.5}
+
+
+async def bc_stage1(c, lon, lat, today):
+    """Regional district (also the 'is it BC' test), reserve, parcel, ECCC stations and the Salmon watershed test, in parallel."""
+    names = ("rd", "reserve", "parcel", "eccc", "salmon")
+    res = await asyncio.gather(BC.regional_district(c, lon, lat), BC.reserve_at(c, lon, lat), BC.parcel_at(c, lon, lat),
+                               BC.eccc(c, lon, lat, dt.date.fromisoformat(today)), BC.salmon_watershed(c, lon, lat),
+                               return_exceptions=True)
+    return dict(zip(names, res))
+
+
+async def bc_boundary(c, parcel, lon, lat):
+    """(geometry, info) from the ParcelMap BC parcel clipped to the ALR; (None, why) when there is no usable outline."""
+    if not isinstance(parcel, dict):
+        return None, {"why": "no ParcelMap BC parcel at this spot" if parcel is None else f"ParcelMap BC did not answer ({type(parcel).__name__})"}
+    geom, share = await BC.alr_clip(c, parcel["geometry"], lon, lat)
+    info = {"parcel_class": parcel["parcel_class"], "owner_type": parcel["owner_type"], "parcel_area_ha": parcel["area_ha"],
+            "alr_share_of_parcel": round(share, 3), "municipality": parcel["municipality"]}
+    if geom is not None:
+        ring = geom["coordinates"][0]
+        if F.ring_area_m2(ring) / 1e4 <= MAX_OUTLINE_HA:
+            return {"type": "Polygon", "coordinates": [ring]}, {**info, "clip": "parcel inside the Agricultural Land Reserve"}
+    g = parcel["geometry"]
+    ring = next((r for r in F.rings_of(g) if F.in_ring(lon, lat, r)), F.rings_of(g)[0])
+    if F.ring_area_m2(ring) / 1e4 <= MAX_OUTLINE_HA:
+        return {"type": "Polygon", "coordinates": [ring]}, {**info, "clip": "whole parcel (not in the ALR)" if share == 0 else
+                                                           "whole parcel (its ALR part did not contain the spot)"}
+    return None, {**info, "why": f"the parcel here is {parcel['area_ha']:.0f} ha (not a single field)"}
 
 
 # ------------------------------------------------------------------ family from CDL
@@ -170,6 +218,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
     ms = {}
     sections: dict[str, dict] = {}
     in_ca_box = CA_BOX[0] <= lon <= CA_BOX[2] and CA_BOX[1] <= lat <= CA_BOX[3]
+    bc_box = BC.in_bc_box(lon, lat) and not in_ca_box
     from water_sources import AG_WORDS, SWRCB, L as LAYERS  # noqa: PLC0415  (backend/fields/water_sources.py)
 
     async def timed(name, coro, deadline):
@@ -187,11 +236,30 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
             timed("power", power_cache.get(c, lon, lat), 30),
             timed("cdl_catalog", power_cache.cdl_meta(c), 10),
             timed("swrcb", power_cache.swrcb(c, SWRCB) if in_ca_box else _none(), 8),
+            timed("bc", bc_stage1(c, lon, lat, today) if bc_box else _none(), 20),
+            timed("tribal", BC.tribal_at(c, lon, lat) if in_ca_box else _none(), 8),
             return_exceptions=True)
-        cty, dwr, pw, cdlmeta, board = st1
+        cty, dwr, pw, cdlmeta, board, bcd, tribal = st1
         ca_now = isinstance(cty, dict) and cty["state_fips"] == "06"
+        bcd = bcd if isinstance(bcd, dict) else {}
+        in_bc = cty is None and isinstance(bcd.get("rd"), str)
+        bc_info = {}
+        if in_bc:
+            try:
+                bgeom, bc_info = await timed("bc_boundary", bc_boundary(c, bcd.get("parcel"), lon, lat), 15)
+            except Exception as e:  # noqa: BLE001
+                bgeom, bc_info = None, {"why": f"ParcelMap BC / ALR lookup failed ({type(e).__name__})", "error": True}
         # boundary
-        if isinstance(dwr, dict):
+        if in_bc and bgeom is not None:
+            geom = bgeom
+            ring, props = geom["coordinates"][0], {}
+            sections["boundary"] = sec("ready", source="parcelmap_bc_x_alr", **{k: v for k, v in bc_info.items() if k != "why"})
+        elif in_bc:
+            geom = F.square(lon, lat, 100)
+            ring, props = geom["coordinates"][0], {}
+            sections["boundary"] = sec("error" if bc_info.get("error") else "unavailable",
+                                       bc_info.get("why", "no parcel outline") + ": a 200 m square around the tap is used", fallback="square_200m")
+        elif isinstance(dwr, dict):
             ring = next((r for r in F.rings_of(dwr["geometry"]) if F.in_ring(lon, lat, r)), F.rings_of(dwr["geometry"])[0])
             geom = {"type": "Polygon", "coordinates": [ring]}
             props = dwr.get("properties") or {}
@@ -213,18 +281,22 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
             timed("soil", F.ssurgo(c, ring) if not outside_us else _none(), 15),
             timed("cdl", _none() if no_cdl else F.cdl_history(c, F.sample_points(ring, lon, lat), cdlmeta[0]) if not isinstance(cdlmeta, Exception) else _raise(cdlmeta), 15),
             timed("water", F.water(c, lon, lat, LAYERS, AG_WORDS, today) if ca_now else _none(), 10),
+            timed("aci", BC.aci_history(c, F.sample_points(ring, lon, lat)) if in_bc else _none(), 15),
             return_exceptions=True)
-        soil_raw, cdl, wat = st2
+        soil_raw, cdl, wat, aci = st2
 
     # county / region
     if isinstance(cty, dict):
         sections["county"] = sec("ready", source="fcc_census_area_2020")
+    elif in_bc:
+        sections["county"] = sec("ready", source="bc_regional_districts_wfs", regional_district=bcd["rd"])
+        cty = None
     else:
         sections["county"] = sec("error" if isinstance(cty, Exception) else "unavailable",
                                  f"county lookup failed ({type(cty).__name__})" if isinstance(cty, Exception) else "outside the United States (no county)")
         cty = None
     in_ca = bool(cty and cty["state_fips"] == "06")
-    region = "ca" if in_ca else "other"
+    region = "ca" if in_ca else "bc" if in_bc else "other"
 
     # weather
     df = pmeta = None
@@ -234,9 +306,36 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         df, pmeta = pw
         sections["weather"] = sec("ready", source="nasa_power_daily", range=[pmeta["date_min"], pmeta["date_max"]])
     sections["daily"] = dict(sections["weather"])
+    stations, eccc_clim = [], None
+    if in_bc:
+        ec = bcd.get("eccc")
+        if isinstance(ec, dict) and ec["stations"]:
+            stations = [{"network": "ECCC", "id": s["id"], "name": s["name"].title().replace(" Cs", " CS"), "distance_km": s["distance_km"],
+                         "years": [int(s["daily"][0][:4]), int(s["daily"][1][:4])]} for s in ec["stations"]]
+            eccc_clim = {"stations": ec["stations"], "monthly": ec["monthly"],
+                         "source": src("eccc_climate", "ECCC daily/monthly climate (MSC GeoMet OGC API)", BC.ECCC + "/climate-monthly", today)}
+            sections["stations"] = sec("ready", source="eccc_geomet", stations=[s["id"] for s in ec["stations"]],
+                                       climate_summary=bool(ec["monthly"]))
+        else:
+            sections["stations"] = sec("error" if isinstance(ec, Exception) else "unavailable",
+                                       f"ECCC station lookup failed ({type(ec).__name__})" if isinstance(ec, Exception) else
+                                       "no ECCC daily climate station within 80 km")
+    else:
+        sections["stations"] = sec("not_computed", "station series (NOAA, CIMIS) are built per preset field; tapped California points use NASA POWER")
 
     # crop history + family
-    if isinstance(cdl, Exception) or isinstance(cdlmeta, Exception):
+    if in_bc:
+        if isinstance(aci, Exception) or not aci:
+            sections["crop_history"] = sec("error" if isinstance(aci, Exception) else "unavailable",
+                                           f"AAFC crop inventory did not answer ({type(aci).__name__})" if isinstance(aci, Exception) else
+                                           "the AAFC crop inventory does not map this spot")
+            hist, purity, aci = {}, {}, {}
+        else:
+            hist, purity = crop_history(aci, BC.aci_legend())
+            sections["crop_history"] = sec("ready", source="aafc_aci", years=[min(aci), max(aci)], points_sampled=max(v["n"] for v in aci.values()))
+        family, fam_why, cropland = BC.family_bc(aci)
+        cdl = aci
+    elif isinstance(cdl, Exception) or isinstance(cdlmeta, Exception):
         e = cdl if isinstance(cdl, Exception) else cdlmeta
         sections["crop_history"] = sec("error", f"Cropland Data Layer did not answer ({type(e).__name__})")
         hist, purity, cdl = {}, {}, {}
@@ -245,14 +344,20 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         hist, purity = crop_history(cdl, cdlmeta[1])
         sections["crop_history"] = (sec("ready", source="usda_nass_cdl", years=[min(cdl), max(cdl)], points_sampled=max(v["n"] for v in cdl.values()) if cdl else 0)
                                     if cdl else sec("unavailable", "no Cropland Data Layer here (it covers the lower 48 US states only)"))
-    family, fam_why, cropland = family_of(cdl)
-    if sections["crop_history"]["status"] == "error":
+    if not in_bc:
+        family, fam_why, cropland = family_of(cdl)
+    if sections["crop_history"]["status"] == "error" and not in_bc:
         fam_why = "crop history unavailable: the forage rotation set (CAF0-CAF3) is shown as a stand-in"
-    sections["family"] = sec("ready" if cdl else "unavailable", fam_why, family=family, template=TEMPLATES[family], cropland=cropland)
+    tpl = BC_TEMPLATE if in_bc else TEMPLATES[family]
+    sections["family"] = sec("ready" if cdl else "unavailable", fam_why, family=family, template=tpl, cropland=cropland)
 
     # soil
+    slc = BC.slc_at(lon, lat) if in_bc else None
     s_src = {"id": "ssurgo_sda", "title": "USDA NRCS SSURGO via Soil Data Access", "url": "https://sdmdataaccess.sc.egov.usda.gov/", "accessed": today, "verified": True}
-    if isinstance(soil_raw, dict):
+    if slc:
+        soil, engine_soil = slc_soil(slc, today)
+        sections["soil"] = sec("ready", source="aafc_slc_v3_2", poly_id=slc["poly_id"])
+    elif isinstance(soil_raw, dict):
         a, o = soil_raw["awc"], soil_raw["om"]
         soil = {"mukey": soil_raw["mukey"], "muname": soil_raw["muname"] or "", "drainage_class": soil_raw["drainage_class"] or "unknown",
                 "hydrologic_group": soil_raw["hydrologic_group"] or "unknown",
@@ -267,6 +372,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         engine_soil = {"drainage_class": soil["drainage_class"], "hydrologic_group": soil["hydrologic_group"], "mukey": soil["mukey"], "muname": soil["muname"]}
     else:
         why = (f"Soil Data Access did not answer ({type(soil_raw).__name__})" if isinstance(soil_raw, Exception)
+               else "no Soil Landscapes of Canada soil data for this spot (SLC v3.2 has soil tables for BC's farmed landscapes only)" if in_bc
                else "no SSURGO soil survey here (SSURGO covers the United States)")
         soil = {"mukey": "unavailable", "muname": why, "drainage_class": "unknown", "hydrologic_group": "unknown",
                 "awc_mm_per_m": blocked_sn("mm/m", why), "om_pct": blocked_sn("%", why), "texture_class": "unknown",
@@ -275,7 +381,11 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         engine_soil = None
 
     # water (California only)
-    if not in_ca:
+    if in_bc:
+        w = None
+        sections["water"] = sec("unavailable", "BC water licences and groundwater aquifers are not looked up for tapped points "
+                                               "(the California SGMA / district layers do not apply)")
+    elif not in_ca:
         w = None
         sections["water"] = (sec("unavailable", "water district, SGMA subbasin and GSA layers are California (DWR) only") if sections["county"]["status"] != "error"
                              else sec("error", "not looked up: the county/state lookup failed, so it is not known whether the spot is in California"))
@@ -301,9 +411,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
     items, eng_ms = None, None
     if df is not None:
         from . import engine_bridge  # noqa: PLC0415
-        entry = {"id": pid, "name": f"Point {lat:.4f}, {lon:.4f}", "family": "rice" if family == "rice" else "forage",
-                 "template": TEMPLATES[family], "region": "ca", "centroid": {"lon": cen[0], "lat": cen[1]},
-                 "slope_pct": 0.0 if family == "rice" else 0.5}
+        entry = engine_entry(pid, f"Point {lat:.4f}, {lon:.4f}", family, region, {"lon": cen[0], "lat": cen[1]})
         t = time.perf_counter()
         try:
             items = await asyncio.to_thread(engine_bridge.run, pid, entry, df, lat, pmeta.get("elevation_m"), pmeta["url"], engine_soil)
@@ -312,9 +420,10 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
                 gaps = (st.get("brief") or {}).get("gaps")
                 if isinstance(gaps, list):
                     st["brief"]["gaps"] = [{"text": g, "source_ids": []} if isinstance(g, str) else g for g in gaps]
-            sections["strategies"] = sec("ready", f"{TEMPLATES[family][:3].upper()} rotation set ({'rice' if family == 'rice' else 'forage'} family) "
-                                                  "scored with this spot's NASA POWER weather" + ("" if engine_soil else "; no soil drainage check"),
-                                         template=TEMPLATES[family])
+            sections["strategies"] = sec("ready", (f"BC rotation set (BC0-BC3, {BC_TEMPLATE})" if in_bc else
+                                                   f"{TEMPLATES[family][:3].upper()} rotation set ({'rice' if family == 'rice' else 'forage'} family)")
+                                         + " scored with this spot's NASA POWER weather" + ("" if engine_soil else "; no soil drainage check"),
+                                         template=tpl)
         except Exception as e:  # noqa: BLE001
             sections["strategies"] = sec("error", f"rotation engine failed for this point ({type(e).__name__}: {str(e)[:160]})")
         eng_ms = round((time.perf_counter() - t) * 1000)
@@ -327,33 +436,53 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
     row, col, _, _, foot = F.power_cell(lon, lat)
     elev = (pmeta or {}).get("elevation_m")
     p_src = src("nasa_power_daily", "NASA POWER daily point", (pmeta or {}).get("url", F.POWER_URL), today)
+    has_outline = bool(props) or (in_bc and sections["boundary"]["status"] == "ready")
     area_src = (src("dwr_landiq_crop_mapping_2023", "DWR Statewide Crop Mapping 2023 (Land IQ), final", F.DWR_2023, today)
                 if props else src("fieldshift_square", "200 m square around the tapped point (no field outline)", "urn:fieldshift:assumed", today, False))
     crop_now = props.get("MAIN_CROP") or props.get("CROPTYP2")
-    county_name = cty["county_name"] if cty else None
-    place = f"{county_name} County, {cty['state_code']}" if cty else f"{lat:.3f}, {lon:.3f}"
+    county_name = cty["county_name"] if cty else bcd.get("rd") if in_bc else None
+    place = (f"{county_name} County, {cty['state_code']}" if cty else f"{county_name}, BC" if in_bc else f"{lat:.3f}, {lon:.3f}")
     fam_word = {"rice": "Rice", "forage": "Forage"}.get(family, "Field")
+    if in_bc:
+        area_src = (src("parcelmap_bc_x_alr", "ParcelMap BC parcel (open parcel fabric) clipped to the Agricultural Land Reserve; "
+                        "parcel id and owner not stored", BC.WFS, today) if sections["boundary"]["status"] == "ready" else area_src)
+    # land status + Nation tools
+    land = None
+    if in_bc and isinstance(bcd.get("reserve"), dict):
+        land = BC.land_status_bc(bcd["reserve"])
+    elif isinstance(tribal, dict):
+        land = BC.land_status_us(tribal)
+    sections["land_status"] = (sec("ready", source="bc_reserves_wfs" if in_bc else "census_aiannh", kind=land["kind"]) if land else
+                               sec("error", "reserve / tribal land lookup failed") if (in_bc and isinstance(bcd.get("reserve"), Exception)) or isinstance(tribal, Exception)
+                               else sec("ready", source="bc_reserves_wfs" if in_bc else "census_aiannh", kind=None) if (in_bc or in_ca_box)
+                               else sec("not_computed", "reserve / tribal land is looked up in BC and California only"))
     ds_stat = lambda k: {"status": sections[k]["status"] if sections[k]["status"] != "ready" else "real", **({"reason": sections[k]["reason"]} if sections[k].get("reason") else {})}  # noqa: E731
     loc = {
         "id": pid, "name": f"Tapped spot {lat:.4f}, {lon:.4f}", "dwr_unique_id": props.get("UniqueID"),
-        "region_adapter": "ca" if in_ca else "other", "region": region, "regime": "not assessed (tapped point)",
+        "region_adapter": "ca" if in_ca else "bc" if in_bc else "other", "region": region, "regime": "not assessed (tapped point)",
         "state_fips": cty["state_fips"] if cty else "", "county_fips": cty["county_fips"] if cty else "",
         "geometry": geom, "centroid": {"lon": round(cen[0], 6), "lat": round(cen[1], 6)},
-        "area_ha": sn(round(area_ha, 2), "ha", area_src, "polygon area (local equirectangular projection)" + ("" if props else "; placeholder square, not a field"), "computed" if props else "assumed"),
+        "area_ha": sn(round(area_ha, 2), "ha", area_src, "polygon area (local equirectangular projection)" + ("" if has_outline else "; placeholder square, not a field"), "computed" if has_outline else "assumed"),
         "crs_working": "EPSG:32610",
-        "family": family, "farmer_name": f"{fam_word} spot in {place}" if cty else f"Spot at {place}",
-        "acres": round(area_ha * 2.47105, 1), "county_name": county_name, "state_code": cty["state_code"] if cty else None,
-        "template": TEMPLATES[family], "why_chosen": "You tapped this spot on the map. " + fam_why[:1].upper() + fam_why[1:] + ".",
+        "family": family, "farmer_name": f"{fam_word} spot in {place}" if (cty or in_bc) else f"Spot at {place}",
+        "acres": round(area_ha * 2.47105, 1), "county_name": county_name, "state_code": cty["state_code"] if cty else "BC" if in_bc else None,
+        "regional_district": bcd.get("rd") if in_bc else None,
+        "template": tpl, "why_chosen": "You tapped this spot on the map. " + fam_why[:1].upper() + fam_why[1:] + ".",
         "soil": soil,
         "terrain": {"slope_mean_pct": blocked_sn("%", "NASADEM not computed for tapped points"),
                     "slope_p90_pct": blocked_sn("%", "NASADEM not computed for tapped points"),
                     "elev_m": (sn(elev, "m", p_src, "elevation of the POWER (MERRA-2) grid cell, NOT a field DEM value", "lookup") if elev is not None
                                else blocked_sn("m", "POWER did not answer")),
                     "low_spot_fraction": blocked_sn("fraction", "NASADEM not computed for tapped points")},
-        "water": water, "market_preference": "no_preference", "stations": [],
+        "water": water, "market_preference": "no_preference", "stations": stations,
+        "land_status": land,
+        "nation_tools": BC.nation_tools(land, salmon=bcd.get("salmon") is True, water=water),
+        "climate_eccc": eccc_clim,
+        "parcel": ({k: bc_info.get(k) for k in ("parcel_class", "owner_type", "parcel_area_ha", "alr_share_of_parcel", "clip")}
+                   if in_bc and sections["boundary"]["status"] == "ready" else None),
         "regional_cell": {"grid": "POWER_MERRA2_0.5x0.625", "row": row, "col": col, "footprint": foot},
         "datasets": {"power": {**ds_stat("weather"), **({"range": [pmeta["date_min"], pmeta["date_max"]]} if pmeta else {})},
-                     "cdl": ds_stat("crop_history"), "imerg": {"status": "not_computed"}, "smap_l3": {"status": "not_computed"},
+                     "cdl": ds_stat("crop_history") if not in_bc else {"status": "unavailable", "reason": "the Cropland Data Layer is US-only; BC uses the AAFC Annual Crop Inventory (sections.crop_history)"}, "imerg": {"status": "not_computed"}, "smap_l3": {"status": "not_computed"},
                      "smap_l4": {"status": "not_computed"}, "grace": {"status": "not_computed"}, "hls": {"status": "not_computed"},
                      "s2": {"status": "not_computed"}, "modis": {"status": "not_computed"}, "ecostress": {"status": "not_computed"},
                      "dem": {"status": "not_computed"}, "openet": {"status": "unavailable", "reason": "not queried for tapped points (monthly quota)"},
@@ -372,14 +501,42 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         "observed_cover": {"typically_bare_doy_ranges": [], "bare_doy_file": None, "years_used": [],
                            "detector": "not computed for tapped points (needs the Sentinel-2/Landsat series)"},
         "events": [],
-        "_notes": {"analysis": "Built live for a tapped point: NASA POWER, SSURGO, CDL, DWR/Land IQ outline, county and DWR water layers. "
-                               "Satellite series, IMERG, SMAP, GRACE, NASADEM and OpenET are not computed for points (sections.*).",
-                   "boundary": "DWR Statewide Crop Mapping 2023 (Land IQ), final" if props else "200 m square around the tap (no field outline)",
-                   "engine": f"rotation set reused from {TEMPLATES[family]} (no new agronomy); market preference no_preference (not asked)"},
+        "_notes": {"analysis": ("Built live for a tapped BC point: NASA POWER, ECCC stations, AAFC Soil Landscapes of Canada, AAFC Annual "
+                                "Crop Inventory, ParcelMap BC parcel in the ALR, regional district. " if in_bc else
+                                "Built live for a tapped point: NASA POWER, SSURGO, CDL, DWR/Land IQ outline, county and DWR water layers. ")
+                               + "Satellite series, IMERG, SMAP, GRACE, NASADEM and OpenET are not computed for points (sections.*).",
+                   "boundary": ("DWR Statewide Crop Mapping 2023 (Land IQ), final" if props else
+                                "ParcelMap BC parcel clipped to the Agricultural Land Reserve (follows legal lines, not the crop edge)" if has_outline
+                                else "200 m square around the tap (no field outline)"),
+                   "engine": f"rotation set reused from {tpl} (no new agronomy); market preference no_preference (not asked)"},
     }
     ms["total"] = round((time.perf_counter() - t0) * 1000)
     daily = daily_payload(pid, df, lat, pmeta, today) if df is not None else {}
     return loc, daily, items, {"timings_ms": ms, "sections": sections, "in_ca": in_ca}
+
+
+def slc_soil(p: dict, today: str) -> tuple[dict, dict]:
+    """Location.soil from an SLC v3.2 polygon (slc_bc.json.gz) + the engine's drainage-check soil."""
+    s = p["summary"]
+    srcd = {"id": "aafc_slc_v3_2", "title": p["source"]["title"], "url": p["source"]["url"], "accessed": today, "verified": True}
+    comps = ", ".join(f"{cp['soil_name']} {cp['percent']}%" for cp in p["components"][:4])
+    note = ("proportion-weighted over the SLC polygon's soils, 0-100 cm (1:1,000,000 map: which soil is in this field is not mapped)")
+    soil = {"mukey": f"SLC {p['poly_id']}", "muname": f"Soil Landscapes of Canada polygon {p['poly_id']}: {comps}",
+            "drainage_class": s["drainage_class"] or "unknown", "hydrologic_group": s["hydrologic_group"] or "unknown",
+            "awc_mm_per_m": (sn(s["awc_mm_per_m"], "mm/m", srcd, "available water (33-1500 kPa) " + note, "lookup", s["awc_low"], s["awc_high"])
+                             if s["awc_mm_per_m"] is not None else blocked_sn("mm/m", "SLC has no water retention data for these soils")),
+            "om_pct": (sn(s["om_pct"], "%", srcd, "organic carbon x 1.724 (assumed factor), " + note, "lookup", s["om_low"], s["om_high"])
+                       if s["om_pct"] is not None else blocked_sn("%", "SLC has no organic carbon for these soils")),
+            "texture_class": s["texture_class"] or "unknown",
+            "source": {"id": "aafc_slc_v3_2", "url": p["source"]["url"], "verified": True},
+            "ph_0_30cm": s.get("ph_0_30cm"),
+            "texture_detail": {"sand_pct": s["sand_pct"], "silt_pct": s["silt_pct"], "clay_pct": s["clay_pct"],
+                               "method": "USDA triangle on SLC 0-100 cm proportion-weighted sand/silt/clay"},
+            "drainage_basis": f"dominant condition ({s['drainage_share_pct']}% of the polygon)",
+            "hydrologic_group_basis": ("derived from SLC Ksat and drainage (NRCS NEH 630 ch. 7 Table 7-1; SLC publishes none), dominant "
+                                       f"condition ({s['hydrologic_group_share_pct']}% of the polygon)"),
+            "components": p["components"]}
+    return soil, {"drainage_class": soil["drainage_class"], "hydrologic_group": soil["hydrologic_group"], "mukey": soil["mukey"], "muname": soil["muname"]}
 
 
 def water_block(w: dict | None, family: str) -> dict:

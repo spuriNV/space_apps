@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import asyncio
 import collections
+import functools
 import datetime as dt
 import gzip
 import json
@@ -57,6 +58,7 @@ POWER_TTL_S = 24 * 3600
 MAX_POINTS = ENV("ANYLOC_MAX_POINTS", 1500)
 CACHE = Path(os.environ.get("ANYLOC_CACHE_DIR", ROOT / "data" / "cache" / "_points"))
 TIER1 = ("weather", "soil", "crop_history", "boundary", "county", "water", "strategies")
+CATALOG = Path(os.environ.get("ANYLOC_CATALOG_DIR", ROOT / "backend" / "api" / "out" / "catalog"))
 
 
 # ------------------------------------------------------------------ guards (thread-safe, event-loop agnostic)
@@ -274,6 +276,51 @@ def _prune_disk():
         shutil.rmtree(p, ignore_errors=True)
 
 
+# ------------------------------------------------------------------ farm catalog (backend/catalog; committed outputs)
+_CAT_INDEX: list | None = None
+
+
+def catalog_index() -> list:
+    global _CAT_INDEX
+    if _CAT_INDEX is None:
+        try:
+            _CAT_INDEX = json.loads((CATALOG / "index.json").read_text())
+        except (OSError, ValueError):
+            _CAT_INDEX = []
+    return _CAT_INDEX
+
+
+@functools.lru_cache(maxsize=64)
+def _catalog_read(pid: str):
+    d = CATALOG / pid
+    try:
+        loc = json.loads((d / "location.json").read_text())
+    except (OSError, ValueError):
+        return None
+    try:
+        with gzip.open(d / "strategies.json.gz", "rt") as f:
+            items = json.load(f).get("items")
+    except (OSError, ValueError):
+        items = None
+    return loc, items
+
+
+def load_catalog(pid: str):
+    """(location, strategies, meta) for a catalog id from the committed outputs, else None. Daily stays lazy (POWER route)."""
+    if not pid.startswith("pt_") or "/" in pid or not (CATALOG / pid / "location.json").exists():
+        return None
+    got = _catalog_read(pid)
+    if not got:
+        return None
+    loc, items = got
+    loc = dict(loc)
+    cat = loc.pop("_catalog", {})
+    sections = loc.pop("sections", {})
+    meta = {"id": pid, "computed_at": cat.get("built_at"), "expires_at": None, "sections": sections,
+            "timings_ms": cat.get("timings_ms", {}), "catalog": cat}
+    return loc, items, meta
+
+
 # ------------------------------------------------------------------ presets containing the point
 _PRESET_RINGS: list | None = None
 
@@ -305,6 +352,10 @@ async def get_or_compute(req: Request, lat: float, lon: float, refresh: bool = F
     pid = B.point_id(lat, lon)
     ip = client_ip(req)
     if not refresh:
+        cat = load_catalog(pid)
+        if cat:
+            GUARD.check_read(ip)
+            return pid, cat, "catalog"
         hit = load_point(pid)
         if hit:
             GUARD.check_read(ip)
@@ -349,19 +400,21 @@ async def get_or_compute(req: Request, lat: float, lon: float, refresh: bool = F
 def payload(pid, hit, cache_state, plon, plat):
     loc, _items, meta = hit
     out = dict(loc)
-    out["_source"] = "live"
+    out["_source"] = "catalog" if cache_state == "catalog" else "live"
     out["sections"] = meta["sections"]
     out["analysis"] = {"id": pid, "point": {"lat": plat, "lon": plon}, "computed_at": meta["computed_at"],
                        "expires_at": meta["expires_at"], "cache": cache_state, "timings_ms": meta["timings_ms"],
                        "matches_preset": matches_preset(plon, plat),
                        "section_statuses": list(B.STATUSES)}
+    if meta.get("catalog"):
+        out["analysis"]["catalog"] = {k: meta["catalog"].get(k) for k in ("name", "crop_group", "region_name", "built_at")}
     return out
 
 
-def send(resp: Response, data: dict) -> dict:
-    resp.headers["X-Data-Source"] = "live"
-    resp.headers["Cache-Control"] = "no-store"
-    data["_source"] = "live"
+def send(resp: Response, data: dict, source: str = "live") -> dict:
+    resp.headers["X-Data-Source"] = source
+    resp.headers["Cache-Control"] = "public, max-age=3600" if source == "catalog" else "no-store"
+    data["_source"] = source
     return data
 
 
@@ -395,7 +448,7 @@ async def _analyze(req, resp, lat, lon, refresh):
     except asyncio.TimeoutError:
         raise HTTPException(504, "analysis took longer than 45 s; try again (partial upstream results are not cached)")
     plat, plon = B.parse_id(pid)
-    return send(resp, payload(pid, hit, state, plon, plat))
+    return send(resp, payload(pid, hit, state, plon, plat), "catalog" if state == "catalog" else "live")
 
 
 @router.get("/api/analyze")
@@ -421,7 +474,9 @@ def _pid_point(pid: str) -> tuple[float, float]:
 def analyze_status(pid: str, resp: Response):
     lat, lon = _pid_point(pid)
     hit = load_point(pid)
-    out = {"id": pid, "point": {"lat": lat, "lon": lon}, "in_flight": pid in INFLIGHT, "cached": bool(hit)}
+    cat = load_catalog(pid)
+    hit = cat or hit
+    out = {"id": pid, "point": {"lat": lat, "lon": lon}, "in_flight": pid in INFLIGHT, "cached": bool(hit), "catalog": bool(cat)}
     if hit:
         m = hit[2]
         out.update(computed_at=m["computed_at"], expires_at=m["expires_at"], sections=m["sections"], timings_ms=m["timings_ms"])
@@ -442,13 +497,13 @@ async def _ensure(pid, req):
 @router.get("/api/locations/{pid}/strategies")
 async def point_strategies(pid: str, req: Request, resp: Response):
     try:
-        _, (loc, items, meta), _ = await _ensure(pid, req)
+        _, (loc, items, meta), state = await _ensure(pid, req)
     except Busy as e:
         return busy_response(e)
     if not items:
         raise HTTPException(404, f"strategies not available for {pid}: {meta['sections']['strategies'].get('reason')}")
     return send(resp, {"location_id": pid, "items": items, "template": loc.get("template"),
-                       "note": meta["sections"]["strategies"].get("reason")})
+                       "note": meta["sections"]["strategies"].get("reason")}, "catalog" if state == "catalog" else "live")
 
 
 @router.get("/api/locations/{pid}/daily")
@@ -520,9 +575,7 @@ async def point_score(pid: str, body: ScoreRequest, req: Request, resp: Response
         async with F.client() as c:
             df, pmeta = await asyncio.wait_for(STORE.get(c, lon, lat), 30)
         from . import engine_bridge  # noqa: PLC0415
-        fam = loc.get("family", "other")
-        entry = {"id": pid, "name": loc["name"], "family": "rice" if fam == "rice" else "forage", "template": loc["template"],
-                 "region": "ca", "centroid": loc["centroid"], "slope_pct": 0.0 if fam == "rice" else 0.5}
+        entry = B.engine_entry(pid, loc["name"], loc.get("family", "other"), "bc" if loc.get("region") == "bc" else "ca", loc["centroid"])
         soil = loc.get("soil") or {}
         esoil = {k: soil.get(k) for k in ("drainage_class", "hydrologic_group", "mukey", "muname")} if soil.get("mukey") not in (None, "unavailable") else None
         try:
@@ -540,6 +593,25 @@ async def point_score(pid: str, body: ScoreRequest, req: Request, resp: Response
             st["brief"]["gaps"] = [{"text": g, "source_ids": []} if isinstance(g, str) else g for g in gaps]
     return send(resp, {"location_id": pid, "request": body.model_dump(), "items": res, "ranking": _rank(res),
                        "note": "scored by backend/engine for a tapped point (rule of thumb, not a model)"})
+
+
+@router.get("/api/catalog")
+def catalog(resp: Response, region: str | None = Query(None, description="ca | bc"),
+            crop_group: str | None = Query(None, description="e.g. rice, forage, grain, nuts, grapes, citrus, vegetables, cotton, orchard, canola"),
+            area: str | None = Query(None, description="catalog area, e.g. 'San Joaquin Valley', 'Okanagan'")):
+    """The farm catalog: real fields across California and BC with pre-built tier-1 payloads. Open one with
+    GET /api/locations/{id} (served from the committed outputs, `_source: "catalog"`)."""
+    items = catalog_index()
+    out = [x for x in items if (not region or x["region"] == region.lower()) and (not crop_group or x["crop_group"] == crop_group.lower())
+           and (not area or x["area"].lower() == area.lower())]
+    resp.headers["Cache-Control"] = "public, max-age=3600"
+    resp.headers["X-Data-Source"] = "catalog"
+    groups: dict = {}
+    for x in items:
+        groups.setdefault(x["crop_group"], {"label": x["crop_group_label"], "count": 0})["count"] += 1
+    return {"count": len(out), "total": len(items), "filters": {"region": region, "crop_group": crop_group, "area": area},
+            "regions": sorted({x["region"] for x in items}), "areas": sorted({x["area"] for x in items}),
+            "crop_groups": groups, "items": out, "_source": "catalog"}
 
 
 @router.get("/api/locations/{pid}/{rest:path}")
