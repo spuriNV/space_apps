@@ -113,13 +113,14 @@ export default function App() {
   const reservesFc = wantReserves && reserves?.id === selected?.id ? reserves.fc : null;
   useEffect(() => {
     if (!selected || live == null) { setData(null); return; }
-    // a tapped spot: nothing to fetch until GET /api/analyze has answered; then only the routes that answer for spots
     const spot = api.isLite(selected.id);
-    if (spot && selected.spot?.state !== 'ready') { setData(null); return; }
     let ok = true;
     setTimedOut(null);
     const to = setTimeout(() => ok && setTimedOut(selected.id), 15000);
     const caPresets = locations.filter((l) => !api.isLite(l.id) && l.region !== 'bc');
+    // 3D stack paints at once from the nearest preset; APIs upgrade in the background (incl. while spot analysis runs)
+    if (spot) setData(api.fieldStackSeed(selected, live, caPresets));
+    api.prefetchFieldStack(selected, caPresets);
     api.getField(selected, live, (b) => ok && setData(b), caPresets).then((b) => ok && setData(b));
     api.getDaily(selected.id).then((r) => ok && setDaily({ id: selected.id, ...r }));
     // always resolve outlook (presets load the file; tapped/drawn fields get a quiet "not built yet" so Coming season never spins)
@@ -187,6 +188,8 @@ export default function App() {
     const lat = Math.round(lat0 * 1e4) / 1e4, lon = Math.round(lon0 * 1e4) / 1e4;
     const seq = ++tapSeq.current;
     const ph = api.spotPlaceholder(lat, lon);
+    const caPresets = locsRef.current.filter((l) => !api.isLite(l.id) && l.region !== 'bc');
+    api.prefetchFieldStack(ph, caPresets);
     setLocations((ls) => [...ls.filter((l) => !api.isSpot(l.id)), ph]);
     setSelectedId(ph.id); setCardOpen(true); setBcOpen(false); setYearOpen(false); setBriefOpen(false);
     setPanel((p) => (p === 'season' || p === 'compare' ? p : 'none'));
@@ -227,7 +230,19 @@ export default function App() {
   }, [live, tapSpot]);
 
   // ---------- my fields: a drawing session, saving (the panel shows at once in its skeleton state), the #field= link ----------
-  const onSubmitting = () => { dropSpot(); setSelectedId(DRAFT_ID); setCardOpen(true); setPanel('none'); setYearOpen(false); setBriefOpen(false); setBcOpen(false); setTimeout(() => { const l = locsRef.current.find((x) => x.id === DRAFT_ID); if (l) map.current?.fitField(l); }, 80); };
+  const onSubmitting = () => {
+    dropSpot();
+    setSelectedId(DRAFT_ID);
+    setCardOpen(true); setPanel('none'); setYearOpen(false); setBriefOpen(false); setBcOpen(false);
+    setTimeout(() => {
+      const l = locsRef.current.find((x) => x.id === DRAFT_ID);
+      if (l) {
+        const caPresets = locsRef.current.filter((x) => !api.isLite(x.id) && x.region !== 'bc');
+        api.prefetchFieldStack(l, caPresets);
+        map.current?.fitField(l);
+      }
+    }, 80);
+  };
   const onSaved = (id: string | null) => { if (id) { setSelectedId((cur) => (cur === DRAFT_ID ? id : cur)); setTimeout(() => { const l = locsRef.current.find((x) => x.id === id); if (l && locsRef.current.length) map.current?.fitField(l); }, 80); } };
   const openMine = (id: string) => { setSelectedId(id); setCardOpen(true); setPanel('none'); setTimeout(() => { const l = locsRef.current.find((x) => x.id === id); if (l) map.current?.fitField(l); }, 120); };
   useEffect(() => { if (!selectedId && mf.draft?.error) mf.dropDraft(); else if (mf.draft?.error && selectedId !== DRAFT_ID) mf.dropDraft(); }, [selectedId, mf.draft]);
@@ -264,7 +279,8 @@ export default function App() {
   const leftInset = phone ? 0 : leftPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
   const rightInset = layersOpen ? 396 : 0;
   const bottomInset = phone ? 64 + (leftPanel === 'card' ? sheetPx : leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
-  const stackField = !!selected && (!selected.spot || selected.spot.state === 'ready');
+  const stackReady = !!d?.cells && !!d.cal && !!regional && d.cal.location_id === selected!.id;
+  const stackField = !!selected && (stackReady || (!api.isLite(selected.id) && (!selected.spot || selected.spot.state === 'ready')));
   const drilled = stackField && view.zoom > 13.4;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;

@@ -216,6 +216,50 @@ function gridAt(loc: Location, presetId: string): CellGrid | null {
   return shiftGrid(raw, loc.centroid.lon - from.centroid.lon, loc.centroid.lat - from.centroid.lat);
 }
 const calFor = (cal: Calendar, id: string) => ({ ...cal, location_id: id });
+const gridCache = new Map<string, ReturnType<typeof apiReal>>();
+const gridFetch = (id: string) => {
+  let p = gridCache.get(id);
+  if (!p) { p = apiReal(`/api/locations/${id}/grid`, undefined, 30000); gridCache.set(id, p); }
+  return p;
+};
+/** Warm API caches for 3D stack (nearest preset grid + series). Safe to call while a spot is still analysing. */
+export function prefetchFieldStack(loc: Location, caPresets?: Location[]) {
+  if (!isLite(loc.id)) return;
+  void apiLive().then((live) => {
+    if (!live) return;
+    const borrow = nearestCaPreset(loc, caPresets ?? MOCK_LOCS);
+    gridFetch(borrow);
+    void apiReal(`/api/locations/${borrow}/calendar`);
+    void apiReal(`/api/locations/${borrow}/calendar?source=hls`);
+    void apiReal(`/api/locations/${borrow}/nasa_series`);
+    void apiReal(`/api/locations/${loc.id}/grid`, undefined, 30000);
+  });
+}
+/** Immediate 3D stack from shifted mock grid + nearest preset calendar/regional (no network). */
+export function fieldStackSeed(loc: Location, live: boolean, caPresets?: Location[]): FieldBundle {
+  const id = loc.id, lite = isLite(id), presets = caPresets ?? MOCK_LOCS, borrow = lite ? nearestCaPreset(loc, presets) : id;
+  const mid = templateId(id, loc.family);
+  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? borrow : mid]);
+  const reg0 = (regional as unknown as ById<Regional>)[lite ? borrow : mid];
+  const prov: ProvMap = {
+    calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', lite ? `illustrative · nearest prepared field (${borrow})` : 'illustrative'),
+    grid: P('grid', '100 ft squares in the 3D view', 'mock', lite ? `illustrative · shifted from ${borrow}` : 'illustrative'),
+    strategies: P('strategies', 'Rotations, water need and scores', 'mock', 'still loading'),
+    news: P('news', 'News headlines', 'mock', 'project brief examples'),
+    regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', lite ? `example numbers · nearest prepared field (${borrow})` : 'no real series served yet'),
+    ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
+  };
+  const cells = lite ? (gridAt(loc, borrow) ?? gridAt(loc, 'car_colusa_rice')) : live ? null : (mockCells as unknown as ById<CellGrid>)[mid];
+  const used: Partial<Record<string, NasaStatus>> = loc.nasadem ? { nasadem: 'live' } : {};
+  const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, used).list;
+  return {
+    id, regional: reg0, cells, cal: calFor(mCal, id), strategies: lite ? [] : mockStrats(mid),
+    news: lite ? [] : (mockNews as unknown as ById<NewsItem[]>)[mid], ml: null,
+    nasa: nasa().map((d) => (live && d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)),
+    regionalLive: { smap: false, grace: false, soilSource: null }, nasaNow: null,
+    extras: { openet: null, stress: null, insurance: null, water: null }, prov,
+  };
+}
 const r4 = (v: number) => Math.round(v * 1e4) / 1e4;
 /** The API's id for a point: pt_<n|s><lat x 1e4>_<e|w><lon x 1e4>. */
 export const spotId = (lat: number, lon: number) => `pt_${lat >= 0 ? 'n' : 's'}${Math.round(Math.abs(lat) * 1e4)}_${lon >= 0 ? 'e' : 'w'}${Math.round(Math.abs(lon) * 1e4)}`;
@@ -344,7 +388,22 @@ const blank = (unit: string, note: string, src?: Source): SourcedNumber => ({ va
 function normStrategy(s: any): RotationStrategy {
   const year = STRIP_YEAR[s.id] ?? 1;
   const strip = monthStrip(s.calendar, year);
-  const rep = (y: string) => ({ irrigation_need_mm: s.exposure.replay?.[y]?.irrigation_need_mm ?? s.water.irrigation_need_mm, exposed_rain_days: s.exposure.replay?.[y]?.exposed_rain_days ?? s.exposure.exposed_rain_days, note: s.exposure.replay?.[y] ? `Engine replay of ${y} weather (NASA POWER)` : 'No replay for this year' });
+  const rep = (y: string) => {
+    const raw = s.exposure.replay?.[y];
+    const irrNote = raw?.irrigation_need_mm?.note;
+    const note = typeof raw?.note === 'string' && raw.note
+      ? raw.note
+      : typeof irrNote === 'string' && /replay/i.test(irrNote)
+        ? (y === '2022' ? 'Dry year replay: less rain, more heat and pumping.' : 'Wet year replay: more winter rain, less summer irrigation.')
+        : raw?.irrigation_need_mm
+          ? `Replay of ${y} weather at this field (NASA POWER).`
+          : 'No replay for this year';
+    return {
+      irrigation_need_mm: raw?.irrigation_need_mm ?? s.water.irrigation_need_mm,
+      exposed_rain_days: raw?.exposed_rain_days ?? s.exposure.exposed_rain_days,
+      note,
+    };
+  };
   const rp = s.risk_profile;
   const r = (k: string) => (rp[k]?.value == null ? blank('share', rp[k]?.note ?? 'blocked', rp[k]?.source) : rp[k]);
   return {
@@ -510,26 +569,36 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     };
   }
   const fetchGrid = async () => {
-    const own = await apiReal(`/api/locations/${id}/grid`, undefined, 30000);
+    const own = await gridFetch(id);
     if (own?.features) return { grid: own, shifted: false };
     if (!lite) return { grid: null, shifted: false };
-    const near = await apiReal(`/api/locations/${borrow}/grid`, undefined, 30000);
+    const near = await gridFetch(borrow);
     return { grid: near, shifted: !!near?.features };
   };
   const lateP = Promise.all([fetchGrid(), lite ? Promise.resolve(null) : apiReal(`/api/locations/${id}/news`)]);
-  const [cal, hls, strat, mlCal, models, ns, now, oet, stressB, insB, waterB] = await Promise.all([
+  prefetchFieldStack(loc, presets);
+  const stratP = apiReal(`/api/locations/${id}/strategies`, undefined, lite ? 45000 : 12000);
+  const stackP = Promise.all([
     apiReal(`/api/locations/${dataId}/calendar`),
     apiReal(`/api/locations/${dataId}/calendar?source=hls`),
-    apiReal(`/api/locations/${id}/strategies`, undefined, lite ? 45000 : 12000),
     lite ? apiReal(`/api/locations/${borrow}/calendar_ml`) : apiReal(`/api/locations/${id}/calendar_ml`),
     lite ? apiReal(`/api/locations/${borrow}/models`) : apiReal(`/api/locations/${id}/models`),
     apiReal(`/api/locations/${dataId}/nasa_series`),
-    lite ? null : apiReal(`/api/locations/${id}/nasa_now`),
-    lite ? null : apiReal(`/api/locations/${id}/openet`),
-    lite ? null : apiReal(`/api/locations/${id}/stress`),
-    lite ? null : apiReal(`/api/locations/${id}/insurance`),
-    lite ? null : apiReal(`/api/locations/${id}/water_seen`),
   ]);
+  const presetP = lite ? null : Promise.all([
+    apiReal(`/api/locations/${id}/nasa_now`),
+    apiReal(`/api/locations/${id}/openet`),
+    apiReal(`/api/locations/${id}/stress`),
+    apiReal(`/api/locations/${id}/insurance`),
+    apiReal(`/api/locations/${id}/water_seen`),
+  ]);
+  const [cal, hls, mlCal, models, ns] = await stackP;
+  const strat = await (lite ? Promise.race([
+    stratP,
+    new Promise<null>((r) => setTimeout(() => r(null), lite ? 1800 : 12000)),
+  ]) : stratP);
+  let now: Awaited<ReturnType<typeof apiReal>> = null, oet = null, stressB = null, insB = null, waterB = null;
+  if (presetP) [now, oet, stressB, insB, waterB] = await presetP;
   // presets: no stand-in squares while the real grid loads; freeform shows a shifted nearest grid until the API answers
   let c = calFor(mCal, id), cells: CellGrid | null = lite ? (gridAt(loc, borrow) ?? gridAt(loc, 'car_colusa_rice')) : null, strategies = mockStrats(mid), nws = id === mid ? (mockNews as unknown as ById<NewsItem[]>)[mid] : [];
   // NASA first: the HLS calendar wins when the API serves it (it says so in its sources)
@@ -563,6 +632,15 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   }
   const extras = lite ? { openet: null, stress: null, insurance: null, water: null } : extrasOf(oet, stressB, insB, waterB, ns, prov, used);
   const first: FieldBundle = { id, regional: reg, cells, cal: c, strategies, news: nws, ml, nasa: nasa(), regionalLive: { smap: !!sm, grace: !!gr, soilSource }, nasaNow: nowOf(now), extras, prov };
+  if (lite) {
+    stratP.then((st) => {
+      if (!st?.items?.length) return;
+      const strategies2 = st.items.map(normStrategy);
+      const p2 = { ...prov, strategies: P('strategies', 'Rotations, water need and scores', orig(st), 'rotation model, NASA POWER weather for this field') };
+      used.power = 'live';
+      setTimeout(() => onLate?.({ ...first, strategies: strategies2, prov: p2 }), 0);
+    });
+  }
   lateP.then(([gridRes, news]) => {
     const p2 = { ...prov };
     let cells2: CellGrid | null = cells, nws2 = nws;
