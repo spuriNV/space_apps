@@ -68,7 +68,7 @@ export function FieldPanel(p: FieldPanelProps) {
             <header className="fp-head" ref={headRef}>
               {loc.mine ? <MineHead loc={loc} onAction={(a) => p.onMine?.(a)} /> : sp && <p className="spot-label" data-testid="spot-label"><i className={`live-dot ${sp.state}`} />Tapped spot · live data</p>}
               <h1>{fieldName(loc)}</h1>
-              {sp?.state === 'loading' ? <p className="fp-facts"><span className="skel skel-chip" /><span className="skel skel-chip" /><span className="skel skel-chip" /></p> : sp?.state === 'error' ? null : (
+              {sp?.state === 'loading' ? <><p className="fp-facts"><span className="skel skel-chip" /><span className="skel skel-chip" /></p><p className="spot-progress" role="status" data-testid="spot-progress">Reading weather, soil and crop maps…</p></> : sp?.state === 'error' ? null : (
               <p className="fp-facts">
                 <span className="fact-chip"><b>{acres(loc)}</b> acres</span>
                 {now.year != null && Number.isFinite(now.year) && <span className="fact-chip"><i style={{ background: CROP_COL(crop) }} />{now.crop.charAt(0).toUpperCase() + now.crop.slice(1).toLowerCase()} in {now.year}</span>}

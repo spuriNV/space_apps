@@ -1550,3 +1550,23 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 .zoom-near .pin.spot-pin { opacity: 1 !important; pointer-events: auto; }
 .zoom-near .pin.spot-pin .pin-text, .zoom-mid .pin.spot-pin .pin-text i { display: none; }
 .zoom-mid .pin.spot-pin .pin-svg, .zoom-near .pin.spot-pin .pin-svg { visibility: visible; }
+
+/* ---------- phone fixes: chips, map label vs controls, progress line, tap targets ---------- */
+.spot-progress { margin: var(--s-2) 0 0; font-size: var(--fs-small); color: var(--text-2); }
+@media (max-width: 640px) {
+  html, body, #root { max-width: 100%; overflow-x: hidden; }
+  /* filter chips wrap instead of clipping at the right edge */
+  .chips { flex-wrap: wrap; overflow-x: visible; row-gap: var(--s-2); }
+  .chips .chip { max-width: 100%; }
+  /* the action row scrolls sideways; a right-edge fade says there is more */
+  .sheet-actions { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); padding-right: 36px; }
+  .sheet-actions .btn { min-height: 44px; }
+  /* map controls: 44 px, above the labels, labels capped so they stay clear of the control column */
+  .ctl, .ctl-group button { width: 44px; height: 44px; background: var(--panel); }
+  .controls { right: max(12px, env(safe-area-inset-right)); }
+  .pin .pin-text { max-width: calc(100vw - 112px); }
+  .pin-text b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .skel-chip { width: 72px; height: 28px; }
+  input, textarea, select { font-size: 16px; }
+  .btn-sm, .seg button { min-height: 44px; }
+}
