@@ -1,3 +1,4 @@
+import { ReadAloud } from '../help/ReadAloud';
 import { motionOff } from '../a11y/prefs';
 // "Nation tools" (field panel): land status and nearby Nations, drought rotation, groundwater, land and season, funding.
 // Routes: GET /api/locations/{id}/nation and /nation/{drought_rotation,groundwater,land_season,funding}, report.pdf.
@@ -124,6 +125,7 @@ function Header({ s }: { s: Summary }) {
           {near.map((n) => <li key={n.nation + n.nearest_area}><span><b>{n.nation}</b><small>{n.nearest_area === n.nearest_area.toUpperCase() ? n.nearest_area.toLowerCase().replace(/(^|[\s(])(\p{L})/gu, (_m, a: string, b: string) => a + b.toUpperCase()) : n.nearest_area}</small></span><em>{n.inside ? 'Inside' : `${mi(n.distance_km)} mi away`}</em></li>)}
         </ul>
       )}
+      <ReadAloud text={`${LAND[s.land_status.value] ?? cap(s.land_status.value.replace(/_/g, ' '))}${s.land_status.area_name ? `, ${s.land_status.area_name}` : ''}.${near.length ? ` Nearest Nations: ${near.map((n) => `${n.nation}, ${n.inside ? 'inside' : `${mi(n.distance_km)} miles away`}`).join('; ')}.` : ''}`} />
       <p className="nt-fine">Listed by distance only. Reserve and trust boundaries are legal lines, not traditional territory.</p>
       {names.length > 0 && (
         <div className="nt-names">

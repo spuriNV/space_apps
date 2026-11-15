@@ -18,14 +18,16 @@ export const RAIN_STEPS: { from: number; label: string; color: string }[] = [
 ];
 export const RAIN_COLOR = ['step', ['get', 'qpf'], RAIN_STEPS[0].color, ...RAIN_STEPS.slice(1).flatMap((s) => [s.from, s.color])];
 export const DROUGHT_STEPS: { dm: number; label: string; name: string; color: string }[] = [
-  { dm: 0, label: 'D0', name: 'Abnormally dry', color: '#f3d9a4' },
-  { dm: 1, label: 'D1', name: 'Moderate', color: '#e3b06a' },
-  { dm: 2, label: 'D2', name: 'Severe', color: '#c98840' },
-  { dm: 3, label: 'D3', name: 'Extreme', color: '#a3632a' },
-  { dm: 4, label: 'D4', name: 'Exceptional', color: '#6f3f1a' },
+  { dm: 0, label: 'D0', name: 'Abnormally dry', color: '#ffff00' },
+  { dm: 1, label: 'D1', name: 'Moderate', color: '#fcd37f' },
+  { dm: 2, label: 'D2', name: 'Severe', color: '#ffaa00' },
+  { dm: 3, label: 'D3', name: 'Extreme', color: '#e60000' },
+  { dm: 4, label: 'D4', name: 'Exceptional', color: '#730000' },
 ];
 export const DROUGHT_COLOR = ['match', ['get', 'dm'], ...DROUGHT_STEPS.flatMap((s) => [s.dm, s.color]), '#999'];
 
+/** Which drought map suits the view: the U.S. and Canadian monitors across North America, NASA soil moisture elsewhere. */
+export const droughtRegion = (lat: number, lon: number): 'na' | 'gl' => (lat >= 15 && lat <= 75 && lon >= -170 && lon <= -50 ? 'na' : 'gl');
 export type WxLayer = 'rain' | 'drought' | 'past';
 export type RainMode = 'total' | 'hourly';
 const when = (d: Date | null, o: Intl.DateTimeFormatOptions) => (d ? d.toLocaleString('en-US', o) : '');
@@ -36,7 +38,7 @@ export const stepWords = (f: RainForecast | null) => { const a = utc(f?.valid_fr
 export function WeatherControl(p: {
   on: boolean; setOn: (v: boolean) => void; layer: WxLayer; setLayer: (l: WxLayer) => void;
   mode: RainMode; setMode: (m: RainMode) => void; days: RainDays; setDays: (d: RainDays) => void;
-  rain: RainForecast | null; drought: DroughtNow | null; state: 'idle' | 'loading' | 'ready' | 'error'; right: number;
+  rain: RainForecast | null; drought: DroughtNow | null; region: 'na' | 'gl'; state: 'idle' | 'loading' | 'ready' | 'error'; right: number;
 }) {
   const issued = utc(p.rain?.issued), to = utc(p.rain?.valid_to);
   const last = to ? new Date(to.getTime() - 1) : null; // valid_to is midnight UTC: the day before, locally
@@ -47,7 +49,7 @@ export function WeatherControl(p: {
       </button>
       {p.on && (
         <section className="rain-card" aria-label="Rain and drought map" data-testid="rain-card">
-          <Seg label="Map layer" value={p.layer} onChange={p.setLayer} options={[{ v: 'rain', label: 'Rain forecast', testid: 'wx-rain' }, { v: 'drought', label: 'Drought now', testid: 'wx-drought' }, { v: 'past', label: 'Rain, last 7 days', testid: 'wx-past' }]} />
+          <Seg label="Map layer" value={p.layer} onChange={p.setLayer} options={[{ v: 'rain', label: 'Rain forecast', testid: 'wx-rain' }, { v: 'drought', label: 'Drought now', testid: 'wx-drought' }, { v: 'past', label: 'Past rain', testid: 'wx-past' }]} />
           {p.layer === 'rain' ? <>
             <div className="rain-row">
               <Seg className="small" label="How to show rain" value={p.mode} onChange={p.setMode} options={[{ v: 'total', label: 'Total', testid: 'rain-total' }, { v: 'hourly', label: 'Hour by hour', testid: 'rain-hourly' }]} />
@@ -64,13 +66,16 @@ export function WeatherControl(p: {
             <p className="rain-title">Rain, last 7 days<small>Animated daily rain from NASA satellites. Play it at the bottom of the map.</small></p>
             <p className="rain-src">NASA GPM IMERG via GIBS, about 10 km pixels.</p>
           </> : <>
-            <p className="rain-title">Drought this week</p>
+            <p className="rain-title">{p.region === 'na' ? 'Drought now' : 'Soil moisture now (no drought monitor here)'}</p>
+            {p.region === 'na' ? <>
             <ol className="drought-legend" aria-label="Legend, drought category">
               {DROUGHT_STEPS.map((s) => <li key={s.dm}><i style={{ background: s.color }} /><b>{s.label}</b><span>{s.name}{s.dm > 0 ? ' drought' : ''}</span></li>)}
             </ol>
             <p className="rain-src" role="status">
-              {p.state === 'loading' ? 'Loading the Drought Monitor map…' : p.state === 'error' ? 'The Drought Monitor map is not reachable right now.' : <>U.S. Drought Monitor, map of {when(p.drought?.map_date ? new Date(p.drought.map_date + 'T12:00:00') : null, { weekday: 'short', month: 'short', day: 'numeric' })}. Updated every Thursday. No colour means no drought.</>}
-            </p>
+              {p.state === 'loading' ? 'Loading the Drought Monitor map…' : <>United States: U.S. Drought Monitor{p.drought?.map_date ? `, map of ${when(new Date(p.drought.map_date + 'T12:00:00'), { month: 'short', day: 'numeric' })}` : ' (not reachable right now)'}, updated Thursdays. Canada: Canadian Drought Monitor (Agriculture and Agri-Food Canada), updated monthly. Same D0 to D4 scale. No colour means no drought.</>}
+            </p></> : <>
+            <p className="rain-src">Yellow and orange are drier soil, green and blue are wetter. NASA SMAP root-zone soil moisture, about 9 km pixels, a few days behind. Pan to North America for the official drought monitors.</p>
+            <p className="rain-src">Source: NASA SMAP L4 via GIBS.</p></>}
           </>}
         </section>
       )}

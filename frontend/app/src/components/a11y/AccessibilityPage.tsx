@@ -1,4 +1,5 @@
 import { Dialog } from './Dialog';
+import { DisabilityHelp } from '../help/DisabilityHelp';
 
 /** What CropLytics supports for access, and how it was checked. Linked from the menu and the footer of the Pick panel. */
 export function AccessibilityPage({ onClose }: { onClose: () => void }) {
@@ -17,6 +18,9 @@ export function AccessibilityPage({ onClose }: { onClose: () => void }) {
         <li><b>Screen readers:</b> landmarks (header, navigation, main, complementary), one page heading, labelled controls, alt text on images, and polite announcements for loading and results.</li>
         <li><b>Large targets:</b> main controls are at least 48 px.</li>
       </ul>
+      <h3>Read aloud</h3>
+      <p>Look for the 🔊 Read aloud button under the main answers. It uses your device's own voice.</p>
+      <DisabilityHelp />
       <h3>How it was tested</h3>
       <ul>
         <li>Automated: axe-core runs against the Pick and Now screens for Colusa on every change (serious and critical violations fail the check).</li>

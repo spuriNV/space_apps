@@ -14,7 +14,7 @@ import ComparePanel from './components/compare/ComparePanel';
 import { FieldTimeline, type SimMode } from './components/ui/FieldTimeline';
 import RotationBrief from './components/brief/RotationBrief';
 import BriefStep from './components/brief/BriefStep';
-import { RainTimeline, WeatherControl, type RainMode, type WxLayer } from './components/rain/RainControl';
+import { RainTimeline, WeatherControl, droughtRegion, type RainMode, type WxLayer } from './components/rain/RainControl';
 import { BCCard, LayersDrawer } from './components/Panels';
 import { LandPanel } from './components/lands/LandPanel';
 import type { LandFeature } from './components/lands/lands';
@@ -130,7 +130,9 @@ export default function App() {
   useEffect(() => { if (!rainHourly) setRainPlaying(false); }, [rainHourly]);
   useEffect(() => { if (wxOn && wxLayer === 'drought' && drought === undefined) api.getDroughtNow().then(setDrought); }, [wxOn, wxLayer, drought]);
   const rainNow = rainTotal ? (rain?.days === rainDays ? rain.data : null) : rainHourly ? steps[rainStep] : null;
-  const droughtNow = wxOn && wxLayer === 'drought' ? drought ?? null : null;
+  const [view, setView] = useState({ zoom: 5.75, pitch: 0, bearing: 0, lat: 37.35, lon: -119.9 });
+  const dRegion = droughtRegion(view.lat, view.lon);
+  const droughtNow = wxOn && wxLayer === 'drought' && dRegion === 'na' ? drought ?? null : null;
   const rainState: 'idle' | 'loading' | 'ready' | 'error' = !wxOn ? 'idle'
     : wxLayer === 'drought' ? (drought === undefined ? 'loading' : drought ? 'ready' : 'error')
     : rainTotal ? (rain?.days !== rainDays ? 'loading' : rain.data ? 'ready' : 'error')
@@ -150,7 +152,6 @@ export default function App() {
     document.addEventListener('mousedown', off);
     return () => document.removeEventListener('mousedown', off);
   }, [switchOpen, dateOpen]);
-  const [view, setView] = useState({ zoom: 5.75, pitch: 0, bearing: 0, lat: 37.35, lon: -119.9 });
 
   useEffect(() => {
     api.getLocations().then(({ locations: ls, prov, live: lv }) => { api.getStrips(ls.map((l) => l.id)).then(setStrips); setLocations(ls); setLocProv(prov); setLive(lv); setAllocation(Object.fromEntries(ls.map((l) => [l.id, l.water.allocation_input.value]))); });
@@ -468,7 +469,7 @@ export default function App() {
       <main id="main" tabIndex={-1} aria-label="Map" className="map-main">
       <MapView ref={map} lands={lands} landsOn={!!layersOn.lands} activeLandId={land ? landId : null} onLandClick={drawing ? undefined : openLand} onToggleLands={() => setLayersOn((l) => ({ ...l, lands: !l.lands }))} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} reservesChip={reservesAvail} reservesOn={!!layersOn.reserves} onToggleReserves={() => setLayersOn((l) => ({ ...l, reserves: !l.reserves }))} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={{ ...layersOn, rain: wxOn && wxLayer === 'past' }} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
-        onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onReplayT={setT} onReplayRunning={setReplaying} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} rain={rainNow} drought={droughtNow} />
+        onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onReplayT={setT} onReplayRunning={setReplaying} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} rain={rainNow} drought={droughtNow} droughtRegion={wxOn && wxLayer === 'drought' ? dRegion : null} />
       </main>
 
       <header className="topbar" data-testid="topbar">
@@ -596,7 +597,7 @@ export default function App() {
         </div>
       </div>
 
-      {!drawing && <WeatherControl on={wxOn} setOn={setWxOn} layer={wxLayer} setLayer={setWxLayer} mode={rainMode} setMode={setRainMode} days={rainDays} setDays={setRainDays} rain={rainNow ?? (rainHourly ? steps.find(Boolean) ?? null : null)} drought={droughtNow} state={rainState} right={16 + rightInset} />}
+      {!drawing && <WeatherControl on={wxOn} setOn={setWxOn} layer={wxLayer} setLayer={setWxLayer} mode={rainMode} setMode={setRainMode} days={rainDays} setDays={setRainDays} rain={rainNow ?? (rainHourly ? steps.find(Boolean) ?? null : null)} drought={droughtNow} region={dRegion} state={rainState} right={16 + rightInset} />}
       {rainHourly && !sim && <RainTimeline step={rainStep} setStep={setRainStep} playing={rainPlaying} setPlaying={setRainPlaying} steps={steps} loaded={stepsDone} left={phone ? '50%' : `calc(50% + ${(leftInset - rightInset) / 2}px)`} />}
       <DrawLayer ref={draw} getMap={() => map.current?.getMap() ?? null} mf={mf} rightInset={rightInset} onActive={(on, hideId) => { if (on) announce('draw'); setDrawing(on ? { hideId: hideId ?? null } : null); }}
         onSubmitting={onSubmitting} onSaved={onSaved} onDeleted={(id) => { if (selectedId === id) { setSelectedId(null); setPanel('none'); } }} onOpenShared={openMine} />

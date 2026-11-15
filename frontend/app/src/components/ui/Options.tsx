@@ -1,6 +1,7 @@
 // One farmer-first field panel. Order: what this field is -> "Your field now" answers -> next steps -> More detail (about the
 // ground, last 3 seasons, sources). A floating paper card on a desktop (the field name collapses into a sticky one-line bar
 // on scroll; the one primary action sits in the footer); a draggable bottom sheet on a phone (peek, half, full).
+import { DisabilityHelp } from '../help/DisabilityHelp';
 import type { Calendar, FieldEvent, Location, Regional, RotationStrategy } from '../../types';
 import { bcGap, isBC, type Extras, type ISSPhoto, type NasaNow, type ProvMap, type RegionalLive } from '../../api';
 import type { NasaDataset } from '../../nasa';
@@ -79,6 +80,7 @@ export function FieldPanel(p: FieldPanelProps) {
         {isBC(loc) && !loc.mine && <FirstNationsCard loc={loc} />}
         {isBC(loc) && !loc.mine && <SalmonPanel locId={loc.id} />}
         {!loc.mine && <NationTools loc={loc} />}
+        <DisabilityHelp region={loc.region} />
         {!sp && <button className="btn btn-text" onClick={() => p.onStep('year')} data-testid="step-year"><Icon name="cube" />See this field’s year on the map</button>}
         <h2 className="fp-h" data-testid="nasa-section">NASA data behind this field</h2>
         <ISSFigure iss={p.iss} />
@@ -157,7 +159,9 @@ function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategi
   const need = mmToAfac(base.water.irrigation_need_mm.value);
   const rf = isRainFed(base), g = allocation != null ? waterGap(need, allocation) : null, short = !rf && !!g?.short, even = !rf && !!g?.even;
   const lim = allocation != null ? `${allocation.toFixed(1)}${exampleLimit ? ' (an example; set yours below)' : ''}` : '';
-  return <Answer tone={short ? 'warn' : even || allocation == null ? 'neutral' : 'good'}
+  const hl = rf ? 'Yes. It’s rain-fed, so it needs no irrigation.' : allocation == null ? `It needs about ${need.toFixed(1)} acre-feet per acre a year.` : short ? `No. Short by about ${g!.by} acre-feet per acre.` : even ? 'Just about. It needs about as much as you can get.' : 'Yes. You can get enough water for it.';
+  const sb = !rf && allocation != null ? `Your current rotation, ${rotName(base)}, needs about ${need.toFixed(1)} acre-feet per acre a year. You can get ${allocation.toFixed(1)}.` : `Your current rotation is ${rotName(base)}.`;
+  return <Answer speak={`${hl} ${sb}`} tone={short ? 'warn' : even || allocation == null ? 'neutral' : 'good'}
     headline={rf ? 'Yes. It’s rain-fed, so it needs no irrigation.' : allocation == null ? `It needs about ${need.toFixed(1)} acre-ft per acre a year.` : short ? `No. Short by about ${g!.by} acre-ft per acre.` : even ? 'Just about. It needs about as much as you can get.' : 'Yes. You can get enough water for it.'}
     sub={!rf && allocation != null ? `Your current rotation, ${rotName(base)}, needs about ${need.toFixed(1)} acre-ft per acre a year. You can get ${lim}.` : `Your current rotation is ${rotName(base)}.`} />;
 }

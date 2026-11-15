@@ -83,6 +83,8 @@ interface Props {
   rain?: GeoJSON.FeatureCollection | null;
   /** U.S. Drought Monitor categories (D0-D4), drawn under the fields when Drought now is on */
   drought?: GeoJSON.FeatureCollection | null;
+  /** which drought sources to draw: 'na' = U.S. Drought Monitor + Canadian Drought Monitor, 'gl' = NASA SMAP soil moisture, null = off */
+  droughtRegion?: 'na' | 'gl' | null;
   onView: (v: { zoom: number; pitch: number; bearing: number; lat: number; lon: number }) => void;
 }
 interface StackLabel { key: string; ax: number; ay: number; color: string; tag: string; title: string; value: string; note: string }
@@ -411,6 +413,28 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     (map.getSource('drought') as maplibregl.GeoJSONSource | undefined)?.setData(p.drought ?? fc());
     for (const id of ['drought-fill', 'drought-line']) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', p.drought ? 'visible' : 'none');
   }, [ready, p.drought]);
+  // Canadian Drought Monitor (AAFC, monthly) and NASA SMAP root-zone soil moisture (global): raster tiles, added the first time they are needed
+  useEffect(() => {
+    const map = mapRef.current; if (!ready || !map) return;
+    const reg = p.droughtRegion ?? null;
+    const show = (id: string, on: boolean) => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none'); };
+    show('drought-ca', reg === 'na'); show('drought-gl', reg === 'gl');
+    const op = ['interpolate', ['linear'], ['zoom'], 5, 0.75, 11, 0.55, 14, 0.4] as unknown as maplibregl.ExpressionSpecification;
+    if (reg === 'na' && !map.getSource('drought-ca')) {
+      const CDM = 'https://agriculture.canada.ca/imagery-images/rest/services/canadian_drought_monitor/ImageServer';
+      const add = (time: number | null) => {
+        if (map.getSource('drought-ca')) return;
+        map.addSource('drought-ca', { type: 'raster', tileSize: 256, attribution: 'Drought: AAFC Canadian Drought Monitor', tiles: [`${CDM}/exportImage?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256&format=png32&transparent=true&f=image${time ? `&time=${time}` : ''}`] });
+        map.addLayer({ id: 'drought-ca', type: 'raster', source: 'drought-ca', paint: { 'raster-opacity': op } }, 'rain-fill');
+      };
+      fetch(`${CDM}/query?where=1%3D1&outFields=dateEnd&orderByFields=dateEnd+desc&resultRecordCount=1&returnGeometry=false&f=json`).then((r) => r.json()).then((j) => add(j?.features?.[0]?.attributes?.dateEnd ?? null)).catch(() => add(null));
+    }
+    if (reg === 'gl' && !map.getSource('drought-gl')) {
+      const d = new Date(Date.now() - 5 * 86400e3).toISOString().slice(0, 10);
+      map.addSource('drought-gl', { type: 'raster', tileSize: 256, maxzoom: 6, attribution: 'Soil moisture: NASA SMAP L4 via GIBS', tiles: [`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/SMAP_L4_Analyzed_Root_Zone_Soil_Moisture/default/${d}/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png`] });
+      map.addLayer({ id: 'drought-gl', type: 'raster', source: 'drought-gl', paint: { 'raster-opacity': op } }, 'rain-fill');
+    }
+  }, [ready, p.droughtRegion]);
 
   // ---------- exploded layer stack for the scrubber date ----------
   useEffect(() => {
