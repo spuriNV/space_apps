@@ -1,0 +1,257 @@
+// Builds the 30-second CropLytics commercial from stock clips, screen recordings, the voice-over lines and the music.
+//   node video/scripts/build.mjs            -> video/croplytics-30s-v1.mp4 + .srt (and stems in video/build/)
+//   VO_DIR=/path/to/lines node ...          -> use other voice-over lines (t1.wav ... t9.wav), e.g. ElevenLabs takes
+// Needs ffmpeg (no drawtext/libass needed: every super, caption and the end card is rendered to PNG with Chrome).
+import { chromium } from '../../design/tools/node_modules/playwright-core/index.mjs';
+import { execFileSync } from 'node:child_process';
+import { mkdirSync, readFileSync, writeFileSync, existsSync, rmSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const V = join(HERE, '..');
+const ROOT = join(V, '..');
+const RAW = join(V, 'raw');
+const B = join(V, 'build');
+const VO_DIR = process.env.VO_DIR ?? join(RAW, 'vo');
+const OUT = join(V, process.env.OUT_NAME ?? 'croplytics-30s-v1');
+const FPS = 24;
+const TOTAL = 29.5; // seconds; 708 frames, under the 30 s limit with margin
+for (const d of [B, join(B, 'seg'), join(B, 'ov')]) mkdirSync(d, { recursive: true });
+
+const ff = (args) => execFileSync('ffmpeg', ['-v', 'error', '-y', ...args], { stdio: ['ignore', 'inherit', 'inherit'] });
+const probe = (f) => +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f]).toString().trim();
+
+// ---------------------------------------------------------------- shot list (as built; see docs/video-30s.md)
+const stock = (f) => join(RAW, 'stock', f);
+const rec = (f) => join(RAW, 'rec', f);
+// warm, low-saturation grade for the stock footage only (the app's recordings stay ungraded)
+const GRADE = "colortemperature=temperature=5400:mix=0.55,eq=contrast=1.05:saturation=0.86:gamma=1.02,curves=all='0/0.035 0.5/0.52 1/0.98'";
+const SHOTS = [
+  { id: '01_iss', len: 2.25, still: join(ROOT, 'data/cache/car_colusa_rice/iss/ISS062-E-81143.jpg'), crop: [5568, 3132, 0, 330],
+    zoom: [1.0, 1.07], c: [0.52, 0.48], grade: "eq=contrast=1.45:brightness=-0.02:saturation=1.35:gamma=0.92,colortemperature=temperature=5600:mix=0.5" },
+  { id: '02_look', len: 2.0, src: stock('mixkit-521-1080.mp4'), in: 6.0, zoom: [1.0, 1.06], c: [0.4, 0.5], grade: GRADE },
+  { id: '03_hat', len: 1.5, src: stock('mixkit-42382-1080.mp4'), in: 0.6, zoom: [1.0, 1.03], c: [0.5, 0.5], grade: GRADE },
+  { id: '04_phone_hand', len: 1.0, src: stock('mixkit-594-1080.mp4'), in: 2.0, zoom: [2.0, 2.06], c: [0.44, 0.62], grade: GRADE },
+  { id: '05_phone_app', len: 4.0, phone: rec('s05_phone.mp4') },
+  { id: '06_laptop', len: 0.75, src: stock('mixkit-32139-720.mp4'), in: 1.1, zoom: [1.0, 1.03], c: [0.5, 0.5], grade: GRADE },
+  { id: '07_3d', len: 2.5, src: rec('s07_3d.mp4'), in: 4.3, zoom: [1.0, 1.04], c: [0.62, 0.5] },
+  { id: '08_year', len: 2.25, src: rec('s08_year.mp4'), in: 0.4, zoom: [1.0, 1.08], c: [0.5, 0.64] },
+  { id: '09_season', len: 2.0, src: rec('s09_season.mp4'), in: 0.3, zoom: [1.3, 1.36], c: [0.35, 0.0] },
+  { id: '10_compare', len: 3.75, src: rec('s10_compare.mp4'), in: 0.2, zoom: [1.0, 1.32], c: [0.22, 0.12] },
+  { id: '11_brief', len: 3.5, src: rec('s11_brief.mp4'), in: 0.3, zoom: [1.45, 1.5], c: [0.4, 0.45] },
+  { id: '12_end', len: 4.0, card: true },
+];
+let t = 0; for (const s of SHOTS) { s.start = t; t += s.len; }
+if (Math.abs(t - TOTAL) > 1e-6) throw new Error(`shots sum to ${t}, not ${TOTAL}`);
+const at = (id) => SHOTS.find((s) => s.id === id).start;
+
+// phone shot: three pieces of the simulator recording (tap, flown in with data, sheet slides up); times in the recording
+const PHONE_PIECES = JSON.parse(process.env.PHONE_PIECES ?? '[[13.4,1.2],[19.6,1.0],[21.3,1.8]]');
+
+// ---------------------------------------------------------------- voice-over (separate stem) and captions
+const VO = [
+  { at: 2.35, text: 'Every season, the same question.' },
+  { at: 4.40, text: 'What do I plant next?' },
+  { at: 6.85, text: 'CropLytics reads your field with NASA Earth data.' },
+  { at: 11.55, text: 'From the crop down to the groundwater.' },
+  { at: 14.20, text: 'What happened here.' },
+  { at: 16.35, text: 'What’s likely this winter.' },
+  { at: 18.35, text: 'What a switch costs: about two acre-feet, not five.' },
+  { at: 22.05, text: 'One page for your adviser, checked against OpenET.' },
+  { at: 25.95, text: 'CropLytics. Your field. Your call.', noBurn: true }, // the end card itself says it
+];
+VO.forEach((l, i) => { l.file = join(VO_DIR, `t${i + 1}.wav`); l.dur = probe(l.file); l.end = l.at + l.dur; });
+VO.forEach((l, i) => { if (i + 1 < VO.length && l.end > VO[i + 1].at - 0.05) throw new Error(`VO line ${i + 1} runs into the next (${l.end.toFixed(2)} > ${VO[i + 1].at})`); });
+if (VO.at(-1).end > TOTAL - 0.3) throw new Error('last VO line runs past the end');
+
+// ---------------------------------------------------------------- on-screen text (rendered to PNG)
+const FIELD = process.env.FIELD_NAME ?? 'Rice field 4 miles east of Williams';
+const N_CA = process.env.N_CA ?? '14';
+const OV = [
+  // ISS opener
+  { kind: 'super', text: 'The Sacramento Valley, seen from the International Space Station', t: [0.25, at('02_look') - 0.05] },
+  { kind: 'credit', text: 'ISS astronaut photo ISS062-E-81143, 4 March 2020. Image courtesy of the Earth Science and Remote Sensing Unit, NASA Johnson Space Center.', t: [0.25, at('02_look') - 0.05] },
+  // phone
+  { kind: 'label', text: `A real field: one of ${N_CA} in California, plus one in British Columbia`, t: [at('05_phone_app') + 0.1, at('06_laptop')] },
+  { kind: 'lower', text: `${FIELD} · 149 acres · Colusa County`, t: [at('05_phone_app') + 1.3, at('06_laptop')] },
+  { kind: 'source', text: 'NASA HLS (Landsat + ESA Sentinel-2) · NASA GPM IMERG rain', t: [at('05_phone_app') + 1.3, at('06_laptop')] },
+  // 3D
+  { kind: 'label', text: 'Different observations, different scales', t: [at('07_3d') + 0.1, at('08_year')] },
+  { kind: 'lower', text: 'Crop · soil moisture · groundwater in the basin', t: [at('07_3d') + 0.4, at('08_year')] },
+  { kind: 'source', text: process.env.SRC_3D ?? 'ESA Sentinel-2 · NASA GRACE-FO', t: [at('07_3d') + 0.4, at('08_year')] },
+  // year
+  { kind: 'label', text: 'Understand risk', t: [at('08_year') + 0.1, at('09_season')] },
+  { kind: 'lower', text: '2022: left fallow in the drought', t: [at('08_year') + 0.5, at('09_season')] },
+  { kind: 'source', text: 'NASA HLS (Landsat + ESA Sentinel-2) · NASA GPM IMERG rain', t: [at('08_year') + 0.5, at('09_season')] },
+  // season
+  { kind: 'label', text: 'Make uncertainty visible', t: [at('09_season') + 0.1, at('10_compare')] },
+  { kind: 'lower', text: 'An outlook, not a forecast', t: [at('09_season') + 0.4, at('10_compare')] },
+  // compare
+  { kind: 'label', text: 'Compare rotations · reveal trade-offs', t: [at('10_compare') + 0.1, at('11_brief')] },
+  { kind: 'big', text: 'Dry-year safflower: about 2 acre-ft/acre, an upper bound.<br>Rice today: about 5.', t: [at('10_compare') + 1.2, at('11_brief')] },
+  { kind: 'source', text: 'Rotation model driven by NASA POWER weather', t: [at('10_compare') + 1.2, at('11_brief')] },
+  // brief + the check
+  { kind: 'label', text: 'One page for the grower and adviser', t: [at('11_brief') + 0.1, at('12_end')] },
+  { kind: 'big', text: 'Water estimate checked against OpenET:<br>runs 16–21% high, nothing tuned.', t: [at('11_brief') + 0.6, at('12_end')] },
+  // end card layers (fade in one after another, then hold still)
+  { kind: 'endbg', t: [at('12_end'), TOTAL], fade: 0.4, fadeOut: 0 },
+  { kind: 'endmark', t: [at('12_end') + 0.3, TOTAL], fade: 0.5, rise: 12, fadeOut: 0 },
+  { kind: 'endline', t: [at('12_end') + 0.6, TOTAL], fade: 0.4, rise: 8, fadeOut: 0 },
+  { kind: 'endsmall', t: [at('12_end') + 0.9, TOTAL], fade: 0.4, fadeOut: 0 },
+];
+for (const l of VO) if (!l.noBurn) OV.push({ kind: 'caption', text: l.text, t: [l.at - 0.05, l.end + 0.35] });
+
+const font = (f) => readFileSync(join(V, 'fonts', f)).toString('base64');
+const CSS = `
+@font-face { font-family: 'Zilla Slab'; font-weight: 500; src: url(data:font/ttf;base64,${font('ZillaSlab-Medium.ttf')}); }
+@font-face { font-family: 'Zilla Slab'; font-weight: 600; src: url(data:font/ttf;base64,${font('ZillaSlab-SemiBold.ttf')}); }
+@font-face { font-family: 'Libre Franklin'; font-weight: 100 900; src: url(data:font/ttf;base64,${font('LibreFranklin-VF.ttf')}); }
+:root { --paper: #f7f6f0; --ink: #191c16; --green: #2f5d34; --muted: #5a5e54; --yellow: #ffd166; }
+html, body { margin: 0; width: 1920px; height: 1080px; background: transparent; overflow: hidden; }
+body { position: relative; font-family: 'Libre Franklin', sans-serif; color: var(--ink); font-variant-numeric: tabular-nums lining-nums; -webkit-font-smoothing: antialiased; }
+.box { position: absolute; background: var(--paper); border: 1px solid var(--ink); box-shadow: 2px 2px 0 rgba(25, 28, 22, .35); }
+.caption { left: 50%; transform: translateX(-50%); bottom: 44px; font-weight: 600; font-size: 40px; line-height: 1.2; padding: 10px 22px; white-space: nowrap; }
+.lower { left: 64px; bottom: 132px; font-weight: 600; font-size: 32px; padding: 12px 20px; }
+.big { left: 64px; bottom: 132px; font-family: 'Zilla Slab'; font-weight: 600; font-size: 46px; line-height: 1.15; padding: 16px 24px; border-left: 8px solid var(--green); }
+.label { left: 64px; top: 108px; font-family: 'Zilla Slab'; font-weight: 600; font-size: 34px; color: var(--green); padding: 8px 18px 9px; border-left: 8px solid var(--green); }
+.source { right: 64px; bottom: 132px; font-size: 21px; color: var(--muted); padding: 7px 14px; background: rgba(247, 246, 240, .94); border-color: rgba(25, 28, 22, .35); box-shadow: none; }
+.super { left: 64px; top: 64px; font-family: 'Zilla Slab'; font-weight: 600; font-size: 40px; padding: 10px 20px; }
+.credit { left: 64px; right: 64px; bottom: 40px; font-size: 20px; color: var(--muted); padding: 7px 14px; background: rgba(247, 246, 240, .94); border-color: rgba(25, 28, 22, .35); box-shadow: none; }
+.endbg { position: absolute; inset: 0; background: var(--paper); }
+.endbg::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--green); }
+.endmark { position: absolute; left: 0; right: 0; top: 270px; text-align: center; font-family: 'Zilla Slab'; font-weight: 600; font-size: 140px; color: var(--green); letter-spacing: -1px; }
+.endline { position: absolute; left: 0; right: 0; top: 452px; text-align: center; }
+.endline .a { font-family: 'Zilla Slab'; font-weight: 600; font-size: 56px; }
+.endline .b { font-size: 36px; margin-top: 14px; }
+.endsmall { position: absolute; left: 0; right: 0; top: 640px; text-align: center; font-size: 28px; color: var(--ink); }
+.endsmall .cov { margin-bottom: 64px; }
+.endsmall .meta { font-size: 26px; color: var(--muted); line-height: 1.6; }
+.endsmall .disc { position: absolute; right: 48px; top: 370px; font-size: 20px; color: var(--muted); text-align: right; }
+`;
+function html(o) {
+  switch (o.kind) {
+    case 'endbg': return '<div class="endbg"></div>';
+    case 'endmark': return '<div class="endmark">CropLytics</div>';
+    case 'endline': return '<div class="endline"><div class="a">Your field. Your call.</div><div class="b">Plan next season’s rotation with NASA Earth data.</div></div>';
+    case 'endsmall': return `<div class="endsmall"><div class="cov">${N_CA} real California fields and one in British Columbia. Next: co-design with First Nations farmers.</div>
+      <div class="meta">NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data<br>croplytics-app.onrender.com</div>
+      <div class="disc">Voice-over is synthetic (text-to-speech). Farmer footage: Mixkit stock. App: real screen recordings.</div></div>`;
+    default: return `<div class="box ${o.kind}">${o.text}</div>`;
+  }
+}
+
+async function renderOverlays() {
+  const browser = await chromium.launch({ channel: 'chrome', headless: true });
+  const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+  for (const [i, o] of OV.entries()) {
+    if (/—/.test(o.text ?? '')) throw new Error(`em dash in: ${o.text}`);
+    o.png = join(B, 'ov', `${String(i).padStart(2, '0')}_${o.kind}.png`);
+    await page.setContent(`<!doctype html><html><head><style>${CSS}</style></head><body>${html(o)}</body></html>`);
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: o.png, omitBackground: true });
+  }
+  // phone bezel: paper outside, dark rounded bezel, transparent screen; screen 600 px wide at (1180, 64)
+  const P = { x: 1160, y: 60, w: 600, r: 64, bez: 18 };
+  P.h = Math.round(P.w * 2556 / 1178);
+  await page.setContent(`<!doctype html><html><head><style>html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden}</style></head><body>
+    <svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+      <defs><mask id="m"><rect width="1920" height="1080" fill="white"/><rect x="${P.x}" y="${P.y}" width="${P.w}" height="${P.h}" rx="${P.r - P.bez}" fill="black"/></mask></defs>
+      <rect width="1920" height="1080" fill="#f7f6f0" mask="url(#m)"/>
+      <rect x="${P.x - P.bez}" y="${P.y - P.bez}" width="${P.w + 2 * P.bez}" height="${P.h + 2 * P.bez}" rx="${P.r}" fill="#1c1d1a" mask="url(#m)"/>
+      <rect x="${P.x - P.bez - 1}" y="${P.y - P.bez - 1}" width="${P.w + 2 * P.bez + 2}" height="${P.h + 2 * P.bez + 2}" rx="${P.r + 1}" fill="none" stroke="#8a8c84" stroke-width="2"/>
+    </svg></body></html>`);
+  await page.screenshot({ path: join(B, 'ov', 'phone_bezel.png'), omitBackground: true });
+  await browser.close();
+  return P;
+}
+
+// ---------------------------------------------------------------- picture
+function zoomFilter(s, n) {
+  const [z0, z1] = s.zoom ?? [1, 1];
+  const [cx, cy] = s.c ?? [0.5, 0.5];
+  const z = `(${z0}+(${z1 - z0})*on/${Math.max(n - 1, 1)})`;
+  return `zoompan=z='${z}':x='max(0,min(iw-iw/zoom,${cx}*iw-iw/zoom/2))':y='max(0,min(ih-ih/zoom,${cy}*ih-ih/zoom/2))':d=1:s=1920x1080:fps=${FPS}`;
+}
+function buildSegment(s, P) {
+  const n = Math.round(s.len * FPS);
+  const out = join(B, 'seg', `${s.id}.mp4`);
+  const enc = ['-frames:v', String(n), '-an', '-c:v', 'libx264', '-preset', 'medium', '-crf', '12', '-pix_fmt', 'yuv420p', '-r', String(FPS), out];
+  if (s.still) {
+    const [cw, ch, cx0, cy0] = s.crop;
+    ff(['-loop', '1', '-framerate', String(FPS), '-t', String(s.len + 1), '-i', s.still, '-vf',
+      `crop=${cw}:${ch}:${cx0}:${cy0},scale=3840:2160:flags=lanczos,${s.grade},${zoomFilter(s, n)},format=yuv420p`, ...enc]);
+  } else if (s.phone) {
+    // pieces of the simulator recording -> 600 px wide screen behind the bezel on paper, slow 3% push
+    const parts = PHONE_PIECES.map(([a, d], i) => `[0:v]trim=start=${a}:duration=${d},setpts=PTS-STARTPTS,fps=${FPS},scale=${P.w}:${P.h}:flags=lanczos,setsar=1[p${i}]`).join(';');
+    const cat = PHONE_PIECES.map((_, i) => `[p${i}]`).join('') + `concat=n=${PHONE_PIECES.length}:v=1:a=0[scr]`;
+    ff(['-i', s.phone, '-loop', '1', '-i', join(B, 'ov', 'phone_bezel.png'), '-f', 'lavfi', '-i', `color=c=0xf7f6f0:s=1920x1080:r=${FPS}:d=${s.len + 1}`, '-filter_complex',
+      `${parts};${cat};[2:v][scr]overlay=${P.x}:${P.y}:shortest=0[a];[a][1:v]overlay=0:0,trim=duration=${s.len + 0.5},${zoomFilter({ zoom: [1.0, 1.03], c: [0.62, 0.42] }, n)},format=yuv420p[v]`,
+      '-map', '[v]', ...enc]);
+  } else if (s.card) {
+    ff(['-f', 'lavfi', '-i', `color=c=0xf7f6f0:s=1920x1080:r=${FPS}:d=${s.len}`, '-vf', 'format=yuv420p', ...enc]);
+  } else {
+    const pre = s.grade ? `,${s.grade}` : '';
+    ff(['-ss', String(s.in), '-i', s.src, '-vf', `fps=${FPS},scale=3840:2160:flags=lanczos${pre},${zoomFilter(s, n)},format=yuv420p`, ...enc]);
+  }
+  const got = +execFileSync('ffprobe', ['-v', 'error', '-count_frames', '-select_streams', 'v', '-show_entries', 'stream=nb_read_frames', '-of', 'csv=p=0', out]).toString().trim().replace(/,$/, '');
+  if (got !== n) throw new Error(`${s.id}: ${got} frames, wanted ${n}`);
+  return out;
+}
+
+// ---------------------------------------------------------------- sound
+function buildAudio() {
+  const vo = join(B, 'vo.wav'), music = join(B, 'music.wav'), mix = join(B, 'mix.wav');
+  // VO stem: each line at its time
+  const ins = VO.flatMap((l) => ['-i', l.file]);
+  const pl = VO.map((l, i) => `[${i}:a]aresample=48000,aformat=channel_layouts=mono,adelay=${Math.round(l.at * 1000)}:all=1[v${i}]`).join(';');
+  ff([...ins, '-filter_complex', `${pl};${VO.map((_, i) => `[v${i}]`).join('')}amix=inputs=${VO.length}:normalize=0,apad,atrim=0:${TOTAL}[o]`, '-map', '[o]', '-ar', '48000', '-ac', '1', vo]);
+  // music bed: "Dreaming Big" from 75 s so its own ending lands near 29 s; fades in, rings out
+  const M = { file: join(RAW, 'music', 'mixkit-music-31.mp3'), from: 75.0 };
+  ff(['-ss', String(M.from), '-t', String(TOTAL), '-i', M.file, '-af', `aresample=48000,afade=t=in:st=0:d=1.2,afade=t=out:st=${TOTAL - 2.2}:d=2.2,volume=-12dB`, '-ac', '2', music]);
+  // duck the music about 9 dB under the voice, then mix and normalise the whole spot to -14 LUFS
+  const graph = `[1:a]asplit=2[sc][vom];[0:a][sc]sidechaincompress=threshold=0.015:ratio=8:attack=30:release=350:makeup=1[duck];[vom]pan=stereo|c0=c0|c1=c0[vos];[duck][vos]amix=inputs=2:normalize=0:weights='1 1'[m]`;
+  ff(['-i', music, '-i', vo, '-filter_complex', graph, '-map', '[m]', '-ar', '48000', join(B, 'premix.wav')]);
+  return { vo, music, mix, premix: join(B, 'premix.wav') };
+}
+function loudnorm(src, dst) {
+  const r = execFileSync('sh', ['-c', `ffmpeg -hide_banner -i "${src}" -af loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json -f null - 2>&1`]).toString();
+  const j = JSON.parse(r.slice(r.lastIndexOf('{'), r.lastIndexOf('}') + 1));
+  ff(['-i', src, '-af', `loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=${j.input_i}:measured_TP=${j.input_tp}:measured_LRA=${j.input_lra}:measured_thresh=${j.input_thresh}:offset=${j.target_offset}:linear=true,aresample=48000`, '-ar', '48000', dst]);
+}
+
+// ---------------------------------------------------------------- captions file
+function srt() {
+  const ts = (x) => { const ms = Math.round(x * 1000); const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60; return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')},${String(ms % 1000).padStart(3, '0')}`; };
+  return VO.map((l, i) => `${i + 1}\n${ts(l.at)} --> ${ts(Math.min(l.end + 0.35, TOTAL))}\n${l.text}\n`).join('\n');
+}
+
+// ---------------------------------------------------------------- go
+const P = await renderOverlays();
+console.log(`overlays: ${OV.length}`);
+const reuse = (process.env.REUSE ?? '').split(',');
+const segs = SHOTS.map((s) => { const f = reuse.includes(s.id) || reuse.includes('all') ? join(B, 'seg', `${s.id}.mp4`) : buildSegment(s, P); console.log('segment', s.id, s.start.toFixed(2), s.len); return f; });
+writeFileSync(join(B, 'concat.txt'), segs.map((f) => `file '${f}'`).join('\n') + '\n');
+ff(['-f', 'concat', '-safe', '0', '-i', join(B, 'concat.txt'), '-c', 'copy', join(B, 'base.mp4')]);
+
+// overlays: each PNG is shown between its times with short fades (end-card layers fade in and stay)
+const ovIn = OV.flatMap((o) => ['-loop', '1', '-framerate', String(FPS), '-t', String(TOTAL), '-i', o.png]);
+let g = '', last = '0:v';
+OV.forEach((o, i) => {
+  const k = i + 1, [a, b] = o.t, f = o.fade ?? 0.18, fo = o.fadeOut ?? 0.12;
+  g += `[${k}:v]format=rgba,fade=t=in:st=${a}:d=${f}:alpha=1${fo ? `,fade=t=out:st=${(b - fo).toFixed(3)}:d=${fo}:alpha=1` : ''}[o${k}];`;
+  const y = o.rise ? `'if(lt(t,${a}),${o.rise},if(lt(t,${a + f}),${o.rise}*(1-(t-${a})/${f}),0))'` : '0';
+  g += `[${last}][o${k}]overlay=x=0:y=${y}:enable='between(t,${a},${b})'[x${k}];`;
+  last = `x${k}`;
+});
+g += `[${last}]format=yuv420p[v]`;
+writeFileSync(join(B, 'overlay-graph.txt'), g);
+ff(['-i', join(B, 'base.mp4'), ...ovIn, '-/filter_complex', join(B, 'overlay-graph.txt'), '-map', '[v]', '-frames:v', String(Math.round(TOTAL * FPS)), '-c:v', 'libx264', '-preset', 'slow', '-crf', '19', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-r', String(FPS), join(B, 'picture.mp4')]);
+
+const A = buildAudio();
+loudnorm(A.premix, A.mix);
+writeFileSync(`${OUT}.srt`, srt());
+const comment = 'CropLytics, NASA Space Apps Challenge 2026, Field Shift. App footage: real screen recordings of croplytics-app.onrender.com. Farmer footage: Mixkit stock video (human-shot, Mixkit Free License). Music: Mixkit Stock Music Free License. Voice-over: synthetic speech (SI-generated) from Microsoft Edge text-to-speech, en-US-AndrewNeural, placeholder. No AI-generated images or video.';
+ff(['-i', join(B, 'picture.mp4'), '-i', A.mix, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-shortest',
+  '-metadata', 'title=CropLytics: 30-second commercial (v1)', '-metadata', `comment=${comment}`, '-metadata', `description=${comment}`, '-movflags', '+faststart', `${OUT}.mp4`]);
+console.log('wrote', `${OUT}.mp4`, probe(`${OUT}.mp4`).toFixed(3), 's');

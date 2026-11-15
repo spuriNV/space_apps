@@ -1,0 +1,33 @@
+# Drives Safari in the iOS Simulator for the phone shot (shot 5 in docs/video-30s.md).
+# Generate and run with video/scripts/record-phone.sh; the generated .xcodeproj is git-ignored.
+name: SimDriver
+options:
+  bundleIdPrefix: org.croplytics.video
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  Host:
+    type: application
+    platform: iOS
+    sources: [Host]
+    info:
+      path: Host/Info.plist
+      properties:
+        UILaunchScreen: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.croplytics.video.Host
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_VERSION: "5.0"
+  DriverUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [DriverUITests]
+    dependencies:
+      - target: Host
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: org.croplytics.video.DriverUITests
+        TEST_TARGET_NAME: Host
+        SWIFT_VERSION: "5.0"
