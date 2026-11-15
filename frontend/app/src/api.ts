@@ -37,7 +37,7 @@ export const isMock = (p?: Prov) => !p || p.origin === 'mock';
 const orig = (b: any): Origin => (b?._source === 'estimate' ? 'estimate' : 'api');
 /** Real data, or the API's labelled estimate for a region gap (BC). Example files (`_source: "mock"`) are not. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const usable = (b: any) => b && (b._source === 'real' || b._source === 'estimate' || b._source === 'live' || b._source === undefined);
+const usable = (b: any) => b && (b._source === 'real' || b._source === 'estimate' || b._source === 'live' || b._source === 'catalog' || b._source === 'user' || b._source === undefined);
 
 // ---------- fetch helpers ----------
 async function getJSON(url: string, init?: RequestInit, ms = 20000) {

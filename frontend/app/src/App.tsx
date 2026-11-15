@@ -1,3 +1,4 @@
+import { getCatalog, type Catalog } from './components/week/catalog';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MapView, { type MapHandle } from './MapView';
 import * as api from './api';
@@ -198,6 +199,11 @@ export default function App() {
     setLocations((ls) => [...ls.filter((l) => !api.isSpot(l.id)), loc]);
     if (loc.id !== ph.id) { setSelectedId(loc.id); history.replaceState(null, '', `#spot=${loc.id}`); }
   }, []);
+  // farm catalog pins and list (components/week): a pick opens the point panel for that farm
+  const [catalog, setCatalog] = useState<Catalog | null>(null);
+  const [catGroup, setCatGroup] = useState<string | null>(null);
+  useEffect(() => { getCatalog().then(setCatalog); }, []);
+  const pickCatalog = useCallback((it: { lat: number; lon: number }) => { tapSpot(it.lat, it.lon); }, [tapSpot]);
   // a shared link (#spot=pt_...) opens that spot once the field list is in
   const hashDone = useRef(false);
   useEffect(() => {
@@ -269,7 +275,7 @@ export default function App() {
     <div className={`app ${detail ? 'detail-on' : 'detail-off'}`}>
       <MapView ref={map} locations={locations} bc={hasBC ? null : bc} reserves={reservesFc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
-        onSelect={select} onBC={goBC} onView={setView} onTap={tapSpot} />
+        onSelect={select} onBC={goBC} onView={setView} onTap={tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} />
 
       <header className="topbar" data-testid="topbar">
         <button className="tb-brand" onClick={goHome} title="Back to all of California">CropLytics</button>
@@ -333,7 +339,7 @@ export default function App() {
       {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldPicker locations={locations.filter((l) => !api.isSpot(l.id))} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {leftPanel === 'fields' && <FieldPicker catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id))} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {selected && !leftPanel && !yearExpanded && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
       {panel === 'season' && selected && d && <ComingSeason nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}

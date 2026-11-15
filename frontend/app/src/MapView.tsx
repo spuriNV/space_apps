@@ -1,3 +1,4 @@
+import { addCatalogLayers, setCatalogData, type CatalogItem } from './components/week/catalog';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import maplibregl, { type GeoJSONSource, type StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -52,6 +53,8 @@ interface Props {
   t: number; detector: 'rule' | 'ml'; metric: 'cover' | 'et'; layersOn: Record<string, boolean>; regionalLive: RegionalLive;
   leftInset: number; bottomInset: number; rightInset: number;
   onSelect: (id: string) => void; onBC: () => void;
+  /** farm catalog pins (clustered, light) and the crop group they are filtered to */
+  catalog?: CatalogItem[] | null; catGroup?: string | null; onCatalogPick?: (it: { id: string; lat: number; lon: number }) => void;
   /** a tap, click or long-press on open map (not on a field or a pin): analyse that spot */
   onTap?: (lat: number, lon: number) => void;
   onView: (v: { zoom: number; pitch: number; bearing: number; lat: number; lon: number }) => void;
@@ -95,6 +98,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.on('load', () => {
       el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
       for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves']) map.addSource(id, { type: 'geojson', data: fc() });
+      addCatalogLayers(map, (it) => live.current.onCatalogPick?.(it));
       // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
       map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(10,12,8,0.5)', 'line-width': 3.6 } });
       map.addLayer({ id: 'res-line', type: 'line', source: 'reserves', paint: { 'line-color': '#f1ecdd', 'line-opacity': 0.95, 'line-width': 2, 'line-dasharray': [3, 2] } });
@@ -116,7 +120,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const tap = (e: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
         const tgt = (e.originalEvent?.target as Element | null);
         if (tgt?.closest?.('.maplibregl-marker, .maplibregl-ctrl')) return;
-        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit'] }).length) return;
+        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit', 'cat-pt', 'cat-cluster'] }).length) return;
         if (Date.now() - lastTap < 700) return;
         lastTap = Date.now();
         live.current.onTap?.(e.lngLat.lat, e.lngLat.lng);
@@ -185,6 +189,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   }, [p.locations, p.bc, ready]);
 
   useEffect(() => { document.querySelectorAll<HTMLElement>('.pin.site').forEach((el) => el.classList.toggle('on', el.dataset.id === p.selected?.id)); }, [p.selected, p.locations]);
+
+  useEffect(() => { const map = mapRef.current; if (map && ready && p.catalog) setCatalogData(map, p.catalog, p.catGroup ?? null); }, [ready, p.catalog, p.catGroup]);
 
   // ---------- reserve outlines (BC, context only) with paper label boxes ----------
   useEffect(() => {

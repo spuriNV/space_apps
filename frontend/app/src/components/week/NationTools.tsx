@@ -49,7 +49,7 @@ const doy = (n: number) => { const d = new Date(Date.UTC(2023, 0, n)); return `$
 const mmdd = (s: string) => { const [m, d] = s.split('-').map(Number); return `${MON[m - 1]} ${d}`; };
 const mi = (km: number) => (km * 0.621).toFixed(km < 16 ? 1 : 0);
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const LAND: Record<string, string> = { reserve: 'On reserve land', trust: 'On trust land', fee: 'On fee land within a reservation', private: 'Not on reserve or trust land', unknown: 'Land status not known' };
+const LAND: Record<string, string> = { reserve: 'On reserve land', trust: 'On trust land', fee: 'On fee land within a reservation', private: 'Not on reserve or trust land', unknown: 'Land status not known', first_nations_reserve: 'On reserve land', tribal_land: 'On tribal land' };
 const rotShort = (n: string) => n.replace(' (current)', '');
 
 export function NationTools({ loc }: { loc: Location }) {
@@ -82,7 +82,7 @@ function Header({ s }: { s: Summary }) {
   const names = s.place_names;
   return (
     <div className="nt-head">
-      <p className="nt-status"><b>{LAND[s.land_status.value] ?? cap(s.land_status.value)}</b>{s.land_status.area_name ? ` (${s.land_status.area_name})` : ''}
+      <p className="nt-status"><b>{LAND[s.land_status.value] ?? cap(s.land_status.value.replace(/_/g, ' '))}</b>{s.land_status.area_name ? ` (${s.land_status.area_name})` : ''}
         {s.land_status.source?.url && <> <a href={s.land_status.source.url} target="_blank" rel="noreferrer">Source</a></>}</p>
       {near.length > 0 && (
         <ul className="nt-near" aria-label="Nearest Nations by distance">

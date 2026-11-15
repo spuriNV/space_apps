@@ -14,6 +14,8 @@ import { AboutField, Actions, CROP_COL, EventLog, NextSteps, PrimaryAction, acre
 import { FirstNationsCard } from './FirstNations';
 import { SalmonPanel } from '../salmon/SalmonPanel';
 import { NationTools } from '../week/NationTools';
+import { CatalogGroup } from '../week/CatalogGroup';
+import type { Catalog, CatalogItem } from '../week/catalog';
 import { FieldNow, LastSeasons, whenT, type LoadState } from './FieldNow';
 import { MONTHS, TODAY_T } from '../../lib';
 
@@ -197,7 +199,7 @@ function useSheet(onSheet?: (visiblePx: number) => void) {
 /** "Pick your field": one paper surface, one row per field with a satellite thumbnail (outline drawn), a 2023-2026 season strip,
  *  one line of facts in grower units and one line of what is notable. A BC field the API serves sits under its own
  *  "British Columbia" heading (and chip); without one, BC is a quiet "not set up yet" row at the bottom. */
-export function FieldPicker(p: { locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void }) {
+export function FieldPicker(p: { locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void }) {
   const thumbs = useThumbs();
   const [q, setQ] = useState('');
   const [fam, setFam] = useState<string | null>(null);
@@ -252,6 +254,7 @@ export function FieldPicker(p: { locations: Location[]; live: boolean | null; st
       </div>
       ))}
       {p.locations.length > 0 && !shown.length && <p className="loading-note">No field matches. <button className="btn btn-outline btn-sm" onClick={() => { setQ(''); setFam(null); }}>Show all</button></p>}
+      {p.catalog && p.onCatalogPick && p.setCatGroup && <CatalogGroup catalog={p.catalog} group={p.catGroup ?? null} setGroup={p.setCatGroup} onPick={p.onCatalogPick} />}
       {p.locations.length > 0 && !nBC && <button className="pk-bc" onClick={p.onBC}>British Columbia: not set up yet. <u>See why</u></button>}
     </section>
   );
