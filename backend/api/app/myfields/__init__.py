@@ -389,6 +389,19 @@ async def score(pid: str, body: AL.ScoreRequest, req: Request, resp: Response):
                        "note": "scored by backend/engine for a user-drawn field (rule of thumb, not a model)"})
 
 
+@router.get("/api/locations/{pid}/outlook")
+def outlook(pid: str, resp: Response):
+    """Coming-season outlook for a drawn field: nearest prepared CA field's CPC / reservoirs file (regional)."""
+    _name, poly, _ha = decode_or_400(pid)
+    lon, lat = G.main_centroid(poly)
+    from ..outlook_near import nearest_ca_outlook  # noqa: PLC0415
+    d = nearest_ca_outlook(lat, lon)
+    if not d:
+        raise HTTPException(404, "winter outlook is not available outside California prepared-field coverage for this drawn field")
+    d = {**d, "location_id": pid}
+    return send(resp, d)
+
+
 @router.get("/api/locations/{pid}/{rest:path}")
 def other(pid: str, rest: str):
     decode_or_400(pid)

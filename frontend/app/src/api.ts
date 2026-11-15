@@ -614,15 +614,18 @@ const outlookGap = (detail: string): Outlook => ({
   },
 });
 export async function getOutlook(id: string, live: boolean): Promise<Outlook> {
-  // tapped spots and drawn fields: the API has no /outlook route (only presets). Never leave the panel on Loading…
-  if (isLite(id)) return outlookGap(isMine(id) ? 'not built for a drawn field yet' : 'not built for a tapped spot yet');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ex = outlookExample as any;
   const exAlloc = ex.presets[id]?.allocations ?? null;
+  // presets + freeform (pt_/my_): API returns a real file; freeform uses the nearest CA prepared field
   const { body: full, missing } = live ? await apiRealOr404(`/api/locations/${id}/outlook`) : { body: null, missing: false };
-  if (full) return fromOutlookFile(full.presets?.[id] ?? full, exAlloc, orig(full));
-  // the API is up but this field's outlook is not built yet: say so quietly instead of showing another field's example
-  if (missing || (live && !ex.presets[id])) return outlookGap('not ready for this field yet');
+  if (full) {
+    const o = fromOutlookFile(full.presets?.[id] ?? full, exAlloc, orig(full));
+    if (full.for_freeform && full.note) o.prov.cpc = { ...o.prov.cpc, detail: String(full.note) };
+    return o;
+  }
+  if (missing || (live && !ex.presets[id] && !isLite(id))) return outlookGap('not ready for this field yet');
+  if (missing && isLite(id)) return outlookGap(isMine(id) ? 'winter outlook not available for this drawn field yet' : 'winter outlook not available for this tapped spot yet');
   return adaptOutlook(ex.example_full, ex.example_full, exAlloc, { cpc: 'mock', water: 'mock', alloc: 'mock' }, 'example file');
 }
 

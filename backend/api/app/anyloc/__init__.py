@@ -614,6 +614,18 @@ def catalog(resp: Response, region: str | None = Query(None, description="ca | b
             "crop_groups": groups, "items": out, "_source": "catalog"}
 
 
+@router.get("/api/locations/{pid}/outlook")
+def point_outlook(pid: str, resp: Response):
+    """Coming-season outlook for a tapped point: nearest prepared CA field's CPC / reservoirs file (regional)."""
+    lat, lon = _pid_point(pid)
+    from ..outlook_near import nearest_ca_outlook  # noqa: PLC0415
+    d = nearest_ca_outlook(lat, lon)
+    if not d:
+        raise HTTPException(404, "winter outlook is not available outside California prepared-field coverage for this tap")
+    d = {**d, "location_id": pid}
+    return send(resp, d, "real")
+
+
 @router.get("/api/locations/{pid}/{rest:path}")
 def point_other(pid: str, rest: str):
     _pid_point(pid)
