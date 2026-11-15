@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
-    "mock": "node scripts/gen-mock.mjs"
+    "mock": "node scripts/gen-mock.mjs",
+    "a11y": "node scripts/a11y.mjs"
   },
   "dependencies": {
     "maplibre-gl": "4.7.1",
@@ -17,9 +18,11 @@
     "terra-draw-maplibre-gl-adapter": "1.5.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "playwright-core": "^1.65.1",
     "typescript": "^5.6.3",
     "vite": "^5.4.11"
   }
