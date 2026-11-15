@@ -168,7 +168,7 @@ export default function App() {
     if (!loc) return;
     if (!api.isSpot(id)) dropSpot();
     setSelectedId(id); setCardOpen(true); setBcOpen(false);
-    setPanel((p) => (p === 'fields' ? 'none' : p));
+    setPanel('none'); setYearOpen(false);
     if (loc.mine) map.current?.fitField(loc); else map.current?.flyToField(loc, 'card');
   }, [locations]);
 
@@ -249,7 +249,7 @@ export default function App() {
   const onStep = (s: Step) => {
     if (!selected) return;
     if (s === 'drill') { setPanel('none'); map.current?.flyToField(selected, 'drill'); }
-    else if (s === 'year') { setPanel('none'); setYearOpen(true); }
+    else if (s === 'year') { setPanel('none'); setBriefOpen(false); setYearOpen(true); map.current?.flyToField(selected, 'year'); }
     else if (s === 'compare') openPanel('compare');
     else if (s === 'season') openPanel('season');
     else { setBriefPick(null); setBriefOpen(true); }

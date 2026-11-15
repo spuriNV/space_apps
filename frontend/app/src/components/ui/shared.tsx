@@ -112,7 +112,7 @@ export function Workflow() {
 }
 export const ACTIONS: { id: Step; label: string; sub: string }[] = [
   { id: 'season', label: 'What’s likely this winter', sub: 'Rain, drought, reservoirs, bare weeks' },
-  { id: 'year', label: 'This field’s year', sub: 'Bare, green or flooded, 2023–2026' },
+  { id: 'year', label: 'See this field’s year (3D)', sub: 'Bare, green or flooded, 2023–2026, on the 3D grid' },
   { id: 'compare', label: 'Compare rotations', sub: 'What you gain and give up' },
   { id: 'brief', label: 'Print for your adviser', sub: 'One page, Letter size' },
 ];
