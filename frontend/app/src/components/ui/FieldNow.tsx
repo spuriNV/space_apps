@@ -299,7 +299,7 @@ function SpotCrop({ loc }: { loc: Location }) {
 export function LastSeasons({ loc, cal, t }: { loc: Location; cal: Calendar | null; t: number }) {
   if (!cal) return null;
   const last = yearOf(lastDataT(cal));
-  const ys = cal.years.filter((y) => y.year <= last && y.year > last - 3).reverse();
+  const ys = (cal?.years ?? []).filter((y) => y.year <= last && y.year > last - 3).reverse();
   return (
     <ul className="seasons">
       {ys.map((y) => {

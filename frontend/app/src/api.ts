@@ -328,7 +328,7 @@ function classString(ry: RealCalYear | undefined, year: number) {
 }
 function convertCalendar(real: { years: RealCalYear[] }, mock: Calendar, hist: Record<string, string>, ml: { years: RealCalYear[] } | null): Calendar {
   const years: CalendarYear[] = YEARS.map((year, yi) => {
-    const ry = real.years.find((y) => y.year === year);
+    const ry = (real?.years ?? []).find((y) => y.year === year);
     const my = mock?.years?.[yi] ?? blankYear(year, hist[year] ?? 'Not published yet');
     if (!ry) return year > 2025 ? blankYear(year, hist[year] ?? 'Not published yet') : my;
     const obs = ry.observations.filter((o) => o.ndvi != null).map((o) => ({ t: Date.parse(o.date), v: o.ndvi as number }));
@@ -344,7 +344,7 @@ function convertCalendar(real: { years: RealCalYear[] }, mock: Calendar, hist: R
     const up = ry.markers.find((m) => m.type === 'green_up' && m.date.startsWith(String(year)));
     const dn = ry.markers.find((m) => m.type === 'senescence_harvest' && m.date.startsWith(String(year)) && (!up || m.date > up.date));
     // ML calendar (GET .../calendar_ml) when it exists; otherwise "no reading" so the comparison never shows a copy of the rule
-    const mlStr = ml ? classString(ml.years.find((y) => y.year === year), year) : 'u'.repeat(36);
+    const mlStr = ml ? classString((ml?.years ?? []).find((y) => y.year === year), year) : 'u'.repeat(36);
     // crop water use per 10-day step and the risk ticks stay from the bundled example (no route yet)
     return { ...my, year, cdl: hist[year] ?? my.cdl, rule, ml: mlStr, ndvi, greenup_dekad: dk(up?.date), senescence_dekad: dk(dn?.date) };
   });

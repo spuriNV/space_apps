@@ -262,7 +262,7 @@ export function AboutField({ loc, prov, cal, insurance, insGap }: { loc: Locatio
       {!rma && insGap && <div><dt>Crop insurance</dt><dd><GapLine gap={insGap} missing /></dd></div>}
       {rma && rma.total_usd == null && <div><dt>Crop losses</dt><dd>Usual causes of crop loss here: {(rma.shares ?? []).map((x) => `${CAUSE[x.cause] ?? x.cause.replace(/_/g, ' ')} ${Math.round(x.share * 100)}%`).join(', ')}. No dollar figures. <cite><Src p={prov.rma} /></cite>{insGap && <GapLine gap={insGap} missing={false} />}</dd></div>}
       {rma && rma.total_usd != null && <div><dt>Crop insurance</dt><dd>{usd(rma.total_usd)} paid out on {rma.scope} {rma.crop.replace('_forage', '').replace(/_/g, ' ')}, {rma.from}–{rma.to}; {usd(rma.top_usd)} in {rma.top_year} alone.{rma.share_drought >= 0.3 ? ` ${Math.round(rma.share_drought * 100)}% of it for drought or failed irrigation water.` : ''} <cite>USDA Risk Management Agency, county totals, not this farm. <Src p={prov.rma} /></cite>{insGap && <GapLine gap={insGap} missing={false} />}</dd></div>}
-      <div><dt>Usually bare</dt><dd>{ob ? <>About {ob.value} days a year, mostly {when} <cite>Seen by satellite, {ob.years[0]}–{ob.years[ob.years.length - 1]}. {BARE_DEF} <Src p={prov.calendar} /></cite></> : loc.observed_cover.summary}</dd></div>
+      <div><dt>Usually bare</dt><dd>{ob && ob.years?.length ? <>About {ob.value} days a year, mostly {when} <cite>Seen by satellite, {ob.years[0]}–{ob.years[ob.years.length - 1]}. {BARE_DEF} <Src p={prov.calendar} /></cite></> : loc.observed_cover.summary}</dd></div>
     </dl>
   );
 }

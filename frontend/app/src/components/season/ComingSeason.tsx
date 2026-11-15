@@ -44,7 +44,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
   const today = p.strategies.find((s) => s.is_baseline);
   const nxt = today ? o?.irrigation?.[today.id]?.value ?? mmToAfac(today.water.irrigation_need_mm.value) : null;
   const nextNeed = nxt == null ? (p.strategies.length ? 'Need not available right now.' : 'Loading…') : today && isRainFed(today) ? `${RAIN_FED}. Fits any limit.` : `Needs ${nxt.toFixed(1)} acre-ft/acre. Limit ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}. ${nxt > p.allocation ? `${(nxt - p.allocation).toFixed(1)} short.` : 'It fits.'}`;
-  const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
+  const bw = p.cal ? bareWindow(p.cal, p.daily, (p.cal.years ?? []).map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const allYearsBw = bw;
   const rainFed = !!today && isRainFed(today);
   const short = nxt != null && !rainFed && nxt > p.allocation;

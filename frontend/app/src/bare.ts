@@ -19,7 +19,7 @@ export function observedBare(cal: Calendar | null): { value: number; years: numb
   if (!cal) return null;
   const last = yearOf(lastDataT(cal));
   const per: Record<number, number> = {};
-  for (const y of cal.years) { if (y.year > last - 3 && y.year <= last) { const v = bareDaysYear(y); if (v != null) per[y.year] = v; } }
+  for (const y of cal?.years ?? []) { if (y.year > last - 3 && y.year <= last) { const v = bareDaysYear(y); if (v != null) per[y.year] = v; } }
   const ys = Object.keys(per).map(Number);
   if (!ys.length) return null;
   return { value: Math.round(ys.reduce((a, y) => a + per[y], 0) / ys.length), years: ys, per };
@@ -29,7 +29,7 @@ export function observedBare(cal: Calendar | null): { value: number; years: numb
 export function usuallyBareMonths(cal: Calendar | null): string {
   if (!cal) return '';
   const last = yearOf(lastDataT(cal));
-  const ys = cal.years.filter((y) => y.year > last - 3 && y.year <= last);
+  const ys = (cal?.years ?? []).filter((y) => y.year > last - 3 && y.year <= last);
   const months = MONTHS.map((_, m) => {
     let b = 0, n = 0;
     for (const y of ys) for (let k = 0; k < 3; k++) { const c = y.rule[m * 3 + k]; if (c && c !== 'u') { n++; if (c === 'b') b++; } }
