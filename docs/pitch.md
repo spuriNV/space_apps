@@ -24,7 +24,7 @@ Spoken lines are in quotes. **Speaker** talks, **Driver** clicks the app. About 
 
 ### 0:30–0:45 Pick the field (app, overview; Driver)
 
-*Driver switches to the app, already open on the overview (`overview.png`). Click the card **"Rice field 3.5 miles east of Williams"**.*
+*Driver switches to the app, already open on the overview (`overview.png`). Click the card **"Rice field 4 miles east of Williams"**.*
 
 > "This is a real 149-acre rice field in Colusa County. CropLytics answers three questions a grower asks: what is happening on my field, what is likely this winter, and what would a different rotation cost me."
 
@@ -110,7 +110,7 @@ Built as `docs/slides/index.html`. Arrow keys move; Print (Cmd+P, landscape, no 
 
 **3. Built where the data is rich**
 - Headline: So we built it where we can check it: two real California fields.
-- A 149-acre rice field 3.5 miles east of Williams (Colusa County) and a 73-acre alfalfa field 6.5 miles south of Hanford (Kings County).
+- A 149-acre rice field 4 miles east of Williams (Colusa County) and a 73-acre alfalfa field 6.5 miles south of Hanford (Kings County).
 - NASA HLS (harmonised Landsat and Sentinel-2), NASA POWER (sunlight, humidity, wind), GPM IMERG rain, GRACE-FO soil moisture and groundwater, NASADEM and ISS photos; checked against OpenET, NOAA stations and USDA records. SMAP, MODIS and ECOSTRESS: not in yet.
 - Screenshot: `overview.png`.
 
@@ -203,7 +203,7 @@ The critical review also mentions NASA reviewers (an ML judge and ISS-photo spec
 | 16 Aug 2023; about 398 licence holders; lower Salmon River and Bessette Creek; stop irrigating forage | Opener, slide 2, video | `docs/research-findings.md` §1 and `docs/field-shift-plan.md` §2 (BC release 2023FOR0052-001305; plan §7 says confirm before pitching) |
 | Nov 2021 Sumas Prairie flood | Opener, slide 2 | `docs/research-findings.md` §1 |
 | BC: no OpenET field water use; crop maps only from 2011 | Opener, slide 2 | `docs/field-shift-plan.md` §2 ("BC's data gap"); `docs/critical-review.md` §5 |
-| 149 acres, 3.5 miles east of Williams, Colusa County | 0:30, slide 3 | App field panel (`field-now.png`, `drilldown-3d.png`) |
+| 149 acres, 4 miles east of Williams, Colusa County | 0:30, slide 3 | App field panel (`field-now.png`, `drilldown-3d.png`) |
 | 73 acres, 6.5 miles south of Hanford, Kings County | Slide 3 | App field picker (`overview.png`) |
 | Field fallow in 2022 (also 2016, 2020); 2022 strip brown nearly all year (297 bare, 34 thin, 34 flooded, 0 crop days) | 0:45, slide 4 | `backend/field/out/car_colusa_rice/crop_history.json` (USDA Cropland Data Layer); `backend/field/out/car_colusa_rice/calendar.json` → `years[2022].summary` |
 | Colusa rice planted 126,500 acres (2020), 20,600 (2022) | 0:45, slide 4 | `data/cache/car_colusa_rice/nass.parquet` (USDA NASS survey, "RICE - ACRES PLANTED") |
@@ -231,4 +231,4 @@ The critical review also mentions NASA reviewers (an ML judge and ISS-photo spec
 - GRACE-FO soil moisture and groundwater and GPM IMERG rain went live in the 16:02 screenshots, and the year view now credits NASA HLS; slides 3 and 7 and the script already say so. If SMAP, MODIS or ECOSTRESS land too, add them to slide 3 and drop them from slide 7.
 - The machine-learning strip is now in the app ("Compare with machine learning" on "This field's year", refreshed screenshots, 14 Nov evening). If a rehearsal has 5 seconds spare at 0:45, click it and say: "Machine learning gives a second opinion, not the answer." Otherwise leave it to slide 5.
 - The field picker already reads "Rice in 7 of the last 10 years; left fallow 2016, 2020 and 2022", matching the crop maps.
-- Field names changed to "3.5 miles east of Williams" and "6.5 miles south of Hanford" in the refreshed screenshots; the script and slides use the new names. If they change again, update the click target at 0:30 and slide 3.
+- Field names changed to "4 miles east of Williams" and "6.5 miles south of Hanford" in the refreshed screenshots; the script and slides use the new names. If they change again, update the click target at 0:30 and slide 3.
