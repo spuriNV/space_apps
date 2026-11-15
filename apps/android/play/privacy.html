@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CropLytics privacy policy</title>
+<style>
+:root{--paper:#f7f6f0;--ink:#191c16;--green:#2f5d34;--line:#d9d7cb}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 "Libre Franklin","Franklin Gothic Book",Arial,sans-serif}
+body:before{content:"";display:block;height:3px;background:var(--green)}
+main{max-width:42rem;margin:0 auto;padding:2rem 1rem 4rem}
+h1,h2{font-family:"Zilla Slab",Rockwell,Georgia,serif;font-weight:600;line-height:1.2}
+h1{font-size:2rem;margin:0 0 .25rem}
+h2{font-size:1.35rem;margin:2rem 0 .5rem;border-top:1px solid var(--line);padding-top:1rem}
+a{color:var(--green)}
+a:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.meta{color:#4a4d43;margin:0 0 1.5rem}
+li{margin:.3rem 0}
+</style>
+</head>
+<body>
+<main>
+<h1>CropLytics privacy policy</h1>
+<p class="meta">Effective 15 November 2026. Covers the CropLytics Android app (app.croplytics) and the website https://croplytics.xyz.</p>
+
+<p>CropLytics is a crop-rotation planner for growers and their advisers. It is run by one person, Caiden Merklin. This page says what the app and the website send, to whom, and what we do not do.</p>
+
+<h2>The short version</h2>
+<ul>
+<li>No accounts, no sign-in, no ads, no tracking, no purchases.</li>
+<li>We do not sell your data or share it for advertising.</li>
+<li>The Android app does not ask for your location, microphone or camera.</li>
+</ul>
+
+<h2>What is sent to our server</h2>
+<p><strong>Android app.</strong> When you open a field, the app asks our server for that field's data using the field's id. If you move the water-limit slider or change priorities, it sends the limit, the priorities and the what-if choice for that field id so the options can be ranked again. Like any web request, the server also receives your IP address and phone model details such as the app version. All requests use HTTPS.</p>
+<p><strong>Website.</strong> In addition to the above, if you tap a spot on the map or draw a field, the coordinates of that spot or outline are sent so the server can look up satellite data for it. If you use the Ask feature, your question, the last few messages, the field id, the open tab and the viewing date are sent to our server and, to write the answer, to the DeepSeek API. If you use voice input where your browser lacks its own, a short audio clip is sent to our server, turned into text, and discarded; clips are decoded in memory and are not saved. Chat text and transcripts are not logged or stored by us. Spoken answers are produced on our own server.</p>
+
+<h2>What stays on your phone</h2>
+<p>The Android app saves what it fetched (so it works offline) and your water limits on your phone only. Clearing the app's storage or uninstalling the app deletes them. The app's cache is excluded from cloud backup. If you tap Share on the adviser summary, the PDF goes only where you send it.</p>
+
+<h2>Third parties</h2>
+<ul>
+<li><strong>Esri</strong> (server.arcgisonline.com, and services9.arcgis.com on the website): satellite map imagery and field thumbnails. Esri sees your IP address and the map area you view.</li>
+<li><strong>OpenFreeMap</strong> (tiles.openfreemap.org): map labels. It sees your IP address and the map area you view.</li>
+<li><strong>Hosting:</strong> our API and website are served from our own server, with a backup copy on Render (croplytics-app.onrender.com), which the Android app uses. These hosts receive the requests described above and may keep ordinary server logs that include IP addresses.</li>
+<li><strong>DeepSeek:</strong> website Ask feature only, as described above.</li>
+</ul>
+<p>These providers have their own privacy policies. We do not use advertising, analytics or crash-reporting services.</p>
+
+<h2>Data sources</h2>
+<p>Field data comes from public sources such as NASA Earth data, ESA Sentinel-2, USDA and OpenET. We do not receive those providers' data about you, and CropLytics is not endorsed by NASA, any agency or any Nation.</p>
+
+<h2>Keeping and deleting data</h2>
+<p>We do not hold an account or profile about you. Anything on your phone is deleted by clearing storage or uninstalling. For anything else, write to the address below and we will delete what we can find.</p>
+
+<h2>Children</h2>
+<p>CropLytics is for adults (18 and over). It is not directed to children.</p>
+
+<h2>Changes</h2>
+<p>If this policy changes we will update this page and its effective date.</p>
+
+<h2>Contact</h2>
+<p>Caiden Merklin, <a href="mailto:caiden.merklin@gmail.com">caiden.merklin@gmail.com</a></p>
+</main>
+</body>
+</html>
