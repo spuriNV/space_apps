@@ -268,7 +268,7 @@ fun DateSheet(state: MainUiState, quick: List<QuickDate>, years: List<Int>, onPi
 /** Map layers (Panels.tsx LayersDrawer): what each dataset sees, its pixel size against this field, and a log-scale ruler. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LayersSheet(on: Map<String, Boolean>, areaHa: Double?, onToggle: (String) -> Unit, onDismiss: () -> Unit) {
+fun LayersSheet(on: Map<String, Boolean>, areaHa: Double?, onToggle: (String) -> Unit, showReserves: Boolean = false, onDismiss: () -> Unit) {
     val c = CropLyticsTheme.colors
     val fieldHa = areaHa ?: 60.0
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = c.paper) {
@@ -291,6 +291,18 @@ fun LayersSheet(on: Map<String, Boolean>, areaHa: Double?, onToggle: (String) ->
                             Text("${Map3D.pixelRatio(d, fieldHa)} · ${d.cadence} · since ${d.since}${d.inStack?.let { " · in 3D stack: $it" } ?: ""}", style = MaterialTheme.typography.labelSmall, color = c.muted)
                             d.caveat?.let { Text(it, style = MaterialTheme.typography.labelSmall.copy(fontStyle = FontStyle.Italic), color = c.warn) }
                         }
+                    }
+                }
+            }
+            if (showReserves) {
+                Spacer(Modifier.height(10.dp))
+                Text("Context", style = MaterialTheme.typography.titleSmall, color = c.text); Text("BC only, off unless you turn it on", style = MaterialTheme.typography.labelSmall, color = c.muted)
+                Row(Modifier.fillMaxWidth().clickable { onToggle("reserves") }.padding(vertical = 6.dp).testTag("layer-reserves"), verticalAlignment = Alignment.Top) {
+                    Checkbox(on["reserves"] == true, { onToggle("reserves") })
+                    Column(Modifier.weight(1f)) {
+                        Text("Reserve boundaries (context)", style = MaterialTheme.typography.labelLarge, color = c.text)
+                        Text("Indian reserve outlines near this field, with their names.", style = MaterialTheme.typography.bodySmall, color = c.text2)
+                        Text("For context only. Not part of the analysis.", style = MaterialTheme.typography.labelSmall, color = c.muted)
                     }
                 }
             }

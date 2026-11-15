@@ -158,6 +158,7 @@ object FieldNowLogic {
         loading: Boolean,
     ): FieldNowView {
         val hist = FieldNames.history(loc)
+        val openetEst = openet?.origin == "estimate"
         val dt = cal?.let { Calendars.latestClearT(it, t) ?: Calendars.dataT(it, t) } ?: t
         val ago = t - dt
         val agoText = if (ago <= 0) "" else if (ago == 1) ", about 10 days ago" else ", about ${(ago * 10.0 / 7).roundToInt()} weeks ago"
@@ -177,6 +178,7 @@ object FieldNowLogic {
         val sm = regional?.let { latestAt(it.soil, t) }; val smap = sm?.first
         val gr = regional?.let { latestAt(it.groundwater, t) }; val grace = gr?.first
         val behindNote = if (dt < t) " Latest clear view ${Timeline.when_(dt)}$agoText${if (Timeline.yearOf(dt) < yr) "; $yr imagery not processed yet" else ""}." else ""
+        val rainFed = BcLogic.rainFed(base)
         val clsOk = fs != null && fs.cls != 'u'
 
         val glance = Glance(
@@ -187,7 +189,7 @@ object FieldNowLogic {
                     it.normal?.let { n -> if (scale > 0) (n / scale).toFloat() else null }, it.pct?.let { p -> "${p.roundToInt()}% of normal" } ?: "",
                     spoken = "Rain since 1 October: ${SeasonCalc.fmtIn(it.inches)} inches" + (it.normal?.let { n -> ", normal ${SeasonCalc.fmtIn(n)} inches" } ?: ""))
             } ?: Meter("Rain since 1 Oct", null, null, null, ""),
-            need = needAf?.let { v ->
+            need = if (rainFed) Meter("Water need, a year", BcLogic.RAIN_FED, null, null, "Fits any limit", spoken = BcLogic.RAIN_FED) else needAf?.let { v ->
                 val scale = maxOf(v, limit ?: 0.0) * 1.2
                 Meter("Water need, a year", "${Fmt.one(v)} acre-ft/acre", limit?.let { minOf(1.0, v / scale).toFloat() }, limit?.let { (it / scale).toFloat() },
                     limit?.let { "Limit ${Fmt.one(it)}${if (exampleLimit) " (example)" else ""}" } ?: "", warn = limit != null && v > limit,
@@ -204,8 +206,8 @@ object FieldNowLogic {
             val lastRec = hist.keys.maxOrNull()
             add(Answer(
                 "What is growing, and how far along?", st?.text ?: "",
-                moreDetail = (if (hist[yr] != null) "${FieldNames.cropName(hist[yr])} on record for $yr." else lastRec?.let { "$yr crop map not published yet (USDA, early ${yr + 1}). $it: ${FieldNames.cropName(hist[it]).lowercase()}." } ?: "") + (st?.sub?.let { " $it" } ?: ""),
-                cite = "${calSource(cal)}, 100 ft squares; crop from the USDA Cropland Data Layer.$behindNote", ready = st != null, swatch = st?.sw,
+                moreDetail = (if (hist[yr] != null) "${FieldNames.cropName(hist[yr])} on record for $yr." else lastRec?.let { "$yr crop map not published yet (${BcLogic.cropMapShort(loc)}, early ${yr + 1}). $it: ${FieldNames.cropName(hist[it]).lowercase()}." } ?: "") + (st?.sub?.let { " $it" } ?: ""),
+                cite = "${calSource(cal)}, 100 ft squares; crop from the ${BcLogic.cropMapName(loc)}.$behindNote", ready = st != null, swatch = st?.sw,
             ))
             add(Answer(
                 "How much green cover is there?",
@@ -219,25 +221,29 @@ object FieldNowLogic {
                     "How much rain so far this season?",
                     (if (it.period.current) "" else "No readings for this winter yet. ") + (it.pct?.let { p -> "${if (it.period.current) "So far" else "Last season was"} ${vsNormal(p, "wetter than normal", "drier than normal")}" } ?: ""),
                     detail = "${SeasonCalc.fmtIn(it.inches)} in ${if (it.period.current) "since 1 Oct" else it.period.label}.${it.normal?.let { n -> " Normal: ${SeasonCalc.fmtIn(n)} in." } ?: ""}",
-                    cite = "${if (it.imerg) "NASA GPM IMERG satellite rain over the field (one reading for a 6-mile square)" else "NOAA weather stations near the field, averaged"}; normal = the same dates in the ${it.nSeasons} seasons before.",
+                    cite = "${if (it.imerg) "NASA GPM IMERG satellite rain over the field (one reading for a 6-mile square)" else "${BcLogic.stationsName(loc)}, averaged"}; normal = the same dates in the ${it.nSeasons} seasons before.",
                 )
             } ?: Answer("How much rain so far this season?", "", ready = !loading && daily != null))
             add(when {
                 ms != null && ms.current -> Answer(
-                    "How much water has the crop used?", "Measured so far this year: ${SeasonCalc.fmtIn(ms.inches)} in",
-                    detail = "${ms.label}, measured on this field. Our model for the same months: ${SeasonCalc.fmtIn(ms.model)} in. That is ${Fmt.one(mmToAf(ms.inches * 25.4))} acre-feet per acre.",
+                    "How much water has the crop used?", "${if (openetEst) "Estimated" else "Measured"} so far this year: ${SeasonCalc.fmtIn(ms.inches)} in",
+                    detail = "${ms.label}, ${if (openetEst) "estimated for" else "measured on"} this field. Our model for the same months: ${SeasonCalc.fmtIn(ms.model)} in. That is ${Fmt.one(mmToAf(ms.inches * 25.4))} acre-feet per acre.",
+                    moreDetail = BcLogic.gapLine(loc.gap("openet"), false).orEmpty(),
                     cite = "OpenET satellite measurement (ensemble of 6 models built on Landsat), monthly, this field’s outline.", gloss = Gloss.Et, moreOnly = true,
                 )
                 cw != null -> Answer(
                     "How much water has the crop used?", "${if (cw.period.current) "So far this year" else "Last year"}: ${vsNormal(cw.pct, "more than normal", "less than normal")}",
                     detail = "About ${SeasonCalc.fmtIn(cw.inches)} in of water ${cw.period.label}, estimated; normal is ${SeasonCalc.fmtIn(cw.normal)} in. That is ${Fmt.one(mmToAf(cw.inches * 25.4))} acre-feet per acre." +
                         (ms?.let { " Measured on this field by OpenET for ${it.label}: ${SeasonCalc.fmtIn(it.inches)} in (our model for those months: ${SeasonCalc.fmtIn(it.model)} in)." } ?: ""),
-                    cite = "Estimate: rotation model driven by NASA POWER sun, wind and humidity${if (ms != null) "; measured: OpenET satellite data, which ends a few months behind" else ""}. ${openetText(strategies)}",
+                    moreDetail = BcLogic.gapLine(loc.gap("openet"), openet == null).orEmpty(),
+                    cite = "Estimate: rotation model driven by NASA POWER sun, wind and humidity${if (ms != null) "; measured: OpenET satellite data, which ends a few months behind" else ""}. ${if (loc.gap("openet") != null) "" else openetText(strategies)}",
                     gloss = Gloss.Et, moreOnly = true,
                 )
                 else -> Answer("How much water has the crop used?", if (strategies != null && daily != null) "No rotation model for this field" else "", gloss = Gloss.Et, moreOnly = true, ready = strategies != null && daily != null)
             })
-            if (needAf != null) {
+            if (rainFed) add(Answer("Will the water limit cover irrigation?", BcLogic.RAIN_FED, detail = "${BcLogic.RAIN_FED}. Fits any limit.", gloss = Gloss.WaterBalance,
+                cite = "Rotation model with NASA POWER weather: crop water use minus rain, typical year 2015–2025."))
+            else if (needAf != null) {
                 add(Answer(
                     "Will the water limit cover irrigation?",
                     when { limit == null -> "About ${Fmt.one(needAf)} acre-feet per acre a year"; needAf > limit -> "Short by about ${Fmt.one(needAf - limit)} acre-feet per acre"; else -> "Fits your limit in a typical year" },
@@ -263,7 +269,7 @@ object FieldNowLogic {
                 cite = "${soil.source}.", soilMix = soil.mix, extra = soil.rotation,
             ))
             add(Answer(
-                "Has the crop been stressed, or the field under water?", if (loading) "" else stressLine(stress, t),
+                "Has the crop been stressed, or the field under water?", if (loading) "" else if (stress == null && loc.gap("ml_calendar") != null) BcLogic.gapLine(loc.gap("ml_calendar"), true)!! else stressLine(stress, t),
                 detail = if (loading) "" else waterLine(water, regional, t),
                 cite = "Crop stress: two statistical methods on satellite greenness and NASA POWER heat and dryness, growing season only. Standing water: NASA OPERA, 100 ft squares, clear images only.",
                 gloss = Gloss.Stress, moreOnly = true, ready = !loading,
@@ -273,7 +279,7 @@ object FieldNowLogic {
                     "How many hot days and frost nights?",
                     "${it.hot} day${if (it.hot == 1) "" else "s"} at or above ${SeasonCalc.HOT_F} °F ${if (it.period.current) "so far this year" else "in ${it.period.label.replace("last year, ", "")}"}",
                     detail = "Normal for the same dates: ${it.hotNormal?.roundToInt() ?: "?"}. Frost nights (32 °F or lower), ${it.frostPeriod.label}: ${it.frost}; normal ${it.frostNormal?.roundToInt() ?: "?"}.",
-                    cite = "NOAA weather stations near the field. NASA POWER is not used for heat here: it runs about 6 °F hot in summer against the stations.",
+                    cite = "${BcLogic.stationsName(loc)}. NASA POWER is not used for heat here: ${if (loc.isBC) "its grid cell sits well above the valley and runs cold" else "it runs about 6 °F hot in summer against the stations"}.",
                     gloss = Gloss.Frost, moreOnly = true,
                 )
             } ?: Answer("How many hot days and frost nights?", "", gloss = Gloss.Frost, moreOnly = true, ready = !loading && daily != null))
@@ -292,7 +298,7 @@ object FieldNowLogic {
     }
 
     /** About the ground (shared.tsx AboutField), label to value. */
-    fun aboutField(loc: LocationDto, cal: FieldCalendar?, insurance: InsuranceSummary?): List<Pair<String, String>> = buildList {
+    fun aboutField(loc: LocationDto, cal: FieldCalendar?, insurance: InsuranceSummary?, insuranceDto: app.croplytics.data.remote.dto.InsuranceDto? = null): List<Pair<String, String>> = buildList {
         val s = loc.soil
         val mu = s?.muname?.takeIf { known(it) && !it.contains("not fetched", true) }?.substringBefore(",").orEmpty()
         val tex = s?.textureClass?.takeIf(::known).orEmpty()
@@ -304,11 +310,15 @@ object FieldNowLogic {
         val w = loc.water
         val src = when (w?.source) { "surface" -> "Surface water"; "groundwater" -> "Groundwater (wells)"; "mixed" -> "Surface water and wells"; else -> null }
         val real = w != null && w.lookedUp && !w.unverified
-        add("Water" to if (!real) listOfNotNull(src, "water district not looked up yet").joinToString("; ") else
+        if (loc.isBC) {
+            val wc = loc.waterContext
+            add("Watershed" to (wc?.let { c -> "${c.watershed.substringBefore(";")}." + c.orders.joinToString("") { o -> " ${Timeline.fmtDate(o.date)}: ${BcLogic.orderText(o)}." } } ?: "watershed not looked up yet"))
+        } else add("Water" to if (!real) listOfNotNull(src, "water district not looked up yet").joinToString("; ") else
             listOfNotNull(src, w!!.district).joinToString(". ") + "." + (w.sgmaStatus?.text?.let { " $it." } ?: ""))
         loc.terrain?.slopeMeanPct?.value?.let { sl ->
             add("Slope" to "${if (sl < 2) "Nearly flat" else if (sl < 5) "Gentle slope" else "Sloping"}, about ${Fmt.one(sl)}% on average${loc.terrain.lowSpotFraction?.value?.takeIf { it > 0 }?.let { "; low spots on about ${(it * 100).roundToInt()}% of the field, where water ponds and frost settles" } ?: ""}. NASA NASADEM elevation, 100 ft squares; radar elevation reads 1 to 2% on a levelled field.")
         }
+        if (insurance == null) BcLogic.lossShares(insuranceDto)?.let { add("Crop losses" to it) }
         insurance?.let { r ->
             add("Crop insurance" to "${Fmt.usd(r.total)} paid out on ${r.scope} ${r.crop.replace("_forage", "").replace('_', ' ')}, ${r.from}–${r.to}; ${Fmt.usd(r.topUsd)} in ${r.topYear} alone.${if (r.shareDrought >= 0.3) " ${(r.shareDrought * 100).roundToInt()}% of it for drought or failed irrigation water." else ""} USDA Risk Management Agency, county totals, not this farm.")
         }

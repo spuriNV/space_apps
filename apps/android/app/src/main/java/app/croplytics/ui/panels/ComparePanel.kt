@@ -99,7 +99,7 @@ fun LazyListScope.comparePanel(state: MainUiState, data: FieldData, ui: CompareU
                 ) {
                     Text(CompareLogic.shortName(s), style = MaterialTheme.typography.labelLarge, color = c.text)
                     CoverStrip(ms.cover.flatMap { ch -> listOf(ch, ch, ch) }.joinToString(""), null, Modifier.padding(vertical = 6.dp).clip(RoundedCornerShape(4.dp)), height = 8f)
-                    Text("${Fmt.one(CompareLogic.water(s, ui.weather)?.value ?: 0.0)} acre-ft/acre · ${CompareLogic.fits(s, ui.weather, limit).lowercase()}", style = MaterialTheme.typography.labelSmall, color = c.muted)
+                    Text("${CompareLogic.needText(s, ui.weather)} · ${CompareLogic.fits(s, ui.weather, limit).lowercase()}", style = MaterialTheme.typography.labelSmall, color = c.muted)
                 }
             }
             Column(
@@ -145,7 +145,7 @@ fun LazyListScope.comparePanel(state: MainUiState, data: FieldData, ui: CompareU
             Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text("Water against your limit", style = MaterialTheme.typography.titleLarge, color = c.text, modifier = Modifier.padding(top = 16.dp))
                 What(Gloss.WaterBalance, glossary)
-                Text("${CompareLogic.fits(alt, ui.weather, limit)}. Needs ${Fmt.one(altW?.value ?: 0.0)} acre-ft/acre. Your limit: ${Fmt.one(limit)}.", style = MaterialTheme.typography.bodyMedium, color = c.text)
+                Text("${CompareLogic.fits(alt, ui.weather, limit)}. ${if (app.croplytics.domain.BcLogic.rainFed(alt)) app.croplytics.domain.BcLogic.RAIN_FED else "Needs ${Fmt.one(altW?.value ?: 0.0)} acre-ft/acre"}. Your limit: ${Fmt.one(limit)}.", style = MaterialTheme.typography.bodyMedium, color = c.text)
                 if (detail) {
                     How("${CompareLogic.rng(CompareLogic.UNIT_METRICS[0], altW).replace("likely", "Likely").let { if (it.isNotEmpty()) "$it acre-ft/acre, " else "" }}${ui.weather.label.lowercase()}. Today needs ${Fmt.one(todayW?.value ?: 0.0)}.${if (Regex("safflower|wheat", RegexOption.IGNORE_CASE).containsMatchIn(alt.name)) " An upper bound: soil water stored over winter is not counted." else ""}")
                     How("${app.croplytics.domain.FieldNowLogic.openetText(base)} That checks crop water use for today’s crop only; irrigation need and the other rotations use the same method, unchecked.")

@@ -120,6 +120,7 @@ object CompareLogic {
     private fun label(m: Metric, heavy: Boolean) = if (m.key == "infiltration" && heavy) m.copy(gain = "${m.gain} (small effect on this heavy, slow-draining soil)", loss = "${m.loss} (small effect on this heavy soil)") else m
 
     fun fits(s: StrategyDto, w: Weather, limit: Double): String {
+        if (BcLogic.rainFed(s)) return "Fits your limit"
         val r = water(s, w) ?: return "No water estimate"
         return if (r.high <= limit) "Fits your limit" else if (r.low > limit) "Over your limit" else "May go over your limit"
     }
@@ -140,6 +141,9 @@ object CompareLogic {
         fun line(r: Row, gain: Boolean) = if (r.m.unit == Unit.SCORE) "${if (gain) r.m.gain else r.m.loss} (rule of thumb${if (r.m.key == "infiltration" && heavySoil) "; small effect on this heavy soil" else ""})." else "${if (gain) r.m.gain else r.m.loss}: ${delta(r.m, r.a!!.value, r.b!!.value)}."
         return Tradeoffs(rows.filter { it.v == Verdict.Better }.map { line(it, true) }, rows.filter { it.v == Verdict.Worse }.map { line(it, false) }, rows.filter { it.v == Verdict.Unclear || it.v == Verdict.Same }.map { it.m.label.lowercase() })
     }
+
+    /** Water text for a rotation: "Rain-fed (no irrigation)" or "1.9 acre-ft/acre". */
+    fun needText(s: StrategyDto, w: Weather) = if (BcLogic.rainFed(s)) BcLogic.RAIN_FED else "${Fmt.one(water(s, w)?.value ?: 0.0)} acre-ft/acre"
 
     const val HEAT_NOTE = "Hot days = NOAA weather-station highs of 104 °F or more, in months the rotation leaves the field bare."
 }

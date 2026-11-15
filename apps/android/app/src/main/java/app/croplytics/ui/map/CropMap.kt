@@ -71,6 +71,8 @@ data class MapContent(
     val selectedId: String?,
     val stack: Map3D.Stack?,
     val footprints: List<Map3D.Footprint>,
+    /** BC: reserve outlines near the field, context only (muted, dotted, never filled). */
+    val reserves: List<app.croplytics.domain.Reserve> = emptyList(),
 )
 
 /** Handle for the overlays (stack and footprint labels) to project points with altitude. */
@@ -173,7 +175,9 @@ fun CropMap(
                 }
             }
             m.setStyle(Style.Builder().fromJson(STYLE)) { s ->
-                listOf("fp", "fpgrid", "field", "shadow", "posts", "slab-grace", "slab-smap", "cells", "pins").forEach { s.addSource(GeoJsonSource(it)) }
+                listOf("reserves", "fp", "fpgrid", "field", "shadow", "posts", "slab-grace", "slab-smap", "cells", "pins").forEach { s.addSource(GeoJsonSource(it)) }
+                s.addLayer(LineLayer("res-casing", "reserves").withProperties(lineColor("rgba(10,12,8,0.5)"), lineWidth(3.6f)))
+                s.addLayer(LineLayer("res-line", "reserves").withProperties(lineColor("#f1ecdd"), lineOpacity(0.95f), lineWidth(2f), lineDasharray(arrayOf(3f, 2f))))
                 s.addLayer(FillLayer("fp-fill", "fp").withProperties(fillColor(get("color")), fillOpacity(interpolate(linear(), zoom(), stop(8, 0.1f), stop(13, 0.03f)))))
                 s.addLayer(LineLayer("fp-line", "fp").withProperties(lineColor(get("color")), lineWidth(2f), lineDasharray(arrayOf(2f, 1.5f))))
                 s.addLayer(LineLayer("fpgrid-line", "fpgrid").withProperties(lineColor(get("color")), lineWidth(1f), lineOpacity(0.75f)).apply { minZoom = 11.5f })
@@ -219,6 +223,7 @@ fun CropMap(
         src("fpgrid")?.setGeoJson(fc(content.footprints.filter { it.gridLines.isNotEmpty() }.map { fp ->
             Feature.fromGeometry(MultiLineString.fromLineStrings(fp.gridLines.map { l -> LineString.fromLngLats(l.map { (x, y) -> Point.fromLngLat(x, y) }) })).apply { addStringProperty("color", fp.color) }
         }))
+        src("reserves")?.setGeoJson(fc(content.reserves.flatMap { r -> r.rings.map { Feature.fromGeometry(LineString.fromLngLats(it.map { (x, y) -> Point.fromLngLat(x, y) })) } }))
         val st = content.stack
         src("cells")?.setGeoJson(fc(st?.cells?.map(::ext).orEmpty()))
         src("slab-smap")?.setGeoJson(fc(st?.smap?.map(::ext).orEmpty()))

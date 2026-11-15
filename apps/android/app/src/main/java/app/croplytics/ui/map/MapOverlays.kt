@@ -188,3 +188,28 @@ fun MapControls(bearing: Double, pitch: Double, onHome: () -> Unit, onNorth: () 
         Btn("Zoom out", { onZoom(-1.0) }) { Text("−", style = MaterialTheme.typography.titleLarge, color = c.text) }
     }
 }
+
+/** Reserve names in paper label boxes just east of each outline (context only); nearer reserves first. */
+@Composable
+fun ReserveLabels(handle: MapHandle, tick: MutableState<Int>, reserves: List<app.croplytics.domain.Reserve>) {
+    @Suppress("UNUSED_VARIABLE") val t = tick.value
+    val m = handle.map ?: return
+    if (reserves.isEmpty() || m.cameraPosition.zoom < 9) return
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val maxW = constraints.maxWidth; val maxH = constraints.maxHeight
+        val placed = mutableListOf<android.graphics.RectF>()
+        reserves.sortedBy { it.km }.forEach { r ->
+            val ring = r.rings.maxByOrNull { it.size } ?: return@forEach
+            val at = LatLng((ring.minOf { it.second } + ring.maxOf { it.second }) / 2, ring.maxOf { it.first })
+            val p = m.projection.toScreenLocation(at)
+            if (p.x < 0 || p.y < 0 || p.x > maxW || p.y > maxH) return@forEach
+            val box = android.graphics.RectF(p.x, p.y - 30, p.x + 360, p.y + 30)
+            if (placed.any { android.graphics.RectF.intersects(it, box) }) return@forEach
+            placed += box
+            Column(Modifier.offset { IntOffset(p.x.roundToInt() + 12, p.y.roundToInt() - 28) }.widthIn(max = 180.dp).background(PAPER).border(1.dp, INK).padding(horizontal = 6.dp, vertical = 3.dp)) {
+                Text(app.croplytics.domain.BcLogic.reserveName(r.name), fontSize = 11.sp, lineHeight = 13.sp, color = INK, fontWeight = FontWeight.SemiBold)
+                Text(r.nation, fontSize = 10.sp, lineHeight = 12.sp, color = MUTED)
+            }
+        }
+    }
+}

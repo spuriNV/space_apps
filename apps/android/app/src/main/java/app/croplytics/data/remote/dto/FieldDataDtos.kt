@@ -8,6 +8,8 @@ import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class CalendarDto(
+    /** "real", or "estimate" where the API fills a region gap (BC). */
+    @SerialName("_source") val origin: String? = null,
     @SerialName("data_through") val dataThrough: String? = null,
     val detector: String? = null,
     val source: String? = null,
@@ -90,6 +92,7 @@ data class StrategyCalendarDto(
     val plant: String? = null,
     val harvest: String? = null,
     val role: String? = null,
+    val irrigated: Boolean? = null,
 )
 
 @Serializable
@@ -301,6 +304,7 @@ data class BlockedItemDto(val item: String = "", val status: String? = null)
 
 @Serializable
 data class OutlookDto(
+    @SerialName("_source") val origin: String? = null,
     val today: String? = null,
     @SerialName("coming_season") val comingSeason: String? = null,
     val county: String? = null,
@@ -336,7 +340,7 @@ data class ModelsDto(val items: List<ModelDto> = emptyList())
 data class OpenEtAnnualDto(val year: Int = 0, @SerialName("et_mm") val etMm: Double? = null, val months: Int = 0)
 
 @Serializable
-data class OpenEtDto(val annual: List<OpenEtAnnualDto> = emptyList(), val rows: List<OpenEtRowDto> = emptyList(), val note: String? = null)
+data class OpenEtDto(@SerialName("_source") val origin: String? = null, val annual: List<OpenEtAnnualDto> = emptyList(), val rows: List<OpenEtRowDto> = emptyList(), val note: String? = null)
 
 @Serializable
 data class OpenEtRowDto(val date: String = "", val month: String? = null, @SerialName("et_in") val etIn: Double? = null, @SerialName("et_mm") val etMm: Double? = null)
@@ -361,7 +365,7 @@ data class WaterSeasonDto(
 )
 
 @Serializable
-data class WaterSeenDto(val summary: String? = null, val seasons: List<WaterSeasonDto> = emptyList(), val scenes: List<WaterSceneDto> = emptyList())
+data class WaterSeenDto(@SerialName("_source") val origin: String? = null, val summary: String? = null, val seasons: List<WaterSeasonDto> = emptyList(), val scenes: List<WaterSceneDto> = emptyList())
 
 @Serializable
 data class WaterSceneDto(val date: String = "", @SerialName("water_frac") val waterFrac: Double? = null, val clear: Boolean = false)
@@ -379,7 +383,7 @@ data class StressYearDto(
 data class StressSummaryDto(@SerialName("by_year") val byYear: Map<String, StressYearDto> = emptyMap())
 
 @Serializable
-data class StressDto(val summary: StressSummaryDto? = null, val weeks: List<StressWeekDto> = emptyList())
+data class StressDto(@SerialName("_source") val origin: String? = null, val summary: StressSummaryDto? = null, val weeks: List<StressWeekDto> = emptyList())
 
 @Serializable
 data class StressWeekDto(
@@ -402,4 +406,43 @@ data class InsuranceProfileDto(
 )
 
 @Serializable
-data class InsuranceDto(val years: List<Int> = emptyList(), val profiles: Map<String, InsuranceProfileDto> = emptyMap(), @SerialName("page_url") val pageUrl: String? = null)
+data class InsuranceDto(@SerialName("_source") val origin: String? = null, val years: List<Int> = emptyList(), val profiles: Map<String, InsuranceProfileDto> = emptyMap(), @SerialName("page_url") val pageUrl: String? = null)
+
+// ---- GET /api/locations/{id}/first_nations (BC fields) ----
+
+@Serializable
+data class LowerNationDto(val nation: String = "", val reserve: String? = null, val url: String? = null)
+
+@Serializable
+data class NearbyReserveDto(val reserve: String = "", val nation: String = "", @SerialName("distance_to_field_km") val distanceKm: Double = 0.0)
+
+@Serializable
+data class PrincipleDto(val id: String = "", val name: String = "", val description: String = "", val url: String? = null)
+
+@Serializable
+data class ContactDto(val nation: String = "", val department: String = "", val url: String? = null)
+
+@Serializable
+data class TimelineDto(val date: String = "", val title: String = "", val url: String? = null)
+
+@Serializable
+data class FirstNationsSourceDto(val title: String? = null, val url: String? = null)
+
+@Serializable
+data class FirstNationsDto(
+    val statement: String = "",
+    @SerialName("field_on_reserve") val fieldOnReserve: Boolean = false,
+    @SerialName("nearest_km") val nearestKm: Double? = null,
+    @SerialName("nearest_nation") val nearestNation: String? = null,
+    @SerialName("lower_river_nation") val lowerRiverNation: LowerNationDto? = null,
+    val nearby: List<NearbyReserveDto> = emptyList(),
+    @SerialName("engagement_steps") val engagementSteps: List<String> = emptyList(),
+    val principles: List<PrincipleDto> = emptyList(),
+    val contacts: List<ContactDto> = emptyList(),
+    @SerialName("water_timeline") val waterTimeline: List<TimelineDto> = emptyList(),
+    val source: FirstNationsSourceDto? = null,
+    val notes: List<String> = emptyList(),
+)
+
+@Serializable
+data class InsurancePerilsDto(@SerialName("peril_year_counts") val perilYearCounts: Map<String, Int> = emptyMap())

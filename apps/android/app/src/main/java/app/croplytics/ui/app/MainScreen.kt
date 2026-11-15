@@ -157,6 +157,7 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
                     CropMap(content, vm.mapCommands, visibleSheetPx.toInt(), topInsetPx, handle, tick, vm::select, vm::goBC, vm::onCamera, Modifier.fillMaxSize().testTag("map"))
                     if (sel != null) {
                         FootprintLabels(handle, tick, content.footprints)
+                        app.croplytics.ui.map.ReserveLabels(handle, tick, content.reserves)
                         StackLabels(handle, tick, content.stack, sel.rings, sel.id.lat, topInsetPx)
                     }
                     Column(Modifier.fillMaxWidth().align(Alignment.TopCenter)) {
@@ -177,7 +178,7 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
 
     if (switchOpen) FieldSwitcher(state, vm::select, vm::goBC, vm::goHome) { switchOpen = false }
     if (dateOpen) DateSheet(state, vm.quickDates, vm.years, vm::setT, vm::toggleEarlier) { dateOpen = false }
-    if (state.layersOpen) LayersSheet(state.layersOn, state.selected?.loc?.areaHa?.value, vm::toggleLayer) { vm.setLayersOpen(false) }
+    if (state.layersOpen) LayersSheet(state.layersOn, state.selected?.loc?.areaHa?.value, vm::toggleLayer, showReserves = state.selected?.loc?.isBC == true) { vm.setLayersOpen(false) }
     if (sourcesOpen) SourcesSheet { sourcesOpen = false }
 }
 
@@ -190,7 +191,8 @@ private fun mapContent(state: MainUiState, data: FieldData?): MapContent {
         if (grid != null && cal != null) Map3D.stack(sel.rings, sel.id.lat, sel.loc.areaHa?.value ?: 60.0, grid, Map3D.offsets(grid), cal, data.regional.dataOrNull, state.t, state.layersOn) else null
     } else null
     val fps = if (sel != null) Map3D.footprints(sel.rings, sel.id.lon, sel.id.lat, state.layersOn, data?.regional?.dataOrNull?.soilSource == "smap") else emptyList()
-    return MapContent(fields, state.selectedId, stack, fps)
+    val reserves = if (sel?.loc?.isBC == true && state.layersOn["reserves"] == true) data?.reserves?.dataOrNull.orEmpty() else emptyList()
+    return MapContent(fields, state.selectedId, stack, fps, reserves)
 }
 
 /** What the sheet shows: BC, the pick list, or the selected field's section. */

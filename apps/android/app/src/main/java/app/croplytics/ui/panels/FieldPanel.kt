@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.offset
+import androidx.compose.animation.animateContentSize
+import app.croplytics.domain.Fmt
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.filled.Print
@@ -131,6 +134,7 @@ fun LazyListScope.fieldNowPanel(state: MainUiState, data: FieldData, view: Field
             AnswerView(ans, detail, glossary)
         }
     }
+    if (data.item.loc.isBC) item(key = "fn-first-nations") { FirstNationsSection(data, detail) }
     item(key = "fn-more") { MoreDetailButton(detail, "Sources, past seasons, 3D", a.toggleDetail) }
     if (detail) {
         item(key = "fn-nasa") { Box(Modifier.animateItem()) { NasaSection(data, nasa) } }
@@ -140,7 +144,7 @@ fun LazyListScope.fieldNowPanel(state: MainUiState, data: FieldData, view: Field
                 app.croplytics.ui.components.SectionHead("About the ground", action = "Look in 3D" to a.drill, helper = "Under the field in 3D: crop, soil moisture, groundwater.")
             }
             Column(Modifier.padding(horizontal = 16.dp)) {
-                FieldNowLogic.aboutField(data.item.loc, data.calendar.dataOrNull?.calendar, data.insurance.dataOrNull?.summary()).forEach { (k, v) ->
+                FieldNowLogic.aboutField(data.item.loc, data.calendar.dataOrNull?.calendar, data.insurance.dataOrNull?.summary(), data.insurance.dataOrNull).forEach { (k, v) ->
                     Row(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
                         Text(k, Modifier.width(100.dp), style = MaterialTheme.typography.bodySmall, color = c.muted)
                         Text(v, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = if (k == "Salt" && v.startsWith("Salty")) c.warn else c.text)
@@ -265,6 +269,46 @@ private fun NasaSection(data: FieldData, list: List<NasaDataset>) {
                 Text(d.tells, style = MaterialTheme.typography.bodySmall, color = c.text2)
                 Text("${d.scale}. ${d.agency}. ${d.status.words}", style = MaterialTheme.typography.labelSmall, color = if (d.status == NasaStatus.Example) c.warn else c.muted)
             }
+        }
+    }
+}
+
+/** "Working with First Nations" (FirstNations.tsx, BC fields only): the statement and two plain lines; the rest under More detail. */
+@Composable
+private fun FirstNationsSection(data: FieldData, detail: Boolean) {
+    val c = CropLyticsTheme.colors
+    val uri = LocalUriHandler.current
+    val s = data.item.loc.firstNations
+    val fn = data.firstNations.dataOrNull
+    if (s == null && fn == null) return
+    val onReserve = fn?.fieldOnReserve ?: s!!.fieldOnReserve
+    val km = fn?.nearestKm ?: s?.nearestKm; val nation = fn?.nearestNation ?: s?.nearestNation
+    val lower = fn?.lowerRiverNation?.nation ?: (s?.lowerRiverNation as? kotlinx.serialization.json.JsonPrimitive)?.content
+    val river = data.item.loc.waterContext?.watershed?.split('(', ';', ',')?.first()?.trim()?.ifBlank { null } ?: "river"
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("first-nations"), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text("Working with First Nations", Modifier.padding(top = 20.dp).semantics { heading() }, style = MaterialTheme.typography.titleLarge, color = c.text)
+        Text(fn?.statement ?: s!!.statement, style = MaterialTheme.typography.bodyMedium, color = c.text)
+        Text(if (onReserve) "This field is on reserve land." else "This field is not on reserve land; nearest reserve ${km?.let { Fmt.one(it) } ?: "?"} km ($nation).", style = MaterialTheme.typography.bodyMedium, color = c.text2)
+        lower?.let { Text("Nation on the lower $river: $it.", style = MaterialTheme.typography.bodyMedium, color = c.text2) }
+        fn?.lowerRiverNation?.url?.let { u -> app.croplytics.ui.components.PillButton("${fn.lowerRiverNation.nation} lands page", app.croplytics.ui.components.PillKind.Text, small = true, modifier = Modifier.offset(x = (-12).dp)) { runCatching { uri.openUri(u) } } }
+        if (detail) Column(Modifier.animateContentSize().testTag("first-nations-detail"), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            if (fn == null) { Text(if (data.firstNations is app.croplytics.data.repository.LoadState.Failed) "More on the Nations is not available right now." else "Loading…", style = MaterialTheme.typography.bodySmall, color = c.muted); return@Column }
+            val near = fn.nearby.filter { it.distanceKm <= 20 }.sortedBy { it.distanceKm }; val rest = fn.nearby.filter { it.distanceKm > 20 }
+            Text("Reserves near this field", Modifier.padding(top = 8.dp), style = MaterialTheme.typography.titleSmall, color = c.text)
+            near.forEach { r -> Row { Text("${Fmt.one(r.distanceKm)} km", Modifier.width(64.dp), style = MaterialTheme.typography.labelLarge, color = c.text); Column { Text(app.croplytics.domain.BcLogic.reserveName(r.reserve), style = MaterialTheme.typography.bodySmall, color = c.text); Text(r.nation, style = MaterialTheme.typography.labelSmall, color = c.muted) } } }
+            if (rest.isNotEmpty()) Text("${rest.size} more within ${kotlin.math.ceil(rest.maxOf { it.distanceKm }).toInt()} km: ${rest.map { it.nation }.distinct().joinToString(", ")}.", style = MaterialTheme.typography.bodySmall, color = c.text2)
+            fn.notes.firstOrNull()?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = c.text2) }
+            Text("How we would start", Modifier.padding(top = 8.dp), style = MaterialTheme.typography.titleSmall, color = c.text)
+            fn.engagementSteps.forEachIndexed { i, x -> Text("${i + 1}. $x", style = MaterialTheme.typography.bodySmall, color = c.text2) }
+            Text("Principles we follow", Modifier.padding(top = 8.dp), style = MaterialTheme.typography.titleSmall, color = c.text)
+            fn.principles.forEach { p -> Column { Text(p.name, Modifier.then(if (p.url != null) Modifier.clickable { runCatching { uri.openUri(p.url) } } else Modifier), style = MaterialTheme.typography.labelLarge, color = if (p.url != null) c.accent else c.text); Text(p.description, style = MaterialTheme.typography.bodySmall, color = c.text2) } }
+            Text("Public contact pages", Modifier.padding(top = 8.dp), style = MaterialTheme.typography.titleSmall, color = c.text)
+            fn.contacts.forEach { x -> Column { Text(x.nation, Modifier.then(if (x.url != null) Modifier.clickable { runCatching { uri.openUri(x.url) } } else Modifier), style = MaterialTheme.typography.labelLarge, color = if (x.url != null) c.accent else c.text); Text(x.department, style = MaterialTheme.typography.bodySmall, color = c.text2) } }
+            if (fn.waterTimeline.isNotEmpty()) {
+                Text("Water and salmon, ${fn.waterTimeline.first().date.take(4)}–${fn.waterTimeline.last().date.take(4)}", Modifier.padding(top = 8.dp), style = MaterialTheme.typography.titleSmall, color = c.text)
+                fn.waterTimeline.forEach { x -> Row { Text(if (x.date.length == 10) Timeline.fmtDate(x.date) else x.date, Modifier.width(96.dp), style = MaterialTheme.typography.labelSmall, color = c.muted); Text(x.title, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = c.text2) } }
+            }
+            Text("${fn.source?.title ?: "BC Data Catalogue"}${fn.notes.getOrNull(1)?.let { ". $it" } ?: ""}", style = MaterialTheme.typography.labelSmall, color = c.muted)
         }
     }
 }

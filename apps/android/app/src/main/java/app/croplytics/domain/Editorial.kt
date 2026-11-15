@@ -84,7 +84,7 @@ object MapDatasets {
         MapDataset("grace", "GRACE", "GRACE / GRACE-FO drought indicators", "Groundwater storage percentile", "0.25°", 27800.0, "weekly", 2003, true, "#ff7eb6", "groundwater", "Underlying signal is about 300 km wide"),
     )
     /** Layers on by default (App.tsx). */
-    val DEFAULT_ON = mapOf("hls" to true, "smap" to true, "grace" to true, "imerg" to false, "modis" to false, "ecostress" to false)
+    val DEFAULT_ON = mapOf("hls" to true, "smap" to true, "grace" to true, "imerg" to false, "modis" to false, "ecostress" to false, "reserves" to false)
 }
 
 // ---------------- "Why not BC yet" (mock/bc.json) ----------------
