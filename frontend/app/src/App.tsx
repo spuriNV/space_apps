@@ -69,6 +69,7 @@ export default function App() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [keysOpen, setKeysOpen] = useState(false);
   const lite = usePrefs().liteNow; // Lite mode: no 3D, replay or rain, no grid download
+  useEffect(() => { if (location.hash === '#accessibility') setAboutOpen(true); const h = () => { if (location.hash === '#accessibility') setAboutOpen(true); }; window.addEventListener('hashchange', h); return () => window.removeEventListener('hashchange', h); }, []);
   useEffect(() => { const f = () => setAboutOpen(true); window.addEventListener('croplytics:about', f); return () => window.removeEventListener('croplytics:about', f); }, []);
   const draw = useRef<DrawHostHandle>(null);
   const [locProv, setLocProv] = useState<Record<string, api.ProvMap>>({});
@@ -613,7 +614,7 @@ export default function App() {
         onField={(id) => { setListOpen(false); select(id); }} onFarm={(it) => { setListOpen(false); pickCatalog(it); }}
         onReserve={(r) => { setListOpen(false); map.current?.flyTo(r.lat, r.lon, 11); }} onFind={(lat, lon) => { setListOpen(false); tapSpot(lat, lon); }} />}
       {keysOpen && <ShortcutsDialog onClose={() => setKeysOpen(false)} />}
-      {aboutOpen && <AccessibilityPage onClose={() => setAboutOpen(false)} />}
+      {aboutOpen && <AccessibilityPage onClose={() => { setAboutOpen(false); if (location.hash === '#accessibility') history.replaceState(null, '', location.pathname + location.search); }} />}
       {layersOpen && <LayersDrawer landsCount={lands?.length ?? null} datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} reserves={!!selected && api.isBC(selected)} onClose={() => setLayersOpen(false)} />}
 
       {stackField && !drilled && panel !== 'compare' && panel !== 'season' && view.zoom > 9.5 && view.zoom <= 13.4 && (
