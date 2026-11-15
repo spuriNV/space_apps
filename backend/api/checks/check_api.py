@@ -862,5 +862,18 @@ _ok(any(p["id"] == "workbc_ats" for p in _dh["programs"]) and not any(p["id"] ==
 _ok(any(p["id"] == "california_agrability" for p in _dc["programs"]) and all(p["url"].startswith("https://") and "verified" in p and p["checked"] and p["line"] for p in _dc["programs"] + _dh["programs"]), "/api/help/disability: California AgrAbility listed; every program has https url, verified flag, date and a plain line")
 _ok(client.get("/api/help/disability?region=xx").status_code == 422, "/api/help/disability?region=xx -> 422")
 # ---- end disability help ======================================================================================
+# ---- voice input (app/chat/transcribe.py) =====================================================================
+print("\nVoice input:")
+import subprocess as _sp, tempfile as _tfm  # noqa: E402
+from app.chat import transcribe as _stt  # noqa: E402
+with _tfm.TemporaryDirectory() as _d:
+    _w = f"{_d}/s.wav"
+    _sp.run(["ffmpeg", "-v", "error", "-f", "lavfi", "-i", "anullsrc=r=16000:cl=mono", "-t", "1", _w], check=True)
+    _tr = client.post("/api/ask/transcribe", files={"audio": ("s.wav", open(_w, "rb"), "audio/wav")})
+if _stt.available():
+    _ok(_tr.status_code == 200 and "text" in _tr.json() and "duration_s" in _tr.json(), f"/api/ask/transcribe: 200 with text ({_tr.status_code})")
+else:
+    _ok(_tr.status_code == 501, f"/api/ask/transcribe: 501 without the stt extra ({_tr.status_code})")
+# ---- end voice input ==========================================================================================
 print(f"\n{'ALL PASS' if not fails else str(fails) + ' FAIL'}")
 sys.exit(1 if fails else 0)

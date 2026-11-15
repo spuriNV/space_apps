@@ -26,9 +26,12 @@ from pydantic import BaseModel, Field
 
 from .facts import build_facts
 from . import tts as _tts
+from . import transcribe as _stt
 
 router = APIRouter()
 router.include_router(_tts.router)  # POST /api/tts (spoken answers)
+_stt.preload()  # background model load
+router.include_router(_stt.router)  # POST /api/ask/transcribe (voice input without Web Speech)
 ROOT = Path(os.environ.get("FIELDSHIFT_ROOT", Path(__file__).resolve().parents[4]))
 
 DEEPSEEK_URL = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/") + "/chat/completions"
