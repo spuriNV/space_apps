@@ -74,18 +74,6 @@ export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolea
             </label>
           </div>
         )}
-        <div className="lg" data-testid="layer-group-weather">
-          <h3>Weather<small>whole map, off unless you turn it on</small></h3>
-          <label className={`layer ${p.on.rain ? 'on' : ''}`}>
-            <input type="checkbox" checked={!!p.on.rain} onChange={() => p.toggle('rain')} data-testid="layer-rain" />
-            <span className="sw" style={p.on.rain ? { background: '#4aa3f0' } : undefined} />
-            <span className="layer-body">
-              <span className="layer-top"><b>Rain, last 7 days</b></span>
-              <span className="layer-sees">Animated daily rain from NASA satellites, drawn under your field outline.</span>
-              <span className="layer-meta">NASA GPM IMERG via GIBS · about 10 km pixels</span>
-            </span>
-          </label>
-        </div>
         {group('field', 'Sees inside your field', 'pixel smaller than the field')}
         {group('regional', 'Sees your district or basin', 'one pixel covers many fields')}
         <div className="scale-ruler">
