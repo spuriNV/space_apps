@@ -40,6 +40,8 @@ const PIN_SVG = `<svg class="pin-svg" width="28" height="36" viewBox="0 0 28 36"
 
 export const HOME = { center: [-119.9, 37.35] as [number, number], zoom: 5.75, pitch: 0, bearing: 0 };
 const LAND_POLY_ZOOM = 7; // below this the lands are dots from the overview; at and above it their outlines load for the viewport
+const SETTLE_COLOR = '#2f6f73'; // dusk teal: Inuit and settlement lands (dashed outline), next to the terracotta of reserves
+const landColor = ['match', ['get', 'kind'], ['inuit_land', 'settlement_land'], SETTLE_COLOR, '#b4521f'] as unknown as maplibregl.ExpressionSpecification;
 const LAND_COLOR = '#b4521f'; // warm terracotta: First Nations lands (fill about 20%, solid 2 px outline)
 const RES_COLOR = '#b4521f'; // warm terracotta: reserve land, distinct from the yellow selection colour
 const EXPLODE_Z0 = 12.5, EXPLODE_Z1 = 14.2;
@@ -162,11 +164,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       addCatalogLayers(map, (it) => live.current.onCatalogPick?.(it));
       // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
       // zoomed out: one dot per land from the light overview (size by area); zoomed in (LAND_POLY_ZOOM): outlines for the viewport only
-      map.addLayer({ id: 'lands-pts', type: 'circle', source: 'lands-pts', maxzoom: LAND_POLY_ZOOM, paint: { 'circle-color': LAND_COLOR, 'circle-opacity': 0.8, 'circle-stroke-color': '#fff4ea', 'circle-stroke-width': 0.6, 'circle-stroke-opacity': 0.8,
+      map.addLayer({ id: 'lands-pts', type: 'circle', source: 'lands-pts', maxzoom: LAND_POLY_ZOOM, paint: { 'circle-color': landColor, 'circle-opacity': 0.8, 'circle-stroke-color': '#fff4ea', 'circle-stroke-width': 0.6, 'circle-stroke-opacity': 0.8,
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 2, ['interpolate', ['linear'], ['get', 'area_ha'], 1, 1.3, 10000, 2.6, 1000000, 6], 6, ['interpolate', ['linear'], ['get', 'area_ha'], 1, 3, 10000, 5, 1000000, 12]] } });
       map.addLayer({ id: 'lands-pts-active', type: 'circle', source: 'lands-pts', maxzoom: LAND_POLY_ZOOM, filter: ['==', ['get', 'id'], ''], paint: { 'circle-color': 'rgba(0,0,0,0)', 'circle-radius': 13, 'circle-stroke-color': '#8f3a0f', 'circle-stroke-width': 3 } });
-      map.addLayer({ id: 'lands-fill', type: 'fill', source: 'lands', minzoom: LAND_POLY_ZOOM, paint: { 'fill-color': LAND_COLOR, 'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.42, 0.33] } });
-      map.addLayer({ id: 'lands-line', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, layout: { 'line-join': 'round' }, paint: { 'line-color': LAND_COLOR, 'line-width': 2.5 } });
+      map.addLayer({ id: 'lands-fill', type: 'fill', source: 'lands', minzoom: LAND_POLY_ZOOM, paint: { 'fill-color': landColor, 'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.42, 0.33] } });
+      map.addLayer({ id: 'lands-line', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, layout: { 'line-join': 'round' }, paint: { 'line-color': landColor, 'line-width': 2.5 } });
+      map.addLayer({ id: 'lands-line-dash', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, filter: ['in', ['get', 'kind'], ['literal', ['inuit_land', 'settlement_land']]], layout: { 'line-join': 'round' }, paint: { 'line-color': '#f4fbfb', 'line-width': 1.4, 'line-dasharray': [2, 2.5] } });
       map.addLayer({ id: 'lands-active-casing', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, filter: ['==', ['get', 'id'], ''], layout: { 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.85 } });
       map.addLayer({ id: 'lands-active', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, filter: ['==', ['get', 'id'], ''], layout: { 'line-join': 'round' }, paint: { 'line-color': '#8f3a0f', 'line-width': 4 } });
       map.addLayer({ id: 'lands-pulse', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, filter: ['==', ['get', 'id'], ''], paint: { 'line-color': '#b4521f', 'line-width': 4, 'line-opacity': 0 } });
@@ -334,7 +337,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const map = mapRef.current;
     if (!map || !ready) return;
     const vis = p.landsOn ? 'visible' : 'none';
-    for (const id of ['lands-pts', 'lands-pts-active', 'lands-fill', 'lands-line', 'lands-label', 'lands-active-casing', 'lands-active', 'lands-pulse']) map.setLayoutProperty(id, 'visibility', vis);
+    for (const id of ['lands-pts', 'lands-pts-active', 'lands-fill', 'lands-line', 'lands-line-dash', 'lands-label', 'lands-active-casing', 'lands-active', 'lands-pulse']) map.setLayoutProperty(id, 'visibility', vis);
   }, [ready, p.landsOn]);
   useEffect(() => {
     const map = mapRef.current;

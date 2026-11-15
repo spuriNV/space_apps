@@ -102,8 +102,10 @@ CAN_PROV = {"Yukon": "YT", "Northwest Territories": "NT", "Manitoba": "MB", "Alb
             "Nunavut": "NU", "Newfoundland and Labrador": "NL", "Saskatchewan": "SK", "Nova Scotia": "NS", "British Columbia": "BC", "New Brunswick": "NB"}
 CLSS = "https://proxyinternet.nrcan-rncan.gc.ca/arcgis/rest/services/CLSS-SATC/CLSS_Administrative_Boundaries/MapServer/0"
 CLSS_URL = "https://open.canada.ca/data/en/dataset/522b07b9-78e2-4819-b736-ad9208eb1067"
-CAN_SKIP = {"Inuit Owned Land", "Inuvialuit Land"}  # not First Nations reserves
-CAN_KIND = {"Indian Reserve": "reserve", "Indian Land": "reserve"}
+# Reserves; Inuit Owned Land (Nunavut) and Inuvialuit Land are Inuit lands; every other modern-treaty or self-government settlement land
+# in the service (Gwich'in, Sahtu, Tlicho, Yukon First Nations, Cree and Naskapi 1A, Sechelt, Salt River ...) is a settlement land.
+CAN_KIND = {"Indian Reserve": "reserve", "Indian Land": "reserve", "Inuit Owned Land": "inuit_land", "Inuvialuit Land": "inuit_land"}
+INUIT = {"Inuit Owned Land", "Inuvialuit Land"}
 SMALL = {"of", "the", "and", "de", "la", "du", "des", "at", "on", "in", "no."}
 
 
@@ -112,6 +114,18 @@ def tcase(s: str) -> str:
     for i, w in enumerate(s.lower().split()):
         out.append("No." if w in ("no.", "no") and i else "IR" if w in ("ir", "i.r.") else w.upper() if re.fullmatch(r"\d+[a-z]?(\([a-z0-9]+\))?", w) else w if (w in SMALL and i) else re.sub(r"(^|[-(/'’])([a-zà-ÿ])", lambda m: m.group(1) + m.group(2).upper(), w))
     return " ".join(out)
+
+
+def inuit_names(raw: str, dist: str):
+    """(name, nation) of an Inuit land: Nunavut Tunngavik / <community>, or Inuvialuit."""
+    if dist == "Inuvialuit Land":
+        return "Inuvialuit Settlement Region Lands", "Inuvialuit"
+    c = re.sub(r"^NUNAVUT LAND CLAIMS AGREEMENT\s*[–-]\s*", "", raw.strip(), flags=re.I)
+    c = re.sub(r"\s*INUIT OWNED LANDS?$", "", c, flags=re.I).strip()
+    if c.upper().startswith("JOINTLY"):
+        return "Nunavut Jointly Owned Land", "Nunavut Tunngavik"
+    c = tcase(c)
+    return f"{c} Inuit Owned Land", f"Nunavut Tunngavik / {c}"
 
 
 def can_nation(name: str) -> str:
@@ -164,23 +178,34 @@ def us_lands():
 
 
 def can_lands():
+    out = []
+    inuit = ",".join(f"'{x}'" for x in INUIT)
+    # Inuit lands are huge and remote: fetch them in small pages with a coarse service-side simplification
+    for where, mao, page in ((f"jurisdictionEng <> 'British Columbia' AND distributionTypeEng NOT IN ({inuit})", 0.0004, 100), (f"distributionTypeEng IN ({inuit})", 0.003, 2)):
+        out += _can_page(where, mao, page)
+    return out
+
+
+def _can_page(where, mao, page):
     out, offset = [], 0
     while True:
-        d = get(f"{CLSS}/query", {"where": "jurisdictionEng <> 'British Columbia'", "outFields": "OBJECTID,adminAreaId,adminAreaNameEng,distributionTypeEng,jurisdictionEng",
-                                  "outSR": 4326, "f": "geojson", "maxAllowableOffset": 0.0004, "resultOffset": offset, "resultRecordCount": 100})
+        d = get(f"{CLSS}/query", {"where": where, "outFields": "OBJECTID,adminAreaId,adminAreaNameEng,distributionTypeEng,jurisdictionEng",
+                                  "outSR": 4326, "f": "geojson", "maxAllowableOffset": mao, "resultOffset": offset, "resultRecordCount": page})
         for f in d["features"]:
             p = f["properties"]
-            if p["distributionTypeEng"] in CAN_SKIP or not f.get("geometry"):
+            if not f.get("geometry"):
                 continue
             g = shape(f["geometry"]).buffer(0)
             if g.is_empty:
                 continue
             raw = (p["adminAreaNameEng"] or "").strip()
-            out.append((g, {"id": f"can-{p['adminAreaId']}", "oid": p["OBJECTID"], "name": tcase(raw), "nation": can_nation(raw), "kind": CAN_KIND.get(p["distributionTypeEng"], "other"),
+            dist = p["distributionTypeEng"]
+            name, nation = inuit_names(raw, dist) if dist in INUIT else (tcase(raw), can_nation(raw))
+            out.append((g, {"id": f"can-{p['adminAreaId']}", "oid": p["OBJECTID"], "name": name, "nation": nation, "kind": CAN_KIND.get(dist, "settlement_land"),
                             "country": "CAN", "province": CAN_PROV.get(p["jurisdictionEng"], p["jurisdictionEng"])}))
-        if len(d["features"]) < 100 and not d.get("exceededTransferLimit"):
+        if len(d["features"]) < page and not d.get("exceededTransferLimit"):
             break
-        offset += 100
+        offset += page
     return out
 
 

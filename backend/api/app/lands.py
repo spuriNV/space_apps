@@ -22,8 +22,9 @@ LANDS = ROOT / "backend" / "api" / "out" / "lands" / "lands.geojson"
 CATALOG = ROOT / "backend" / "api" / "out" / "catalog" / "index.json"
 NEAR_KM = 15
 router = APIRouter()
-KIND = {"reserve": "Reserve", "reservation": "Tribal land", "trust": "Tribal land", "other": "Tribal area"}
-KINDS = ["reserve", "reservation", "trust", "other"]
+KIND = {"reserve": "Reserve", "reservation": "Tribal land", "trust": "Tribal land", "other": "Tribal area",
+        "inuit_land": "Inuit land", "settlement_land": "Settlement land"}
+KINDS = ["reserve", "reservation", "trust", "other", "inuit_land", "settlement_land"]
 
 
 @lru_cache(maxsize=1)
