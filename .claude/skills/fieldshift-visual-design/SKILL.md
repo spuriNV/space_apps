@@ -37,6 +37,9 @@ who print maps, not like a generated dashboard. Sources: `references.md`.
   when it is usually bare) -> crops grown -> what happened here -> "Where every number comes
   from" (collapsed).
 - **Overview is a pick list a grower recognises**, not an attribute table.
+- **One fact once.** Say a fact in one place (not a headline, a sentence and a note). A number gets its unit and nothing
+  else ("1.9 in since 1 Oct. Normal: 3.0 in."). Hints, ranges and sources go behind More detail. No sentence over about
+  12 words in the farmer default; More detail teasers are about three words ("Outlooks, reservoirs, every rotation").
 - **10-second test** for every screen: write what a grower who has never seen the app would
   understand in 10 seconds. If the answer needs a dataset name, rewrite the screen.
 - Copy: sentence case everywhere; plain verbs; no em dashes in UI copy; no marketing words.
@@ -68,11 +71,11 @@ no hex in components except data colours.
 
 ## 4. Labels, units and sources
 
-- Headings: sentence case, heading face, 15-17px. No eyebrow above a heading. If a group needs
+- Headings: sentence case, heading face, 22px (`--fs-head`). No eyebrow above a heading. If a group needs
   a name, the heading is the name.
 - Label/value rows: label in `--muted` at the left, value in `--text`. Units always shown.
 - Dates in the grower's terms: "mid July 2023", "16 Apr 2024". Avoid dekad, DOY, ISO.
-- Every answer has one `cite` line (shown under More detail): instrument in plain words + scale in miles.
+- Every answer has one `cite` line (shown under More detail): the instrument in plain words ("NASA GRACE-FO"). Scale in miles, method and caveats go on the Sources sheet.
 - Maps: say what a footprint means ("Soil moisture: one reading covers this square"), not "pixel".
 
 ## 5. Data status and uncertainty, without badge soup
@@ -114,8 +117,17 @@ column. Touch targets at least 44 px; nothing scrolls sideways except inside a t
 ## 6. Density, shape, iconography
 
 - Solid panels (`--panel`), 1px rules, radius 2-4px, one modest shadow. No blur/glass.
-- Dense but readable: 13px body, 12-12.5px secondary, 11.5px source lines, 15-17px answers.
-  Rows separated by hairlines, not cards in cards.
+- **Type scale** (tokens at the top of `styles.css`; components use the tokens, not literal sizes):
+  `--fs-fine` 13px (floor: source lines, chart ticks, map scale and labels, legends), `--fs-small` 14.5px (labels,
+  meter notes, secondary lines), `--fs-body` 16px (body, rows, buttons, tabs; also stops iOS zooming on inputs),
+  `--fs-answer` 20px (Zilla Slab 600: the answer sentence, option names), `--fs-head` 22px (section and sheet headings),
+  `--fs-title` 28px (field name in the panel, sheet titles, wordmark). **Nothing below 13px** on screen, including SVG
+  chart text and MapLibre label layers. Only the printable brief keeps its own print sizes (one Letter page).
+- Widths that go with it: field panel and pick list about 460px (max 46vw); Compare drops to two columns below
+  1280px wide (water against the limit moves under Gain / Give up); Coming season's three summary cells stack below
+  1180px; the top bar shortens tab labels below 1500px and 1300px. On a phone (390px) nothing scrolls sideways and
+  every touch target is at least 44px.
+- Rows separated by hairlines, not cards in cards.
 - **Navigation is a top bar, not an icon rail.** Wordmark "CropLytics" at the left (heading face, spot green), then a field
   switcher (county and acres small, field name in the heading face; click to change or search), then the sections as text tabs
   (Field now, Coming season, This field's year, Compare, Print for your adviser; the active tab gets a 3px spot-green underline),
@@ -125,7 +137,7 @@ column. Touch targets at least 44 px; nothing scrolls sideways except inside a t
   spot-green band under it and a soft two-step shadow so it sits above the map. No stacked icon+label buttons, no flat grey slab.
 - Icons: the existing line set in `Icons.tsx`, 16-20px, only next to a text label (map layers, play, close, zoom).
   Logo is the wordmark "CropLytics" in the heading face; no initials tile, no gradient.
-- Actions: full-width rows with a title and one-line description; one primary per panel
+- Actions: full-width rows with a title only (no subtitle); one primary per panel
   (the printable summary). Chevron at the right only for things that open a view.
 
 ## 7. Do not (AI-default patterns)

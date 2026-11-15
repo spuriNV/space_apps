@@ -36,10 +36,10 @@ function usePhone() {
   useEffect(() => { const mq = window.matchMedia(q); const f = () => setM(mq.matches); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, []);
   return m;
 }
-const TABS: { id: Tab; label: string; short?: string }[] = [
+const TABS: { id: Tab; label: string; short?: string; tiny?: string }[] = [
   { id: 'now', label: 'Field now' },
-  { id: 'season', label: 'Coming season' },
-  { id: 'year', label: 'This field’s year' },
+  { id: 'season', label: 'Coming season', tiny: 'Season' },
+  { id: 'year', label: 'This field’s year', tiny: 'Year' },
   { id: 'compare', label: 'Compare' },
   { id: 'brief', label: 'Print for your adviser', short: 'Print' },
 ];
@@ -163,8 +163,8 @@ export default function App() {
   const toolPanel = panel === 'fields' ? panel : null;
   const leftPanel = yearExpanded ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
   const phone = usePhone();
-  const leftInset = phone ? 0 : leftPanel === 'fields' ? 464 : leftPanel ? 412 : 0;
-  const rightInset = layersOpen ? 344 : 0;
+  const leftInset = phone ? 0 : leftPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
+  const rightInset = layersOpen ? 396 : 0;
   const bottomInset = phone ? 64 + (leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
   const drilled = !!selected && view.zoom > 13.4;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
@@ -227,7 +227,7 @@ export default function App() {
         </div>
         <nav className="tb-tabs" aria-label="Sections">
           {TABS.map((tb) => (
-            <button key={tb.id} className={tabOn(tb.id) ? 'on' : ''} onClick={() => onTab(tb.id)} data-testid={`tab-${tb.id}`} disabled={!selected && tb.id !== 'now'} title={selected ? undefined : 'Pick a field first'}><span className="tb-long">{tb.label}</span>{tb.short && <span className="tb-short">{tb.short}</span>}</button>
+            <button key={tb.id} className={tabOn(tb.id) ? 'on' : ''} onClick={() => onTab(tb.id)} data-testid={`tab-${tb.id}`} disabled={!selected && tb.id !== 'now'} title={selected ? undefined : 'Pick a field first'}><span className="tb-long">{tb.label}</span>{tb.short && <span className="tb-short">{tb.short}</span>}{tb.tiny && <span className="tb-tiny">{tb.tiny}</span>}</button>
           ))}
         </nav>
         <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
