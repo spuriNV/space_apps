@@ -240,7 +240,7 @@ export function prefetchFieldStack(loc: Location, caPresets?: Location[]) {
 export function fieldStackSeed(loc: Location, live: boolean, caPresets?: Location[]): FieldBundle {
   const id = loc.id, lite = isLite(id), presets = caPresets ?? MOCK_LOCS, borrow = lite ? nearestCaPreset(loc, presets) : id;
   const mid = templateId(id, loc.family);
-  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? borrow : mid]);
+  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? borrow : mid] ?? (mockCalendar as unknown as ById<Calendar>)[mid]);
   const reg0 = (regional as unknown as ById<Regional>)[lite ? borrow : mid];
   const prov: ProvMap = {
     calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', lite ? `illustrative · nearest prepared field (${borrow})` : 'illustrative'),
@@ -549,7 +549,7 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   const id = loc.id, lite = isLite(id), presets = caPresets ?? MOCK_LOCS, borrow = lite ? nearestCaPreset(loc, presets) : id;
   const mid = templateId(id, loc.family); // mid: the bundled example used until the API answers
   const dataId = lite ? borrow : id;
-  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? borrow : mid]);
+  const mCal = padCalendar((mockCalendar as unknown as ById<Calendar>)[lite ? borrow : mid] ?? (mockCalendar as unknown as ById<Calendar>)[mid]);
   const prov: ProvMap = {
     calendar: P('calendar', 'Bare / green / flooded calendar', 'mock', 'illustrative'),
     grid: P('grid', '100 ft squares in the 3D view', 'mock', 'illustrative'),

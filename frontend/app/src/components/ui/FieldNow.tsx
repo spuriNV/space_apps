@@ -19,8 +19,8 @@ const band = (pct: number, hi: string, mid: string, lo: string) => (pct >= 67 ? 
 const vsNormal = (pct: number | null, wet: string, dry: string) => (pct == null ? '' : pct >= 115 ? wet : pct <= 85 ? dry : 'about normal');
 
 export function stage(cal: Calendar, t: number) {
-  const y = cal.years[Math.floor(t / 36)], d = t % 36, c = y.rule[d];
-  const up = y.greenup_dekad, dn = y.senescence_dekad;
+  const y = cal?.years?.[Math.floor(t / 36)], d = t % 36, c = y?.rule?.[d];
+  const up = y?.greenup_dekad ?? null, dn = y?.senescence_dekad ?? null;
   if (c === 'w') return { sw: 'water', text: 'Under water', sub: d >= 30 || d <= 5 ? 'Flooded for the winter, as most years.' : 'Standing water on the field.' };
   if (c === 'c') return { sw: 'good', text: up != null && d >= up && (dn == null || d < dn) ? `Crop growing, green since ${dk(up)}` : 'Crop growing, full green cover', sub: '' };
   if (c === 'p') return { sw: 'part', text: 'Thin cover', sub: 'Some green, less than a full crop: a young crop, regrowth after a cutting, stubble or weeds.' };
@@ -77,7 +77,7 @@ export type LoadState = 'loading' | 'ready' | 'timeout';
 const Skel = () => <span className="skel" aria-label="Loading" />;
 /** The latest 10-day step with a clear satellite reading at or before t, at most 6 weeks back. */
 export function latestClearT(cal: Calendar, t: number, maxBack = 4): number | null {
-  for (let k = t; k >= 0 && t - k <= maxBack; k--) { const y = cal.years[Math.floor(k / 36)]; const c = y?.rule[k % 36]; if (c && c !== 'u') return k; }
+  for (let k = t; k >= 0 && t - k <= maxBack; k--) { const y = cal?.years?.[Math.floor(k / 36)]; const c = y?.rule?.[k % 36]; if (c && c !== 'u') return k; }
   return null;
 }
 /** One small reading: label, value, a bar with a reference mark. A number (`num`) counts up when it first appears and the
@@ -114,7 +114,7 @@ export function FieldNow(p: FieldNowProps) {
   const gr = p.regional ? latestAt(p.regional.grace_gw_pct.values, t) : null, grace = gr?.v ?? null;
   const behindNote = dt < t ? ` Latest clear view ${whenT(dt)}${agoText}${yearOf(dt) < yr ? `; ${yr} imagery not processed yet` : ''}.` : '';
   const limit = p.allocation ?? null, needAf = need ? mmToAfac(need.value) : null, rainFed = !!base && isRainFed(base);
-  const y26 = cal?.years.find((y) => y.year === yr);
+  const y26 = (cal?.years ?? []).find((y) => y.year === yr);
   const soil = soilFacts(loc.soil);
   // BC: California datasets this field lacks (a 404 shows one quiet line; an estimate shows normally, the reason under More detail)
   const bc = isBC(loc), gOpenet = bcGap(loc, 'openet'), gMl = bcGap(loc, 'ml_calendar');

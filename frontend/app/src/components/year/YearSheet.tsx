@@ -51,11 +51,11 @@ export default function YearSheet(p: YearSheetProps) {
   const gMl = bcGap(p.loc, 'ml_calendar');
   const verdict = mlVerdict(p.ml, gMl);
   const last = yearOf(lastDataT(p.cal));
-  const past = p.cal.years.filter((y) => y.year <= last && y.rule.replace(/u/g, '').length > 6);
+  const past = (p.cal.years ?? []).filter((y) => y.year <= last && y.rule.replace(/u/g, '').length > 6);
   const typ = typical(past);
   const typY: CalendarYear = { ...past[0], rule: typ };
-  const shown = p.cal.years.filter((y) => (p.showEarlier ? true : y.year >= RECENT_FROM)).reverse();
-  const ly = p.cal.years.find((y) => y.year === last)!;
+  const shown = (p.cal.years ?? []).filter((y) => (p.showEarlier ? true : y.year >= RECENT_FROM)).reverse();
+  const ly = (p.cal.years ?? []).find((y) => y.year === last)!;
   const dBare = count(ly, 'b') - count(typY, 'b'), dWater = count(ly, 'w') - count(typY, 'w');
   const diff = Math.abs(dBare) >= 20 ? `${last} had about ${Math.abs(dBare)} ${dBare > 0 ? 'more' : 'fewer'} bare days than a typical year` : Math.abs(dWater) >= 20 ? `${last} was flooded about ${Math.abs(dWater)} days ${dWater > 0 ? 'longer' : 'less'} than a typical year` : `${last} looked much like a typical year`;
   const up = ly.greenup_dekad;
