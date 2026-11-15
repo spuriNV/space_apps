@@ -254,7 +254,7 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
         Column(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 12.dp, vertical = 8.dp)) {
             SearchBarPill(onClick = { vm.setSearchOpen(true) })
             if (!state.isToday) DateBanner(state.t, vm::backToToday, Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp))
-            if (state.drilled) UnderFieldHud(Modifier.padding(top = 8.dp))
+            if (state.drilled && content.stack != null) UnderFieldHud(Modifier.padding(top = 8.dp))
         }
 
         // ---------- thumb-sized map buttons above the sheet ----------
@@ -385,8 +385,9 @@ private fun mapContent(state: MainUiState, data: FieldData?): MapContent {
     val fields = state.fields.dataOrNull.orEmpty()
     val sel = state.selected
     val stack = if (sel != null && data != null && data.item.id.id == sel.id.id) {
-        val grid = data.grid.dataOrNull; val cal = data.calendar.dataOrNull?.calendar
-        if (grid != null && cal != null) Map3D.stack(sel.rings, sel.id.lat, sel.loc.areaHa?.value ?: 60.0, grid, Map3D.offsets(grid), cal, data.regional.dataOrNull, state.t, state.layersOn) else null
+        data.stack3d?.let { s ->
+            Map3D.stack(sel.rings, sel.id.lat, sel.loc.areaHa?.value ?: 60.0, s.grid, Map3D.offsets(s.grid), s.calendar, s.regional, state.t, state.layersOn)
+        }
     } else null
     val fps = if (sel != null) Map3D.footprints(sel.rings, sel.id.lon, sel.id.lat, state.layersOn, data?.regional?.dataOrNull?.soilSource == "smap") else emptyList()
     val reserves = if (sel?.loc?.isBC == true && state.layersOn["reserves"] == true) data?.reserves?.dataOrNull.orEmpty() else emptyList()

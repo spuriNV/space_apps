@@ -146,12 +146,30 @@ fun CropMap(
             m.uiSettings.apply { isCompassEnabled = false; isLogoEnabled = false; isAttributionEnabled = true; isRotateGesturesEnabled = true; isTiltGesturesEnabled = true }
             m.setMaxPitchPreference(70.0)
             m.cameraPosition = CameraPosition.Builder().target(LatLng(Map3D.HOME_LAT, Map3D.HOME_LON)).zoom(Map3D.HOME_ZOOM).build()
-            m.addOnCameraMoveListener { cameraTick.value++ }
+            var gesture = false
+            m.addOnCameraMoveStartedListener { reason ->
+                gesture = reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE
+            }
+            fun tiltForDrill(c: CameraPosition) {
+                val sel = latest.fields.firstOrNull { it.id.id == latest.selectedId } ?: return
+                val t = c.target ?: return
+                if (abs(t.latitude - sel.id.lat) > 0.06 || abs(t.longitude - sel.id.lon) > 0.08) return
+                val f = ((c.zoom - (Map3D.Z0 - 0.3)) / (Map3D.Z1 - Map3D.Z0)).coerceIn(0.0, 1.0)
+                val target = f * 58.0
+                val bearing = if (f > 0) -22.0 * f else c.bearing
+                if (abs(c.tilt - target) > 0.5 || (f > 0 && abs(c.bearing - bearing) > 0.5)) {
+                    m.cameraPosition = CameraPosition.Builder(c).tilt(target).bearing(bearing).build()
+                }
+            }
+            m.addOnCameraMoveListener {
+                cameraTick.value++
+                if (gesture) tiltForDrill(m.cameraPosition)
+            }
             m.addOnCameraIdleListener {
                 val c = m.cameraPosition
                 report(CameraView(c.zoom, c.tilt, c.bearing, c.target?.latitude ?: 0.0, c.target?.longitude ?: 0.0))
                 cameraTick.value++
-                // no camera animation here: an animation started on idle fights the next pan or pinch (the 3D button tilts)
+                gesture = false
             }
             m.addOnMapClickListener { ll ->
                 val pt: PointF = m.projection.toScreenLocation(ll)

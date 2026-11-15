@@ -24,6 +24,8 @@ import app.croplytics.domain.FieldNames
 import app.croplytics.domain.MapDatasets
 import app.croplytics.domain.RegionalSeries
 import app.croplytics.domain.Rings
+import app.croplytics.domain.StackBorrow
+import app.croplytics.domain.Stack3dInputs
 import app.croplytics.domain.Timeline
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -158,6 +160,8 @@ data class FieldData(
     val reserves: LoadState<List<app.croplytics.domain.Reserve>> = LoadState.Failed(app.croplytics.data.repository.LoadError.NotAvailable),
     val limit: Double? = null,
     val exampleLimit: Boolean = true,
+    /** Resolved grid/calendar/regional for the 3D stack (includes borrow/shift while the field grid loads). */
+    val stack3d: Stack3dInputs? = null,
 ) {
     val parts: List<LoadState<*>> get() = listOf(calendar, regional, nasaNow, strategies, daily, outlook)
     val waking get() = parts.any { it is LoadState.Waking }
@@ -213,9 +217,18 @@ class MainViewModel @Inject constructor(
         (saved ?: exampleLimit(item)) to (saved == null)
     }
 
-    val field: StateFlow<FieldData?> = selectedItem.flatMapLatest { item ->
+    val field: StateFlow<FieldData?> = combine(selectedItem, fields) { item, fieldList -> item to fieldList.dataOrNull.orEmpty() }
+        .flatMapLatest { (item, allFields) ->
         if (item == null) return@flatMapLatest flowOf(null)
         val id = item.id.id
+        val borrow = StackBorrow.nearest(item, allFields)
+        val borrowId = borrow?.id?.id
+        val emptyGrid = flowOf<LoadState<CellGrid>>(LoadState.Loading)
+        val emptyCal = flowOf<LoadState<CalendarBundle>>(LoadState.Loading)
+        val emptyRegional = flowOf<LoadState<RegionalSeries>>(LoadState.Loading)
+        val borrowGrid = if (borrowId != null) repository.grid(borrowId) else emptyGrid
+        val borrowCal = if (borrowId != null) repository.calendar(borrowId) else emptyCal
+        val borrowRegional = if (borrowId != null) repository.regional(borrowId) else emptyRegional
         val limit = limitFlow(item).distinctUntilChanged()
         val base = repository.strategies(id)
         val scored = limit.debounce(450).distinctUntilChanged().flatMapLatest { (lim, _) -> repository.score(id, lim) }
@@ -231,9 +244,11 @@ class MainViewModel @Inject constructor(
         val core = combine(repository.calendar(id), repository.regional(id), repository.nasaNow(id), strategies, limit) { c, r, n, s, l ->
             FieldData(item, calendar = c, regional = r, nasaNow = n, strategies = s, limit = l.first, exampleLimit = l.second)
         }
-        val more = combine(repository.daily(id), repository.grid(id), repository.outlook(id), repository.openet(id), repository.stress(id)) { d, g, o, oe, st ->
-            listOf(d, g, o, oe, st)
-        }
+        val fieldLoads = combine(
+            repository.daily(id), repository.grid(id), repository.outlook(id), repository.openet(id), repository.stress(id),
+        ) { d, g, o, oe, st -> listOf(d, g, o, oe, st) }
+        val borrowLoads = combine(borrowGrid, borrowCal, borrowRegional) { bg, bc, br -> listOf(bg, bc, br) }
+        val more = combine(fieldLoads, borrowLoads) { f, b -> f + b }
         val bc = item.loc.isBC
         val none: Flow<LoadState<Nothing>> = flowOf(LoadState.Failed(app.croplytics.data.repository.LoadError.NotAvailable))
         val more2 = combine(repository.insurance(id), repository.waterSeen(id), repository.iss(id), repository.glossary(),
@@ -241,6 +256,16 @@ class MainViewModel @Inject constructor(
         val reserves = if (bc) repository.reserves(id) else none
         @Suppress("UNCHECKED_CAST")
         combine(core, more, more2, reserves) { c, m, m2, rs ->
+            val stack3d = StackBorrow.inputs(
+                item, allFields,
+                (m[1] as LoadState<CellGrid>).dataOrNull,
+                c.calendar.dataOrNull?.calendar,
+                c.regional.dataOrNull,
+                borrow,
+                (m[5] as LoadState<CellGrid>).dataOrNull,
+                (m[6] as LoadState<CalendarBundle>).dataOrNull?.calendar,
+                (m[7] as LoadState<RegionalSeries>).dataOrNull,
+            )
             c.copy(
                 daily = m[0] as LoadState<Daily>, grid = m[1] as LoadState<CellGrid>, outlook = m[2] as LoadState<OutlookDto>,
                 openet = m[3] as LoadState<OpenEtDto>, stress = m[4] as LoadState<StressDto>,
@@ -248,6 +273,7 @@ class MainViewModel @Inject constructor(
                 glossary = m2[3] as LoadState<GlossaryDto>,
                 firstNations = m2[4] as LoadState<app.croplytics.data.remote.dto.FirstNationsDto>,
                 reserves = rs as LoadState<List<app.croplytics.domain.Reserve>>,
+                stack3d = stack3d,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
