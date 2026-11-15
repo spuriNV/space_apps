@@ -50,3 +50,8 @@
 .cw-delta { margin: var(--s-3) 0 0; font: var(--head-weight) var(--fs-answer)/1.25 var(--font-head); color: var(--text); }
 .cw-delta small { display: block; font: 400 var(--fs-fine)/1.3 var(--font-ui); color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .wc-rain, .wc-temp, .wc-acc, .wc-g-fill, .cw-bar, .cw-lim { transition-duration: 1ms !important; transition-delay: 0ms !important; } }
+.wc-acc circle { fill: inherit; }
+.wc-acc-g { fill: #fff; font: 800 12px var(--font-ui); }
+.wc-acc.marginal .wc-acc-g { fill: #fff; }
+.wc-acc.too_wet circle { stroke: var(--text); stroke-width: 1.5; stroke-dasharray: 3 2; }
+.wc-k i.k-ok, .wc-k i.k-mid, .wc-k i.k-wet { width: auto; height: auto; min-width: 16px; text-align: center; color: #fff; font: 800 11px/16px var(--font-ui); border-radius: 8px; font-style: normal; }

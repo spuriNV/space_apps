@@ -19,9 +19,12 @@ export function getCatalog(): Promise<Catalog | null> {
 
 /** Muted tones that read on satellite imagery (each pin also has a paper ring). */
 export const GROUP_COLOR: Record<string, string> = {
-  grapes: '#7a4b86', forage: '#4f8f3a', vegetables: '#d2692c', nuts: '#9a6a3a', grain: '#d9a53a',
-  rice: '#3d7fc4', citrus: '#e48a1c', cotton: '#c9c4b4', orchard: '#b8465a', canola: '#e3d24a',
-};
+  grapes: '#CC79A7', forage: '#009E73', vegetables: '#D55E00', nuts: '#8c6d1f', grain: '#E69F00',
+  rice: '#0072B2', citrus: '#F0E442', cotton: '#9a9a9a', orchard: '#56B4E9', canola: '#4d4d4d',
+}; // Okabe-Ito colour-blind-safe set; every pin and dot also carries the crop group's letter, so colour is never the only cue
+/** One letter per crop group (G grapes, F forage, V vegetables, N nuts, A grain, R rice, C citrus, T cotton, O orchard, K canola). */
+export const GROUP_LETTER: Record<string, string> = { grapes: 'G', forage: 'F', vegetables: 'V', nuts: 'N', grain: 'A', rice: 'R', citrus: 'C', cotton: 'T', orchard: 'O', canola: 'K' };
+export const groupLetter = (g: string) => GROUP_LETTER[g] ?? g.charAt(0).toUpperCase();
 export const groupColor = (g: string) => GROUP_COLOR[g] ?? '#8a8a80';
 export const landNote = (l: CatalogItem['land_status']) => {
   const kind = typeof l === 'string' ? l : l?.kind;
@@ -50,6 +53,7 @@ export function addCatalogLayers(map: maplibregl.Map, onPick: (it: { id: string;
     const [lon, lat] = (f.geometry as GeoJSON.Point).coordinates;
     onPick({ id: String(f.properties!.id), lat, lon });
   });
+  map.addLayer({ id: 'cat-letter', type: 'symbol', source: SRC, minzoom: 9, filter: ['!', ['has', 'point_count']], layout: { 'text-field': ['get', 'letter'], 'text-font': ['Noto Sans Bold'], 'text-size': 11, 'text-allow-overlap': true }, paint: { 'text-color': '#191c16', 'text-halo-color': '#f7f6f0', 'text-halo-width': 1.5 } });
   for (const l of ['cat-cluster', 'cat-pt']) {
     map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer'));
     map.on('mouseleave', l, () => (map.getCanvas().style.cursor = ''));
@@ -58,5 +62,5 @@ export function addCatalogLayers(map: maplibregl.Map, onPick: (it: { id: string;
 export function setCatalogData(map: maplibregl.Map, items: CatalogItem[], group: string | null) {
   const src = map.getSource(SRC) as maplibregl.GeoJSONSource | undefined;
   src?.setData({ type: 'FeatureCollection', features: items.filter((i) => !group || i.crop_group === group).map((i) => ({
-    type: 'Feature', properties: { id: i.id, color: groupColor(i.crop_group) }, geometry: { type: 'Point', coordinates: [i.lon, i.lat] } })) });
+    type: 'Feature', properties: { id: i.id, color: groupColor(i.crop_group), letter: groupLetter(i.crop_group) }, geometry: { type: 'Point', coordinates: [i.lon, i.lat] } })) });
 }

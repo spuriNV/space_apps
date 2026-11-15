@@ -10,3 +10,4 @@
 .cg-row { align-items: center; gap: var(--s-3); }
 .cg-more-btn { margin: var(--s-2) 0; }
 .cg-note { margin: var(--s-2) 0 0; }
+.cg-dot { color: #fff !important; text-shadow: 0 0 2px #000, 0 0 2px #000; width: 18px; height: 18px; display: inline-grid; place-items: center; font: 800 10px/1 var(--font-ui); font-style: normal; color: #191c16; }

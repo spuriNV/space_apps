@@ -6,6 +6,7 @@ import { RAIN_FED } from '../../lib';
 import { waterOf, type Weather } from './weatherReplay';
 import { useCountUp } from '../week/useCountUp';
 import '../week/weekchart.css';
+import { ChartTable } from '../a11y/ChartTable';
 
 export function WaterBars({ strategies, selId, todayId, weather, allocation, acres }: {
   strategies: RotationStrategy[]; selId: string; todayId: string; weather: Weather; allocation: number; acres: number;
@@ -21,7 +22,7 @@ export function WaterBars({ strategies, selId, todayId, weather, allocation, acr
   return (
     <section className="cw" data-testid="water-bars" aria-label="Yearly water need against your limit">
       <h3>Water a year, against your limit</h3>
-      <div className="cw-chart" role="img" aria-label={rows.map((r) => `${r.s.short_name} ${r.rf ? RAIN_FED : `${r.v?.toFixed(1)} acre-feet per acre`}`).join('; ') + `. Your limit is ${allocation.toFixed(1)}.`}>
+      <div className="cw-chart" role="img" aria-label={`Bar chart of yearly irrigation water per rotation. ` + rows.map((r) => `${r.s.short_name} ${r.rf ? RAIN_FED : `${r.v?.toFixed(1)} acre-feet per acre`}`).join('; ') + `. Your limit is ${allocation.toFixed(1)}.`}>
         {rows.map((r) => (
           <div key={r.s.id} className={`cw-row ${r.s.id === selId ? 'sel' : ''} ${r.v != null && r.v > allocation ? 'over' : ''}`}>
             <span className="cw-lab" title={r.s.short_name}>{r.s.is_baseline ? 'Today' : r.s.short_name}</span>
@@ -33,6 +34,8 @@ export function WaterBars({ strategies, selId, todayId, weather, allocation, acr
           </div>
         ))}
       </div>
+      <ChartTable caption="Irrigation water a year, acre-feet per acre, against your limit" head={['Rotation', 'Acre-feet per acre', 'Against your limit']}
+        rows={rows.map((r) => [r.s.is_baseline ? 'Today' : r.s.short_name, r.rf ? RAIN_FED : r.v != null ? r.v.toFixed(1) : 'no value', r.v == null ? '' : r.v > allocation ? `over, limit ${allocation.toFixed(1)}` : `within, limit ${allocation.toFixed(1)}`])} />
       <p className="cw-note dim" style={{ margin: '6px 0 0', fontSize: 'var(--fs-fine)' }}>Acre-feet per acre. Dashed line: your limit, {allocation.toFixed(1)}.</p>
       {diffAf != null && (
         <p className="cw-delta" aria-live="polite" data-testid="water-delta">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useCountUp } from './useCountUp';
 import './weekchart.css';
+import { ChartTable } from '../a11y/ChartTable';
 
 interface V { value: number | null }
 export interface WcDay { date: string; rain_mm: V; tmax_c: V; tmin_c: V; et0_mm?: V }
@@ -61,10 +62,13 @@ export function WeekChart({ forecast, irrDays, access, verdict, needIn, showGaug
     return [`${WD[dow(d.date)]}`, r != null ? `rain ${inch(r).toFixed(2)} in` : null, use[i] != null ? `crop use ${inch(use[i]!).toFixed(2)} in` : null,
       hi != null && lo != null ? `${degF(lo)}–${degF(hi)} °F` : null, a && hasAcc ? ACC[a.status] : null].filter(Boolean).join(' · ');
   };
+  const rainTot = rains.reduce((a, b) => a + b, 0);
+  const hiF = days.map((d) => d.tmax_c.value).filter((x): x is number => x != null).map(degF), loF = days.map((d) => d.tmin_c.value).filter((x): x is number => x != null).map(degF);
+  const summary = `Next ${n} days: ${rainTot < 0.5 ? 'no rain expected' : `${inch(rainTot).toFixed(1)} inches of rain in total`}${hiF.length ? `, highs ${Math.min(...hiF)} to ${Math.max(...hiF)} degrees Fahrenheit` : ''}${hasAcc ? `, ${access!.filter((a) => a.status === 'ok').length} of ${n} days OK to work the field` : ''}.`;
   return (
     <div className="wc" data-testid="week-chart">
       {showGauge && <Gauge inches={needIn} verdict={verdict} />}
-      <svg viewBox={`0 0 ${n * W} ${H}`} className={`wc-svg ${on ? 'on' : ''}`} role="group" aria-label="Seven-day rain, crop water use, temperature and field access">
+      <svg viewBox={`0 0 ${n * W} ${H}`} className={`wc-svg ${on ? 'on' : ''}`} role="group" aria-label={summary}>
         <line x1="0" x2={n * W} y1={RAIN_H} y2={RAIN_H} className="wc-base" />
         {days.map((d, i) => (
           <rect key={d.date} className="wc-rain" x={i * W + 13} width={22} y={RAIN_H - Math.max(rains[i] > 0 ? 2 : 0, ys(rains[i]))} height={Math.max(rains[i] > 0 ? 2 : 0, ys(rains[i]))} rx="3"
@@ -81,7 +85,11 @@ export function WeekChart({ forecast, irrDays, access, verdict, needIn, showGaug
           if (hi == null || lo == null) return null;
           return <line key={d.date} className="wc-temp" x1={i * W + W / 2} x2={i * W + W / 2} y1={ty(hi)} y2={ty(lo) + 0.01} style={{ transitionDelay: `${i * 60}ms` }} />;
         })}
-        {hasAcc && days.map((d, i) => <circle key={d.date} className={`wc-acc ${access![i]?.status ?? 'unknown'}`} cx={i * W + W / 2} cy={DOT_Y} r="6" style={{ transitionDelay: `${i * 60}ms` }} />)}
+        {hasAcc && days.map((d, i) => { const st = access![i]?.status ?? 'unknown'; return (
+          <g key={d.date} className={`wc-acc ${st}`} style={{ transitionDelay: `${i * 60}ms` }} aria-hidden="true">
+            <circle cx={i * W + W / 2} cy={DOT_Y} r="9" />
+            <text x={i * W + W / 2} y={DOT_Y + 4.5} textAnchor="middle" className="wc-acc-g">{st === 'ok' ? '✓' : st === 'marginal' ? '~' : st === 'too_wet' ? '✕' : ''}</text>
+          </g>); })}
         {days.map((d, i) => (
           <text key={d.date} x={i * W + W / 2} y={LAB_Y} textAnchor="middle" className={`wc-day ${tip === i ? 'sel' : ''}`}>{INIT[dow(d.date)]}</text>
         ))}
@@ -93,9 +101,11 @@ export function WeekChart({ forecast, irrDays, access, verdict, needIn, showGaug
           </g>
         ))}
       </svg>
+      <ChartTable caption="Seven-day rain, crop water use, temperature and field access" head={['Day', 'Rain (in)', 'Crop water use (in)', 'Low–high (°F)', 'Field access']}
+        rows={days.map((d, i) => { const hi = d.tmax_c.value, lo = d.tmin_c.value; return [WD[dow(d.date)], d.rain_mm.value != null ? inch(d.rain_mm.value).toFixed(2) : '–', use[i] != null ? inch(use[i]!).toFixed(2) : '–', hi != null && lo != null ? `${degF(lo)}–${degF(hi)}` : '–', access?.[i] && hasAcc ? ACC[access[i].status] : '–']; })} />
       <div className="wc-tip" role="status" aria-live="polite">{tip != null ? tipFor(tip) : <>
         <span className="wc-k"><i className="k-rain" />rain</span>{hasUse && <span className="wc-k"><i className="k-use" />crop water use</span>}
-        <span className="wc-k"><i className="k-temp" />low to high</span>{hasAcc && <span className="wc-k"><i className="k-ok" />ok <i className="k-mid" />maybe <i className="k-wet" />wet</span>}</>}</div>
+        <span className="wc-k"><i className="k-temp" />low to high</span>{hasAcc && <span className="wc-k"><i className="k-ok">✓</i>ok <i className="k-mid">~</i>maybe <i className="k-wet">✕</i>wet</span>}</>}</div>
     </div>
   );
 }

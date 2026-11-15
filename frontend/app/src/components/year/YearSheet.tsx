@@ -8,6 +8,7 @@ import { GapLine } from '../ui/shared';
 import { DRIVER } from '../ui/FieldNow';
 import { fmtDate } from '../../lib';
 import { MoreDetail, useDetail } from '../ui/Detail';
+import { ChartTable } from '../a11y/ChartTable';
 import { CLASS_COLOR, MONTHS, RECENT_FROM, dateToT, dekadOf, lastDataT, tLabel, tOf, yearOf } from '../../lib';
 import Icon from '../Icons';
 import { cropName } from '../ui/shared';
@@ -60,10 +61,11 @@ export default function YearSheet(p: YearSheetProps) {
   const diff = Math.abs(dBare) >= 20 ? `${last} had about ${Math.abs(dBare)} ${dBare > 0 ? 'more' : 'fewer'} bare days than a typical year` : Math.abs(dWater) >= 20 ? `${last} was flooded about ${Math.abs(dWater)} days ${dWater > 0 ? 'longer' : 'less'} than a typical year` : `${last} looked much like a typical year`;
   const up = ly.greenup_dekad;
   const rainDays = (year: number) => (p.daily?.rows ?? []).filter((r) => r.date.startsWith(String(year)) && (rainOf(r) ?? 0) >= 25.4);
+  const yearSummary = `Cover of this field in each 10-day period, ${shown.length} seasons. ${diff}.`;
   const Strip = ({ y, cur, ml }: { y: CalendarYear; cur: boolean; ml?: boolean }) => (
     <div className={`yr-strip ${ml ? 'ml' : ''}`}>
       {(ml ? y.ml : y.rule).split('').map((c, d) => (
-        <button key={d} className={`${c === 'u' ? 'unk' : ''} ${cur && d === cd ? 'now' : ''}`} style={{ background: c === 'u' ? undefined : CLASS_COLOR[c as CoverClass] }}
+        <button key={d} data-c={c} className={`${c === 'u' ? 'unk' : ''} ${cur && d === cd ? 'now' : ''}`} style={{ background: c === 'u' ? undefined : CLASS_COLOR[c as CoverClass] }}
           title={`${tLabel(tOf(y.year, d))}: ${LABEL[c as CoverClass]}${ml ? ' (machine learning)' : ''}`} onClick={() => y.year && p.setT(tOf(y.year, d))} />
       ))}
       {!ml && detail && y.year > 0 && (p.extras?.water?.scenes ?? []).filter((s) => s.date.startsWith(String(y.year)) && s.frac >= 0.5).map((s, si) => {
@@ -90,7 +92,7 @@ export default function YearSheet(p: YearSheetProps) {
         <Seg className="small ml-seg d-only" testid="ml-toggle" label="Calendar" value={both} onChange={setBoth}
           options={[{ v: false, label: 'Satellite rule' }, { v: true, label: 'Compare with machine learning', testid: 'ml-on', disabled: !p.ml, title: p.ml ? 'Show the machine-learning calendar under the rule, season by season' : verdict.long }]} />
         <div className="ys-legend">
-          {(['c', 'p', 'b', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{LABEL[c]}</span>)}
+          {(['c', 'p', 'b', 'w'] as CoverClass[]).map((c) => <span key={c}><i data-c={c} style={{ background: CLASS_COLOR[c] }} />{LABEL[c]}</span>)}
           <span><i className="hatch-u" />No clear view or not processed</span>
           <span><i className="rain-key hit" />1 inch of rain on bare ground</span>
           <span><i className="rain-key" />on a crop or water</span>
@@ -103,7 +105,7 @@ export default function YearSheet(p: YearSheetProps) {
       </div>
       {gMl && <p className="ml-note d-only"><GapLine gap={gMl} missing={!p.ml} /></p>}
       {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget && !p.ml.estimate ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}
-      <div className="yr-grid">
+      <div className="yr-grid" role="group" aria-label={yearSummary}>
         <div className="yr-row yr-months"><span /><span /><div className="yr-m">{MONTHS.map((m) => <span key={m}>{m}</span>)}</div><span className="yr-n">Bare days a year</span><span className="yr-n">1-inch rain days on bare ground</span></div>
         <div className="yr-row typical">
           <b>Typical year</b><span className="yr-crop" title={`Most common cover for each 10 days, ${past[0]?.year}–${last}`}>most common, {past[0]?.year}–{String(last).slice(2)}</span>
@@ -123,6 +125,8 @@ export default function YearSheet(p: YearSheetProps) {
           );
         })}
       </div>
+      <ChartTable caption="Bare days and heavy-rain days on bare ground, by year" head={['Year', 'Crop', 'Bare days', '1-inch rain days on bare ground']}
+        rows={shown.map((y) => { const rd = rainDays(y.year), empty = y.rule.replace(/u/g, '').length === 0; return [y.year, p.loc.crop_history[y.year] ? cropName(p.loc.crop_history[y.year]) : 'Crop map not out yet', empty ? 'no data' : bareDaysYear(y) ?? 'no data', empty || !p.daily ? 'no data' : `${rd.filter((r) => y.rule[dekadOf(dateToT(r.date))] === 'b').length} of ${rd.length}`]; })} />
       <div className="ys-foot">
         <span className="ys-md"><MoreDetail what="Machine learning, earlier years" /></span>
         {p.events.length > 0 && <span className="ys-events">{p.events.map((e) => <button key={e.date + e.type} className="link" onClick={() => p.setT(dateToT(e.date))} title={e.title}>{e.short}</button>)}</span>}

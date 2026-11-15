@@ -2,7 +2,7 @@
 // The same chips filter the map pins (state lives in App). Clicking a farm opens the point panel for its pt_ id.
 import { useRef, useState } from 'react';
 import Icon from '../Icons';
-import { groupColor, landNote, type Catalog, type CatalogItem } from './catalog';
+import { groupColor, groupLetter, landNote, type Catalog, type CatalogItem } from './catalog';
 import './catalog.css';
 
 const PAGE = 30;
@@ -23,7 +23,7 @@ export function CatalogGroup({ catalog, group, setGroup, onPick }: { catalog: Ca
           <div className="chips cg-chips" role="group" aria-label="Crop group">
             {groups.map(([g, v]) => (
               <button key={g} className="chip" aria-pressed={group === g} onClick={() => { setGroup(group === g ? null : g); setN(PAGE); }}>
-                <Icon name="check" size={16} /><i className="cg-dot" style={{ background: groupColor(g) }} />{v.label} <span className="n">{v.count}</span>
+                <Icon name="check" size={16} /><i className="cg-dot" style={{ background: groupColor(g) }} aria-hidden="true">{groupLetter(g)}</i>{v.label} <span className="n">{v.count}</span>
               </button>
             ))}
           </div>
@@ -31,7 +31,7 @@ export function CatalogGroup({ catalog, group, setGroup, onPick }: { catalog: Ca
             {open && rows.slice(0, n).map((it) => (
               <li key={it.id}>
                 <button className="pk-row cg-row" onClick={() => onPick(it)} data-testid={`cat-${it.id}`}>
-                  <i className="cg-dot" style={{ background: groupColor(it.crop_group) }} />
+                  <i className="cg-dot" style={{ background: groupColor(it.crop_group) }} aria-hidden="true">{groupLetter(it.crop_group)}</i>
                   <span className="pk-body"><b>{it.name}</b>
                     <span className="pk-facts">{it.crop_group_label}{it.acres ? ` · ${Math.round(it.acres)} acres` : ''} · {it.area}</span>
                     {landNote(it.land_status) && <span className="pk-note">{landNote(it.land_status)}</span>}</span>
