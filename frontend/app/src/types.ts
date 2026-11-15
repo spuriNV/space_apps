@@ -64,7 +64,7 @@ export interface CellGrid { cell_m: number; rows: number; cols: number; layers?:
 export type ScoreKey = 'water_use' | 'forage_value' | 'n_fixation' | 'erosion' | 'organic_matter' | 'market' | 'pest_break' | 'infiltration' | 'n_scavenging';
 export interface RotationStrategy {
   id: string; location_id: string; name: string; short_name: string; is_baseline: boolean; cycle_years: number;
-  calendar_months: string[]; month_cover: string; strip_year?: number; allocation_rule: string | null;
+  calendar?: { irrigated?: boolean }[]; calendar_months: string[]; month_cover: string; strip_year?: number; allocation_rule: string | null;
   exposure: { bare_days_per_year: SourcedNumber; exposed_rain_days: SourcedNumber; exposed_heat_days: SourcedNumber; cover_basis: string; replay: Record<string, { irrigation_need_mm: SourcedNumber; exposed_rain_days: SourcedNumber; note: string }> };
   water: { etc_mm_season: SourcedNumber; irrigation_need_mm: SourcedNumber; etc_by_month_mm: number[]; openet_et_mm_season: SourcedNumber | null; etc_vs_openet_pct: SourcedNumber | null };
   scores: Record<ScoreKey, SourcedNumber>;

@@ -5,7 +5,7 @@ import { bcGap, isBC, type Extras, type NasaNow, type ProvMap, type RegionalLive
 import { TODAY_T } from '../../lib';
 import type { Daily } from '../../season';
 import { HOT_F, cropWaterSoFar, fmtIn, fmtShort, heatFrost, rainSoFar, type RainSoFar } from '../../season';
-import { MONTHS, atT, latestAt, dataT, dekadOf, fieldState, lastDataT, mmToAfac, ordinal, yearOf } from '../../lib';
+import { MONTHS, atT, latestAt, dataT, dekadOf, fieldState, isRainFed, lastDataT, mmToAfac, ordinal, RAIN_FED, yearOf } from '../../lib';
 import { GapLine, SoilBar, Src, calSource, cropMapName, cropName, openetText, soilFacts, stationsName } from './shared';
 import { What } from './What';
 
@@ -110,7 +110,7 @@ export function FieldNow(p: FieldNowProps) {
   const sm = p.regional ? latestAt(p.regional.smap_rootzone_pct.values, t) : null, smap = sm?.v ?? null;
   const gr = p.regional ? latestAt(p.regional.grace_gw_pct.values, t) : null, grace = gr?.v ?? null;
   const behindNote = dt < t ? ` Latest clear view ${whenT(dt)}${agoText}${yearOf(dt) < yr ? `; ${yr} imagery not processed yet` : ''}.` : '';
-  const limit = p.allocation ?? null, needAf = need ? mmToAfac(need.value) : null;
+  const limit = p.allocation ?? null, needAf = need ? mmToAfac(need.value) : null, rainFed = !!base && isRainFed(base);
   const y26 = cal?.years.find((y) => y.year === yr);
   const soil = soilFacts(loc.soil);
   // BC: California datasets this field lacks (a 404 shows one quiet line; an estimate shows normally, the reason under More detail)
@@ -136,7 +136,7 @@ export function FieldNow(p: FieldNowProps) {
       </div>
       <div className="gl-grid">
         <Meter label="Rain since 1 Oct" value={rain ? `${fmtIn(rain.inches)} in` : null} state={p.dailyState} pct={rain && rain.normal ? Math.min(1, rain.inches / (Math.max(rain.inches, rain.normal) * 1.25)) : null} mark={rain && rain.normal ? rain.normal / (Math.max(rain.inches, rain.normal) * 1.25) : null} markLabel="normal" note={rain?.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} />
-        <Meter label="Water need, a year" value={needAf != null ? `${needAf.toFixed(1)} acre-ft/acre` : null} state={p.dataState} pct={needAf != null && limit ? Math.min(1, needAf / (Math.max(needAf, limit) * 1.2)) : null} mark={needAf != null && limit ? limit / (Math.max(needAf, limit) * 1.2) : null} markLabel="limit" warn={needAf != null && limit != null && needAf > limit} note={limit != null ? `Limit ${limit.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}` : ''} />
+        <Meter label="Water need, a year" value={needAf != null ? (rainFed ? RAIN_FED : `${needAf.toFixed(1)} acre-ft/acre`) : null} state={p.dataState} pct={needAf != null && limit ? rainFed ? 0 : Math.min(1, needAf / (Math.max(needAf, limit) * 1.2)) : null} mark={needAf != null && limit ? limit / (Math.max(needAf, limit) * 1.2) : null} markLabel="limit" warn={needAf != null && limit != null && !rainFed && needAf > limit} note={limit != null ? `Limit ${limit.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}` : ''} />
         <Meter label="Greenness" value={fs && fs.cls !== 'u' ? fs.ndvi.toFixed(2) : null} state={p.dataState} pct={fs && fs.cls !== 'u' ? Math.max(0, Math.min(1, fs.ndvi)) : null} mark={0.6} markLabel="full canopy" note={fs && fs.cls !== 'u' ? cap(whenT(dt)) : ''} />
         <div className="meter">
           <span className="m-label">Soil and groundwater</span>
@@ -198,9 +198,9 @@ export function FieldNow(p: FieldNowProps) {
         <div className="ans">
           <dt>Will the water limit cover irrigation? <What k="waterBalance" /></dt>
           <dd>
-            <b>{p.allocation == null ? `About ${mmToAfac(need.value).toFixed(1)} acre-feet per acre a year` : mmToAfac(need.value) > p.allocation ? `Short by about ${(mmToAfac(need.value) - p.allocation).toFixed(1)} acre-feet per acre` : 'Fits your limit in a typical year'}</b>
-            <span>Needs {mmToAfac(need.value).toFixed(1)} acre-ft/acre a year.{p.allocation != null ? ` Limit: ${p.allocation.toFixed(1)}.` : ''}{p.exampleLimit && <em className="ex-limit">example, change it on Compare</em>}</span>
-            <span className="d-only">Likely {mmToAfac(need.low ?? need.value).toFixed(1)}–{mmToAfac(need.high ?? need.value).toFixed(1)} acre-ft/acre.</span>
+            <b>{rainFed ? 'Fits any limit' : p.allocation == null ? `About ${mmToAfac(need.value).toFixed(1)} acre-feet per acre a year` : mmToAfac(need.value) > p.allocation ? `Short by about ${(mmToAfac(need.value) - p.allocation).toFixed(1)} acre-feet per acre` : 'Fits your limit in a typical year'}</b>
+            <span>{rainFed ? `${RAIN_FED}.` : `Needs ${mmToAfac(need.value).toFixed(1)} acre-ft/acre a year.`}{p.allocation != null ? ` Limit: ${p.allocation.toFixed(1)}.` : ''}{p.exampleLimit && <em className="ex-limit">example, change it on Compare</em>}</span>
+            {!rainFed && <span className="d-only">Likely {mmToAfac(need.low ?? need.value).toFixed(1)}–{mmToAfac(need.high ?? need.value).toFixed(1)} acre-ft/acre.</span>}
             <cite>Rotation model with NASA POWER weather: crop water use minus rain, typical year 2015–2025. <Src p={p.prov.strategies} /></cite>
           </dd>
         </div>

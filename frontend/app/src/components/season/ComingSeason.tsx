@@ -4,7 +4,7 @@ import { bcGap, isBC, type NasaNow, type Outlook, type OutlookCat, type ProvMap,
 import { whenT } from '../ui/FieldNow';
 import type { Daily } from '../../season';
 import { bareWindow } from '../../season';
-import { TODAY_T, fmtDate, latestAt, mmToAfac, ordinal } from '../../lib';
+import { RAIN_FED, TODAY_T, fmtDate, isRainFed, latestAt, mmToAfac, ordinal } from '../../lib';
 const band = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi : v > 33 ? mid : lo);
 import Icon from '../Icons';
 import { GapLine, Src, place, stationsName } from '../ui/shared';
@@ -41,7 +41,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
     : gw ? `Basin groundwater: ${band(gw.v, 'above usual', 'about usual', 'below usual')}. Under state pumping rules.` : 'Groundwater reading not available right now.';
   const today = p.strategies.find((s) => s.is_baseline);
   const nxt = today ? o?.irrigation?.[today.id]?.value ?? mmToAfac(today.water.irrigation_need_mm.value) : null;
-  const nextNeed = nxt == null ? 'Loading…' : `Needs ${nxt.toFixed(1)} acre-ft/acre. Limit ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}. ${nxt > p.allocation ? `${(nxt - p.allocation).toFixed(1)} short.` : 'It fits.'}`;
+  const nextNeed = nxt == null ? 'Loading…' : today && isRainFed(today) ? `${RAIN_FED}. Fits any limit.` : `Needs ${nxt.toFixed(1)} acre-ft/acre. Limit ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}. ${nxt > p.allocation ? `${(nxt - p.allocation).toFixed(1)} short.` : 'It fits.'}`;
   const headline = !o ? 'Loading the outlooks…' : notReady ? (gOut ? 'Winter outlook not available in BC' : 'Winter outlook not ready for this field yet') : wetLean > dryLean ? 'Wetter than normal this winter' : dryLean > wetLean ? 'Drier than normal this winter' : 'No clear lean this winter';
   const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const allYearsBw = bw;
@@ -164,10 +164,11 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
                 return (
                   <tr key={s.id} className={s.is_baseline ? 'base' : ''}>
                     <th>{s.short_name}{s.is_baseline && <small> today</small>}</th>
+                    {isRainFed(s) ? <td colSpan={o?.irrigation ? 4 : 3} className="strong">{RAIN_FED}</td> : <>
                     {o?.irrigation && <td className={(o.irrigation[s.id]?.value ?? 0) > p.allocation ? 'warn strong' : 'strong'}>{o.irrigation[s.id] ? `${o.irrigation[s.id].value.toFixed(1)}` : '–'}</td>}
                     <td className={over ? 'warn' : ''}>{mmToAfac(n.low ?? n.value).toFixed(1)}–{mmToAfac(n.high ?? n.value).toFixed(1)}</td>
                     <td>{dry ? mmToAfac(dry.value).toFixed(1) : '–'}</td>
-                    <td>{wet ? mmToAfac(wet.value).toFixed(1) : '–'}</td>
+                    <td>{wet ? mmToAfac(wet.value).toFixed(1) : '–'}</td></>}
                   </tr>
                 );
               })}
