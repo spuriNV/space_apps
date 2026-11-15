@@ -1,0 +1,869 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02BE6E48F682ECD783EFCD3C /* ComingSeasonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F223551A49CF3C5D67AAF8F8 /* ComingSeasonViewModel.swift */; };
+		0CE45865EDE3810C1B6F6B80 /* LibreFranklin-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5901EBA931C36BFBAC8A3033 /* LibreFranklin-Regular.ttf */; };
+		1044A18BF289633B5EDF16D0 /* ServerStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D661431803F367635911C1 /* ServerStatus.swift */; };
+		174F4323CF5B09B3537F00FE /* CompareViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662E921AB503B98C14EB2759 /* CompareViewModel.swift */; };
+		17B1AF6633D926AD164466DA /* Units.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF5CBD1D7019586F64E914B /* Units.swift */; };
+		1AC542D02AAEC66236AD38EC /* SeasonCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F234A2C0EC457E2576DACBC /* SeasonCalendar.swift */; };
+		215E178FB00543A73FF2C255 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2B9303D86A4D421B28925819 /* PrivacyInfo.xcprivacy */; };
+		24CFBBD0013704AB58FD6E71 /* FieldNaming.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3677002700C2232B7A7F038 /* FieldNaming.swift */; };
+		2575E135ED90D262FEE2EF41 /* FieldsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AF00001268DC1B34A89D0D4 /* FieldsScreen.swift */; };
+		273D66BB26A48E73A9518808 /* Charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132E32F8192EEF4FF140BA25 /* Charts.swift */; };
+		34E096E398683939420956AB /* LibreFranklin-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = D561ACF6B0D6AFDF5898B08A /* LibreFranklin-OFL.txt */; };
+		3A67F47C46D71A13BBB07C54 /* FieldNowScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169091770420B5EAB29CEB6F /* FieldNowScreen.swift */; };
+		3BAA30C884FE0A272E7B4F5B /* ZillaSlab-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = D281F4E7082E74D2CFA0B2DD /* ZillaSlab-OFL.txt */; };
+		3F523F5E622AF1BFB8EB54B0 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC957B1F81E2066A43C7213C /* AppEnvironment.swift */; };
+		407780C9391933C4DCAB4D5A /* FieldsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF490B4450C3B19FE80185EF /* FieldsViewModel.swift */; };
+		48308FC83A1C463304881101 /* ZillaSlab-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FAD35DDB70193ABAB7278921 /* ZillaSlab-Medium.ttf */; };
+		4A61FD4801750483D80668C5 /* DetailSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3CF78CE816DB7B2C0881677 /* DetailSections.swift */; };
+		4B3837E12DC6BDCF0E0C59FB /* SourcedNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701DC4D82F7E2350765C554A /* SourcedNumber.swift */; };
+		4DDE2C87F8BDBD7FACCD3CF3 /* SummaryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347BDFBAAA0A4336744E74C0 /* SummaryViewModel.swift */; };
+		53B92257A3D1251B7EBD7358 /* Fixtures in Resources */ = {isa = PBXBuildFile; fileRef = C0F5AA96335C3EB5862EDC09 /* Fixtures */; };
+		583D290616326E2F33FB25C1 /* SummaryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A339765F354F6B74F347DCC /* SummaryScreen.swift */; };
+		5F680AB9D409051F49312FF2 /* ViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE62B6FE8846F0DCDA5C3317 /* ViewModelTests.swift */; };
+		5F8AE1BF7E3B527A7565631D /* LibreFranklin-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 87154FFCAEC0F687C2626E6C /* LibreFranklin-Bold.ttf */; };
+		61B46D10B39469233FF6543D /* SummaryPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF9C38B75836ED3875DD9B8 /* SummaryPage.swift */; };
+		6534B45FE4F07FA6271EB5F1 /* Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB21AD3395FC56977897D65 /* Presentation.swift */; };
+		6E506A9E976150C3D8551599 /* ThumbnailStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EF804917F52503492B439F9 /* ThumbnailStore.swift */; };
+		7BE57308E956ABEFEFF0B14C /* FieldNowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A0DF1916CF8C646234E74E /* FieldNowViewModel.swift */; };
+		7D622A6C3536FCBEAE5497BA /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589558BD8E0412393CCF8D0 /* TestSupport.swift */; };
+		7E93CC87DCB2EE80A5FE90A4 /* ComingSeasonScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB92764CD68ACCB8D4A0ED /* ComingSeasonScreen.swift */; };
+		80EB2269B28E24A932D952D8 /* Basics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F58040AD5D91304D28EEDB /* Basics.swift */; };
+		81917E3D67237725D88BCAF3 /* FieldData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D6FAE654EF26CC9F0D1549C /* FieldData.swift */; };
+		8A5E0204BD6D8C12AD4357A4 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D3CDAFF6A13B215543B5519 /* RootView.swift */; };
+		91ED572D0FD6A416614A5D7A /* ResponseCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF78DDD284449858E0058F4A /* ResponseCache.swift */; };
+		9447840E4FE1718C0DA69D25 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1DD8F01D5FDC10DCBDD667 /* AppIcon60x60@2x.png */; };
+		9CA248452F8C507ADC942552 /* FieldLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC7867F9F31ED1E5A8D3170 /* FieldLocation.swift */; };
+		A05C9D1E125DDDB73971237E /* LibreFranklin-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F3AEE1EBABDB1A927487A614 /* LibreFranklin-SemiBold.ttf */; };
+		A68B90DE26A4815B4D0B72AD /* CompareBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C52B3CB62EF5547F47AECAC /* CompareBuilder.swift */; };
+		AE92140B9B4C4204571CB8C0 /* CropLyticsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63054F6258BAC9E2CE7F29BC /* CropLyticsUITests.swift */; };
+		B34C2C8E8B5A62B54577FC5D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C99416C5592951B01BDD301 /* Theme.swift */; };
+		B6847FE88A8C6061CFC963FA /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF977283E110F05B33D12BCB /* Typography.swift */; };
+		B9C7F53768ED23121711E072 /* ZillaSlab-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7A2471E56234549FADE5A1A3 /* ZillaSlab-SemiBold.ttf */; };
+		BB7F01EE404A02E422F072D3 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ED624D14D2E9189670A56CF /* Endpoint.swift */; };
+		C07FE86CEE03F96A54460FAB /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D544820F2F783A70737F8604 /* APIClient.swift */; };
+		C137801FC24882095368EAF1 /* AppIcon60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 23C685CFCC00607D80F715EE /* AppIcon60x60@3x.png */; };
+		C9B9978BC4269D2AFEDE9B3C /* RepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C3B8526264CE3139D850AEE /* RepositoryTests.swift */; };
+		CA80DBE32DAAAC8667212869 /* FieldMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6B6907FF6C49234AC3786 /* FieldMap.swift */; };
+		CC8C032CCD20887A3AC8FDF0 /* CompareScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB2EC934D9476254047CBA8 /* CompareScreen.swift */; };
+		D08FC399E6AFA2BC4317F0B5 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC744AA985E35DCCECD2483A /* AppError.swift */; };
+		D31E9C5EBB4C83D31620529E /* LoadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38930ED446ED35BB98FDF8 /* LoadState.swift */; };
+		D687AF22A25F0A62DCB53E6A /* FieldNowBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DF95C62D4FACFF950B6AFC /* FieldNowBuilder.swift */; };
+		DCC5C8105DA457DCF964D3B8 /* DetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CA6E874BDE1CE671688382 /* DetailModel.swift */; };
+		DE0CD4CEC0083F8616D3E2DC /* ComingSeasonBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D36297C3487309BD52011CC2 /* ComingSeasonBuilder.swift */; };
+		ECAAF95431840D0DC7FFC8CF /* APIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B7416BCAE9863EBC231716 /* APIClientTests.swift */; };
+		EE63615A13D9CFD79E8CEC5A /* WaterLimitStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDB1042C707D9F25D29C62E /* WaterLimitStore.swift */; };
+		F56745C087546711EF91180D /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60512A3BDB542D44CD544487 /* AppModel.swift */; };
+		F602A194DF40759DEF901D2B /* FieldRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00BEFDF4E6009E2BB5A5132 /* FieldRepository.swift */; };
+		F8167D785B7CAC74DD004749 /* DomainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591102160C12344976BB3437 /* DomainTests.swift */; };
+		FA4321274633DC4A3351D34C /* CropLyticsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 127FB354486B4868125FE789 /* CropLyticsApp.swift */; };
+		FACADCAB0E205A9BC6CD0A2B /* Outlook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F164048270CF9DB1153AA5EF /* Outlook.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0242316D3322EF503EC476B8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D1D66ECE0080BE7AA6A56D90 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7F3CEDB831476ABFA592E266;
+			remoteInfo = CropLytics;
+		};
+		17B1241DC26FCE993D108F57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D1D66ECE0080BE7AA6A56D90 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7F3CEDB831476ABFA592E266;
+			remoteInfo = CropLytics;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0261FDE79D25C4FFCAF49EDA /* CropLyticsTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CropLyticsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0BB2EC934D9476254047CBA8 /* CompareScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareScreen.swift; sourceTree = "<group>"; };
+		0BF5CBD1D7019586F64E914B /* Units.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Units.swift; sourceTree = "<group>"; };
+		127FB354486B4868125FE789 /* CropLyticsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropLyticsApp.swift; sourceTree = "<group>"; };
+		132E32F8192EEF4FF140BA25 /* Charts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Charts.swift; sourceTree = "<group>"; };
+		14B7416BCAE9863EBC231716 /* APIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClientTests.swift; sourceTree = "<group>"; };
+		169091770420B5EAB29CEB6F /* FieldNowScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNowScreen.swift; sourceTree = "<group>"; };
+		1C52B3CB62EF5547F47AECAC /* CompareBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareBuilder.swift; sourceTree = "<group>"; };
+		1C99416C5592951B01BDD301 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		1DF9C38B75836ED3875DD9B8 /* SummaryPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryPage.swift; sourceTree = "<group>"; };
+		23C685CFCC00607D80F715EE /* AppIcon60x60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@3x.png"; sourceTree = "<group>"; };
+		2A339765F354F6B74F347DCC /* SummaryScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryScreen.swift; sourceTree = "<group>"; };
+		2B9303D86A4D421B28925819 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		347BDFBAAA0A4336744E74C0 /* SummaryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryViewModel.swift; sourceTree = "<group>"; };
+		3589558BD8E0412393CCF8D0 /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
+		3BA6B6907FF6C49234AC3786 /* FieldMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldMap.swift; sourceTree = "<group>"; };
+		50D661431803F367635911C1 /* ServerStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerStatus.swift; sourceTree = "<group>"; };
+		5901EBA931C36BFBAC8A3033 /* LibreFranklin-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibreFranklin-Regular.ttf"; sourceTree = "<group>"; };
+		591102160C12344976BB3437 /* DomainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainTests.swift; sourceTree = "<group>"; };
+		60512A3BDB542D44CD544487 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		63054F6258BAC9E2CE7F29BC /* CropLyticsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropLyticsUITests.swift; sourceTree = "<group>"; };
+		63DF95C62D4FACFF950B6AFC /* FieldNowBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNowBuilder.swift; sourceTree = "<group>"; };
+		662E921AB503B98C14EB2759 /* CompareViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareViewModel.swift; sourceTree = "<group>"; };
+		6BC7867F9F31ED1E5A8D3170 /* FieldLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldLocation.swift; sourceTree = "<group>"; };
+		6D6FAE654EF26CC9F0D1549C /* FieldData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldData.swift; sourceTree = "<group>"; };
+		6ED624D14D2E9189670A56CF /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
+		6EF804917F52503492B439F9 /* ThumbnailStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailStore.swift; sourceTree = "<group>"; };
+		6F234A2C0EC457E2576DACBC /* SeasonCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonCalendar.swift; sourceTree = "<group>"; };
+		701DC4D82F7E2350765C554A /* SourcedNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourcedNumber.swift; sourceTree = "<group>"; };
+		72FF753AD8CDF1437C18328E /* CropLytics.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CropLytics.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A2471E56234549FADE5A1A3 /* ZillaSlab-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ZillaSlab-SemiBold.ttf"; sourceTree = "<group>"; };
+		7FFB92764CD68ACCB8D4A0ED /* ComingSeasonScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComingSeasonScreen.swift; sourceTree = "<group>"; };
+		87154FFCAEC0F687C2626E6C /* LibreFranklin-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibreFranklin-Bold.ttf"; sourceTree = "<group>"; };
+		8AF00001268DC1B34A89D0D4 /* FieldsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldsScreen.swift; sourceTree = "<group>"; };
+		9C3B8526264CE3139D850AEE /* RepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryTests.swift; sourceTree = "<group>"; };
+		9D3CDAFF6A13B215543B5519 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A3677002700C2232B7A7F038 /* FieldNaming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNaming.swift; sourceTree = "<group>"; };
+		ADDB1042C707D9F25D29C62E /* WaterLimitStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterLimitStore.swift; sourceTree = "<group>"; };
+		AE62B6FE8846F0DCDA5C3317 /* ViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelTests.swift; sourceTree = "<group>"; };
+		B00BEFDF4E6009E2BB5A5132 /* FieldRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldRepository.swift; sourceTree = "<group>"; };
+		B1A0DF1916CF8C646234E74E /* FieldNowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNowViewModel.swift; sourceTree = "<group>"; };
+		BC744AA985E35DCCECD2483A /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		BE38930ED446ED35BB98FDF8 /* LoadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadState.swift; sourceTree = "<group>"; };
+		BF977283E110F05B33D12BCB /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		C0F5AA96335C3EB5862EDC09 /* Fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fixtures; path = CropLytics/Resources/Fixtures; sourceTree = SOURCE_ROOT; };
+		C8CA6E874BDE1CE671688382 /* DetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailModel.swift; sourceTree = "<group>"; };
+		CC957B1F81E2066A43C7213C /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		D281F4E7082E74D2CFA0B2DD /* ZillaSlab-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ZillaSlab-OFL.txt"; sourceTree = "<group>"; };
+		D36297C3487309BD52011CC2 /* ComingSeasonBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComingSeasonBuilder.swift; sourceTree = "<group>"; };
+		D544820F2F783A70737F8604 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		D561ACF6B0D6AFDF5898B08A /* LibreFranklin-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LibreFranklin-OFL.txt"; sourceTree = "<group>"; };
+		DAB21AD3395FC56977897D65 /* Presentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Presentation.swift; sourceTree = "<group>"; };
+		DC1DD8F01D5FDC10DCBDD667 /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@2x.png"; sourceTree = "<group>"; };
+		DF78DDD284449858E0058F4A /* ResponseCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCache.swift; sourceTree = "<group>"; };
+		E0F58040AD5D91304D28EEDB /* Basics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Basics.swift; sourceTree = "<group>"; };
+		E3CF78CE816DB7B2C0881677 /* DetailSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailSections.swift; sourceTree = "<group>"; };
+		EFA8CA59461CE26FF1DF0303 /* CropLyticsUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CropLyticsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F164048270CF9DB1153AA5EF /* Outlook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outlook.swift; sourceTree = "<group>"; };
+		F223551A49CF3C5D67AAF8F8 /* ComingSeasonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComingSeasonViewModel.swift; sourceTree = "<group>"; };
+		F3AEE1EBABDB1A927487A614 /* LibreFranklin-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibreFranklin-SemiBold.ttf"; sourceTree = "<group>"; };
+		FAD35DDB70193ABAB7278921 /* ZillaSlab-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ZillaSlab-Medium.ttf"; sourceTree = "<group>"; };
+		FF490B4450C3B19FE80185EF /* FieldsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldsViewModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0C65190FC1989597BFC16FDA /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				B00BEFDF4E6009E2BB5A5132 /* FieldRepository.swift */,
+				BE38930ED446ED35BB98FDF8 /* LoadState.swift */,
+				DF78DDD284449858E0058F4A /* ResponseCache.swift */,
+				6EF804917F52503492B439F9 /* ThumbnailStore.swift */,
+				ADDB1042C707D9F25D29C62E /* WaterLimitStore.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		12A412A9AC7023E78C6696D4 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				CC957B1F81E2066A43C7213C /* AppEnvironment.swift */,
+				60512A3BDB542D44CD544487 /* AppModel.swift */,
+				127FB354486B4868125FE789 /* CropLyticsApp.swift */,
+				9D3CDAFF6A13B215543B5519 /* RootView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		16892E2D496DD339A78D4C80 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				C8CA6E874BDE1CE671688382 /* DetailModel.swift */,
+				E3CF78CE816DB7B2C0881677 /* DetailSections.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		305BE0B0AC4B2AD32EFCE232 /* FieldNow */ = {
+			isa = PBXGroup;
+			children = (
+				169091770420B5EAB29CEB6F /* FieldNowScreen.swift */,
+				B1A0DF1916CF8C646234E74E /* FieldNowViewModel.swift */,
+			);
+			path = FieldNow;
+			sourceTree = "<group>";
+		};
+		35D5FB70EED56E2CED60A9B1 /* CropLyticsUITests */ = {
+			isa = PBXGroup;
+			children = (
+				63054F6258BAC9E2CE7F29BC /* CropLyticsUITests.swift */,
+			);
+			path = CropLyticsUITests;
+			sourceTree = "<group>";
+		};
+		3A6BAE34007AFEBB7B20FD5A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6D6FAE654EF26CC9F0D1549C /* FieldData.swift */,
+				6BC7867F9F31ED1E5A8D3170 /* FieldLocation.swift */,
+				F164048270CF9DB1153AA5EF /* Outlook.swift */,
+				701DC4D82F7E2350765C554A /* SourcedNumber.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		419C985943762DB32D2F0979 /* Compare */ = {
+			isa = PBXGroup;
+			children = (
+				0BB2EC934D9476254047CBA8 /* CompareScreen.swift */,
+				662E921AB503B98C14EB2759 /* CompareViewModel.swift */,
+			);
+			path = Compare;
+			sourceTree = "<group>";
+		};
+		4667D69755B6994F19389BF1 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				A120B445A36FA56264FB4099 /* Components */,
+				1C99416C5592951B01BDD301 /* Theme.swift */,
+				BF977283E110F05B33D12BCB /* Typography.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		536651BD371D49D6D278AF2A /* CropLyticsTests */ = {
+			isa = PBXGroup;
+			children = (
+				14B7416BCAE9863EBC231716 /* APIClientTests.swift */,
+				591102160C12344976BB3437 /* DomainTests.swift */,
+				9C3B8526264CE3139D850AEE /* RepositoryTests.swift */,
+				3589558BD8E0412393CCF8D0 /* TestSupport.swift */,
+				AE62B6FE8846F0DCDA5C3317 /* ViewModelTests.swift */,
+			);
+			path = CropLyticsTests;
+			sourceTree = "<group>";
+		};
+		71EC85D72A9082A2C24DFD90 /* AppIcon */ = {
+			isa = PBXGroup;
+			children = (
+				DC1DD8F01D5FDC10DCBDD667 /* AppIcon60x60@2x.png */,
+				23C685CFCC00607D80F715EE /* AppIcon60x60@3x.png */,
+			);
+			path = AppIcon;
+			sourceTree = "<group>";
+		};
+		76BE763A9C1CFC784B9AB364 /* Summary */ = {
+			isa = PBXGroup;
+			children = (
+				1DF9C38B75836ED3875DD9B8 /* SummaryPage.swift */,
+				2A339765F354F6B74F347DCC /* SummaryScreen.swift */,
+				347BDFBAAA0A4336744E74C0 /* SummaryViewModel.swift */,
+			);
+			path = Summary;
+			sourceTree = "<group>";
+		};
+		78385843364C402E3A8009D6 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				D36297C3487309BD52011CC2 /* ComingSeasonBuilder.swift */,
+				1C52B3CB62EF5547F47AECAC /* CompareBuilder.swift */,
+				A3677002700C2232B7A7F038 /* FieldNaming.swift */,
+				63DF95C62D4FACFF950B6AFC /* FieldNowBuilder.swift */,
+				DAB21AD3395FC56977897D65 /* Presentation.swift */,
+				6F234A2C0EC457E2576DACBC /* SeasonCalendar.swift */,
+				0BF5CBD1D7019586F64E914B /* Units.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		78E0257E101393EC5382395E /* ComingSeason */ = {
+			isa = PBXGroup;
+			children = (
+				7FFB92764CD68ACCB8D4A0ED /* ComingSeasonScreen.swift */,
+				F223551A49CF3C5D67AAF8F8 /* ComingSeasonViewModel.swift */,
+			);
+			path = ComingSeason;
+			sourceTree = "<group>";
+		};
+		895ED5DF1BA7398438805E72 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				78E0257E101393EC5382395E /* ComingSeason */,
+				419C985943762DB32D2F0979 /* Compare */,
+				305BE0B0AC4B2AD32EFCE232 /* FieldNow */,
+				E001B089670CB9454C4CDF48 /* Fields */,
+				16892E2D496DD339A78D4C80 /* Shared */,
+				76BE763A9C1CFC784B9AB364 /* Summary */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		9269084C94403CD3007BFC17 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				71EC85D72A9082A2C24DFD90 /* AppIcon */,
+				D3410E1949A523E66C82D154 /* Fonts */,
+				C0F5AA96335C3EB5862EDC09 /* Fixtures */,
+				2B9303D86A4D421B28925819 /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A120B445A36FA56264FB4099 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				E0F58040AD5D91304D28EEDB /* Basics.swift */,
+				132E32F8192EEF4FF140BA25 /* Charts.swift */,
+				3BA6B6907FF6C49234AC3786 /* FieldMap.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		C419D9E1FC824CE27CBA545C = {
+			isa = PBXGroup;
+			children = (
+				FFADAFE2497BF68DFA988396 /* CropLytics */,
+				536651BD371D49D6D278AF2A /* CropLyticsTests */,
+				35D5FB70EED56E2CED60A9B1 /* CropLyticsUITests */,
+				CB07D4150F54113D747B9843 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CB07D4150F54113D747B9843 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				72FF753AD8CDF1437C18328E /* CropLytics.app */,
+				0261FDE79D25C4FFCAF49EDA /* CropLyticsTests.xctest */,
+				EFA8CA59461CE26FF1DF0303 /* CropLyticsUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D31278C2C2CAA318FC1A1BD8 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				D544820F2F783A70737F8604 /* APIClient.swift */,
+				BC744AA985E35DCCECD2483A /* AppError.swift */,
+				6ED624D14D2E9189670A56CF /* Endpoint.swift */,
+				50D661431803F367635911C1 /* ServerStatus.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		D3410E1949A523E66C82D154 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				87154FFCAEC0F687C2626E6C /* LibreFranklin-Bold.ttf */,
+				D561ACF6B0D6AFDF5898B08A /* LibreFranklin-OFL.txt */,
+				5901EBA931C36BFBAC8A3033 /* LibreFranklin-Regular.ttf */,
+				F3AEE1EBABDB1A927487A614 /* LibreFranklin-SemiBold.ttf */,
+				FAD35DDB70193ABAB7278921 /* ZillaSlab-Medium.ttf */,
+				D281F4E7082E74D2CFA0B2DD /* ZillaSlab-OFL.txt */,
+				7A2471E56234549FADE5A1A3 /* ZillaSlab-SemiBold.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		E001B089670CB9454C4CDF48 /* Fields */ = {
+			isa = PBXGroup;
+			children = (
+				8AF00001268DC1B34A89D0D4 /* FieldsScreen.swift */,
+				FF490B4450C3B19FE80185EF /* FieldsViewModel.swift */,
+			);
+			path = Fields;
+			sourceTree = "<group>";
+		};
+		FFADAFE2497BF68DFA988396 /* CropLytics */ = {
+			isa = PBXGroup;
+			children = (
+				12A412A9AC7023E78C6696D4 /* App */,
+				0C65190FC1989597BFC16FDA /* Data */,
+				4667D69755B6994F19389BF1 /* Design */,
+				78385843364C402E3A8009D6 /* Domain */,
+				895ED5DF1BA7398438805E72 /* Features */,
+				3A6BAE34007AFEBB7B20FD5A /* Models */,
+				D31278C2C2CAA318FC1A1BD8 /* Networking */,
+				9269084C94403CD3007BFC17 /* Resources */,
+			);
+			path = CropLytics;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4216A27EE8CD073768C6EB0D /* CropLyticsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D18947F6FCC8DB23D9D660F9 /* Build configuration list for PBXNativeTarget "CropLyticsTests" */;
+			buildPhases = (
+				AEE980F965B29B453C397C2A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E75ED44A39B41F0938012BA6 /* PBXTargetDependency */,
+			);
+			name = CropLyticsTests;
+			packageProductDependencies = (
+			);
+			productName = CropLyticsTests;
+			productReference = 0261FDE79D25C4FFCAF49EDA /* CropLyticsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		7F3CEDB831476ABFA592E266 /* CropLytics */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E91F401DE529797E63131096 /* Build configuration list for PBXNativeTarget "CropLytics" */;
+			buildPhases = (
+				F2B67F17E86A4119AB1F0AE5 /* Sources */,
+				EF9A9DE7461C545DA8DC2B2E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CropLytics;
+			packageProductDependencies = (
+			);
+			productName = CropLytics;
+			productReference = 72FF753AD8CDF1437C18328E /* CropLytics.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E19BF6AC917A6E0ECE465DE1 /* CropLyticsUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0051E68D506E301FA2661539 /* Build configuration list for PBXNativeTarget "CropLyticsUITests" */;
+			buildPhases = (
+				B4C8B305FE6818E385686E21 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1D7B473C27D835DE3DFD4F4E /* PBXTargetDependency */,
+			);
+			name = CropLyticsUITests;
+			packageProductDependencies = (
+			);
+			productName = CropLyticsUITests;
+			productReference = EFA8CA59461CE26FF1DF0303 /* CropLyticsUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D1D66ECE0080BE7AA6A56D90 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					7F3CEDB831476ABFA592E266 = {
+						ProvisioningStyle = Automatic;
+					};
+					E19BF6AC917A6E0ECE465DE1 = {
+						TestTargetID = 7F3CEDB831476ABFA592E266;
+					};
+				};
+			};
+			buildConfigurationList = A36843A10B27AE19828C3ECF /* Build configuration list for PBXProject "CropLytics" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C419D9E1FC824CE27CBA545C;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = CB07D4150F54113D747B9843 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7F3CEDB831476ABFA592E266 /* CropLytics */,
+				4216A27EE8CD073768C6EB0D /* CropLyticsTests */,
+				E19BF6AC917A6E0ECE465DE1 /* CropLyticsUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EF9A9DE7461C545DA8DC2B2E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9447840E4FE1718C0DA69D25 /* AppIcon60x60@2x.png in Resources */,
+				C137801FC24882095368EAF1 /* AppIcon60x60@3x.png in Resources */,
+				53B92257A3D1251B7EBD7358 /* Fixtures in Resources */,
+				5F8AE1BF7E3B527A7565631D /* LibreFranklin-Bold.ttf in Resources */,
+				34E096E398683939420956AB /* LibreFranklin-OFL.txt in Resources */,
+				0CE45865EDE3810C1B6F6B80 /* LibreFranklin-Regular.ttf in Resources */,
+				A05C9D1E125DDDB73971237E /* LibreFranklin-SemiBold.ttf in Resources */,
+				215E178FB00543A73FF2C255 /* PrivacyInfo.xcprivacy in Resources */,
+				48308FC83A1C463304881101 /* ZillaSlab-Medium.ttf in Resources */,
+				3BAA30C884FE0A272E7B4F5B /* ZillaSlab-OFL.txt in Resources */,
+				B9C7F53768ED23121711E072 /* ZillaSlab-SemiBold.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AEE980F965B29B453C397C2A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ECAAF95431840D0DC7FFC8CF /* APIClientTests.swift in Sources */,
+				F8167D785B7CAC74DD004749 /* DomainTests.swift in Sources */,
+				C9B9978BC4269D2AFEDE9B3C /* RepositoryTests.swift in Sources */,
+				7D622A6C3536FCBEAE5497BA /* TestSupport.swift in Sources */,
+				5F680AB9D409051F49312FF2 /* ViewModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B4C8B305FE6818E385686E21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AE92140B9B4C4204571CB8C0 /* CropLyticsUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F2B67F17E86A4119AB1F0AE5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C07FE86CEE03F96A54460FAB /* APIClient.swift in Sources */,
+				3F523F5E622AF1BFB8EB54B0 /* AppEnvironment.swift in Sources */,
+				D08FC399E6AFA2BC4317F0B5 /* AppError.swift in Sources */,
+				F56745C087546711EF91180D /* AppModel.swift in Sources */,
+				80EB2269B28E24A932D952D8 /* Basics.swift in Sources */,
+				273D66BB26A48E73A9518808 /* Charts.swift in Sources */,
+				DE0CD4CEC0083F8616D3E2DC /* ComingSeasonBuilder.swift in Sources */,
+				7E93CC87DCB2EE80A5FE90A4 /* ComingSeasonScreen.swift in Sources */,
+				02BE6E48F682ECD783EFCD3C /* ComingSeasonViewModel.swift in Sources */,
+				A68B90DE26A4815B4D0B72AD /* CompareBuilder.swift in Sources */,
+				CC8C032CCD20887A3AC8FDF0 /* CompareScreen.swift in Sources */,
+				174F4323CF5B09B3537F00FE /* CompareViewModel.swift in Sources */,
+				FA4321274633DC4A3351D34C /* CropLyticsApp.swift in Sources */,
+				DCC5C8105DA457DCF964D3B8 /* DetailModel.swift in Sources */,
+				4A61FD4801750483D80668C5 /* DetailSections.swift in Sources */,
+				BB7F01EE404A02E422F072D3 /* Endpoint.swift in Sources */,
+				81917E3D67237725D88BCAF3 /* FieldData.swift in Sources */,
+				9CA248452F8C507ADC942552 /* FieldLocation.swift in Sources */,
+				CA80DBE32DAAAC8667212869 /* FieldMap.swift in Sources */,
+				24CFBBD0013704AB58FD6E71 /* FieldNaming.swift in Sources */,
+				D687AF22A25F0A62DCB53E6A /* FieldNowBuilder.swift in Sources */,
+				3A67F47C46D71A13BBB07C54 /* FieldNowScreen.swift in Sources */,
+				7BE57308E956ABEFEFF0B14C /* FieldNowViewModel.swift in Sources */,
+				F602A194DF40759DEF901D2B /* FieldRepository.swift in Sources */,
+				2575E135ED90D262FEE2EF41 /* FieldsScreen.swift in Sources */,
+				407780C9391933C4DCAB4D5A /* FieldsViewModel.swift in Sources */,
+				D31E9C5EBB4C83D31620529E /* LoadState.swift in Sources */,
+				FACADCAB0E205A9BC6CD0A2B /* Outlook.swift in Sources */,
+				6534B45FE4F07FA6271EB5F1 /* Presentation.swift in Sources */,
+				91ED572D0FD6A416614A5D7A /* ResponseCache.swift in Sources */,
+				8A5E0204BD6D8C12AD4357A4 /* RootView.swift in Sources */,
+				1AC542D02AAEC66236AD38EC /* SeasonCalendar.swift in Sources */,
+				1044A18BF289633B5EDF16D0 /* ServerStatus.swift in Sources */,
+				4B3837E12DC6BDCF0E0C59FB /* SourcedNumber.swift in Sources */,
+				61B46D10B39469233FF6543D /* SummaryPage.swift in Sources */,
+				583D290616326E2F33FB25C1 /* SummaryScreen.swift in Sources */,
+				4DDE2C87F8BDBD7FACCD3CF3 /* SummaryViewModel.swift in Sources */,
+				B34C2C8E8B5A62B54577FC5D /* Theme.swift in Sources */,
+				6E506A9E976150C3D8551599 /* ThumbnailStore.swift in Sources */,
+				B6847FE88A8C6061CFC963FA /* Typography.swift in Sources */,
+				17B1AF6633D926AD164466DA /* Units.swift in Sources */,
+				EE63615A13D9CFD79E8CEC5A /* WaterLimitStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1D7B473C27D835DE3DFD4F4E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7F3CEDB831476ABFA592E266 /* CropLytics */;
+			targetProxy = 0242316D3322EF503EC476B8 /* PBXContainerItemProxy */;
+		};
+		E75ED44A39B41F0938012BA6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7F3CEDB831476ABFA592E266 /* CropLytics */;
+			targetProxy = 17B1241DC26FCE993D108F57 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		197195E0FFF58F82B17B1AEF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.croplytics.CropLyticsUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CropLytics;
+			};
+			name = Release;
+		};
+		363F6BD6B6D1EEBCFE43AC1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		646765446039747A7EC604A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.croplytics.CropLyticsTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CropLytics.app/CropLytics";
+			};
+			name = Debug;
+		};
+		730A98C3AD330B92E2D10079 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.croplytics.CropLyticsTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CropLytics.app/CropLytics";
+			};
+			name = Release;
+		};
+		B7F5F2271D5615C6A236802F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.croplytics.CropLyticsUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CropLytics;
+			};
+			name = Debug;
+		};
+		BB2C1067A5F816D8C2FAFD4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		D9DBDBE5962F873ECEEA8BAE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = CropLytics/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.croplytics.CropLytics;
+				PRODUCT_NAME = CropLytics;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		F866360F4C6850FF3A09A30B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = CropLytics/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.croplytics.CropLytics;
+				PRODUCT_NAME = CropLytics;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0051E68D506E301FA2661539 /* Build configuration list for PBXNativeTarget "CropLyticsUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B7F5F2271D5615C6A236802F /* Debug */,
+				197195E0FFF58F82B17B1AEF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A36843A10B27AE19828C3ECF /* Build configuration list for PBXProject "CropLytics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				363F6BD6B6D1EEBCFE43AC1C /* Debug */,
+				BB2C1067A5F816D8C2FAFD4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D18947F6FCC8DB23D9D660F9 /* Build configuration list for PBXNativeTarget "CropLyticsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				646765446039747A7EC604A3 /* Debug */,
+				730A98C3AD330B92E2D10079 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E91F401DE529797E63131096 /* Build configuration list for PBXNativeTarget "CropLytics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F866360F4C6850FF3A09A30B /* Debug */,
+				D9DBDBE5962F873ECEEA8BAE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D1D66ECE0080BE7AA6A56D90 /* Project object */;
+}
