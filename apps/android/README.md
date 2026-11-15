@@ -6,36 +6,35 @@ Screenshots: `design/screenshots/android/`.
 
 ## What it does
 
-| Screen | What the grower sees first | Behind "More detail" |
-|---|---|---|
-| **Fields** | Search, then one row per field: satellite thumbnail with the outline, farmer-style name ("Rice field 3.5 miles east of Williams"), acres, this year's crop, county, and a one-line crop record | – |
-| **Field now** | Still satellite map with the outline ("Open map" for a full map), then a visual summary (this year's bare/green/flooded strip, rain vs normal, water need vs limit, greenness, soil and groundwater percentiles), then at most 4 one-sentence answers, each with a source line | About this field, crops grown, how to read the strip, events, NASA data behind the field, crop-stress weeks, standing water, measured water use (OpenET), machine-learning check, crop insurance, every source |
-| **Coming season** | 3 items: rain outlook (with drought), water in storage and allocations, next season's water need | Every 3-month outlook, the longest bare stretch and heavy-rain odds, the full outlook paragraph, what isn't published yet |
-| **Compare** | Your water limit (editable, saved per field, "example, change to yours" until you change it), today's rotation, then the top 2 options as "You gain / You give up" in acre-feet and days; "See all options" | How the options are ranked (rule-of-thumb scores), how good the water estimate is (OpenET), what better/worse means |
-| **Summary** (for your adviser) | Pick the option, then "Share as PDF": a one-page US Letter summary drawn with `PdfDocument` and sent through the Android share sheet | – |
+A native port of the web app (`frontend/app`), screen for screen, in its phone layout and to `docs/ui-redesign-spec.md`.
+The satellite map fills the screen, the field panel is a draggable bottom sheet (128 dp, 52%, full), and the sections are bottom tabs.
 
-Every screen has loading skeletons, an error panel with "Try again", pull to refresh, and a "Waking the server, up to a minute" panel when the free Render server is asleep. Everything the app has fetched is saved on the phone, so a field opens offline with "Saved on <date>. Can't reach the server right now."
+| Part | What it shows |
+|---|---|
+| **Map** | Esri imagery with OpenFreeMap labels; pan, pinch-zoom, rotate, two-finger tilt. A pin for every field (tap to open), outlines, SMAP / IMERG / GRACE footprints, Map layers sheet with pixel sizes. Zooming in under a field tilts the camera and its 30 m cells rise as fill-extrusions coloured by greenness, with SMAP and GRACE-FO slabs, posts and labels. BC: reserve outlines as a context layer. |
+| **Pick your field** | Search, Rice / Forage / British Columbia chips, satellite thumbnails with outlines, 2023 to now season strips, one notable line. |
+| **Viewing date** | Menu > Viewing: Today, quick picks (last summer, last spring, 2023 floods, 2022 drought) and a month picker; a floating "Showing ... Back to today" pill. |
+| **Field now** | Paper header (collapses on scroll) with action pills; glance card (season strip, rain, water need, greenness, soil and groundwater; readings count up, bars glide); five answers including soil composition. More detail: NASA data list with the ISS photo, About the ground, the last 3 seasons, events, Sources. BC: Working with First Nations. |
+| **Coming season** | Winter rain, water supply (BC: watershed and irrigation orders), next season's need; More detail: outlooks, drought, reservoirs, allocations, snowpack, bare stretch, need by rotation. |
+| **This field's year** | Typical year and one strip per season with rain, OPERA water and stress marks; rule vs machine learning; replay on the map; tap a cell to move the date. |
+| **Compare** | The two best options (all with More detail), water limit (saved per field), weather replays, priorities and what-ifs re-scored by POST /score, gain / give up with range bars, See all options. |
+| **Print** | One Letter page for the adviser; Share as PDF or Print (PdfDocument, Android print). |
 
-A deep link opens any field section directly: `croplytics://field/<id>?tab=<0-3>` (0 field now, 1 coming season, 2 compare, 3 summary for your adviser).
+Every part has skeletons, an error panel with "Try again", and "Waking the server, up to a minute" for the sleeping free server. Everything fetched is saved on the phone ("Saved on <date>"). Deep link: `croplytics://field/<id>?tab=<0-4>`.
 
 ## Architecture
 
-Single activity, Jetpack Compose and Material 3, MVVM with unidirectional data flow.
+Single activity, Compose and Material 3, MVVM with unidirectional data flow.
 
 ```
-ui/            Compose screens (stateless *Content functions) + one @HiltViewModel per screen,
-               each exposing a StateFlow<UiState>; events go up as plain callbacks
-  fields/      Fields list and search
-  field/       Field container: top bar, text tabs (3 dp spot-green indicator), HorizontalPager
-  now/ season/ compare/ summary/ map/
-  components/  Status (skeleton, waking, error, offline note), blocks, charts (Canvas), MapLibre map, thumbnails
-  theme/       Bulletin palette tokens (light and dark), Zilla Slab + Libre Franklin, small radii
-domain/        Pure Kotlin: payload -> farmer wording (names, units, answers, gain/give-up, PDF content)
-data/
-  remote/      Retrofit + kotlinx.serialization API and DTOs (every field optional)
-  local/       Room cache (one JSON row per response, with the time it was saved); DataStore water limits
-  repository/  FieldRepository: offline-first flows of LoadState (Loading, Waking, Ready, Failed)
-di/            Hilt module: OkHttp (75 s read timeout for the sleeping server), Retrofit, Room, DataStore
+ui/app/        MainScreen (map + sheet + tabs), MainViewModel (selection, date, tabs, layers, compare tuning,
+               map commands as a channel), chrome (top bar, sheets), the pick list
+ui/panels/     Field now, Coming season, This field's year, Compare, Print (LazyListScope builders)
+ui/map/        CropMap (MapLibre), pin bitmaps, overlays (stack and footprint labels, controls, legend)
+ui/components/ Redesign controls (pills, chips, segmented, disclosure, focus ring, count-up), charts, status
+ui/theme/      Spec tokens (light and dark), Zilla Slab + Libre Franklin, reduce-motion flag
+domain/        Pure Kotlin ports of the web's lib.ts, season.ts, bare.ts, nasa.ts and components
+data/          Retrofit API, Room cache, file store for the 2 MB daily record and grid, DataStore water limits
 ```
 
 **Data flow.** A ViewModel combines repository flows (location, calendar, NASA readings, rotations, outlook, the saved limit) and maps them through `domain/` builders into one UI state. `DefaultFieldRepository.cached()`:
@@ -46,7 +45,7 @@ di/            Hilt module: OkHttp (75 s read timeout for the sleeping server), 
 
 Concurrent requests for the same key share one network call (four tabs, one fetch). A 404 (a route the live server doesn't have yet, such as `stress` or `water_seen`) becomes "Not on the server for this field yet", never a crash.
 
-**Compare re-scoring.** The limit slider updates the screen at once, is saved to DataStore after 400 ms, and `POST /api/locations/{id}/score` runs once the value has been still for 450 ms. Scored results are cached per limit. If re-scoring fails, the server's default ranking is shown with a note.
+**Re-scoring.** The limit slider updates the screen at once, is saved to DataStore after 400 ms, and `POST /api/locations/{id}/score` runs once the value has been still for 450 ms. Scored results are cached per limit. If re-scoring fails, the server's default ranking is shown with a note.
 
 **Map and imagery.** MapLibre Native Android with an inline raster style on Esri World Imagery (no key, as in `CONTRACT.md`); the field outline is a yellow `#ffd166` line on a dark casing. List thumbnails are Esri `MapServer/export` images cut to a Web Mercator box around the field, with the outline drawn on top in Compose; Coil keeps them on disk for offline use.
 
@@ -67,13 +66,9 @@ export JAVA_HOME=/path/to/jdk-17
 
 Use a local API instead of the live one with `./gradlew assembleDebug -PapiBaseUrl=http://10.0.2.2:8000/api/` (`10.0.2.2` is the host machine from the emulator; a non-HTTPS URL also needs a network security config).
 
-**Tests** (`app/src/test`):
-- `data/DefaultFieldRepositoryTest`: MockWebServer with real API payloads. First load and save, the fresh-cache shortcut, a stale copy then the fresh one, offline with a saved copy, 404 vs 5xx, the waking state on a slow server, the shared in-flight request, and the score POST body and per-limit cache.
-- `domain/BuildersTest`, `domain/FieldNamesTest`: farmer wording, units, the 4 answers, the 3 coming-season items, gain/give-up, limit fit, the adviser summary and thumbnail geometry.
-- `ui/ViewModelsTest`: the ViewModels against a fake repository with coroutine test dispatchers (search, waking/offline/error, retry, saved vs example limit, debounced save and re-score, failed re-score, "See all options").
-- `ui/ScreensUiTest`: Compose UI tests under Robolectric (the field list and opening a field, the waking panel, error and "Try again", and Compare's limit buttons and "See all options").
+**Tests** (`app/src/test`, 42): repository with MockWebServer (offline-first cache, waking, 404 vs 5xx, shared requests, HLS fallback, file store); the live field list parses (11 fields incl. BC); the web ports (clock, calendar, five answers, coming season, year, compare verdicts, the 3D stack, NASA list, brief); BC (watershed and orders, gap lines, rain-fed, First Nations, estimates); MainViewModel (filters, select-and-fly, date and replay, tabs, debounced re-score, saved limit, deep link); Compose UI tests under Robolectric.
 
-Fixtures in `app/src/test/resources/fixtures/` are trimmed copies of the live API's responses for the Colusa rice field (14 Nov 2026).
+Release: `./gradlew assembleRelease -Pabi=arm64-v8a` signs with the keystore named in `~/.croplytics/keystore.properties` (outside git).
 
 ## Releasing on Google Play (not done)
 
@@ -90,6 +85,6 @@ No accounts, keys or listings have been created. To publish:
 
 Before a real release: move the API off the free Render plan (cold starts), add Esri's attribution and terms review for imagery use, and add crash reporting.
 
-## Not in this app
+## Not in this app yet
 
-To match the web app's farmer-first scope (`PLAN.md`): no 3D view, no date picker or year replay, no "your priorities" weighting or what-if sliders on Compare, and no news timeline.
+The salmon panel (waiting for its `/salmon` route) and the web's 3D water-use mode (removed from the web too).
