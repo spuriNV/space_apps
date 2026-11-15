@@ -1,0 +1,545 @@
+{
+ "source": {
+  "id": "soilgrids_v2",
+  "title": "ISRIC SoilGrids v2.0 (250 m global soil property maps), REST API",
+  "url": "https://rest.isric.org/soilgrids/v2.0/properties/query",
+  "doi": "https://doi.org/10.5194/soil-7-217-2021",
+  "accessed": "2026-11-15",
+  "verified": true,
+  "licence": "CC BY 4.0"
+ },
+ "points_lonlat": [
+  [
+   -119.38259,
+   50.64344
+  ],
+  [
+   -119.38685,
+   50.64201
+  ],
+  [
+   -119.38685,
+   50.64471
+  ],
+  [
+   -119.37875,
+   50.64201
+  ],
+  [
+   -119.37875,
+   50.64471
+  ]
+ ],
+ "fetched_at": "2026-11-15T10:11:34Z",
+ "units": {
+  "sand": "%",
+  "silt": "%",
+  "clay": "%",
+  "soc": "g/kg",
+  "phh2o": "pH",
+  "bdod": "g/cm3",
+  "cec": "cmol(+)/kg",
+  "cfvo": "vol %",
+  "nitrogen": "g/kg"
+ },
+ "layers": {
+  "sand": {
+   "0-5cm": {
+    "median_mean_of_points": 36.48,
+    "points_min": 35.7,
+    "points_max": 37.9,
+    "centroid_q05": 2.5,
+    "centroid_q50": 35.7,
+    "centroid_q95": 77.7,
+    "n_points": 5
+   },
+   "5-15cm": {
+    "median_mean_of_points": 37.36,
+    "points_min": 36.3,
+    "points_max": 38.5,
+    "centroid_q05": 2.5,
+    "centroid_q50": 36.3,
+    "centroid_q95": 74.8,
+    "n_points": 5
+   },
+   "15-30cm": {
+    "median_mean_of_points": 39.1,
+    "points_min": 38.4,
+    "points_max": 40.2,
+    "centroid_q05": 2.0,
+    "centroid_q50": 38.4,
+    "centroid_q95": 75.3,
+    "n_points": 5
+   },
+   "30-60cm": {
+    "median_mean_of_points": 40.74,
+    "points_min": 39.1,
+    "points_max": 42.4,
+    "centroid_q05": 1.6,
+    "centroid_q50": 40.3,
+    "centroid_q95": 75.3,
+    "n_points": 5
+   },
+   "60-100cm": {
+    "median_mean_of_points": 41.7,
+    "points_min": 39.1,
+    "points_max": 43.6,
+    "centroid_q05": 1.6,
+    "centroid_q50": 41.3,
+    "centroid_q95": 76.5,
+    "n_points": 5
+   }
+  },
+  "silt": {
+   "0-5cm": {
+    "median_mean_of_points": 38.4,
+    "points_min": 37.7,
+    "points_max": 38.9,
+    "centroid_q05": 2.4,
+    "centroid_q50": 38.4,
+    "centroid_q95": 88.6,
+    "n_points": 5
+   },
+   "5-15cm": {
+    "median_mean_of_points": 37.86,
+    "points_min": 37.2,
+    "points_max": 38.4,
+    "centroid_q05": 2.0,
+    "centroid_q50": 38.4,
+    "centroid_q95": 88.6,
+    "n_points": 5
+   },
+   "15-30cm": {
+    "median_mean_of_points": 35.56,
+    "points_min": 34.2,
+    "points_max": 36.7,
+    "centroid_q05": 2.3,
+    "centroid_q50": 36.3,
+    "centroid_q95": 85.8,
+    "n_points": 5
+   },
+   "30-60cm": {
+    "median_mean_of_points": 34.82,
+    "points_min": 34.2,
+    "points_max": 36.2,
+    "centroid_q05": 2.0,
+    "centroid_q50": 34.5,
+    "centroid_q95": 88.1,
+    "n_points": 5
+   },
+   "60-100cm": {
+    "median_mean_of_points": 34.18,
+    "points_min": 33.0,
+    "points_max": 36.0,
+    "centroid_q05": 1.9,
+    "centroid_q50": 34.8,
+    "centroid_q95": 89.2,
+    "n_points": 5
+   }
+  },
+  "clay": {
+   "0-5cm": {
+    "median_mean_of_points": 9.2,
+    "points_min": 8.1,
+    "points_max": 9.8,
+    "centroid_q05": 1.0,
+    "centroid_q50": 9.8,
+    "centroid_q95": 93.7,
+    "n_points": 5
+   },
+   "5-15cm": {
+    "median_mean_of_points": 9.18,
+    "points_min": 8.4,
+    "points_max": 9.8,
+    "centroid_q05": 0.7,
+    "centroid_q50": 9.8,
+    "centroid_q95": 93.7,
+    "n_points": 5
+   },
+   "15-30cm": {
+    "median_mean_of_points": 8.9,
+    "points_min": 8.6,
+    "points_max": 9.3,
+    "centroid_q05": 1.0,
+    "centroid_q50": 9.0,
+    "centroid_q95": 94.7,
+    "n_points": 5
+   },
+   "30-60cm": {
+    "median_mean_of_points": 7.74,
+    "points_min": 7.1,
+    "points_max": 8.3,
+    "centroid_q05": 0.9,
+    "centroid_q50": 7.8,
+    "centroid_q95": 95.3,
+    "n_points": 5
+   },
+   "60-100cm": {
+    "median_mean_of_points": 7.14,
+    "points_min": 6.7,
+    "points_max": 7.7,
+    "centroid_q05": 0.7,
+    "centroid_q50": 7.0,
+    "centroid_q95": 95.5,
+    "n_points": 5
+   }
+  },
+  "soc": {
+   "0-5cm": {
+    "median_mean_of_points": 35.46,
+    "points_min": 34.9,
+    "points_max": 36.4,
+    "centroid_q05": 9.1,
+    "centroid_q50": 35.4,
+    "centroid_q95": 192.1,
+    "n_points": 5
+   },
+   "5-15cm": {
+    "median_mean_of_points": 20.98,
+    "points_min": 19.9,
+    "points_max": 22.0,
+    "centroid_q05": 6.0,
+    "centroid_q50": 20.0,
+    "centroid_q95": 83.9,
+    "n_points": 5
+   },
+   "15-30cm": {
+    "median_mean_of_points": 10.84,
+    "points_min": 10.5,
+    "points_max": 11.2,
+    "centroid_q05": 2.0,
+    "centroid_q50": 10.8,
+    "centroid_q95": 57.0,
+    "n_points": 5
+   },
+   "30-60cm": {
+    "median_mean_of_points": 5.6,
+    "points_min": 5.1,
+    "points_max": 6.0,
+    "centroid_q05": 1.0,
+    "centroid_q50": 5.8,
+    "centroid_q95": 53.6,
+    "n_points": 5
+   },
+   "60-100cm": {
+    "median_mean_of_points": 3.92,
+    "points_min": 3.8,
+    "points_max": 4.0,
+    "centroid_q05": 0.7,
+    "centroid_q50": 3.8,
+    "centroid_q95": 19.0,
+    "n_points": 5
+   }
+  },
+  "phh2o": {
+   "0-5cm": {
+    "median_mean_of_points": 6.52,
+    "points_min": 6.4,
+    "points_max": 6.6,
+    "centroid_q05": 5.3,
+    "centroid_q50": 6.5,
+    "centroid_q95": 8.4,
+    "n_points": 5
+   },
+   "5-15cm": {
+    "median_mean_of_points": 6.68,
+    "points_min": 6.4,
+    "points_max": 6.9,
+    "centroid_q05": 5.4,
+    "centroid_q50": 6.8,
+    "centroid_q95": 8.6,
+    "n_points": 5
+   },
+   "15-30cm": {
+    "median_mean_of_points": 6.74,
+    "points_min": 6.5,
+    "points_max": 6.9,
+    "centroid_q05": 5.3,
+    "centroid_q50": 6.9,
+    "centroid_q95": 8.8,
+    "n_points": 5
+   },
+   "30-60cm": {
+    "median_mean_of_points": 7.06,
+    "points_min": 6.8,
+    "points_max": 7.4,
+    "centroid_q05": 5.6,
+    "centroid_q50": 7.4,
+    "centroid_q95": 9.7,
+    "n_points": 5
+   },
+   "60-100cm": {
+    "median_mean_of_points": 7.3,
+    "points_min": 7.0,
+    "points_max": 7.6,
+    "centroid_q05": 5.5,
+    "centroid_q50": 7.5,
+    "centroid_q95": 9.4,
+    "n_points": 5
+   }
+  },
+  "bdod": {
+   "0-5cm": {
+    "median_mean_of_points": 1.06,
+    "points_min": 1.02,
+    "points_max": 1.1,
+    "centroid_q05": 0.5,
+    "centroid_q50": 1.07,
+    "centroid_q95": 1.55,
+    "n_points": 5
+   },
+   "5-15cm": {
+    "median_mean_of_points": 1.21,
+    "points_min": 1.19,
+    "points_max": 1.23,
+    "centroid_q05": 0.67,
+    "centroid_q50": 1.22,
+    "centroid_q95": 1.6,
+    "n_points": 5
+   },
+   "15-30cm": {
+    "median_mean_of_points": 1.25,
+    "points_min": 1.23,
+    "points_max": 1.27,
+    "centroid_q05": 0.75,
+    "centroid_q50": 1.25,
+    "centroid_q95": 1.58,
+    "n_points": 5
+   },
+   "30-60cm": {
+    "median_mean_of_points": 1.4,
+    "points_min": 1.38,
+    "points_max": 1.42,
+    "centroid_q05": 0.87,
+    "centroid_q50": 1.4,
+    "centroid_q95": 1.77,
+    "n_points": 5
+   },
+   "60-100cm": {
+    "median_mean_of_points": 1.48,
+    "points_min": 1.43,
+    "points_max": 1.51,
+    "centroid_q05": 0.95,
+    "centroid_q50": 1.48,
+    "centroid_q95": 1.77,
+    "n_points": 5
+   }
+  },
+  "cec": {
+   "0-5cm": {
+    "median_mean_of_points": 21.32,
+    "points_min": 19.3,
+    "points_max": 23.1,
+    "centroid_q05": 3.7,
+    "centroid_q50": 19.3,
+    "centroid_q95": 70.7,
+    "n_points": 5
+   },
+   "5-15cm": {
+    "median_mean_of_points": 16.42,
+    "points_min": 16.3,
+    "points_max": 16.6,
+    "centroid_q05": 3.0,
+    "centroid_q50": 16.3,
+    "centroid_q95": 47.8,
+    "n_points": 5
+   },
+   "15-30cm": {
+    "median_mean_of_points": 16.08,
+    "points_min": 16.0,
+    "points_max": 16.2,
+    "centroid_q05": 3.0,
+    "centroid_q50": 16.0,
+    "centroid_q95": 46.2,
+    "n_points": 5
+   },
+   "30-60cm": {
+    "median_mean_of_points": 14.92,
+    "points_min": 14.3,
+    "points_max": 15.6,
+    "centroid_q05": 2.7,
+    "centroid_q50": 15.4,
+    "centroid_q95": 46.0,
+    "n_points": 5
+   },
+   "60-100cm": {
+    "median_mean_of_points": 14.0,
+    "points_min": 13.4,
+    "points_max": 14.4,
+    "centroid_q05": 2.2,
+    "centroid_q50": 13.8,
+    "centroid_q95": 46.2,
+    "n_points": 5
+   }
+  },
+  "cfvo": {
+   "0-5cm": {
+    "median_mean_of_points": 4.14,
+    "points_min": 3.0,
+    "points_max": 7.2,
+    "centroid_q05": 0.0,
+    "centroid_q50": 3.0,
+    "centroid_q95": 60.0,
+    "n_points": 5
+   },
+   "5-15cm": {
+    "median_mean_of_points": 7.4,
+    "points_min": 6.0,
+    "points_max": 11.5,
+    "centroid_q05": 0.0,
+    "centroid_q50": 6.0,
+    "centroid_q95": 60.0,
+    "n_points": 5
+   },
+   "15-30cm": {
+    "median_mean_of_points": 5.94,
+    "points_min": 4.0,
+    "points_max": 10.5,
+    "centroid_q05": 0.0,
+    "centroid_q50": 4.0,
+    "centroid_q95": 58.0,
+    "n_points": 5
+   },
+   "30-60cm": {
+    "median_mean_of_points": 7.2,
+    "points_min": 4.0,
+    "points_max": 15.0,
+    "centroid_q05": 0.0,
+    "centroid_q50": 4.0,
+    "centroid_q95": 60.0,
+    "n_points": 5
+   },
+   "60-100cm": {
+    "median_mean_of_points": 6.52,
+    "points_min": 4.0,
+    "points_max": 13.5,
+    "centroid_q05": 0.0,
+    "centroid_q50": 4.0,
+    "centroid_q95": 59.0,
+    "n_points": 5
+   }
+  },
+  "nitrogen": {
+   "0-5cm": {
+    "median_mean_of_points": 3.11,
+    "points_min": 2.78,
+    "points_max": 3.45,
+    "centroid_q05": 0.6,
+    "centroid_q50": 2.95,
+    "centroid_q95": 19.34,
+    "n_points": 5
+   },
+   "5-15cm": {
+    "median_mean_of_points": 1.92,
+    "points_min": 1.6,
+    "points_max": 2.09,
+    "centroid_q05": 0.5,
+    "centroid_q50": 2.04,
+    "centroid_q95": 17.84,
+    "n_points": 5
+   },
+   "15-30cm": {
+    "median_mean_of_points": 1.18,
+    "points_min": 1.11,
+    "points_max": 1.28,
+    "centroid_q05": 0.3,
+    "centroid_q50": 1.2,
+    "centroid_q95": 19.1,
+    "n_points": 5
+   },
+   "30-60cm": {
+    "median_mean_of_points": 0.7,
+    "points_min": 0.66,
+    "points_max": 0.73,
+    "centroid_q05": 0.1,
+    "centroid_q50": 0.7,
+    "centroid_q95": 19.1,
+    "n_points": 5
+   },
+   "60-100cm": {
+    "median_mean_of_points": 0.49,
+    "points_min": 0.46,
+    "points_max": 0.5,
+    "centroid_q05": 0.1,
+    "centroid_q50": 0.5,
+    "centroid_q95": 15.05,
+    "n_points": 5
+   }
+  }
+ },
+ "summary": {
+  "0-30cm": {
+   "sand": 38.08,
+   "silt": 36.8,
+   "clay": 9.04,
+   "soc": 18.32,
+   "phh2o": 6.68,
+   "bdod": 1.2,
+   "cec": 17.07,
+   "cfvo": 6.13,
+   "nitrogen": 1.75,
+   "low": {
+    "sand": 2.25,
+    "silt": 2.22,
+    "clay": 0.9,
+    "soc": 4.52,
+    "phh2o": 5.33,
+    "bdod": 0.68,
+    "cec": 3.12,
+    "cfvo": 0.0,
+    "nitrogen": 0.42
+   },
+   "high": {
+    "sand": 75.53,
+    "silt": 87.2,
+    "clay": 94.2,
+    "soc": 88.48,
+    "phh2o": 8.67,
+    "bdod": 1.58,
+    "cec": 50.82,
+    "cfvo": 59.0,
+    "nitrogen": 18.72
+   }
+  },
+  "0-100cm": {
+   "sand": 40.33,
+   "silt": 35.16,
+   "clay": 7.89,
+   "soc": 8.74,
+   "phh2o": 7.04,
+   "bdod": 1.37,
+   "cec": 15.2,
+   "cfvo": 6.61,
+   "nitrogen": 0.93,
+   "low": {
+    "sand": 1.79,
+    "silt": 2.02,
+    "clay": 0.82,
+    "soc": 1.94,
+    "phh2o": 5.48,
+    "bdod": 0.85,
+    "cec": 2.62,
+    "cfvo": 0.0,
+    "nitrogen": 0.2
+   },
+   "high": {
+    "sand": 75.85,
+    "silt": 88.27,
+    "clay": 95.05,
+    "soc": 50.23,
+    "phh2o": 9.27,
+    "bdod": 1.71,
+    "cec": 47.52,
+    "cfvo": 59.3,
+    "nitrogen": 17.37
+   }
+  }
+ },
+ "texture_class_0_30cm": "loam",
+ "organic_matter_pct_0_30cm": 3.16,
+ "notes": [
+  "SoilGrids is a 250 m model trained on global soil profiles, not a survey of this field; its 5-95% prediction intervals are wide. A soil test is the real answer.",
+  "Organic matter = SOC x 1.724 (van Bemmelen factor, a convention, assumed).",
+  "Drainage class, hydrologic group and available water capacity are not SoilGrids properties: they stay unknown for this field (BC soil survey maps exist but have no query API we could use)."
+ ]
+}
