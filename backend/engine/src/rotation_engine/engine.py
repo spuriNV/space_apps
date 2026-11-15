@@ -8,13 +8,14 @@ from functools import lru_cache
 
 import numpy as np
 
-from . import model
+from . import bc, model
 from .model import WYear, cover_metrics, water_metrics
 from .observed import observed_timeline
 from .sources import assumed, blocked, sn, src
 from .timeline import build_timeline, doy0
 from .validation import openet_matched
-from .weather import CHUNK, DEFAULT_ETO, REPO, fieldreg, load_station_precip, load_weather, station_year_precip, year_weather
+from .weather import (CHUNK, DEFAULT_ETO, REPO, fieldreg, load_station_precip, load_weather, station_network,
+                      station_year_precip, year_weather)
 
 MM_PER_AF_AC = 304.8                      # 1 acre-ft/acre = 1 ft depth (exact)
 DEFAULT_YEARS = tuple(range(2015, 2026))  # spec B2 daily master table 2015-2025
@@ -39,6 +40,10 @@ SLOPE_PCT = {
     "caf_tulare_forage": assumed(0.5, "%", low=0.0, high=1.0,
                                  note="Flat SJV field placeholder; NASADEM slope not yet supplied by backend/field. "
                                       "Cancels in E/E_baseline."),
+    "bc_salmon_river_forage": assumed(1.0, "%", low=0.0, high=3.0,
+                                      note="Salmon River valley-floor hay field placeholder (assumed); the NASADEM "
+                                           "slope is pending (backend/nasa_open terrain not run for BC). Cancels in "
+                                           "E/E_baseline."),
 }
 RULE = "rule of thumb, not a model"
 
@@ -66,6 +71,13 @@ def load_strategies(preset_id: str) -> list[dict]:
         s["location_id"] = preset_id
         s["template_location_id"] = tpl
     return out
+
+
+def _region(preset_id: str) -> str:
+    try:
+        return fieldreg.region(preset_id)
+    except KeyError:
+        return "ca"
 
 
 def slope_pct(preset_id: str) -> dict:
@@ -160,6 +172,8 @@ def _clamp(x, lo=0.0, hi=100.0):
 
 
 def _psources(preset_id, wys):
+    if station_network(preset_id) == "eccc":
+        return bc.psources(preset_id, wys)
     used = ["NASA POWER PRECTOTCORR"]
     if any(w.p.get("noaa") is not None for w in wys):
         used.append("NOAA NCEI GHCN-Daily station mean (regional cache)")
@@ -607,7 +621,8 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
             sw = sp.crop.get("seeding_window")
             if not sw or sp.entry["role"] in ("water",) or sp.entry.get("note", "").startswith("Carried"):
                 continue
-            if sp.entry["plant"] == "12-01" and sp.crop.get("perennial") and sp.entry["role"] == "forage":
+            if (sp.entry["plant"] == "12-01" or sp.entry.get("season_boundary")) and sp.crop.get("perennial") \
+                    and sp.entry["role"] == "forage":
                 continue  # stand season boundary, not a seeding
             d, a, b = doy0(sp.entry["plant"]), doy0(sw["start"]), doy0(sw["end"])
             ok = a <= d <= b
@@ -636,7 +651,8 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
 
         u_inputs = _count_unverified(tl, crops)
         rec = {
-            "id": s["id"], "location_id": preset_id, "name": s["name"], "is_baseline": s["is_baseline"],
+            "id": s["id"], "location_id": preset_id, "name": s["name"],
+            **({"short_name": s["short_name"]} if s.get("short_name") else {}), "is_baseline": s["is_baseline"],
             "cycle_years": N, "calendar": s["calendar"], "allocation_rule": s.get("allocation_rule"),
             "exposure": exposure, "water": water, "scores": scores, "composite": comp_sn,
             "risk_profile": {
@@ -671,6 +687,8 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
                 "weather_years": list(years),
             },
         }
+        if _region(preset_id) == "bc":
+            bc.adapt(rec, preset_id)   # US-only text -> BC wording (rotation_engine/bc.py); CA never enters
         out.append(rec)
 
     _apply_ranks(out)

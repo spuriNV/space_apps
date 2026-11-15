@@ -88,6 +88,37 @@ SOURCES: dict[str, dict] = {
                   "url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary", "verified": False},
     "cal_adapt": {"title": "Cal-Adapt 2050s scenario values (not transcribed)", "url": "https://cal-adapt.org",
                   "verified": False},
+    # British Columbia (bc_salmon_river_forage; docs/handoff-bc.md "BC rotations to add", sources read)
+    "kamloops_forage_manual": {
+        "title": "Kamloops District Forage Manual (BC Ministry of Agriculture, 2002), Zone 2: '2 cuts are more "
+                 "typical'; 5-year irrigated alfalfa stand; 2-cut budget 2.0 + 1.5 ton/acre hay. Kamloops district, "
+                 "applied to the neighbouring Shuswap by assumption",
+        "url": "https://bac-lac.wayback.archive-it.org/web/20080212123631/http://www.al.gov.bc.ca/forage/"
+               "publications/documents/kamloops_forage_manual.pdf", "verified": True},
+    "bc_drought_factsheet6": {
+        "title": "BC Drought Management Factsheet No. 6 'Alternate forage crops when irrigation water is limited' "
+                 "(Order No. 665.000-6, Oct 2005): barley silage ~100 days, ~15 in water for 3-4 ton/acre vs ~36 in "
+                 "for full-season alfalfa; fall rye/triticale high drought tolerance, harvest before heading",
+        "url": "https://www.irrigationtoolbox.com/ReferenceDocuments/Extension/BCExtension/665000-6.pdf",
+        "verified": True},
+    "bf04_nonbloat_legumes": {
+        "title": "BC Climate Change Adaptation BF04 fact sheet 'Non-bloat legumes' (2023): sainfoin drought tolerant, "
+                 "300-600 mm precipitation, well-drained soils; 1 cut dryland, 2 irrigated; pair with bunchgrasses. "
+                 "Written for northern BC, applied to the Shuswap by assumption",
+        "url": "https://www.bcclimatechangeadaptation.ca/app/uploads/BF04-FactSheet-Non-bloat-Legumes-2023.pdf",
+        "verified": True},
+    "eccc_daily": {
+        "title": "ECCC daily climate (MSC GeoMet OGC API climate-daily): Salmon Arm CS 116FRMN (1991-2026) and "
+                 "Silver Creek 1167337 (1991-2021), cached by backend/bc/fetch_eccc.py",
+        "url": "https://api.weather.gc.ca/collections/climate-daily/items", "verified": True},
+    "eccc_frost_dates": {
+        "title": "-4 C dates computed from ECCC daily Tmin, Silver Creek 1167337 1991-2021: median last spring -4 C "
+                 "day 100 (10 Apr), median first fall -4 C day 299 (26 Oct); Salmon Arm CS gives days 84 and 307",
+        "url": "https://api.weather.gc.ca/collections/climate-daily/items", "verified": True},
+    "bc_wsa": {
+        "title": "BC Water Sustainability Act: water licences and fish population protection orders",
+        "url": "https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/laws-rules/water-sustainability-act",
+        "verified": False},
 }
 
 

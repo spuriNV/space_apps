@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # backend/api, for
 sys.path.insert(0, str(ROOT / "backend" / "fields"))
 import fieldreg  # noqa: E402  field registry (backend/fields/registry.json)
 
-PRESETS = fieldreg.ids()   # every registry field; the original two first
+PRESETS = fieldreg.ids(region=None)   # every registry field of every region; the original two first
 LAYERS = ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly", "usdm_d2_weeks", "reservoir_storage"]
 DEFAULT_W = {"water_use": 1, "forage_value": 1, "n_fixation": 1, "erosion": 1, "organic_matter": 1, "market": 1,
              "pest_break": 0, "infiltration": 0, "n_scavenging": 0, "income": 0}
@@ -46,6 +46,7 @@ LOOKUP = {
     "calendar_ml": ["backend/ai/out/{p}/calendar_ml.json"],
     "transitions": ["backend/ai/out/{p}/transitions.json"],
     "outlook": ["backend/outlook/out/{p}/outlook.json"],
+    "first_nations": ["backend/api/out/{p}/first_nations.json"],
 }
 FIXTURE = {
     "location": "{p}/location.json", "daily": "{p}/daily.json", "features_weekly": "{p}/features_weekly.json",
@@ -123,6 +124,19 @@ def check_preset(pid: str):
         raise HTTPException(404, f"unknown location {pid}; known: {PRESETS}")
 
 
+# California-only outputs -> the registry's not_available key that explains the gap for a field outside California
+REGION_GAPS = {"openet": "openet", "insurance": "insurance", "outlook": "outlook", "usdm_d2_weeks": "outlook", "reservoir_storage": "sgma",
+               "calendar_ml": "ml_calendar", "stress": "ml_calendar", "transitions": "ml_calendar", "models": "ml_calendar", "water_seen": None}
+
+
+def region_gap(kind: str, pid: str):
+    """404 "not available in BC: <registry reason>" for a California-only output asked of a field outside California."""
+    reg = fieldreg.region(pid)
+    if reg != "ca" and kind in REGION_GAPS:
+        why = (fieldreg.get(pid).get("not_available") or {}).get(REGION_GAPS[kind] or "")
+        raise HTTPException(404, f"{kind} not available in {reg.upper()}" + (f": {why}" if why else ""))
+
+
 def filter_dates(data: dict, key: str, frm: str | None, to: str | None, field: str = "date"):
     if (frm or to) and isinstance(data.get(key), list):
         data[key] = [r for r in data[key] if (not frm or r[field] >= frm) and (not to or r[field] <= to)]
@@ -135,23 +149,25 @@ def health():
 
 
 @app.get("/api/locations")
-def locations(resp: Response, family: str | None = Query(None, pattern="^(rice|forage)$"), county: str | None = None):
+def locations(resp: Response, family: str | None = Query(None, pattern="^(rice|forage)$"), county: str | None = None,
+              region: str | None = Query(None, pattern="^(ca|bc)$")):
     """Every registry field (backend/fields/registry.json). ?family=rice|forage and ?county=<name or FIPS> filter the list;
     `facets` counts all fields by family and county so a picker can build its filters."""
     items, srcs = [], []
-    for f in fieldreg.fields(family, county):
+    for f in fieldreg.fields(family, county, region=region):
         try:
             d, s = resolve("location", f["id"])
         except HTTPException:   # registry field whose payload is not built yet: skip it rather than fail the list
             continue
-        items.append({k: v for k, v in d.items() if k not in ("_fixture", "_source")}); srcs.append(s)
+        items.append({"region": f.get("region", "ca"), **{k: v for k, v in d.items() if k not in ("_fixture", "_source")}}); srcs.append(s)
     src = "real" if srcs and all(s == "real" for s in srcs) else "fixture"
-    fam, cty = {}, {}
-    for f in fieldreg.fields():
+    fam, cty, rgn = {}, {}, {}
+    for f in fieldreg.fields(region=None):
+        rgn[f.get("region", "ca")] = rgn.get(f.get("region", "ca"), 0) + 1
         fam[f["family"]] = fam.get(f["family"], 0) + 1
         cty[f["county"]["name"]] = cty.get(f["county"]["name"], 0) + 1
-    out = {"items": items, "count": len(items), "filters": {"family": family, "county": county},
-           "facets": {"family": fam, "county": dict(sorted(cty.items()))}}
+    out = {"items": items, "count": len(items), "filters": {"family": family, "county": county, "region": region},
+           "facets": {"family": fam, "county": dict(sorted(cty.items())), "region": rgn}}
     if src == "fixture":
         out["_fixture"] = True
     return send(resp, out, src)
@@ -159,7 +175,7 @@ def locations(resp: Response, family: str | None = Query(None, pattern="^(rice|f
 
 @app.get("/api/locations/{pid}")
 def location(pid: str, resp: Response):
-    check_preset(pid); d, s = resolve("location", pid); return send(resp, d, s)
+    check_preset(pid); d, s = resolve("location", pid); d.setdefault("region", fieldreg.region(pid)); return send(resp, d, s)
 
 
 @app.get("/api/locations/{pid}/daily")
@@ -292,7 +308,7 @@ def score(pid: str, req: ScoreRequest, resp: Response):
 
 @app.get("/api/locations/{pid}/models")
 def models(pid: str, resp: Response):
-    check_preset(pid); d, s = resolve("models", pid); return send(resp, d, s)
+    check_preset(pid); region_gap("models", pid); d, s = resolve("models", pid); return send(resp, d, s)
 
 
 @app.get("/api/locations/{pid}/zones")
@@ -305,6 +321,7 @@ def trends(pid: str, resp: Response, layer: str = "smap_anomaly", year: int | No
     check_preset(pid)
     if layer not in LAYERS:
         raise HTTPException(422, f"layer must be one of {LAYERS}")
+    region_gap(layer, pid)
     d, s = resolve("trends", pid, l=layer)
     if "by_year" in d:  # real files hold every year: pick one, default_year when `year` is omitted
         y = year if year is not None else d.get("default_year")
@@ -360,6 +377,7 @@ def crop(cid: str, resp: Response):
 
 
 def _real_only(kind: str, pid: str) -> dict:
+    region_gap(kind, pid)
     for rel in LOOKUP[kind]:
         f = ROOT / rel.format(p=pid)
         if f.is_file():
@@ -387,7 +405,7 @@ def calendar(pid: str, resp: Response, year: int | None = None, source: str = Qu
 @app.get("/api/locations/{pid}/openet")
 def openet(pid: str, resp: Response, from_: str | None = Query(None, alias="from"), to: str | None = None):
     """Monthly measured actual ET (OpenET Ensemble, field polygon) from data/cache/<id>/openet.parquet. Real only."""
-    check_preset(pid)
+    check_preset(pid); region_gap("openet", pid)
     f = ROOT / "data" / "cache" / pid / "openet.parquet"
     if not f.is_file():
         raise HTTPException(404, f"no OpenET cache for {pid}")
@@ -513,6 +531,30 @@ def grid(pid: str, resp: Response, layer: list[str] | None = Query(None)):
             raise HTTPException(422, f"unknown layer(s) {sorted(unknown)}")
         d = {**d, "layers": [l for l in d["layers"] if l["key"] in keep],
              "features": [{**f, "properties": {k: v for k, v in f["properties"].items() if k in keep or (k.startswith("n_") and k[2:] in keep)}} for f in d["features"]]}
+    d["location_id"] = pid
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/first_nations")
+def first_nations(pid: str, resp: Response):
+    """First Nations context for a BC field (backend/bc/build_api.py, facts from docs/bc-first-nations.md). 404 for California."""
+    check_preset(pid)
+    if fieldreg.region(pid) != "bc":
+        raise HTTPException(404, "First Nations context is built for the BC example field only")
+    d = _real_only("first_nations", pid)
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/first_nations/reserves.geojson")
+def first_nations_reserves(pid: str, resp: Response):
+    """Nearby reserve outlines (BC CLSS layer, ~20 km), for the map as context only. BC fields only."""
+    check_preset(pid)
+    f = ROOT / "data" / "cache" / pid / "reserves_nearby.geojson"
+    if fieldreg.region(pid) != "bc":
+        raise HTTPException(404, "First Nations context is built for the BC example field only")
+    if not f.is_file():
+        raise HTTPException(404, f"no reserves_nearby.geojson for {pid} (run backend/bc/fetch_reserves.py)")
+    d = _read(f)
     d["location_id"] = pid
     return send(resp, d, "real")
 

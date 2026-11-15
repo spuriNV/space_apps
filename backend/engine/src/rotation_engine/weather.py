@@ -252,15 +252,32 @@ class StationPrecip:
 _ST: dict[str, StationPrecip | None] = {}
 
 
+def station_cache(preset_id: str) -> Path | None:
+    """The station cache for a field: NOAA NCEI (data/cache/<id>/ncei.parquet, CA) or, when that is absent,
+    ECCC daily climate (data/cache/<id>/eccc.parquet, BC; same columns date/station/tmax_c/tmin_c/prcp_mm)."""
+    for name in ("ncei", "eccc"):
+        p = REPO / "data" / "cache" / preset_id / f"{name}.parquet"
+        if p.exists():
+            return p
+    return None
+
+
+def station_network(preset_id: str) -> str | None:
+    """'ncei', 'eccc' or None (no station cache)."""
+    p = station_cache(preset_id)
+    return p.stem if p else None
+
+
 def load_station_precip(preset_id: str) -> StationPrecip | None:
-    """NOAA NCEI daily PRCP from the regional chunk cache, mean over its selected stations."""
+    """Station daily PRCP (NOAA NCEI, or ECCC for BC) from data/cache, mean over its selected stations."""
     if preset_id in _ST:
         return _ST[preset_id]
-    path = REPO / "data" / "cache" / preset_id / "ncei.parquet"
-    if not path.exists():
+    path = station_cache(preset_id)
+    if path is None:
         _ST[preset_id] = None
         return None
-    meta = json.loads(path.with_name("ncei.meta.json").read_text()) if path.with_name("ncei.meta.json").exists() else {}
+    meta_p = path.with_name(path.stem + ".meta.json")
+    meta = json.loads(meta_p.read_text()) if meta_p.exists() else {}
     df = pd.read_parquet(path)
     df["date"] = pd.to_datetime(df["date"])
     s = df.groupby("date")["prcp_mm"].mean()
@@ -290,11 +307,12 @@ _STT: dict[str, pd.DataFrame | None] = {}
 
 
 def station_temps(preset_id: str) -> pd.DataFrame | None:
-    """NOAA NCEI daily Tmax/Tmin (C), mean over the regional chunk's selected stations that report both that day."""
+    """Station daily Tmax/Tmin (C; NOAA NCEI, or ECCC for BC), mean over the selected stations that report both
+    that day."""
     if preset_id in _STT:
         return _STT[preset_id]
-    path = REPO / "data" / "cache" / preset_id / "ncei.parquet"
-    if not path.exists():
+    path = station_cache(preset_id)
+    if path is None:
         _STT[preset_id] = None
         return None
     df = pd.read_parquet(path)

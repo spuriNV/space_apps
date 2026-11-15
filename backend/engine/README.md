@@ -15,6 +15,7 @@ A small pure-Python package (`rotation_engine`, uv, Python 3.12, numpy/pandas/py
 | `src/rotation_engine/model.py` | Raw metrics: ETc, irrigation need, risk days, exposure, erosion index E |
 | `src/rotation_engine/engine.py` | `score(...)`: ranges, the nine scores plus income, composite, ties, allocation check, constraints |
 | `src/rotation_engine/cli.py` | Writes `out/<preset_id>/strategies.json` |
+| `src/rotation_engine/bc.py` | BC post-pass: rewrites the US-only parts of a BC field's records (see "British Columbia") |
 | `checks/run_checks.py` | PASS/FAIL checks, the OpenET check lines and the sanity table |
 | `checks/validate_et.py` | ETc-vs-OpenET bias decomposition (the table under "Validation against OpenET") |
 | `checks/fetch_gridmet_eto.py` | One-off fetch of OpenET's gridMET reference ETo (1 OpenET query per preset) into `.cache/<id>/gridmet_eto.parquet`; used only by `validate_et.py` |
@@ -47,6 +48,20 @@ recs = score("car_colusa_rice", weights={"water_use": 4, "erosion": 3}, constrai
 - A full call for one preset takes about 0.3 s.
 
 **Weather input.** The engine reads `data/cache/<preset>/power.parquet`, which the regional chunk had already produced. If that file is missing, it fetches POWER daily (no auth) into `backend/engine/.cache/<preset>/`. The second precipitation source is `data/cache/<preset>/ncei.parquet` (regional chunk), averaged over its selected stations. A station-year is used only when it has ≥ 95 % coverage. Remaining gaps are filled with the POWER value for that day. The same NOAA file supplies daily Tmax/Tmin for ETo, using the mean of the stations that report both that day and POWER when none do.
+
+## British Columbia (`bc_salmon_river_forage`)
+
+One BC field (Salmon River valley, Shuswap; registry `fields_other_regions`, `region: "bc"`). It is not in the default run:
+
+```bash
+FIELDSHIFT_FIELDS=bc_salmon_river_forage uv run rotation-engine bc_salmon_river_forage   # -> out/bc_salmon_river_forage/
+```
+
+- **Crops and strategies** (`build_data.py`, designs from `docs/handoff-bc.md`): `alfalfa_hay_bc`, `barley_silage_bc`, `fall_cereal_silage_bc`, `sainfoin_grass_bc`; `bc0_alfalfa` (baseline, 2 cuts), `bc1_barley_break`, `bc2_fall_cereal_silage` (5-year cycles) and `bc3_sainfoin_grass` (dryland). BC strategies carry a `short_name`, which `score()` passes through when present. V: FAO-56 Tables 11/12, Kamloops District Forage Manual (2 cuts, 5-year stand, 3.5 ton/acre), BC Drought Factsheet No. 6 (barley silage ~100 d, ~15 in vs ~36 in for alfalfa), BF04 (sainfoin 1 cut dryland) and the ECCC -4 C dates (10 Apr / 26 Oct, Silver Creek 1991-2021). Everything else is U: yields (alfalfa 6,900 kg DM/ha from 3.5 ton/acre at an assumed 88% DM), stage splits, cut months, cover, ratings, seed costs, the sainfoin Kc (clover-hay proxy), and the transfer of Kamloops and northern-BC sources to the Shuswap.
+- **Weather.** No `ncei.parquet`; `load_station_precip`/`station_temps` fall back to `data/cache/<id>/eccc.parquet` (Salmon Arm CS 116FRMN, Silver Creek 1167337 to 2021), with provenance from `eccc.meta.json`. The POWER cell sits at ~1,025 m vs the field's ~450 m, so the station temperatures drive ETo (PM with POWER Rs/RH/wind). Risk days still use POWER Tmax/Tmin (frost overstated). POWER precipitation is the nominal (~726 mm/yr vs ~500 mm at the stations), so the nominal I is the low side of the range.
+- **BC post-pass** (`bc.py`, only when `fieldreg.region(id) == "bc"`): RMA shares blocked with the registry's `not_available.insurance` text; funding = "BC programs (unverified)" with no rate and no EQIP; income notes "NASS/AMS prices not available in BC" (no `eqip_340_rate` component); OpenET blocked with `not_available.openet`; precip source labels are the ECCC stations, with CIMIS/NOAA listed as not applicable; BC ETo note and scale text; "district/GSA rules" becomes the BC water-licence / Water Sustainability Act wording; `brief.not_available_in_bc` copies the registry reasons. California records never pass through it.
+- **Slope** 1% (0-3%, assumed): NASADEM slope pending. **Observed baseline cover:** `observed.BASELINE_CDL["alfalfa_hay_bc"]` = AAFC ACI "Pasture / Forages" (not alfalfa-specific), but `backend/field/out/bc_salmon_river_forage/calendar.json` does not exist yet, so the baseline uses modelled cover.
+- **Results (default weights, 2015-2025):** ETo 638 mm/yr; baseline 2-cut alfalfa ETc 528 mm, I 254 mm (190-412), vs CAF0's 1,174 mm. Barley-silage ETc 302 mm against the factsheet's ~381 mm (15 in). All four composites tie within uncertainty. **Erosion is 50 for all four:** POWER has no day >= 25 mm in 2015-2025 here (the stations have 2), so E = 0 everywhere and the score says nothing in BC with the CA rain threshold.
 
 ## Formula-to-spec mapping
 

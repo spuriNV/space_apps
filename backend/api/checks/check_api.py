@@ -12,7 +12,9 @@ from referencing import Registry, Resource  # noqa: E402
 
 from app.main import ROOT, PRESETS, LAYERS, app, fieldreg  # noqa: E402
 
-ALL_FIELDS = list(PRESETS)                      # every registry field gets the core routes (below)
+ALL_FIELDS = list(PRESETS)                      # every registry field of every region gets the core routes (below)
+CA_FIELDS = fieldreg.ids(region="ca")           # California counts stay on region="ca"
+BC_FIELDS = fieldreg.ids(region="bc")
 PRESETS = [p for p in PRESETS if fieldreg.is_original(p)]   # the original two get every route and content check
 
 SCHEMAS = ROOT / "schemas"
@@ -148,23 +150,24 @@ check("GET", "/api/locations/nope/transitions", ANY, expect=404)
 # ---- registry: list, filters, and the core routes for every field
 rl = client.get("/api/locations").json()
 BUILT = [p for p in ALL_FIELDS if (ROOT / "backend/api/out" / p / "location.json").exists()]   # payloads built so far
-ok = rl["count"] == len(BUILT) and len(ALL_FIELDS) == 14 and [i["id"] for i in rl["items"]][:2] == ["car_colusa_rice", "caf_tulare_forage"]
-fails += not ok; print(("PASS" if ok else "FAIL") + f" /api/locations lists {rl['count']} built of {len(ALL_FIELDS)} registry fields, originals first")
+ok = rl["count"] == len(BUILT) and len(CA_FIELDS) == 14 and [i["id"] for i in rl["items"]][:2] == ["car_colusa_rice", "caf_tulare_forage"]
+fails += not ok; print(("PASS" if ok else "FAIL") + f" /api/locations lists {rl['count']} built of {len(ALL_FIELDS)} registry fields ({len(CA_FIELDS)} CA), originals first")
 if len(BUILT) < len(ALL_FIELDS):
     print(f"INFO registry fields not built yet (skipped by /api/locations): {[p for p in ALL_FIELDS if p not in BUILT]}")
 for q, fam, cty in (("family=rice", "rice", None), ("family=forage", "forage", None), ("county=Tulare", None, "Tulare"),
                     ("county=06031", None, "06031"), ("family=forage&county=kings", "forage", "kings"),
                     ("county=Colusa", None, "Colusa"), ("family=rice&county=Kings", "rice", "Kings")):
-    want = len([f for f in fieldreg.fields(fam, cty) if f["id"] in BUILT])
-    n = client.get(f"/api/locations?{q}").json()["count"]
-    ok = n == want
-    fails += not ok; print(("PASS" if ok else "FAIL") + f" /api/locations?{q} -> {n} (want {want})")
+    for rq, rg in (("", None), ("&region=ca", "ca")):   # no region filter = every region; region=ca = California only
+        want = len([f for f in fieldreg.fields(fam, cty, region=rg) if f["id"] in BUILT])
+        n = client.get(f"/api/locations?{q}{rq}").json()["count"]
+        ok = n == want
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" /api/locations?{q}{rq} -> {n} (want {want})")
 check("GET", "/api/locations?family=wheat", ANY, expect=422)
-ok = all(i.get("family") and i.get("farmer_name") and i.get("acres") and (i.get("water") or {}).get("sgma_subbasin")
-         for i in rl["items"])
-fails += not ok; print(("PASS" if ok else "FAIL") + " every location item has family, farmer_name, acres, water.sgma_subbasin")
+ok = all(i.get("family") and i.get("farmer_name") and i.get("acres") and i.get("region") in ("ca", "bc") for i in rl["items"]) and \
+    all((i.get("water") or {}).get("sgma_subbasin") for i in rl["items"] if i["region"] == "ca")
+fails += not ok; print(("PASS" if ok else "FAIL") + " every location item has region, family, farmer_name, acres; every CA item water.sgma_subbasin")
 for p in BUILT:
-    if p in PRESETS:
+    if p in PRESETS or p not in CA_FIELDS:
         continue
     L = f"/api/locations/{p}"
     check("GET", L, validator("location.schema.json"))
@@ -182,6 +185,76 @@ for p in BUILT:
                        ("/calendar_ml", "backend/ai/out/{p}/calendar_ml.json"), ("/transitions", "backend/ai/out/{p}/transitions.json"),
                        ("/outlook", "backend/outlook/out/{p}/outlook.json")):
         check("GET", L + route, ANY, expect=200 if (ROOT / rel.format(p=p)).exists() else 404)
+
+# ---- British Columbia: core routes 200 + schema; California-only routes 404 "not available in BC: <registry reason>"
+CA_ONLY = ["/openet", "/insurance", "/outlook", "/calendar_ml", "/stress", "/water_seen", "/transitions", "/models",
+           "/trends?layer=usdm_d2_weeks&year=2023", "/trends?layer=reservoir_storage&year=2023"]
+for p in BC_FIELDS:
+    if p not in BUILT:
+        fails += 1; print(f"FAIL {p} payloads not built (cd backend/api && uv run python ../bc/build_api.py)"); continue
+    L = f"/api/locations/{p}"
+    reasons = fieldreg.get(p).get("not_available", {})
+    loc = check("GET", L, validator("location.schema.json"))
+    if loc is not None and loc.status_code == 200:
+        j = loc.json()
+        ok = (j["region_adapter"] == "bc" and j.get("region") == "bc" and {g["id"] for g in j.get("data_gaps", [])} == set(reasons)
+              and bool((j.get("water_context") or {}).get("orders")) and j["water"].get("example_limit_af_ac", {}).get("value") == 3.0
+              and all(s_["network"] == "ECCC" for s_ in j["stations"]))
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} location: region bc, data_gaps = registry not_available, water_context, example limit 3.0, ECCC stations")
+    n = client.get(f"/api/locations?region=bc").json()
+    ok = n["count"] == 1 and n["items"][0]["id"] == p and n["facets"]["region"].get("bc") == len(BC_FIELDS)
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" /api/locations?region=bc -> {n['count']} ({p}), region facet {n['facets'].get('region')}")
+    check("GET", L + "/daily?from=2023-03-01&to=2023-03-31", validator("responses.schema.json", "Daily"))
+    check("GET", L + "/features/weekly", validator("responses.schema.json", "FeaturesWeekly"))
+    check("GET", L + "/validation", validator("responses.schema.json", "Validation"))
+    for layer in ("heatwave_days", "precip_anomaly"):
+        check("GET", L + f"/trends?layer={layer}&year=2023", validator("responses.schema.json", "Trends"))
+    for layer in ("grace_gw_pct", "smap_anomaly", "modis_ndvi_anomaly"):
+        built = (ROOT / "backend/api/out" / p / f"trends_{layer}.json").exists()
+        check("GET", L + f"/trends?layer={layer}&year=2023", validator("responses.schema.json", "Trends") if built else ANY, expect=200 if built else 404)
+    rn = check("GET", L + "/news", validator("responses.schema.json", "News"))
+    if rn is not None and rn.status_code == 200:
+        its = rn.json()["items"]
+        ok = len(its) > 0 and all(i["query_id"].startswith("bc_") for i in its)
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /news has {len(its)} BC items and no California news")
+    check("GET", L + "/nasa_series?from=2023-01-01&to=2023-12-31", ANY)
+    check("GET", L + "/nasa_now?date=2023-08-16", ANY)
+    has_strat = (ROOT / "backend/engine/out" / p / "strategies.json").exists()
+    if has_strat:
+        r = check("GET", L + "/strategies", validator("responses.schema.json", "Strategies"))
+        check("POST", L + "/score", validator("responses.schema.json", "Score"), {"weights": {"water_use": 4}})
+        for cid in sorted({c["crop_id"] for s_ in (r.json()["items"] if r is not None and r.status_code == 200 else []) for c in s_["calendar"]}):
+            check("GET", f"/api/crops/{cid}", validator("crop.schema.json"))
+    else:
+        print(f"INFO {p} engine strategies not built yet (backend/engine/out/{p}/strategies.json); /strategies must 404")
+        check("GET", L + "/strategies", ANY, expect=404)
+    for route, rel in (("/calendar", "backend/field/out/{p}/calendar.json"), ("/grid", "backend/field/out/{p}/grid.geojson"),
+                       ("/zones", "backend/api/out/{p}/zones.json"), ("/calendar?source=hls", "backend/nasa/out/{p}/calendar_hls.json")):
+        check("GET", L + route, ANY, expect=200 if (ROOT / rel.format(p=p)).exists() else 404)
+    for route in CA_ONLY:
+        r = check("GET", L + route, ANY, expect=404)
+        det = (r.json().get("detail", "") if r is not None and r.status_code == 404 else "")
+        ok = "not available in BC" in det and (det.split(": ", 1)[-1] in reasons.values() or route == "/water_seen")
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} {route} 404 says: {det[:90]}")
+    rf = check("GET", L + "/first_nations", validator("first_nations.schema.json"))
+    if rf is not None and rf.status_code == 200:
+        j = rf.json(); lf = client.get(L).json().get("first_nations") or {}
+        ok = (j["engagement_steps"][0].startswith("Contact Splatsin first") and j["lower_river_nation"]["nation"] == "Splatsin"
+              and j["nearby"] == sorted(j["nearby"], key=lambda r_: r_["distance_to_field_km"]) and j["nearest_km"] == j["nearby"][0]["distance_to_field_km"]
+              and lf.get("statement") == j["statement"] and lf.get("nearest_km") == j["nearest_km"])
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /first_nations: Splatsin first, nearby sorted, nearest {j['nearest_km']} km, summary in location.json")
+    if (ROOT / "data/cache" / p / "reserves_nearby.geojson").exists():
+        rg_ = check("GET", L + "/first_nations/reserves.geojson", ANY)
+        ok = rg_ is not None and rg_.status_code == 200 and rg_.json()["type"] == "FeatureCollection" and len(rg_.json()["features"]) > 0
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} reserves.geojson is a FeatureCollection")
+for p in CA_FIELDS[:2]:   # First Nations context is BC only
+    for route in ("/first_nations", "/first_nations/reserves.geojson"):
+        r = check("GET", f"/api/locations/{p}{route}", ANY, expect=404)
+        ok = r is not None and "built for the BC example field only" in r.json().get("detail", "")
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} {route} 404 BC only")
+for p in CA_FIELDS[:2]:   # California is untouched by the BC gate
+    for route in ("/openet", "/insurance", "/water_seen"):
+        check("GET", f"/api/locations/{p}{route}", ANY)
 check("GET", "/api/bc/news", validator("responses.schema.json", "News"))
 check("GET", "/api/bc/signal", validator("responses.schema.json", "BcSignal"))
 rg = check("GET", "/api/glossary", validator("responses.schema.json", "Glossary"))
