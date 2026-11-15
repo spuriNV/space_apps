@@ -28,7 +28,7 @@ export function FieldTimeline(p: {
   const track = useRef<HTMLDivElement>(null);
   const y = yearOf(p.t), d = dekadOf(p.t);
   const last = p.cal ? yearOf(lastDataT(p.cal)) : yearOf(TODAY_T);
-  const yearRow = p.cal?.years.find((x) => x.year === y);
+  const yearRow = (p.cal?.years ?? []).find((x) => x.year === y);
   const rule = yearRow?.rule ?? 'u'.repeat(36);
   const tMin = p.sim ? tOf(p.sim.year, 0) : tOf(Math.max(2016, last - 3), 0);
   const tMax = p.sim ? tOf(p.sim.year, 35) : Math.min(T_MAX, TODAY_T);
