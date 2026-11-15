@@ -37,7 +37,7 @@ from rasterio.windows import from_bounds
 from shapely.geometry import Point, mapping, shape
 from shapely.ops import transform as shp_transform
 
-from .common import CROP_WINDOWS, FIELD_DIR, PRESETS, YEARS, ai_cache, cache, now, read_json, write_json
+from .common import CROP_WINDOWS, FIELD_DIR, PRESETS, TRAINED, YEARS, ai_cache, cache, now, read_json, write_json
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 MPC = "https://planetarycomputer.microsoft.com/api/stac/v1"
@@ -275,5 +275,5 @@ if __name__ == "__main__":
     ap.add_argument("presets", nargs="*")
     ap.add_argument("--n", type=int, default=250)
     a = ap.parse_args()
-    for p in (a.presets or PRESETS):
+    for p in (a.presets or [x for x in PRESETS if x in TRAINED]):   # only the original two have training samples
         run(p, a.n)
