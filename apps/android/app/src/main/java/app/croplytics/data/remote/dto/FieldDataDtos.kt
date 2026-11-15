@@ -9,9 +9,16 @@ import kotlinx.serialization.json.JsonObject
 @Serializable
 data class CalendarDto(
     @SerialName("data_through") val dataThrough: String? = null,
+    val detector: String? = null,
+    val source: String? = null,
+    @SerialName("disagreement_with_rule_obs_pct") val disagreementPct: Double? = null,
+    @SerialName("crop_history") val cropHistory: CalendarCropHistoryDto? = null,
     val years: List<CalendarYearDto> = emptyList(),
     val sources: List<SourceDto> = emptyList(),
 )
+
+@Serializable
+data class CalendarCropHistoryDto(@SerialName("by_year") val byYear: Map<String, String> = emptyMap())
 
 @Serializable
 data class CalendarYearDto(
@@ -64,7 +71,11 @@ data class NasaNowDto(
 data class StrategiesDto(val items: List<StrategyDto> = emptyList())
 
 @Serializable
-data class ScoreRequestDto(val allocation: Double)
+data class ScenarioDto(@SerialName("dT_c") val dTc: Double = 0.0, @SerialName("dP_pct") val dPPct: Double = 0.0)
+
+/** POST /score body: water limit (acre-ft/acre), the grower's priorities (0-4 per score) and a rain / heat what-if. */
+@Serializable
+data class ScoreRequestDto(val allocation: Double, val weights: Map<String, Double>? = null, val scenario: ScenarioDto? = null)
 
 @Serializable
 data class ScoreResponseDto(
@@ -83,10 +94,17 @@ data class StrategyCalendarDto(
 
 @Serializable
 data class ExposureDto(
+    val replay: Map<String, ReplayDto> = emptyMap(),
     @SerialName("bare_days_per_year") val bareDays: SourcedNumberDto? = null,
     @SerialName("exposed_rain_days") val exposedRainDays: SourcedNumberDto? = null,
     @SerialName("exposed_heat_days") val exposedHeatDays: SourcedNumberDto? = null,
     @SerialName("exposed_frost_days") val exposedFrostDays: SourcedNumberDto? = null,
+)
+
+@Serializable
+data class ReplayDto(
+    @SerialName("irrigation_need_mm") val irrigationNeedMm: SourcedNumberDto? = null,
+    @SerialName("exposed_rain_days") val exposedRainDays: SourcedNumberDto? = null,
 )
 
 @Serializable
@@ -100,6 +118,7 @@ data class StrategyWaterDto(
     @SerialName("irrigation_need_af_ac") val irrigationNeedAfAc: SourcedNumberDto? = null,
     @SerialName("irrigation_need_mm") val irrigationNeedMm: SourcedNumberDto? = null,
     @SerialName("etc_vs_openet_pct") val etcVsOpenetPct: SourcedNumberDto? = null,
+    @SerialName("etc_by_month_mm") val etcByMonthMm: List<kotlinx.serialization.json.JsonElement> = emptyList(),
     @SerialName("openet_et_mm_season") val openetEtMmSeason: SourcedNumberDto? = null,
     @SerialName("allocation_check") val allocationCheck: AllocationCheckDto? = null,
 )
@@ -190,6 +209,9 @@ data class ReservoirDto(
     @SerialName("storage_af") val storageAf: SourcedNumberDto? = null,
     @SerialName("pct_of_capacity") val pctOfCapacity: SourcedNumberDto? = null,
     @SerialName("pct_of_cdec_average") val pctOfAverage: SourcedNumberDto? = null,
+    @SerialName("pct_of_own_average") val pctOfOwnAverage: SourcedNumberDto? = null,
+    @SerialName("storage_year_ago_af") val storageYearAgoAf: SourcedNumberDto? = null,
+    @SerialName("latest_daily_date") val latestDailyDate: String? = null,
 )
 
 @Serializable
@@ -208,7 +230,35 @@ data class SwpDto(
 )
 
 @Serializable
-data class AllocationsContextDto(val cvp: CvpDto? = null, val swp: SwpDto? = null)
+data class StorageAllocRowDto(
+    @SerialName("allocation_year") val allocationYear: Int = 0,
+    @SerialName("pct_of_capacity") val pctOfCapacity: Double? = null,
+    @SerialName("cvp_south_of_delta_ag_pct") val southAg: Double? = null,
+    @SerialName("cvp_settlement_contractors_pct") val settlement: Double? = null,
+    @SerialName("partial_year") val partial: Boolean? = null,
+)
+
+@Serializable
+data class StorageVsAllocDto(
+    val rows: List<StorageAllocRowDto> = emptyList(),
+    @SerialName("shasta_13nov_2026_af") val shastaNowAf: Double? = null,
+)
+
+@Serializable
+data class AllocationsContextDto(
+    val cvp: CvpDto? = null,
+    val swp: SwpDto? = null,
+    @SerialName("storage_vs_final_allocation") val storageVsAlloc: StorageVsAllocDto? = null,
+)
+
+@Serializable
+data class SnowNowDto(@SerialName("swe_inches") val sweInches: SourcedNumberDto? = null, @SerialName("report_date") val reportDate: String? = null)
+
+@Serializable
+data class Bulletin120Dto(val status: String? = null)
+
+@Serializable
+data class SnowpackDto(@SerialName("snow_now_statewide") val snowNow: SnowNowDto? = null, @SerialName("bulletin_120") val bulletin120: Bulletin120Dto? = null)
 
 @Serializable
 data class BareWindowDto(
@@ -261,6 +311,7 @@ data class OutlookDto(
     @SerialName("field_expectations_from_history") val fieldExpectations: FieldExpectationsDto? = null,
     @SerialName("irrigation_2027") val irrigation2027: Irrigation2027Dto? = null,
     @SerialName("plain_language_summary") val plainLanguageSummary: String? = null,
+    @SerialName("snowpack_runoff") val snowpack: SnowpackDto? = null,
     @SerialName("blocked_or_not_yet_published") val blocked: List<BlockedItemDto> = emptyList(),
 )
 
@@ -285,7 +336,10 @@ data class ModelsDto(val items: List<ModelDto> = emptyList())
 data class OpenEtAnnualDto(val year: Int = 0, @SerialName("et_mm") val etMm: Double? = null, val months: Int = 0)
 
 @Serializable
-data class OpenEtDto(val annual: List<OpenEtAnnualDto> = emptyList(), val note: String? = null)
+data class OpenEtDto(val annual: List<OpenEtAnnualDto> = emptyList(), val rows: List<OpenEtRowDto> = emptyList(), val note: String? = null)
+
+@Serializable
+data class OpenEtRowDto(val date: String = "", val month: String? = null, @SerialName("et_in") val etIn: Double? = null, @SerialName("et_mm") val etMm: Double? = null)
 
 @Serializable
 data class GlossaryItemDto(
@@ -307,7 +361,10 @@ data class WaterSeasonDto(
 )
 
 @Serializable
-data class WaterSeenDto(val summary: String? = null, val seasons: List<WaterSeasonDto> = emptyList())
+data class WaterSeenDto(val summary: String? = null, val seasons: List<WaterSeasonDto> = emptyList(), val scenes: List<WaterSceneDto> = emptyList())
+
+@Serializable
+data class WaterSceneDto(val date: String = "", @SerialName("water_frac") val waterFrac: Double? = null, val clear: Boolean = false)
 
 @Serializable
 data class StressYearDto(
@@ -322,7 +379,18 @@ data class StressYearDto(
 data class StressSummaryDto(@SerialName("by_year") val byYear: Map<String, StressYearDto> = emptyMap())
 
 @Serializable
-data class StressDto(val summary: StressSummaryDto? = null)
+data class StressDto(val summary: StressSummaryDto? = null, val weeks: List<StressWeekDto> = emptyList())
+
+@Serializable
+data class StressWeekDto(
+    @SerialName("week_start") val weekStart: String = "",
+    @SerialName("iso_year") val isoYear: Int? = null,
+    val status: String? = null,
+    val drivers: List<String> = emptyList(),
+    @SerialName("tmax_c") val tmaxC: Double? = null,
+    val crop: String? = null,
+    val evaluated: Boolean? = null,
+)
 
 @Serializable
 data class InsuranceProfileDto(
@@ -334,4 +402,4 @@ data class InsuranceProfileDto(
 )
 
 @Serializable
-data class InsuranceDto(val years: List<Int> = emptyList(), val profiles: Map<String, InsuranceProfileDto> = emptyMap())
+data class InsuranceDto(val years: List<Int> = emptyList(), val profiles: Map<String, InsuranceProfileDto> = emptyMap(), @SerialName("page_url") val pageUrl: String? = null)

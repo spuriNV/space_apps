@@ -73,14 +73,29 @@ data class SoilDto(
     @SerialName("om_pct") val omPct: SourcedNumberDto? = null,
     @SerialName("texture_class") val textureClass: String? = null,
     @SerialName("ec_ds_per_m") val ecDsPerM: Double? = null,
+    @SerialName("texture_detail") val textureDetail: TextureDetailDto? = null,
+)
+
+@Serializable
+data class TextureDetailDto(
+    @SerialName("sand_pct") val sandPct: Double? = null,
+    @SerialName("silt_pct") val siltPct: Double? = null,
+    @SerialName("clay_pct") val clayPct: Double? = null,
 )
 
 @Serializable
 data class TerrainDto(
     @SerialName("slope_mean_pct") val slopeMeanPct: SourcedNumberDto? = null,
+    @SerialName("slope_p90_pct") val slopeP90Pct: SourcedNumberDto? = null,
     @SerialName("low_spot_fraction") val lowSpotFraction: SourcedNumberDto? = null,
     @SerialName("elev_m") val elevM: SourcedNumberDto? = null,
 )
+
+@Serializable
+data class DatasetStatusDto(val status: String? = null, val reason: String? = null)
+
+@Serializable
+data class SgmaStatusDto(val text: String? = null, val url: String? = null, val verified: Boolean? = null)
 
 @Serializable
 data class AllocationInputDto(val value: Double? = null, val unit: String? = null)
@@ -91,6 +106,9 @@ data class WaterDto(
     @SerialName("allocation_input") val allocationInput: AllocationInputDto? = null,
     val district: String? = null,
     @SerialName("sgma_subbasin") val sgmaSubbasin: String? = null,
+    @SerialName("sgma_status") val sgmaStatus: SgmaStatusDto? = null,
+    val lookup: Boolean? = null,
+    val verified: Boolean? = null,
 )
 
 @Serializable
@@ -118,8 +136,12 @@ data class FieldEventDto(
     val date: String = "",
     val type: String? = null,
     val title: String = "",
+    /** One or two words for the timeline buttons ("2022 drought"). */
+    val short: String? = null,
     val url: String? = null,
     val verified: Boolean? = null,
+    val detail: String? = null,
+    @SerialName("end_date") val endDate: String? = null,
 )
 
 @Serializable
@@ -130,6 +152,14 @@ data class LocationDto(
     /** Newer payloads carry `county` as `{fips, name}`; older ones only `county_fips`. */
     val county: JsonElement? = null,
     @SerialName("county_fips") val countyFips: String? = null,
+    @SerialName("county_name") val countyNameApi: String? = null,
+    /** Crop family ("rice", "forage") from the field registry. */
+    val family: String? = null,
+    /** "ca" (default) or "bc". */
+    val region: String? = null,
+    /** Backend fetch status per dataset (`datasets.<id>.status`), for the NASA list. */
+    val datasets: Map<String, DatasetStatusDto> = emptyMap(),
+    @SerialName("market_preference") val marketPreference: String? = null,
     val acres: Double? = null,
     val geometry: GeometryDto? = null,
     val centroid: LatLonDto = LatLonDto(),
@@ -145,7 +175,7 @@ data class LocationDto(
 ) {
     /** County name from `county` (string or object), else null. */
     val countyName: String?
-        get() = when (val c = county) {
+        get() = countyNameApi ?: when (val c = county) {
             is JsonPrimitive -> c.contentOrNull
             is JsonObject -> (c["name"] as? JsonPrimitive)?.contentOrNull
             else -> null

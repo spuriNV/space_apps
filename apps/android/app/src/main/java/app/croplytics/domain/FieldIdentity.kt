@@ -19,7 +19,19 @@ data class FieldIdentity(
     val stateFieldNo: String?,
     val lat: Double,
     val lon: Double,
+    /** "rice", "forage" or "other" (from the API, else from the id: car_ rice, caf_ forage). */
+    val family: String = "other",
+    /** "ca" or "bc". */
+    val region: String = "ca",
+    /** One line of what is notable about the field, from its record (the pick list). */
+    val notable: String = "",
 ) {
+    /** "Kings County" in California; "Columbia-Shuswap, BC" in British Columbia. */
+    val place: String get() = if (region == "bc") "${county ?: ""}, BC" else "${county ?: ""} County"
+    /** "State field no. 0605542, 39.1414° N, 122.0833° W". */
+    val idLine: String get() = (stateFieldNo?.let { "State field no. $it" } ?: id.uppercase()) +
+        String.format(java.util.Locale.US, ", %.4f° N, %.4f° W", lat, kotlin.math.abs(lon))
+
     /** "149 acres, rice in 2025, Colusa County". */
     val subtitle: String
         get() = listOfNotNull(
@@ -39,6 +51,9 @@ object FieldNames {
         val c = raw.orEmpty().replace(Regex("\\s*\\(CDL pending\\)", RegexOption.IGNORE_CASE), "").trim()
         return when {
             c.isEmpty() -> "Not recorded"
+            c.startsWith("Pasture / Forages") -> "Hay or pasture"
+            c.startsWith("Agriculture (undifferentiated)") -> "Farmland, crop not identified"
+            c.startsWith("Not mapped") -> "Not mapped"
             c.startsWith("Fallow") -> "Left fallow"
             c.startsWith("Dbl Crop WinWht/Corn") -> "Wheat, then corn"
             c.startsWith("Dbl Crop ") -> c.removePrefix("Dbl Crop ").replaceFirst("/", ", then ")
@@ -128,7 +143,20 @@ object FieldNames {
         val name = loc.farmerName?.takeIf { it.isNotBlank() }
             ?: near?.let { "${main.substringBefore(",")} field $it" }
             ?: loc.name.ifBlank { loc.id }
+        val fallow = hist.filter { (y, c) -> y >= 2016 && cropName(c) == "Left fallow" }.keys.sorted()
+        val notes = buildList {
+            if (2022 in fallow) add("Left fallow in the 2022 drought") else if (fallow.isNotEmpty()) add("Left fallow in ${fallow.last()}")
+            val w = loc.water
+            val district = w?.district?.takeUnless { it.contains("(U)") || it.isBlank() }
+            when {
+                w?.source == "surface" -> add(if (district != null) "surface water, $district" else "surface water")
+                w?.source != null -> add(if (w.sgmaStatus?.text?.contains("probation", true) == true) "wells; basin on state probation" else "wells")
+            }
+        }.joinToString("; ")
         return FieldIdentity(
+            family = loc.family ?: when { loc.id.startsWith("car") -> "rice"; loc.id.startsWith("caf") -> "forage"; else -> "other" },
+            region = loc.region ?: "ca",
+            notable = if (notes.isEmpty()) "" else notes.replaceFirstChar { it.uppercase() } + ".",
             id = loc.id,
             name = name,
             county = county,

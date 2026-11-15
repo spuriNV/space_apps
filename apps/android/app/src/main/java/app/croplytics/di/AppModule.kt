@@ -11,6 +11,7 @@ import app.croplytics.data.local.CacheDao
 import app.croplytics.data.local.CacheDatabase
 import app.croplytics.data.local.DataStoreFieldPrefs
 import app.croplytics.data.local.FieldPrefs
+import app.croplytics.data.local.FileStore
 import app.croplytics.data.remote.CropLyticsApi
 import app.croplytics.data.repository.DefaultFieldRepository
 import app.croplytics.data.repository.FieldRepository
@@ -105,10 +106,17 @@ object AppModule {
     @Provides
     @Singleton
     fun repository(
+        @ApplicationContext context: Context,
         api: CropLyticsApi,
         dao: CacheDao,
         prefs: FieldPrefs,
         json: Json,
         @ApplicationScope scope: CoroutineScope,
-    ): FieldRepository = DefaultFieldRepository(api, dao, prefs, json, scope)
+        clock: Clock,
+    ): FieldRepository = DefaultFieldRepository(
+        api, dao, prefs, json, scope, clock,
+        blobs = FileStore(context.filesDir.resolve("blobs")),
+        // the web app serves its own files (ISS photos) from the same host as the API
+        webBase = BuildConfig.API_BASE_URL.removeSuffix("/").removeSuffix("api") ,
+    )
 }

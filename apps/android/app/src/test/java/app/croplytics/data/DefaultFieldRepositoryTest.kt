@@ -69,6 +69,8 @@ class DefaultFieldRepositoryTest {
         server.shutdown()
     }
 
+    private val blobs = InMemoryCacheDao()
+
     private fun repo(config: RepositoryConfig = RepositoryConfig(wakeAfterMs = 2_000)) = DefaultFieldRepository(
         api = Retrofit.Builder()
             .baseUrl(server.url("/api/"))
@@ -82,6 +84,7 @@ class DefaultFieldRepositoryTest {
         appScope = scope,
         clock = clock,
         config = config,
+        blobs = blobs,
     )
 
     private fun ok(name: String) = MockResponse().setResponseCode(200).setBody(Fixtures.text(name))
@@ -176,6 +179,34 @@ class DefaultFieldRepositoryTest {
         val req = server.takeRequest()
         assertEquals("POST", req.method)
         assertEquals("""{"allocation":3.0}""", req.body.readUtf8())
-        assertTrue(dao.rows.containsKey("score/car_colusa_rice/3.00"))
+        assertTrue(dao.rows.keys.any { it.startsWith("score/car_colusa_rice/3.00/") })
+    }
+
+    @Test
+    fun `the calendar falls back to Landsat and Sentinel-2 when HLS is not served, with the ML comparison`() = runBlocking {
+        server.dispatcher = object : okhttp3.mockwebserver.Dispatcher() {
+            override fun dispatch(request: okhttp3.mockwebserver.RecordedRequest): MockResponse = when {
+                request.path!!.contains("calendar?source=hls") -> MockResponse().setResponseCode(404)
+                request.path!!.endsWith("/calendar") -> ok("calendar_car.json")
+                request.path!!.endsWith("/calendar_ml") -> ok("calendar_ml_car.json")
+                request.path!!.endsWith("/models") -> ok("models_car.json")
+                else -> MockResponse().setResponseCode(404)
+            }
+        }
+        val b = (repo().calendar("car_colusa_rice").first { it is LoadState.Ready } as LoadState.Ready).data
+        assertEquals(false, b.calendar.hls)
+        assertTrue(b.calendar.hasMl)
+        assertEquals((2016..2026).toList(), b.calendar.years.map { it.year })
+        assertTrue(b.calendar.year(2026)!!.rule.any { it != 'u' })
+        assertEquals("random forest", b.ml!!.model)
+    }
+
+    @Test
+    fun `the daily record is parsed small and kept in the file store, not Room`() = runBlocking {
+        server.enqueue(ok("daily_car.json"))
+        val d = (repo().daily("car_colusa_rice").first { it is LoadState.Ready } as LoadState.Ready).data
+        assertTrue(d.dates.size > 1000)
+        assertTrue(blobs.rows.containsKey("daily/car_colusa_rice"))
+        assertTrue(!dao.rows.containsKey("daily/car_colusa_rice"))
     }
 }

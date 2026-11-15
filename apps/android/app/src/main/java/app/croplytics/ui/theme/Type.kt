@@ -26,17 +26,17 @@ val LibreFranklin = FontFamily(
 
 private val tight = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None)
 
-/** All sizes in sp so the grower's font-size setting scales every line. */
+/** docs/ui-redesign-spec.md 3.6, in sp so the grower's font size scales every line: 28 / 22 / 20 / 16 / 14.5 / 13. */
 val CropLyticsTypography = Typography(
-    headlineMedium = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 26.sp, lineHeight = 30.sp),
-    headlineSmall = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 22.sp, lineHeight = 27.sp),
-    titleLarge = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 20.sp, lineHeight = 25.sp),
-    titleMedium = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 18.sp, lineHeight = 23.sp),
-    titleSmall = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.Medium, fontSize = 17.sp, lineHeight = 22.sp),
-    bodyLarge = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 23.sp),
-    bodyMedium = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp),
-    bodySmall = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 13.sp, lineHeight = 18.sp, lineHeightStyle = tight),
-    labelLarge = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, lineHeight = 20.sp),
-    labelMedium = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, lineHeight = 17.sp),
-    labelSmall = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 16.sp),
+    headlineMedium = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 28.sp, lineHeight = 32.sp),
+    headlineSmall = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 22.sp, lineHeight = 26.sp),
+    titleLarge = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 22.sp, lineHeight = 26.sp),
+    titleMedium = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 20.sp, lineHeight = 25.sp),
+    titleSmall = TextStyle(fontFamily = ZillaSlab, fontWeight = FontWeight.SemiBold, fontSize = 18.sp, lineHeight = 23.sp),
+    bodyLarge = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 22.sp),
+    bodyMedium = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 22.sp),
+    bodySmall = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 14.5.sp, lineHeight = 20.sp, lineHeightStyle = tight),
+    labelLarge = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, lineHeight = 20.sp),
+    labelMedium = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.SemiBold, fontSize = 14.5.sp, lineHeight = 18.sp),
+    labelSmall = TextStyle(fontFamily = LibreFranklin, fontWeight = FontWeight.Normal, fontSize = 13.sp, lineHeight = 17.sp),
 )
