@@ -7,6 +7,7 @@ import type { ProvMap, Prov } from '../../api';
 import { SOIL_COLOR, dateToT, fmtDate, haToAc, yearOf, dekadOf } from '../../lib';
 const MONTHS_FULL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 import Icon from '../Icons';
+import type { ReactNode } from 'react';
 
 const known = (s?: string | null) => !!(s && s.trim() && !/^(unknown|n\/?a|none)$/i.test(s.trim()));
 /** Soil facts in plain words. Missing values return null. */
@@ -122,6 +123,20 @@ export const FLOW: { n: number; id: Step | 'pick' | 'now'; label: string; short:
   { n: 4, id: 'compare', label: 'Compare rotations', short: 'Compare', does: 'What you’d gain or give up' },
   { n: 5, id: 'brief', label: 'Print for your adviser', short: 'Print', does: 'One page to take with you' },
 ];
+/** Top of each step's panel: where you are, the step's name, and one sentence on why you are here.
+ *  After the USWDS step indicator ("Step 2 of 5") and the GOV.UK one-question-per-page heading. */
+export function StepHead({ id, title, purpose, children }: { id: (typeof FLOW)[number]['id']; title: string; purpose: ReactNode; children?: ReactNode }) {
+  const i = FLOW.findIndex((s) => s.id === id);
+  return (
+    <header className="step-head" data-testid={`step-head-${id}`}>
+      <p className="step-of">Step {i + 1} of {FLOW.length}</p>
+      <ol className="step-bar" aria-hidden="true">{FLOW.map((s, k) => <li key={s.id} className={k < i ? 'done' : k === i ? 'on' : ''} />)}</ol>
+      <h1>{title}</h1>
+      <p className="step-purpose">{purpose}</p>
+      {children}
+    </header>
+  );
+}
 /** Problem → what this tool does → goal. Shown on Pick; step list lives in the docked sidebar. */
 export function Workflow({ current, problem, hideSteps }: { current: 'pick' | 'now' | 'season' | 'compare' | 'brief'; problem?: boolean; hideSteps?: boolean }) {
   const i = FLOW.findIndex((x) => x.id === current);

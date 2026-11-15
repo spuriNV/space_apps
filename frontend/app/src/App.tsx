@@ -290,7 +290,7 @@ export default function App() {
             )}
           </main>
           <aside className={`bottombar ${step === 'pick' ? 'idle' : ''}`} ref={setBottomEl} data-testid="bottombar">
-            {step === 'pick' && <p className="bottom-hint">Tap a field on the left — or the pin on the map.</p>}
+            {step === 'pick' && <p className="bottom-hint">Pick a field on the left to begin, or tap its pin on the map.</p>}
           </aside>
         </div>
       </div>

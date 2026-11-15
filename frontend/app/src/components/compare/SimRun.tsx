@@ -45,8 +45,8 @@ export function SimRun(p: {
   };
   return (
     <div className="c2-in-block sim-run" data-testid="sim-run">
-      <h3>Run a year on the map</h3>
-      <p className="how">Watch cover change month by month, with water use vs your limit.</p>
+      <h3>Play a year on the map</h3>
+      <p className="how">Watch the field’s cover change month by month, and its water use against your limit.</p>
       <div className="seg small wrap" role="group" aria-label="Weather year for the sim">
         {(['typical', '2022', '2023'] as Weather[]).map((w) => (
           <button key={w} type="button" className={p.weather === w ? 'on' : ''} onClick={() => p.setWeather(w)} data-testid={`sim-weather-${w}`}>

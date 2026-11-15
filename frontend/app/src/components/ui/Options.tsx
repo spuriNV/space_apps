@@ -5,7 +5,7 @@ import type { NasaDataset } from '../../nasa';
 import type { Daily } from '../../season';
 import Icon from '../Icons';
 import { useEffect, useState } from 'react';
-import { Workflow, acres, fieldName, isBC, latestCrop, placeLabel, type Step } from './shared';
+import { StepHead, acres, fieldName, isBC, latestCrop, placeLabel, type Step } from './shared';
 import { FieldNow, whenT, type LoadState } from './FieldNow';
 import { FirstNationsCard } from './FirstNations';
 import { DockBottom } from './Dock';
@@ -28,17 +28,20 @@ export function FieldPanel(p: FieldPanelProps) {
   };
   return (
     <section className="panel fpanel docked talk" data-testid="field-panel">
-      <header className="fp-head">
-        <div className="fp-title"><h1>{fieldName(loc)}</h1></div>
-        <p className="fp-facts"><b>{acres(loc)} acres</b> · {now.crop.toLowerCase()} in {now.year}</p>
-      </header>
+      <StepHead id="now" title="Your field now" purpose="Check whether what you grow today fits the water you have. The next steps build on this." />
       <div className="panel-scroll">
+        <p className="step-field"><b>{fieldName(loc)}</b><span>{acres(loc)} acres · {now.crop.toLowerCase()} in {now.year}</span></p>
         <p className="talk-q">{isToday ? 'Will today’s plan fit your water?' : `What about ${whenT(p.t)}?`}
-          {!isToday && <button className="link" onClick={() => p.setT(TODAY_T)}>Today</button>}
+          {!isToday && <button className="link" onClick={() => p.setT(TODAY_T)}>Back to today</button>}
         </p>
         <FieldNow {...shared} mode="takeaway" />
-        <button className="btn primary wide now-next" onClick={() => p.onStep('season')} data-testid="now-to-season">Next: season<Icon name="right" size={16} /></button>
       </div>
+      <footer className="step-foot">
+        <button className="next-step" onClick={() => p.onStep('season')} data-testid="now-to-season">
+          <span><b>Next: coming season</b><small>Winter rain and whether next year still fits</small></span>
+          <Icon name="right" size={18} />
+        </button>
+      </footer>
       <DockBottom>
         <div className="bottom-inner">
           <p className="bottom-label">At a glance</p>
@@ -53,36 +56,38 @@ export function FieldPicker(p: { locations: Location[]; live: boolean | null; st
   const thumbs = useThumbs();
   return (
     <section className="picker2 docked talk" data-testid="fields-panel">
-      <header className="pk-head">
-        <h1>Which field?</h1>
-        <Workflow current="pick" problem hideSteps />
-      </header>
-      {p.live === false && <p className="offline-note" data-testid="offline-note">Server offline — example numbers.</p>}
+      <StepHead id="pick" title="Pick your field" purpose="Choose the field you want to plan. Everything after this is about that field." />
+      {p.live === false && <p className="offline-note" data-testid="offline-note"><i className="ex-hatch" />Example numbers. The server is not answering.</p>}
       {p.locations.length === 0 && <p className="loading-note">Finding fields…</p>}
       <ul className="pk-list" data-testid="field-table">
         {p.locations.map((l) => {
           const now = latestCrop(l), th = thumbs?.[l.id];
           return (
             <li key={l.id}>
-              <button className={`pk-row ${p.selectedId === l.id ? 'on' : ''}`} onClick={() => p.onSelect(l.id)} data-testid={`row-${l.id}`}>
+              <button className={`pk-card ${p.selectedId === l.id ? 'on' : ''}`} onClick={() => p.onSelect(l.id)} data-testid={`row-${l.id}`}>
                 <span className="pk-thumb">
                   <img src={`${import.meta.env.BASE_URL}thumbs/${l.id}.jpg`} alt={`Satellite view of ${fieldName(l)}`} />
                   {th && <svg viewBox="0 0 360 240" preserveAspectRatio="none" aria-hidden="true"><polygon points={outlinePts(l, th.bbox)} /></svg>}
                 </span>
                 <span className="pk-body">
                   <b>{fieldName(l)}</b>
-                  <span className="pk-facts">{placeLabel(l)} · {acres(l)} acres · {now.crop.toLowerCase()} in {now.year}</span>
-                  {isBC(l) && <span className="pk-tag">BC Salmon River · near First Nations lands</span>}
+                  <span className="pk-facts">{acres(l)} acres · {now.crop.toLowerCase()} in {now.year}</span>
+                  <span className="pk-place">{placeLabel(l)}</span>
                 </span>
+                <span className="pk-cta">{p.selectedId === l.id ? 'Continue with this field' : 'Pick this field'}<Icon name="right" size={18} /></span>
               </button>
             </li>
           );
         })}
       </ul>
+      <p className="pk-or">Or tap the field’s pin on the map.</p>
       {p.locations.some(isBC) && (
-        <div className="pk-fn">
-          <FirstNationsCard loc={p.locations.find(isBC)!} />
-        </div>
+        <details className="pk-more" data-testid="pk-more">
+          <summary>About this area <small>optional reading</small></summary>
+          <div className="pk-fn">
+            <FirstNationsCard loc={p.locations.find(isBC)!} />
+          </div>
+        </details>
       )}
     </section>
   );

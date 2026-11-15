@@ -7,7 +7,7 @@ import { observedBare } from '../../bare';
 import { useDetail } from '../ui/Detail';
 import { mmToAfac } from '../../lib';
 import Icon from '../Icons';
-import { isBC } from '../ui/shared';
+import { StepHead, isBC } from '../ui/shared';
 import { DockBottom } from '../ui/Dock';
 import { SimRun } from './SimRun';
 import type { SimMode } from '../ui/FieldTimeline';
@@ -113,7 +113,6 @@ export default function ComparePanel(p: {
   const all = detail ? [...UNIT, ...SCORE.filter((m) => !flat.has(m.key)).map(label)] : UNIT;
   const rows = useMemo(() => all.map((m) => { const a = m.get(alt, weather, ctx), b = m.get(today, weather, ctx); return { m, a, b, v: verdict(a, b, m.higherIsBetter) }; }), [alt, today, weather, ctx, flat, detail]); // eslint-disable-line react-hooks/exhaustive-deps
   const gains = rows.filter((r) => r.v === 'better'), losses = rows.filter((r) => r.v === 'worse');
-  const lead = (r: (typeof rows)[number] | undefined, k: 'gain' | 'loss') => (r ? `${r.m[k].toLowerCase()}, ${delta(r.m, r.a.v!, r.b.v!)}` : 'nothing clear');
   const water = (s: RotationStrategy) => af(n(rep(s, weather, 'irrigation_need_mm') ?? s.water.irrigation_need_mm));
   const fits = (s: RotationStrategy) => { const w = water(s); return (w.hi ?? 0) <= p.allocation ? 'Fits your limit' : (w.lo ?? 0) > p.allocation ? 'Over your limit' : 'May go over your limit'; };
   const ranked = [...strategies].sort((a, b) => b.composite.value - a.composite.value);
@@ -129,34 +128,35 @@ export default function ComparePanel(p: {
 
   return (
     <section className="sheet compare2 talk" data-testid="compare">
-      <header className="sheet-head">
-        <div>
-          <h2>Your call</h2>
-          <p className="sheet-lede">Set knobs. Results under the map.</p>
-        </div>
-      </header>
+      <StepHead id="compare" title="Compare rotations" purpose="Set your water limit and what matters most. The rotations are ranked under the map." />
 
-      <div className="c2-inputs" data-testid="farmer-inputs">
+      <div className="c2-inputs panel-scroll" data-testid="farmer-inputs">
         <div className="c2-in-block">
-          <h3>Water limit <b className="c2-inline">{p.allocation.toFixed(1)} acre-ft/acre</b></h3>
-          {p.exampleLimit && <p className="how"><em className="ex-limit">example — drag to yours</em></p>}
+          <h3 className="c2-row-h">Your water limit <b className="c2-inline">{p.allocation.toFixed(1)} <small>acre-ft/acre</small></b></h3>
           <label className="c2-alloc">
             <input type="range" min={0.5} max={6} step={0.1} value={p.allocation} onChange={(e) => p.setAllocation(+e.target.value)} data-testid="alloc" aria-label="Water limit in acre-feet per acre" />
+            <span className="c2-scale"><span>0.5</span><span>6.0</span></span>
           </label>
+          {p.exampleLimit && <p className="how"><em className="ex-limit">Example limit. Drag to yours.</em></p>}
         </div>
         <div className="c2-in-block">
-          <h3>What matters most</h3>
+          <h3>What matters most?</h3>
+          <p className="how">Pick one. The ranking leans toward it.</p>
           <div className="c2-focus" role="group" aria-label="What matters most">
             {PRIORITIES.map(([k, lab]) => (
-              <button key={k} type="button" className={focus === k ? 'on' : ''} onClick={() => setPrimary(k)} disabled={!p.live} data-testid={`focus-${k}`}>{lab}</button>
+              <button key={k} type="button" className={focus === k ? 'on' : ''} aria-pressed={focus === k} onClick={() => setPrimary(k)} disabled={!p.live} data-testid={`focus-${k}`}>{lab}</button>
             ))}
           </div>
         </div>
         <div className="c2-in-block">
-          <h3>What if</h3>
-          <div className="seg small wrap">{RAIN.map(([v, l]) => <button key={v} className={scen.dP_pct === v ? 'on' : ''} onClick={() => setScen({ ...scen, dP_pct: v })} disabled={!p.live} data-testid={`rain-${v}`}>{l}</button>)}</div>
-          <div className="seg small wrap">{HEAT.map(([v, l]) => <button key={v} className={scen.dT_c === v ? 'on' : ''} onClick={() => setScen({ ...scen, dT_c: v })} disabled={!p.live}>{l}</button>)}</div>
-          <p className="how">{busy ? 'Updating…' : !p.live ? 'Server offline — saved scores only.' : custom ? 'Using your settings.' : 'Even weights, normal weather.'}</p>
+          <h3>What if the weather changes?</h3>
+          <div className="c2-whatif">
+            <span>Rain</span>
+            <div className="seg small wrap">{RAIN.map(([v, l]) => <button key={v} className={scen.dP_pct === v ? 'on' : ''} onClick={() => setScen({ ...scen, dP_pct: v })} disabled={!p.live} data-testid={`rain-${v}`}>{l}</button>)}</div>
+            <span>Heat</span>
+            <div className="seg small wrap">{HEAT.map(([v, l]) => <button key={v} className={scen.dT_c === v ? 'on' : ''} onClick={() => setScen({ ...scen, dT_c: v })} disabled={!p.live}>{l}</button>)}</div>
+          </div>
+          <p className="how">{busy ? 'Updating…' : !p.live ? 'Server offline: saved scores only.' : custom ? 'Using your settings.' : 'Even weights, normal weather.'}</p>
         </div>
         <SimRun
           loc={p.loc}
@@ -174,13 +174,16 @@ export default function ComparePanel(p: {
       <DockBottom>
         <div className="bottom-inner c2-bottom" data-testid="compare-bottom">
           <div className="c2-rank-block">
-            <p className="bottom-label">Best fit {busy ? '· updating…' : ''}</p>
+            <p className="bottom-label">Ranked for your field {busy ? '· updating…' : ''}</p>
             <ol className="rank" data-testid="farmer-rank">
               {ranked.map((s, i) => (
                 <li key={s.id} className={`${s.is_baseline ? 'base' : ''} ${s.id === alt?.id ? 'pick' : ''}`}>
                   <button type="button" onClick={() => setId(s.id)}>
-                    <b>{i + 1}. {s.short_name}</b>{s.is_baseline ? <em>today</em> : null}
-                    <small>{(water(s).v ?? 0).toFixed(1)} af/ac · {fits(s).toLowerCase()}</small>
+                    <i className="rk-n">{i + 1}</i>
+                    <span className="rk-body">
+                      <b>{s.short_name}{s.is_baseline ? <em>today</em> : null}</b>
+                      <small className={(water(s).lo ?? 0) > p.allocation ? 'over' : ''}>{(water(s).v ?? 0).toFixed(1)} acre-ft/acre · {fits(s).toLowerCase()}</small>
+                    </span>
                   </button>
                 </li>
               ))}
@@ -188,21 +191,21 @@ export default function ComparePanel(p: {
             {tie && <p className="how">Top two are too close to call.</p>}
           </div>
           <div className="c2-trade">
-            <p className="c2-bar-lede">{alt ? <><b>{alt.short_name}</b> vs today: gain <b className="good">{lead(gains[0], 'gain')}</b>; give up <b className="bad">{lead(losses[0], 'loss')}</b>.</> : 'Pick a rotation.'}</p>
-            <div className="c2-mini">
-              <div>
-                <h3 className="gain">You gain</h3>
-                <ul>{gains.slice(0, 2).map((r) => <li key={r.m.key}><b>{r.m.gain}</b> — {delta(r.m, r.a.v!, r.b.v!)}</li>)}</ul>
-                {!gains.length && <p className="muted">Nothing clear.</p>}
+            {alt ? <>
+              <h3 className="c2-trade-h">{alt.short_name} <span>compared with today</span></h3>
+              <p className="c2-fit"><b className={(water(alt).lo ?? 0) > p.allocation ? 'bad' : ''}>{fits(alt)}</b> · needs about {water(alt).v?.toFixed(1)} acre-ft/acre ({WEATHER[weather].toLowerCase()})</p>
+              <div className="c2-mini">
+                <div>
+                  <h4 className="gain">You gain</h4>
+                  {gains.length ? <ul>{gains.slice(0, 2).map((r) => <li key={r.m.key}><b>{r.m.gain}</b><span>{delta(r.m, r.a.v!, r.b.v!)}</span></li>)}</ul> : <p className="muted">Nothing clear</p>}
+                </div>
+                <div>
+                  <h4 className="loss">You give up</h4>
+                  {losses.length ? <ul>{losses.slice(0, 2).map((r) => <li key={r.m.key}><b>{r.m.loss}</b><span>{delta(r.m, r.a.v!, r.b.v!)}</span></li>)}</ul> : <p className="muted">Nothing clear</p>}
+                </div>
               </div>
-              <div>
-                <h3 className="loss">You give up</h3>
-                <ul>{losses.slice(0, 2).map((r) => <li key={r.m.key}><b>{r.m.loss}</b> — {delta(r.m, r.a.v!, r.b.v!)}</li>)}</ul>
-                {!losses.length && <p className="muted">Nothing clear.</p>}
-              </div>
-            </div>
-            <p className="how"><b>{fits(alt)}</b> · needs {water(alt).v?.toFixed(1)} acre-ft/acre ({WEATHER[weather].toLowerCase()}).</p>
-            <button className="btn primary" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Print this for your adviser<Icon name="right" size={16} /></button>
+              <button className="btn primary" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Next: print this for your adviser<Icon name="right" size={16} /></button>
+            </> : <p className="muted">Pick a rotation on the left.</p>}
           </div>
         </div>
       </DockBottom>

@@ -114,19 +114,21 @@ export function FieldNow(p: FieldNowProps) {
   const waterFit = needAf == null || limit == null ? null : needAf > limit ? `short by about ${(needAf - limit).toFixed(1)} acre-ft/acre` : 'fits your water limit';
   const soilWords = smap == null ? null : band(smap, 'Soil wetter than usual', 'Soil about normal', 'Soil drier than usual');
   const soil = soilFacts(loc.soil);
+  const short = needAf != null && limit != null && needAf > limit;
   const takeaway = waterFit
-    ? `Today’s rotation ${waterFit}${soilWords ? `. ${soilWords}` : ''}.`
-    : soilWords
-      ? `${soilWords}.`
-      : st
-        ? `${st.text}.`
-        : null;
+    ? (short ? `No. Short by about ${(needAf! - limit!).toFixed(1)} acre-ft/acre` : 'Yes. It fits your water limit')
+    : soilWords ?? (st ? st.text : null);
+  const takeawaySub = waterFit
+    ? `Today’s rotation needs about ${needAf!.toFixed(1)} acre-ft/acre a year; your limit is ${limit!.toFixed(1)}${p.exampleLimit ? ' (an example, set yours in step 4)' : ''}.${soilWords ? ` ${soilWords}.` : ''}`
+    : null;
   const mode = p.mode ?? 'all';
   const showTake = mode === 'all' || mode === 'takeaway';
   const showGlance = mode === 'all' || mode === 'glance';
   return (
     <>
-    {showTake && takeaway && <p className="now-take" data-testid="now-takeaway"><b>Bottom line:</b> {takeaway}</p>}
+    {showTake && (takeaway
+      ? <div className={`now-take ${short ? 'short' : ''}`} data-testid="now-takeaway"><b>{takeaway}.</b>{takeawaySub && <span>{takeawaySub}</span>}</div>
+      : <div className="now-take"><Skel /></div>)}
     {showTake && (soil.mix || soil.texture || soil.holds) && (
       <div className="soil-card" data-testid="soil-answer">
         <p className="soil-q">What is the soil like?</p>

@@ -1537,3 +1537,124 @@ details.prov summary { cursor: pointer; font-size: 13px; color: var(--link); }
   height: 36px; padding: 0 12px; border-radius: 8px; background: var(--head-band); color: #fff;
   font-weight: 600; font-size: 14px;
 }
+
+/* ---------- Step layout (Nov 2026 cleanup) ----------
+   Borrowed patterns: USWDS step indicator ("Step 2 of 5" + segments), GOV.UK start page (one obvious action),
+   GOV.UK details (optional reading folded away), GOV.UK summary list (label / answer rows, no cards in cards). */
+.step-head { flex: none; padding: 16px 16px 14px; border-bottom: 1px solid var(--line-soft); background: var(--panel); }
+.step-of { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--head-band); }
+.step-bar { list-style: none; margin: 0 0 12px; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.step-bar li { height: 4px; border-radius: 2px; background: var(--tint-2); }
+.step-bar li.done { background: rgba(47, 93, 52, 0.4); }
+.step-bar li.on { background: var(--head-band); }
+.dock .side-body .step-head h1 { font-family: var(--font-head); font-size: 26px; font-weight: 600; line-height: 1.15; color: var(--text); }
+.step-purpose { margin-top: 6px; font-size: 15px; line-height: 1.4; color: var(--text-2); }
+
+/* Next step pinned to the bottom of the panel, same place on every step */
+.step-foot { flex: none; padding: 12px 16px 14px; border-top: 1px solid var(--line-soft); background: var(--panel); }
+.next-step { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 10px 14px; background: var(--head-band); color: #fff; border-radius: 4px; text-align: left; }
+.next-step > span { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.next-step b { font-size: 15.5px; font-weight: 700; }
+.next-step small { font-size: 12.5px; color: var(--head-ink-2); }
+.next-step:hover { filter: brightness(1.1); }
+.next-step:focus-visible, .pk-card:focus-visible { outline: 3px solid #ffd166; outline-offset: 2px; }
+
+/* The answer that leads each step */
+.dock .panel-scroll { padding: 0 16px 16px; }
+.dock .panel-scroll > .now-take:first-child { margin-top: 16px; }
+.step-field { display: flex; flex-direction: column; gap: 2px; margin: 14px 0 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line-soft); }
+.step-field b { font-family: var(--font-head); font-size: 17px; font-weight: 600; line-height: 1.2; }
+.step-field span { font-size: 13.5px; color: var(--text-2); }
+.dock .talk .talk-q { display: flex; align-items: baseline; gap: 10px; margin: 0 0 8px; font-family: var(--font-head); font-size: 18px; font-weight: 600; line-height: 1.25; color: var(--text); }
+.dock .talk-q .link { font-family: var(--font-ui); font-size: 13px; font-weight: 600; }
+.dock .now-take { display: flex; flex-direction: column; gap: 4px; margin: 0 0 18px; padding: 12px 14px; background: var(--accent-soft); border: 0; border-left: 4px solid var(--head-band); }
+.dock .now-take b { font-family: var(--font-head); font-size: 21px; font-weight: 600; line-height: 1.2; color: var(--text); }
+.dock .now-take span { font-size: 14px; line-height: 1.4; color: var(--text-2); }
+.dock .now-take.short { background: #f4ead6; border-left-color: var(--warn); }
+.dock .now-take.short b { color: #6b4600; }
+.dock .soil-card { margin: 0; padding: 14px 0 0; background: none; border: 0; border-top: 1px solid var(--line-soft); border-radius: 0; }
+.dock .soil-q { font-family: var(--font-head); font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.dock .soil-tex { font-size: 16px; margin-bottom: 8px; }
+
+/* Summary list: label on the left, answer on the right */
+.sum-list { margin: 0; border-top: 1px solid var(--line-soft); }
+.sum-list > div { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+.sum-list dt { padding-top: 3px; font-size: 13.5px; font-weight: 600; line-height: 1.3; color: var(--muted); }
+.sum-list dd { margin: 0; display: flex; flex-direction: column; gap: 3px; }
+.sum-list dd b { font-family: var(--font-head); font-size: 18px; font-weight: 600; line-height: 1.2; color: var(--text); }
+.sum-list dd span { font-size: 14px; line-height: 1.4; color: var(--text-2); }
+.sum-list .warn dd b { color: var(--warn); }
+.dock .season .more-detail { margin-top: 16px; }
+.cs-extra .sheet-col { padding: 0 !important; }
+.cs-extra h3 { margin: 18px 0 6px; font-family: var(--font-head); font-size: 16px; font-weight: 600; }
+
+/* Step 1: one card per field, one obvious button, optional reading folded away */
+.dock .side-body > .picker2 { background: var(--panel); }
+.picker2 .step-head { border-bottom: 0; padding-bottom: 4px; }
+.dock .picker2 .pk-list { padding: 10px 16px 0; }
+.pk-list li + li { margin-top: 10px; border-top: 0; }
+.pk-card { display: grid; grid-template-columns: 112px 1fr; gap: 12px; width: 100%; padding: 12px; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); transition: border-color 0.12s, box-shadow 0.12s; }
+.pk-card:hover { border-color: var(--head-band); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14); }
+.pk-card.on { border: 2px solid var(--head-band); padding: 11px; }
+.pk-card .pk-thumb { width: 112px; height: 76px; }
+.pk-place { font-size: 12.5px; color: var(--muted); }
+.pk-cta { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 6px; height: 46px; background: var(--head-band); color: #fff; font-size: 15.5px; font-weight: 700; border-radius: 3px; }
+.pk-card:hover .pk-cta { filter: brightness(1.1); }
+.pk-or { margin: 10px 16px 0; font-size: 13.5px; color: var(--muted); text-align: center; }
+.pk-more { margin: auto 16px 14px; padding-top: 12px; border-top: 1px solid var(--line-soft); }
+.picker2 > .pk-or + .pk-more { margin-top: 28px; }
+.pk-more summary { display: flex; align-items: baseline; gap: 8px; cursor: pointer; list-style: none; font-size: 14px; font-weight: 600; color: var(--link); }
+.pk-more summary::-webkit-details-marker { display: none; }
+.pk-more summary::before { content: ''; width: 0; height: 0; border-left: 6px solid currentColor; border-top: 4.5px solid transparent; border-bottom: 4.5px solid transparent; transition: transform 0.12s; align-self: center; }
+.pk-more[open] summary::before { transform: rotate(90deg); }
+.pk-more summary small { font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.pk-more .pk-fn { padding: 10px 0 0 14px; border: 0; border-left: 3px solid var(--line-soft); margin-top: 10px; }
+.pk-more .fn-h { font-size: 15.5px; }
+.pk-more .fn-statement { font-size: 14px; }
+.pk-more .fn-lines li { font-size: 13.5px; }
+.ex-hatch { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border: 1px solid currentColor; background: repeating-linear-gradient(-45deg, currentColor 0 1px, transparent 1px 3px); }
+
+/* Step 4: inputs */
+.dock .c2-inputs.panel-scroll { padding: 0; }
+.dock .c2-in-block { padding: 14px 16px; }
+.dock .c2-in-block h3 { margin-bottom: 4px; font-size: 16px; }
+.dock .c2-in-block .how { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+.c2-row-h { justify-content: space-between; }
+.dock .c2-inline { margin-left: auto; font-family: var(--font-head); font-size: 18px; font-weight: 600; color: var(--head-band); }
+.c2-inline small { font-family: var(--font-ui); font-size: 12.5px; color: var(--text-2); font-weight: 600; }
+.c2-alloc { margin-top: 6px; }
+.c2-scale { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dock .c2-alloc + .how { margin: 6px 0 0; }
+.dock .c2-focus button { border-radius: 4px; font-size: 13.5px; }
+.dock .c2-focus button.on { background: var(--head-band); color: #fff; border-color: var(--head-band); }
+.c2-whatif { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.c2-whatif > span { font-size: 13px; font-weight: 600; color: var(--muted); }
+.c2-whatif > span + .seg { margin-bottom: 8px !important; }
+.dock .c2-whatif .seg.wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 0; background: none; padding: 0; }
+.dock .c2-whatif .seg.wrap button { padding: 7px 4px; text-align: center; }
+.dock .c2-in-block .seg.wrap button { border-radius: 4px; padding: 7px 10px; font-size: 12.5px; }
+.dock .c2-in-block .seg.wrap button.on { background: var(--head-band); color: #fff; border-color: var(--head-band); }
+.c2-whatif + .how { margin-top: 10px !important; }
+.sim-run .sim-preview { padding: 8px 10px; background: var(--tint); border-radius: 3px; font-size: 13.5px; }
+
+/* Step 4: results under the map */
+.dock .c2-bottom { grid-template-columns: minmax(240px, 300px) 1fr; gap: 24px; }
+.dock .c2-rank-block .bottom-label { margin-bottom: 8px; }
+.c2-rank-block .rank li button { flex-direction: row; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 3px; }
+.c2-rank-block .rank li.base button { border-style: solid; }
+.rk-n { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--tint-2); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text-2); }
+.c2-rank-block .rank li.pick .rk-n { background: var(--head-band); color: #fff; }
+.rk-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.c2-rank-block .rank em { font-family: var(--font-ui); font-size: 11.5px; font-weight: 600; font-style: normal; color: var(--muted); }
+.c2-rank-block .rank small.over { color: var(--warn); }
+.c2-trade-h { margin: 0; font-family: var(--font-head); font-size: 19px; font-weight: 600; line-height: 1.2; }
+.c2-trade-h span { font-family: var(--font-ui); font-size: 14px; font-weight: 400; color: var(--muted); }
+.c2-fit { margin: 4px 0 0; font-size: 13.5px; color: var(--text-2); }
+.c2-fit b { color: var(--good); }
+.c2-fit b.bad { color: var(--bad); }
+.dock .c2-mini { gap: 20px; margin: 12px 0; }
+.dock .c2-mini h4 { margin: 0 0 6px; padding-bottom: 4px; border-bottom: 2px solid var(--good); font-size: 13.5px; font-weight: 700; color: var(--good); }
+.dock .c2-mini h4.loss { border-color: var(--bad); color: var(--bad); }
+.dock .c2-mini ul { list-style: none; margin: 0; padding: 0; }
+.dock .c2-mini li { display: flex; flex-direction: column; gap: 1px; padding: 4px 0; font-size: 13.5px; }
+.dock .c2-mini li span { color: var(--text-2); font-size: 13px; }

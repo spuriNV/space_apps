@@ -7,7 +7,8 @@ import { bareWindow } from '../../season';
 import { TODAY_T, fmtDate, latestAt, mmToAfac, ordinal } from '../../lib';
 const band = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi : v > 33 ? mid : lo);
 import Icon from '../Icons';
-import { Src, isBC, placeLabel } from '../ui/shared';
+import { Src, StepHead, isBC, placeLabel } from '../ui/shared';
+import { MoreDetail } from '../ui/Detail';
 import { What } from '../ui/What';
 import { DockBottom } from '../ui/Dock';
 import { BARE_DEF } from '../../bare';
@@ -33,7 +34,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
   const surface = p.loc.water.source === 'surface';
   const shasta = !bc ? (o?.reservoirs.find((r) => /shasta/i.test(r.name)) ?? o?.reservoirs[0]) : undefined;
   const supply = !o ? 'Loading…' : bc
-    ? 'Fish-protection cuts can stop forage irrigation (Aug 2023). Set your licence on Compare.'
+    ? 'Fish-protection cuts can stop forage irrigation (Aug 2023). Set your licence in step 4.'
     : surface
       ? `${shasta ? `${words(shasta.name)} is at ${shasta.pctAvg != null ? `${Math.round(shasta.pctAvg)}% of average` : 'an unknown level'} for the date.` : ''}${o.cvpNow?.settlement != null ? ` This year’s federal allocation for Sacramento River settlement contractors was ${o.cvpNow.settlement}%.` : ''}`
       : gw ? `Groundwater in the basin is ${band(gw.v, 'above usual', 'about usual', 'below usual')} for the time of year.` : 'Groundwater reading not available right now.';
@@ -51,37 +52,31 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
   const fitLine = nxt == null ? 'Loading…' : nxt > p.allocation ? `About ${(nxt - p.allocation).toFixed(1)} short` : 'Fits your limit';
   return (
     <section className="sheet season talk" data-testid="coming-season">
-      <header className="sheet-head">
+      <StepHead id="season" title="Coming season" purpose="See what this winter and next year may bring, so you know whether today’s plan will still fit." />
+      <div className="panel-scroll">
+      <div className="now-take" data-testid="season-lead"><b>{headline}.</b><span>From seasonal outlooks: these are odds, not a forecast.</span></div>
+      <dl className="sum-list" data-testid="season-summary">
         <div>
-          <h2>Coming season</h2>
-          <p className="sheet-lede">{headline}. <span className="outlook-tag">Odds only.</span></p>
+          <dt>Winter rain</dt>
+          <dd><b>{rainLine}</b></dd>
         </div>
-      </header>
-      <div className="cs-cards" data-testid="season-summary">
-        <button type="button" className="cs-card" disabled>
-          <small>Winter rain</small>
-          <b>{rainLine}</b>
-        </button>
-        <button type="button" className="cs-card" disabled>
-          <small>Water supply</small>
-          <b>{bc ? 'Watch for cuts' : 'See note'}</b>
-          <span>{bc ? supply : supply}</span>
-        </button>
-        <button type="button" className="cs-card warn" disabled>
-          <small>Next year</small>
-          <b>{fitLine}</b>
-          <span>{nxt != null ? `${nxt.toFixed(1)} vs ${p.allocation.toFixed(1)} acre-ft/acre` : '…'}{p.exampleLimit ? ' (example)' : ''}</span>
-        </button>
-      </div>
-      <button className="btn primary wide cs-next" onClick={p.onCompare} data-testid="season-to-compare">Compare rotations<Icon name="right" size={16} /></button>
+        <div>
+          <dt>Water supply</dt>
+          <dd><b>{bc ? 'Watch for cuts' : 'See note'}</b><span>{supply}</span></dd>
+        </div>
+        <div className={nxt != null && nxt > p.allocation ? 'warn' : ''}>
+          <dt>Next year’s water</dt>
+          <dd><b>{fitLine}</b><span>{nxt != null ? `Needs about ${nxt.toFixed(1)} acre-ft/acre; your limit is ${p.allocation.toFixed(1)}` : '…'}{p.exampleLimit ? ' (an example, set yours in step 4)' : ''}.</span></dd>
+        </div>
+      </dl>
+      <MoreDetail what="Outlook by month, drought, water in the ground, bare stretch, need by rotation" />
       <DockBottom>
         <div className="bottom-inner">
-          <p className="bottom-label">Next</p>
-          <p className="bottom-copy">Short on water? Set your real licence on Compare and pick what matters most.</p>
+          <p className="bottom-label">What to do next</p>
+          <p className="bottom-copy">{nxt != null && nxt > p.allocation ? 'Short on water? ' : ''}In step 4, set your real water limit and pick what matters most. CropLytics ranks other rotations against today’s.</p>
         </div>
       </DockBottom>
-      {/* Extra outlook tables stay out of the core path for now */}
-      <div className="sheet-cols three d-only" hidden>
+      <div className="cs-extra d-only">
         <div className="sheet-col">
           <h3>Rain and temperature outlook</h3>
           <ul className="olist">
@@ -196,9 +191,15 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
           </table>
           <p className="how">Acre-feet per acre a year. Your limit: {p.allocation.toFixed(1)}{p.exampleLimit ? ' (example, change to yours on Compare)' : ''}; brown means over it.</p>
           <cite>Rotation model driven by NASA POWER at this field. <Src p={p.prov.strategies} /></cite>
-          <button className="btn primary wide" onClick={p.onCompare}>Compare rotations<Icon name="right" size={16} /></button>
         </div>
       </div>
+      </div>
+      <footer className="step-foot">
+        <button className="next-step" onClick={p.onCompare} data-testid="season-to-compare">
+          <span><b>Next: compare rotations</b><small>What you would gain or give up by changing</small></span>
+          <Icon name="right" size={18} />
+        </button>
+      </footer>
     </section>
   );
 }
