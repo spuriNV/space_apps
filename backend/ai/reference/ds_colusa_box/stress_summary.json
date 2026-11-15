@@ -1,0 +1,35 @@
+{
+  "ca_colusa_rice": {
+    "evidence": "Current crop showed stress in 4 weeks over 2015-2025, mostly early May.",
+    "evaluation": {
+      "weeks_scored": 241,
+      "flag_rate_zscore": 0.112,
+      "flag_rate_iforest": 0.0996,
+      "agreement": 0.9046,
+      "events": [
+        {
+          "name": "CA 2021-22 drought",
+          "start": "2021-01-01",
+          "end": "2022-12-31",
+          "weeks_in_window": 44,
+          "flagged_zscore": 19,
+          "flagged_iforest": 12,
+          "flagged_both": 11,
+          "recall_zscore": 0.4318,
+          "recall_iforest": 0.2727
+        }
+      ],
+      "wet_cool_weeks": 74,
+      "false_positive_proxy_zscore": 0.0946,
+      "false_positive_proxy_iforest": 0.1486
+    },
+    "checks": {
+      "2022_flag_rate_zscore": 0.8182,
+      "2022_flag_rate_iforest": 0.5,
+      "note": "2022 was a fallow year: anomalous, but fallow is not crop stress"
+    },
+    "no_crop_years_excluded_from_evidence": [
+      2022
+    ]
+  }
+}
