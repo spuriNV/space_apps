@@ -1,0 +1,112 @@
+{
+ "generated_at": "2026-11-15T15:17:38+00:00",
+ "source_url": "https://quickstats.nass.usda.gov/",
+ "rice_ca_planted": {
+  "year": 2025,
+  "value": 524000.0,
+  "county": "",
+  "desc": "RICE - ACRES PLANTED",
+  "source": "SURVEY",
+  "period": "YEAR"
+ },
+ "rice_ca_current_year": {
+  "year": 2026,
+  "value": 501000.0,
+  "county": "",
+  "desc": "RICE - ACRES PLANTED",
+  "source": "SURVEY",
+  "period": "YEAR"
+ },
+ "rice_ca_history": [
+  [
+   2018,
+   506000.0
+  ],
+  [
+   2019,
+   503000.0
+  ],
+  [
+   2020,
+   517000.0
+  ],
+  [
+   2021,
+   407000.0
+  ],
+  [
+   2022,
+   254000.0
+  ],
+  [
+   2023,
+   516000.0
+  ],
+  [
+   2024,
+   476000.0
+  ],
+  [
+   2025,
+   524000.0
+  ],
+  [
+   2026,
+   501000.0
+  ]
+ ],
+ "kings_tulare": {
+  "KINGS": {
+   "alfalfa_hay": {
+    "year": 2022,
+    "value": 23691.0,
+    "county": "KINGS",
+    "desc": "HAY, ALFALFA - ACRES HARVESTED",
+    "source": "CENSUS",
+    "period": "YEAR"
+   },
+   "other_hay": {
+    "year": 2022,
+    "value": 15107.0,
+    "county": "KINGS",
+    "desc": "HAY, (EXCL ALFALFA) - ACRES HARVESTED",
+    "source": "CENSUS",
+    "period": "YEAR"
+   },
+   "silage_corn": {
+    "year": 2023,
+    "value": 45300.0,
+    "county": "KINGS",
+    "desc": "CORN, SILAGE - ACRES HARVESTED",
+    "source": "SURVEY",
+    "period": "YEAR"
+   }
+  },
+  "TULARE": {
+   "alfalfa_hay": {
+    "year": 2022,
+    "value": 40786.0,
+    "county": "TULARE",
+    "desc": "HAY, ALFALFA - ACRES HARVESTED",
+    "source": "CENSUS",
+    "period": "YEAR"
+   },
+   "other_hay": {
+    "year": 2022,
+    "value": 20348.0,
+    "county": "TULARE",
+    "desc": "HAY, (EXCL ALFALFA) - ACRES HARVESTED",
+    "source": "CENSUS",
+    "period": "YEAR"
+   },
+   "silage_corn": {
+    "year": 2023,
+    "value": 109700.0,
+    "county": "TULARE",
+    "desc": "CORN, SILAGE - ACRES HARVESTED",
+    "source": "SURVEY",
+    "period": "YEAR"
+   }
+  }
+ }
+}
