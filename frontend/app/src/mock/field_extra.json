@@ -1,43 +1,4 @@
 {
  "_note": "Crop-insurance totals copied from backend/ground/out/<id>/rma_profile.json; used only until GET .../insurance answers. The DWR field number, soil EC and texture, and NASADEM terrain now come from GET /api/locations/{id}.",
- "fields": {
-  "car_colusa_rice": {
-   "_from": [
-    "backend/ground/out/car_colusa_rice/rma_profile.json"
-   ],
-   "rma": {
-    "scope": "Colusa County",
-    "crop": "rice",
-    "total_usd": 247816322,
-    "from": 2014,
-    "to": 2024,
-    "top_year": 2022,
-    "top_usd": 145565846,
-    "share_drought": 0.8417,
-    "share_excess_moisture": 0.1465,
-    "share_heat": 0.0049,
-    "source": "USDA RMA Cause of Loss, Summary of Business 2010-2024",
-    "url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss"
-   }
-  },
-  "caf_tulare_forage": {
-   "_from": [
-    "backend/ground/out/caf_tulare_forage/rma_profile.json"
-   ],
-   "rma": {
-    "scope": "Kings County",
-    "crop": "alfalfa_forage",
-    "total_usd": 6956492,
-    "from": 2011,
-    "to": 2024,
-    "top_year": 2022,
-    "top_usd": 2950308,
-    "share_drought": 0.0028,
-    "share_excess_moisture": 0.0,
-    "share_heat": 0.0,
-    "source": "USDA RMA Cause of Loss, Summary of Business 2010-2024",
-    "url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss"
-   }
-  }
- }
+ "fields": {}
 }

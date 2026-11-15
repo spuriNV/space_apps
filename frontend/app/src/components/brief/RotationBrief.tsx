@@ -8,7 +8,7 @@ import { bareWindow, fmtIn } from '../../season';
 import { rainNow } from '../ui/FieldNow';
 import { CLASS_COLOR, MONTHS, TODAY_T, lastDataT, mmToAfac, yearOf } from '../../lib';
 import Icon from '../Icons';
-import { Src, fieldCode, fieldName, acres, county, cropName, openetText } from '../ui/shared';
+import { Src, Workflow, fieldCode, fieldName, acres, placeLabel, cropName, openetText, isBC } from '../ui/shared';
 import { fieldCtx, tradeoffs, HEAT_NOTE } from '../compare/ComparePanel';
 import { BARE_DEF, observedBare, usuallyBareMonths } from '../../bare';
 
@@ -56,7 +56,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
             <div>
               <div className="p-kicker">CropLytics summary for the grower and adviser · prepared 14 Nov 2026</div>
               <h1>{fieldName(loc)}</h1>
-              <div className="p-sub">{acres(loc)} acres, {county(loc)} County, California · {fieldCode(loc).replace('DWR ', 'state field no. ')}</div>
+              <div className="p-sub">{acres(loc)} acres, {placeLabel(loc)} · {fieldCode(loc).startsWith('DWR') ? fieldCode(loc).replace('DWR ', 'state field no. ') : fieldCode(loc)}</div>
             </div>
             <div className="p-option"><span>Option looked at</span><b>{s.short_name}</b>{s.is_baseline && <em>what the field does now</em>}</div>
           </header>
@@ -64,7 +64,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <div className="p-cols">
             <section>
               <h2>1. This field</h2>
-              <p>{soil.muname.split(',')[0]}: {soil.drainage_class.toLowerCase()}, holds about {inFt.toFixed(1)} in of water per foot of soil{saline ? ', salty enough to limit salt-sensitive crops' : ''}.{cite(loc.area_ha.source)} Water from {loc.water.source === 'surface' ? 'a surface-water district' : 'wells, under a groundwater allocation'}. Last three seasons: {recent}. {ob ? `Bare about ${ob.value} days a year, mostly ${bareWhen} (satellite, ${ob.years[0]}–${ob.years[ob.years.length - 1]}).` : ''} {openetText(strategies)}{cite(base.water.etc_vs_openet_pct?.source)}</p>
+              <p>{soil.muname.split(',')[0]}: {soil.drainage_class.toLowerCase()}, holds about {inFt.toFixed(1)} in of water per foot of soil{saline ? ', salty enough to limit salt-sensitive crops' : ''}.{cite(loc.area_ha.source)} Water from {isBC(loc) ? (loc.water.district || 'Lower Salmon River surface licences') : loc.water.source === 'surface' ? 'a surface-water district' : 'wells, under a groundwater allocation'}. Last three seasons: {recent}. {ob ? `Bare about ${ob.value} days a year, mostly ${bareWhen} (satellite, ${ob.years[0]}–${ob.years[ob.years.length - 1]}).` : ''} {openetText(strategies, loc)}{cite(base.water.etc_vs_openet_pct?.source)}</p>
             </section>
             <section>
               <h2>2. What’s likely this season <small>outlooks, not forecasts</small></h2>
@@ -108,7 +108,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
             <ul className="p-review">
               {checks.map((c) => <li key={c.constraint}><label><input type="checkbox" /><span>{plain(c.detail)}</span></label></li>)}
               {review.map((r) => <li key={r.item}><label><input type="checkbox" checked={!!ticks[r.item]} onChange={(e) => setTicks({ ...ticks, [r.item]: e.target.checked })} /><span>{plain(r.item)}</span></label>{r.severity === 'high' && <em className="sev high">important</em>}</li>)}
-              <li><label><input type="checkbox" /><span>This year’s water allocation or pumping limit, and any district rules on winter flooding or fallowing.</span></label></li>
+              <li><label><input type="checkbox" /><span>{isBC(loc) ? 'This year’s licence volume and any fish-protection or streamflow notices on the Salmon River.' : 'This year’s water allocation or pumping limit, and any district rules on winter flooding or fallowing.'}</span></label></li>
               <li><label><input type="checkbox" /><span>Seed, buyer and price for the new crop: dollars are not counted in this summary.</span></label></li>
             </ul>
           </section>
@@ -116,7 +116,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <footer className="p-foot">
             <div className="p-sources"><b>Sources</b>
               {sources.map((src, i) => <span key={src.id}>{i + 1}. {src.title ?? src.id}{src.verified ? '' : ' (unverified)'}</span>)}
-              <span>NASA: Landsat (NASA/USGS) for the field calendar with Sentinel-2 (ESA), cross-checked with HLS; NASA POWER sun, wind and humidity for crop water use; NASADEM for slope. Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Soil: USDA soil survey (SSURGO). {BARE_DEF} {HEAT_NOTE}</span>
+              <span>NASA: Landsat (NASA/USGS) and Sentinel-2 (ESA) via HLS for the field calendar; NASA POWER for crop water use; NASADEM for slope. Crops: AAFC Annual Crop Inventory. Outlooks: NOAA Climate Prediction Center. Soil: BC / SoilGrids (illustrative on this outline). {BARE_DEF} {HEAT_NOTE}</span>
             </div>
             <div className="p-disclaimer">This summary supports a conversation between grower and adviser; it does not replace one.</div>
             <div>CropLytics, made for the NASA Space Apps challenge “Field Shift: Adapting Farms with NASA Data”.</div>
@@ -126,7 +126,8 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
 
       <aside className="brief-rail glass">
         <div className="br-head"><h2>Summary for your adviser</h2><button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button></div>
-        <p className="muted">One page, Letter size. <Src p={p.prov.strategies} /></p>
+        <Workflow current="brief" hideSteps />
+        <p className="muted">Step 5: one page, Letter size. <Src p={p.prov.strategies} /></p>
         <label className="br-field"><span>Option to print</span>
           <select value={s.id} onChange={(e) => p.setPick(e.target.value)} data-testid="brief-pick">{strategies.map((x) => <option key={x.id} value={x.id}>{x.short_name}{x.is_baseline ? ' (today)' : ''}</option>)}</select>
         </label>

@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "preset_id": "bsr_salmon_forage",
+        "name": "Salmon River forage field (illustrative BC)",
+        "area_ha": 39.9424,
+        "illustrative": true
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -119.3544674893354,
+              50.547161336687026
+            ],
+            [
+              -119.34553251066458,
+              50.547161336687026
+            ],
+            [
+              -119.34553251066458,
+              50.55283866331297
+            ],
+            [
+              -119.3544674893354,
+              50.55283866331297
+            ],
+            [
+              -119.3544674893354,
+              50.547161336687026
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 ROOT = Path(os.environ.get("FIELDSHIFT_ROOT", Path(__file__).resolve().parents[3]))
 FIX = ROOT / "fixtures"
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # backend/api, for nasa_build
-PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
+PRESETS = ["bsr_salmon_forage"]  # BC Salmon River forage (illustrative); CA presets remain on disk
 LAYERS = ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly", "usdm_d2_weeks", "reservoir_storage"]
 DEFAULT_W = {"water_use": 1, "forage_value": 1, "n_fixation": 1, "erosion": 1, "organic_matter": 1, "market": 1,
              "pest_break": 0, "infiltration": 0, "n_scavenging": 0, "income": 0}
@@ -39,6 +39,7 @@ LOOKUP = {
     "grid": ["backend/field/out/{p}/grid.geojson"],
     "calendar_ml": ["backend/ai/out/{p}/calendar_ml.json"],
     "outlook": ["backend/outlook/out/{p}/outlook.json"],
+    "first_nations": ["backend/api/out/{p}/first_nations.json", "data/cache/{p}/first_nations.json"],
 }
 FIXTURE = {
     "location": "{p}/location.json", "daily": "{p}/daily.json", "features_weekly": "{p}/features_weekly.json",
@@ -443,6 +444,16 @@ def grid(pid: str, resp: Response, layer: list[str] | None = Query(None)):
         d = {**d, "layers": [l for l in d["layers"] if l["key"] in keep],
              "features": [{**f, "properties": {k: v for k, v in f["properties"].items() if k in keep or (k.startswith("n_") and k[2:] in keep)}} for f in d["features"]]}
     d["location_id"] = pid
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/first_nations")
+def first_nations(pid: str, resp: Response):
+    """First Nations context for the BC Salmon River example. Public facts only; nothing speaks for a Nation."""
+    check_preset(pid)
+    if not (pid.startswith("bsr_") or pid.startswith("bc_")):
+        raise HTTPException(404, "First Nations context is built for the BC example field only")
+    d = _real_only("first_nations", pid)
     return send(resp, d, "real")
 
 

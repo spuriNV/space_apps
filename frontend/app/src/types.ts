@@ -1,18 +1,25 @@
 // Shapes follow planner-spec.md B3. Only the fields this prototype reads are typed strictly.
-export interface Source { id: string; title?: string; url: string | null; accessed?: string; verified: boolean }
+export interface Source { id: string; title?: string; url: string | null; accessed?: string; verified: boolean; internal?: boolean }
 export interface SourcedNumber { value: number; low: number | null; high: number | null; unit: string; method: string; source?: Source; note?: string; blocked?: boolean }
+type Linkable = { url?: string | null; internal?: boolean };
+/** Prefer a public URL; skip internal-only links. */
+export const linkOf = (x: Linkable | null | undefined) => (x?.url && !x.internal ? x.url : null);
 
-export interface FieldEvent { date: string; end_date?: string; type: 'drought_fallow' | 'atmospheric_river' | 'sgma_probation'; short: string; title: string; detail?: string; url: string | null; verified: boolean }
+export interface FieldEvent { date: string; end_date?: string; type: 'drought_fallow' | 'atmospheric_river' | 'sgma_probation'; short: string; title: string; detail?: string; url: string | null; verified: boolean; internal?: boolean }
+
+/** BC: one Province order on the watershed. */
+export interface WaterOrder { date: string; title: string; url: string | null; internal?: boolean; verified?: boolean; kind?: 'order' | 'rescission'; licences?: number; effective?: string }
 
 export interface Location {
   id: string; name: string; short_name: string; valley: string; ground_data: string; headline: string;
+  region_adapter?: string; illustrative?: boolean;
   geometry: { type: 'Polygon'; coordinates: number[][][] };
   centroid: { lon: number; lat: number };
   area_ha: SourcedNumber;
-  soil: { muname: string; drainage_class: string; hydrologic_group: string; texture_class: string; awc_mm_per_m: SourcedNumber; om_pct?: SourcedNumber; ec_ds_per_m?: number; texture_detail?: { sand_pct: number; silt_pct: number; clay_pct: number } };
+  soil: { source?: { id?: string; title?: string; url?: string | null; verified?: boolean }; muname: string; drainage_class: string; hydrologic_group: string; texture_class: string; awc_mm_per_m: SourcedNumber; om_pct?: SourcedNumber; ec_ds_per_m?: number; texture_detail?: { sand_pct: number; silt_pct: number; clay_pct: number } };
   county?: string; dwr_id?: string; boundary_title?: string; cdl_source?: Source;
   terrain: { slope_mean_pct: SourcedNumber; note: string };
-  water: { source: string; allocation_input: { unit: string; value: number }; district: string; sgma_subbasin: string; sgma_status: { text: string; url: string; verified: boolean } };
+  water: { source: string; allocation_input: { unit: string; value: number }; district: string; sgma_subbasin: string; sgma_status: { text: string; url: string; verified: boolean; internal?: boolean } };
   market_preference: string;
   stations: { network: string; id: number | string; name: string; distance_km?: number }[];
   crop_history: Record<string, string>;
@@ -26,6 +33,19 @@ export interface Location {
   water_real?: boolean;
   rma?: { scope: string; crop: string; total_usd: number; from: number; to: number; top_year: number; top_usd: number; share_drought: number; share_excess_moisture: number | null; source: string; url: string };
   nasadem?: { slope_mean_pct?: number; slope_p90_pct?: number; low_spot_fraction?: number; elev_m?: number }; datasets?: Record<string, { status?: string; reason?: string }>;
+  region?: 'ca' | 'bc';
+  water_context?: { watershed: string; orders: WaterOrder[]; note?: string };
+  first_nations?: { statement: string; field_on_reserve: boolean; nearest_km: number; nearest_reserve: string; nearest_nation: string; lower_river_nation: string; route?: string };
+}
+export interface FirstNations {
+  statement: string; field_on_reserve: boolean; nearest_km: number; nearest_reserve: string; nearest_nation: string;
+  lower_river_nation: { nation: string; band_number?: string; reserve: string; note?: string; url: string };
+  nearby: { reserve: string; nation: string; band?: string; band_number?: string; area_ha?: number; distance_to_field_km: number }[];
+  engagement_steps: string[];
+  principles: { id: string; name: string; description: string; url: string }[];
+  contacts: { nation: string; department: string; url: string }[];
+  water_timeline: { date: string; title: string; url: string | null; licences?: number; effective?: string }[];
+  reserves_geojson?: string; source?: { title: string; url: string }; notes?: string[];
 }
 
 export type CoverClass = 'b' | 'p' | 'c' | 'w' | 'u';

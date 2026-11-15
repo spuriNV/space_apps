@@ -2,7 +2,7 @@
 // Everything real comes from the CropLytics API at VITE_API_BASE: http://localhost:8000/api in dev, same-origin /api in a
 // production build (the backend serves the built app and the API from one origin). Anything the API does not answer falls
 // back to the bundled examples in src/mock, and the UI says so in the source line.
-import type { BCInfo, Calendar, CalendarYear, CellGrid, CoverClass, Dataset, GridLayer, Location, NewsItem, Regional, RotationStrategy, SourcedNumber, Source, ScoreKey } from './types';
+import type { BCInfo, Calendar, CalendarYear, CellGrid, CoverClass, Dataset, FirstNations, GridLayer, Location, NewsItem, Regional, RotationStrategy, SourcedNumber, Source, ScoreKey } from './types';
 import mockLocations from './mock/locations.json';
 import mockCells from './mock/cells.json';
 import mockCalendar from './mock/calendar.json';
@@ -22,7 +22,7 @@ const BASE = import.meta.env.BASE_URL ?? '/';
 type ById<T> = Record<string, T>;
 
 /** Example water limit per field, until the grower types their own (PLAN.md decisions, 14 Nov). acre-ft/acre */
-export const EXAMPLE_LIMIT: Record<string, number> = { car_colusa_rice: 5.0, caf_tulare_forage: 3.0 };
+export const EXAMPLE_LIMIT: Record<string, number> = { bsr_salmon_forage: 2.0 };
 
 // ---------- provenance ----------
 /** api = real backend output from the API; file = real output copied into the app (no route yet); mock = illustrative */
@@ -63,35 +63,49 @@ export const getDatasets = () => Promise.resolve(datasets as Dataset[]);
 export const getBC = () => Promise.resolve(bc as BCInfo);
 
 // ---------- locations: bundled card text + the API's outline, area, soil, crop history ----------
-const KINGS = { short_name: 'Kings County forage', name: 'Kings County forage field for dairy (example)' };
-const COUNTY: Record<string, string> = { '011': 'Colusa', '031': 'Kings' };
 const EXTRA = (fieldExtra as unknown as { fields: ById<{ rma?: Location['rma'] }> }).fields;
+const bcLoc = (l: Location) => l.region_adapter === 'bc' || l.id.startsWith('bsr_');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: ProvMap } {
+  const bc = bcLoc(base);
   const prov: ProvMap = {
-    outline: P('outline', 'Field outline', 'mock', 'placeholder square'),
-    soil: P('soil', 'Soil (USDA soil survey)', 'mock', 'illustrative'),
-    crop_history: P('crop_history', 'Crop on record (USDA Cropland Data Layer)', 'mock', 'illustrative'),
-    water: P('water', 'Water source and district', 'mock', 'project brief, not looked up'),
+    outline: P('outline', bc ? 'Field outline (illustrative BC)' : 'Field outline', 'mock', bc ? 'AAFC pasture pixel square' : 'placeholder square'),
+    soil: P('soil', bc ? 'Soil (illustrative BC)' : 'Soil (USDA soil survey)', 'mock', 'illustrative'),
+    crop_history: P('crop_history', bc ? 'Crop on record (AAFC Annual Crop Inventory)' : 'Crop on record (USDA Cropland Data Layer)', 'mock', 'illustrative'),
+    water: P('water', 'Water source and district', 'mock', bc ? 'Salmon River licences (illustrative)' : 'project brief, not looked up'),
   };
   if (EXTRA[base.id]?.rma) prov.rma = P('rma', 'Crop-insurance payouts (USDA RMA)', 'file', 'backend/ground, 2010–2024');
   let loc: Location = { ...base, rma: EXTRA[base.id]?.rma, water: { ...base.water, allocation_input: { unit: 'acre-ft/acre', value: EXAMPLE_LIMIT[base.id] ?? base.water.allocation_input.value } } };
   if (!apiLoc?.geometry) return { loc, prov };
   const a = apiLoc;
-  loc = { ...loc, ...(base.id === 'caf_tulare_forage' ? KINGS : {}),
-    geometry: a.geometry, centroid: a.centroid, area_ha: a.area_ha, county: COUNTY[a.county_fips] ?? loc.county,
+  loc = { ...loc,
+    geometry: a.geometry, centroid: a.centroid, area_ha: a.area_ha, county: a.county ?? loc.county,
     dwr_id: a.dwr_unique_id ?? a.dwr_id,
     soil: { ...loc.soil, ...a.soil },
     crop_history: a.crop_history ?? loc.crop_history, nasa_datasets: a.nasa_datasets, datasets: a.datasets, terrain: a.terrain ?? loc.terrain,
+    region_adapter: a.region_adapter ?? loc.region_adapter, illustrative: a.illustrative ?? loc.illustrative,
     nasadem: a.terrain?.slope_mean_pct?.value != null ? { slope_mean_pct: a.terrain.slope_mean_pct.value, slope_p90_pct: a.terrain.slope_p90_pct?.value, low_spot_fraction: a.terrain.low_spot_fraction?.value } : undefined };
   if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', 'api', 'NASA JPL elevation, 30 m');
-  // water district / GSA: use the API's only when it is looked up (the placeholder text carries "(U)")
   const w = a.water;
   if (w?.district && !/\(U\)/.test(String(w.district)) && w.verified !== false) { loc = { ...loc, water: { ...loc.water, ...w, allocation_input: loc.water.allocation_input }, water_real: true }; prov.water = P('water', 'Water source and district', 'api', String(w.district)); }
-  prov.outline = P('outline', 'Field outline', 'api', `DWR / Land IQ 2023${loc.dwr_id ? ` field ${loc.dwr_id}` : ''}`);
-  if (a.soil?.muname) prov.soil = P('soil', 'Soil (USDA soil survey)', 'api', a.soil.muname);
-  if (a.crop_history) prov.crop_history = P('crop_history', 'Crop on record (USDA Cropland Data Layer)', 'api', 'USDA CDL 2008–2025');
+  const useBc = bcLoc(loc) || a.illustrative || a.region_adapter === 'bc';
+  prov.outline = useBc
+    ? P('outline', 'Field outline (illustrative BC square)', 'api', 'Centred on AAFC pasture/forages pixel near Salmon River; not a surveyed farm parcel')
+    : P('outline', 'Field outline', 'api', `DWR / Land IQ 2023${loc.dwr_id ? ` field ${loc.dwr_id}` : ''}`);
+  if (a.soil?.muname) prov.soil = P('soil', useBc ? 'Soil (illustrative BC)' : 'Soil (USDA soil survey)', 'api', a.soil.muname);
+  if (a.crop_history) prov.crop_history = P('crop_history', useBc ? 'Crop on record (AAFC Annual Crop Inventory)' : 'Crop on record (USDA Cropland Data Layer)', 'api', useBc ? 'AAFC ACI at field point' : 'USDA CDL 2008–2025');
+  if (a.headline) loc = { ...loc, headline: a.headline };
+  if (a.name) loc = { ...loc, name: a.name, short_name: a.short_name ?? loc.short_name };
+  if (a.water_context) loc = { ...loc, water_context: a.water_context, region: useBc ? 'bc' : loc.region };
+  if (a.first_nations) loc = { ...loc, first_nations: a.first_nations, region: useBc ? 'bc' : loc.region };
+  else if (useBc) loc = { ...loc, region: 'bc' };
   return { loc, prov };
+}
+
+/** GET .../first_nations (BC only). */
+export async function getFirstNations(id: string): Promise<FirstNations | null> {
+  const b = await apiReal(`/api/locations/${id}/first_nations`);
+  return b?.statement ? (b as FirstNations) : null;
 }
 export async function getLocations(): Promise<{ locations: Location[]; prov: ById<ProvMap>; live: boolean }> {
   const live = await apiLive();
@@ -176,7 +190,9 @@ function monthStrip(cal: { year: number; crop_id: string; plant: string; harvest
   }
   return { months, cover: cover.join('') };
 }
-const SHORT: Record<string, string> = { car0_rice_winterflood: 'Rice + winter flood', car1_rice_wintercover: 'Rice + winter cover', car2_dryyear_safflower: 'Dry-year safflower', car3_rice_wheat: 'Rice – wheat', caf0_alfalfa: 'Alfalfa stand', caf1_smallgrain_corn: 'Small grain + corn', caf2_smallgrain_sorghumsudan: 'Small grain + sorghum-sudan', caf3_alfalfa_break: 'Short alfalfa + break' };
+const SHORT: Record<string, string> = {
+  bsr0_alfalfa: 'Alfalfa (baseline)', bsr1_smallgrain_corn: 'Small grain + corn', bsr2_sorghumsudan: 'Sorghum-sudan summer', bsr3_alfalfa_break: 'Alfalfa + cereal break',
+};
 const STRIP_YEAR: Record<string, number> = { caf3_alfalfa_break: 3 }; // show the break year
 const blank = (unit: string, note: string, src?: Source): SourcedNumber => ({ value: 0, low: 0, high: 0, unit, method: 'lookup', note, source: src, blocked: true });
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -333,8 +349,10 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     apiReal(`/api/locations/${id}/insurance`),
     apiReal(`/api/locations/${id}/water_seen`),
   ]);
-  // live: no stand-in squares in the 3D view while the real 30 m grid is still loading
-  let c = mCal, cells: CellGrid | null = null, strategies = mockStrats(id), nws = (mockNews as unknown as ById<NewsItem[]>)[id];
+  // Prefer the real 30 m grid when the API has it; otherwise use the bundled field grid so 3D / layers still work (BC has no grid route yet).
+  const mockGrid = (mockCells as unknown as ById<CellGrid>)[id] ?? null;
+  let c = mCal, cells: CellGrid | null = mockGrid, strategies = mockStrats(id), nws = (mockNews as unknown as ById<NewsItem[]>)[id];
+  if (cells) prov.grid = P('grid', '100 ft squares in the 3D view', 'mock', 'illustrative grid on this field outline');
   // NASA first: the HLS calendar wins when the API serves it (it says so in its sources)
   const isHls = !!hls?.years && /hls/i.test(JSON.stringify(hls.source ?? hls.sources ?? hls.calendar_source ?? hls.method ?? ''));
   const calSrc = isHls ? hls : cal;
@@ -365,7 +383,13 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   lateP.then(([grid, news]) => {
     const p2 = { ...prov };
     let cells2: CellGrid | null = cells, nws2 = nws;
-    if (grid?.features) { cells2 = convertGrid(grid); p2.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells2!.features.length} squares, Sentinel-2 greenness`); }
+    if (grid?.features?.length) {
+      cells2 = convertGrid(grid);
+      p2.grid = P('grid', '100 ft squares in the 3D view', 'api', `${cells2!.features.length} squares, Sentinel-2 greenness`);
+    } else if (mockGrid) {
+      cells2 = mockGrid;
+      p2.grid = P('grid', '100 ft squares in the 3D view', 'mock', 'illustrative grid on this field outline');
+    }
     if (news?.items?.length) { nws2 = news.items.map(normNews); p2.news = P('news', 'News headlines', 'api', `${news.items.length} saved headlines`); }
     // after the caller has stored `first` (a late result must not be overwritten by the early one)
     if (cells2 !== cells || nws2 !== nws) setTimeout(() => onLate?.({ ...first, cells: cells2, news: nws2, prov: p2 }), 0);
@@ -443,10 +467,34 @@ function adaptOutlook(o: any, w: any, al: any, origin: { cpc: Origin; water: Ori
 export async function getOutlook(id: string, live: boolean): Promise<Outlook> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ex = outlookExample as any;
-  const exAlloc = ex.presets[id]?.allocations ?? null;
+  const preset = ex.presets?.[id] ?? {};
+  const exAlloc = preset.allocations ?? null;
   const full = live ? await apiReal(`/api/locations/${id}/outlook`) : null;
-  if (full) return fromOutlookFile(full.presets?.[id] ?? full, exAlloc, 'api');
-  return adaptOutlook(ex.example_full, ex.example_full, exAlloc, { cpc: 'mock', water: 'mock', alloc: 'mock' }, 'example file');
+  if (full) {
+    const o = fromOutlookFile(full.presets?.[id] ?? full, exAlloc, 'api');
+    if (id.startsWith('bsr_') || full.region_adapter === 'bc') {
+      o.cvpNow = null; o.swpNow = null; o.storageVsAlloc = []; o.shastaNowAf = null; o.snow = null;
+      o.allocations = exAlloc ? { project: exAlloc.project, items: exAlloc.items ?? [], next: exAlloc.next, url: exAlloc.url } : o.allocations;
+      o.prov.alloc = P('outlook_alloc', 'BC surface licences / fish-protection orders', 'api', 'Salmon River demo');
+      o.prov.water = P('outlook_water', 'Drought and local water context', 'api', 'BC demo');
+    }
+    return o;
+  }
+  // Offline: same Coming-season shape as CA, filled from the BC (or other) preset in outlook.example.json
+  const o = fromOutlookFile({
+    cpc_seasonal_outlook: preset.cpc_seasonal_outlook ?? { seasons: ex.example_full?.seasons, issued: ex.example_full?.seasons?.[0]?.issued },
+    drought: preset.drought ?? { cpc_drought_outlook: ex.example_full?.drought_outlook, us_drought_monitor: ex.example_full?.drought_monitor },
+    reservoirs_now: preset.reservoirs_now ?? ex.example_full?.reservoirs ?? {},
+    generated_at: 'example',
+  }, exAlloc, 'mock');
+  if (id.startsWith('bsr_')) {
+    o.cvpNow = null; o.swpNow = null; o.storageVsAlloc = []; o.shastaNowAf = null; o.snow = null;
+    o.allocations = exAlloc ? { project: exAlloc.project, items: exAlloc.items ?? [], next: exAlloc.next, url: exAlloc.url } : null;
+    o.prov.alloc = P('outlook_alloc', 'BC surface licences / fish-protection orders', 'mock', 'example file');
+    o.prov.water = P('outlook_water', 'Drought and local water context', 'mock', 'example file');
+    o.prov.cpc = P('outlook_cpc', 'NOAA seasonal outlook at this field', 'mock', 'example file');
+  }
+  return o;
 }
 
 const MD = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

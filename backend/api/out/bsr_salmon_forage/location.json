@@ -1,0 +1,382 @@
+{
+  "id": "bsr_salmon_forage",
+  "name": "Salmon River forage field (illustrative BC)",
+  "short_name": "Salmon River forage",
+  "headline": "Pasture and forage near the 2023 Salmon River irrigation orders. NASA weather and AAFC crops are real at this point.",
+  "region_adapter": "bc",
+  "regime": "drought",
+  "province": "BC",
+  "county": "Columbia-Shuswap",
+  "near": "Salmon Arm",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -119.3544674893354,
+          50.547161336687026
+        ],
+        [
+          -119.34553251066458,
+          50.547161336687026
+        ],
+        [
+          -119.34553251066458,
+          50.55283866331297
+        ],
+        [
+          -119.3544674893354,
+          50.55283866331297
+        ],
+        [
+          -119.3544674893354,
+          50.547161336687026
+        ]
+      ]
+    ]
+  },
+  "centroid": {
+    "lon": -119.35,
+    "lat": 50.55
+  },
+  "area_ha": {
+    "value": 39.94,
+    "unit": "ha",
+    "low": null,
+    "high": null,
+    "method": "computed",
+    "source": {
+      "id": "example_square",
+      "title": "Illustrative ~40 ha square on AAFC pasture/forage pixel",
+      "url": null,
+      "accessed": "2026-11-15",
+      "verified": false
+    },
+    "note": "Not a surveyed farm parcel; centred on a stable AAFC Pasture/forages pixel next to Splatsin / Salmon River 1"
+  },
+  "crs_working": "EPSG:4326",
+  "soil": {
+    "mukey": null,
+    "muname": "Interior plateau forage soils (illustrative)",
+    "drainage_class": "Well drained",
+    "hydrologic_group": "C",
+    "awc_mm_per_m": {
+      "value": 120,
+      "unit": "mm/m",
+      "low": 80,
+      "high": 160,
+      "method": "assumed",
+      "source": {
+        "id": "illustrative",
+        "title": "Illustrative AWC until SoilGrids/BC survey wired",
+        "url": null,
+        "accessed": "2026-11-15",
+        "verified": false
+      },
+      "note": "Example soil water holding"
+    },
+    "om_pct": {
+      "value": 2.5,
+      "unit": "%",
+      "low": 1.5,
+      "high": 3.5,
+      "method": "assumed",
+      "source": {
+        "id": "illustrative",
+        "verified": false
+      },
+      "note": "Example"
+    },
+    "texture_class": "loam",
+    "ec_ds_per_m": 0.5,
+    "source": {
+      "id": "illustrative_bc_soil",
+      "verified": false
+    },
+    "texture_detail": {
+      "sand_pct": 40,
+      "silt_pct": 40,
+      "clay_pct": 20
+    }
+  },
+  "terrain": {
+    "slope_mean_pct": {
+      "value": 2.0,
+      "unit": "%",
+      "method": "assumed",
+      "source": {
+        "id": "illustrative",
+        "verified": false
+      },
+      "verified": false
+    },
+    "slope_p90_pct": {
+      "value": 4.0,
+      "unit": "%",
+      "method": "assumed",
+      "source": {
+        "id": "illustrative",
+        "verified": false
+      },
+      "verified": false
+    },
+    "elev_m": {
+      "value": 450,
+      "unit": "m",
+      "method": "approx",
+      "source": {
+        "id": "illustrative",
+        "verified": false
+      },
+      "verified": false
+    },
+    "low_spot_fraction": {
+      "value": 0.05,
+      "unit": "fraction",
+      "method": "assumed",
+      "source": {
+        "id": "illustrative",
+        "verified": false
+      },
+      "verified": false
+    },
+    "note": "Illustrative Interior BC slopes until NASADEM wired for this point."
+  },
+  "water": {
+    "source": "surface",
+    "allocation_input": {
+      "unit": "acre-ft/acre",
+      "value": 2.0
+    },
+    "district": "Lower Salmon River licences (illustrative allocation)",
+    "sgma_subbasin": "",
+    "sgma_status": {
+      "text": "BC Fish Population Protection Order area (Aug 2023)",
+      "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+      "verified": true
+    },
+    "cdec_stations": []
+  },
+  "market_preference": "feed_own_herd",
+  "stations": [
+    {
+      "network": "ECCC",
+      "id": "6843",
+      "name": "SALMON ARM CS",
+      "distance_km": 20,
+      "years": [
+        1991,
+        2026
+      ]
+    },
+    {
+      "network": "NASA_POWER",
+      "id": "point",
+      "name": "NASA POWER cell",
+      "distance_km": 0,
+      "years": [
+        2015,
+        2026
+      ]
+    }
+  ],
+  "regional_cell": {
+    "grid": "POWER_MERRA2_0.5x0.625",
+    "row": null,
+    "col": null,
+    "footprint": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -119.64999999999999,
+            50.3
+          ],
+          [
+            -119.05,
+            50.3
+          ],
+          [
+            -119.05,
+            50.8
+          ],
+          [
+            -119.64999999999999,
+            50.8
+          ],
+          [
+            -119.64999999999999,
+            50.3
+          ]
+        ]
+      ]
+    }
+  },
+  "datasets": {
+    "power": {
+      "status": "real",
+      "meta_path": "data/cache/bsr_salmon_forage/power.meta.json",
+      "range": [
+        "2015-01-01",
+        "2026-11-12"
+      ]
+    },
+    "aafc": {
+      "status": "real",
+      "note": "AAFC Annual Crop Inventory identify at centroid 2018-2025"
+    },
+    "openet": {
+      "status": "unavailable",
+      "reason": "OpenET does not cover Canada"
+    },
+    "cimis": {
+      "status": "unavailable",
+      "reason": "California-only"
+    },
+    "rma": {
+      "status": "unavailable",
+      "reason": "USDA RMA is US-only"
+    },
+    "smap_l4": {
+      "status": "pending",
+      "reason": "use NASA Earthdata; example percentiles in regional until fetched"
+    },
+    "grace": {
+      "status": "pending",
+      "reason": "example percentiles until fetched"
+    },
+    "hls": {
+      "status": "pending",
+      "reason": "calendar is illustrative forage phenology until HLS built for BC"
+    }
+  },
+  "nasa_datasets": [
+    {
+      "id": "power",
+      "name": "NASA POWER daily weather",
+      "tells_you": "Daily heat, cold, rain for this BC point.",
+      "resolution": "about 50 km",
+      "date_range": [
+        "2015-01-01",
+        "2026-11-12"
+      ],
+      "rows": 4334,
+      "status": "live",
+      "used_in": [
+        "daily",
+        "strategies"
+      ],
+      "source_url": "https://power.larc.nasa.gov/"
+    },
+    {
+      "id": "aafc",
+      "name": "AAFC Annual Crop Inventory",
+      "tells_you": "What grew here each year (pasture/forages).",
+      "resolution": "30 m",
+      "date_range": [
+        "2018",
+        "2025"
+      ],
+      "rows": 8,
+      "status": "live",
+      "used_in": [
+        "crop_history"
+      ],
+      "source_url": "https://agriculture.canada.ca/atlas/annual-crop-inventory"
+    }
+  ],
+  "crop_history": {
+    "2018": "Pasture/forages",
+    "2019": "Pasture/forages",
+    "2020": "Pasture/forages",
+    "2021": "Pasture/forages",
+    "2022": "Pasture/forages",
+    "2023": "Pasture/forages",
+    "2024": "Pasture/forages",
+    "2025": "Pasture/forages",
+    "2008": "Pasture/forages",
+    "2009": "Pasture/forages",
+    "2010": "Pasture/forages",
+    "2011": "Pasture/forages",
+    "2012": "Pasture/forages",
+    "2013": "Pasture/forages",
+    "2014": "Pasture/forages",
+    "2015": "Pasture/forages",
+    "2016": "Pasture/forages",
+    "2017": "Pasture/forages"
+  },
+  "observed_cover": {
+    "typically_bare_doy_ranges": [
+      [
+        300,
+        365
+      ],
+      [
+        1,
+        60
+      ]
+    ],
+    "years_used": [
+      2018,
+      2019,
+      2020,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "detector": "illustrative forage phenology (not satellite rule calendar yet)",
+    "summary": "Usually pasture/forages; bare mainly in late fall and winter (illustrative)."
+  },
+  "events": [
+    {
+      "date": "2023-08-16",
+      "type": "drought_fallow",
+      "short": "Irrigation order",
+      "title": "Fish population protection order: stop irrigating forage, Salmon River / Bessette Creek",
+      "detail": "About 398 licence holders ordered mid-season.",
+      "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+      "verified": true
+    },
+    {
+      "date": "2023-06-15",
+      "type": "drought_fallow",
+      "short": "50% cut ask",
+      "title": "Mid-June letters asked for up to 50% irrigation cuts",
+      "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+      "verified": true
+    }
+  ],
+  "dwr_id": null,
+  "illustrative": true,
+  "_notes": {
+    "boundary": "Illustrative square on AAFC pasture/forage pixel near Splatsin Salmon River 1; not a First Nations farm claim",
+    "crop_history": "AAFC ImageServer identify at centroid; codes 122=Pasture/forages",
+    "allocation": "Example 2.0 acre-ft/acre \u2014 change on Compare",
+    "openet": "Not available in BC; irrigation need is modelled only"
+  },
+  "first_nations": {
+    "statement": "Built to be co-developed with First Nations farmers; we would only add a reserve field with the Nation\u2019s permission.",
+    "field_on_reserve": false,
+    "nearest_km": 6.5,
+    "nearest_reserve": "SWITSEMALPH INDIAN RESERVE NO. 3",
+    "nearest_nation": "Neskonlith",
+    "lower_river_nation": "Splatsin",
+    "route": "/api/locations/bsr_salmon_forage/first_nations"
+  },
+  "water_context": {
+    "watershed": "Salmon River (Shuswap / Columbia-Shuswap)",
+    "orders": [
+      {
+        "date": "2023-08-15",
+        "title": "Temporary protection order: stop irrigating forage",
+        "url": "https://www2.gov.bc.ca/",
+        "kind": "order",
+        "licences": 398,
+        "effective": "2023-08-18",
+        "verified": true
+      }
+    ],
+    "note": "Illustrative summary of the 2023 BC forage irrigation stop for demo."
+  }
+}

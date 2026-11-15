@@ -1,0 +1,12 @@
+{
+  "url": "https://power.larc.nasa.gov/api/temporal/daily/point",
+  "lon": -119.35,
+  "lat": 50.55,
+  "fetched_for": "bsr_salmon_forage",
+  "n": 4334,
+  "range": [
+    "2015-01-01",
+    "2026-11-12"
+  ],
+  "note": "NASA POWER daily for illustrative BC Salmon River forage field"
+}

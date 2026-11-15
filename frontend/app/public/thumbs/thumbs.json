@@ -1,29 +1,17 @@
 {
- "_note": "Esri World Imagery export at the field bounds (imagery (c) Esri, Maxar, Earthstar Geographics); bbox in lon/lat, EPSG:4326 image.",
- "fields": {
-  "car_colusa_rice": {
-   "bbox": [
-    -122.096196,
-    39.134698,
-    -122.070474,
-    39.148087
-   ],
-   "size": [
-    360,
-    240
-   ]
-  },
-  "caf_tulare_forage": {
-   "bbox": [
-    -119.64727,
-    36.229934,
-    -119.622123,
-    36.243547
-   ],
-   "size": [
-    360,
-    240
-   ]
+  "_note": "Esri World Imagery export at the field bounds (imagery (c) Esri, Maxar, Earthstar Geographics); bbox in lon/lat, EPSG:4326 image.",
+  "fields": {
+    "bsr_salmon_forage": {
+      "bbox": [
+        -119.365,
+        50.535,
+        -119.335,
+        50.565
+      ],
+      "size": [
+        360,
+        240
+      ]
+    }
   }
- }
 }

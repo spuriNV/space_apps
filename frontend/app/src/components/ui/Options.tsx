@@ -1,21 +1,19 @@
-// One farmer-first field panel. Order: what this field is -> "Your field now" answers -> about the ground -> last 3 seasons -> sources.
-// The next steps sit in a fixed footer so they are always visible without scrolling.
-import type { Calendar, FieldEvent, Location, Regional, RotationStrategy } from '../../types';
+// Core field panel: decision on the left, meters in the bottom dock.
+import type { Calendar, FieldEvent, Location, NewsItem, Regional, RotationStrategy } from '../../types';
 import type { Extras, ISSPhoto, NasaNow, ProvMap, RegionalLive } from '../../api';
 import type { NasaDataset } from '../../nasa';
-import { ISSFigure, NasaList } from './NasaSection';
-import { SourcesSheet } from './Sources';
-import { MoreDetail } from './Detail';
 import type { Daily } from '../../season';
 import Icon from '../Icons';
 import { useEffect, useState } from 'react';
-import { AboutField, Actions, EventLog, ProvList, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, type Step } from './shared';
-import { FieldNow, LastSeasons, whenT, type LoadState } from './FieldNow';
+import { Workflow, acres, fieldName, isBC, latestCrop, placeLabel, type Step } from './shared';
+import { FieldNow, whenT, type LoadState } from './FieldNow';
+import { FirstNationsCard } from './FirstNations';
+import { DockBottom } from './Dock';
 import { TODAY_T } from '../../lib';
 
 export interface FieldPanelProps {
   loc: Location; prov: ProvMap; cal: Calendar | null; regional: Regional | null; regionalLive: RegionalLive; strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; daily: Daily | null;
-  nasa: NasaDataset[] | null; nasaNow: NasaNow | null; extras: Extras; iss: { photo: ISSPhoto; credit: string } | null; dataState: LoadState; dailyState: LoadState;
+  nasa: NasaDataset[] | null; nasaNow: NasaNow | null; extras: Extras; iss: { photo: ISSPhoto; credit: string } | null; news: NewsItem[]; dataState: LoadState; dailyState: LoadState;
   t: number; setT: (t: number) => void; events: FieldEvent[];
   onStep: (s: Step) => void; onClose: () => void;
 }
@@ -23,60 +21,47 @@ export interface FieldPanelProps {
 export function FieldPanel(p: FieldPanelProps) {
   const { loc } = p;
   const thumbs = useThumbs();
-  const [src, setSrc] = useState(false);
-  const [snap, setSnap] = useState<'peek' | 'half' | 'full'>('half'); // phone bottom sheet height
   const now = latestCrop(loc);
   const isToday = p.t === TODAY_T;
+  const shared = {
+    dataState: p.dataState, dailyState: p.dailyState, thumb: thumbs?.[loc.id] ?? null, extras: p.extras, nasaNow: p.nasaNow, loc, cal: p.cal, regional: p.regional, regionalLive: p.regionalLive, strategies: p.strategies, allocation: p.allocation, exampleLimit: p.exampleLimit, t: p.t, daily: p.daily, prov: p.prov,
+  };
   return (
-    <section className={`panel fpanel sheet-${snap}`} data-testid="field-panel">
-      <button className="fp-grab" onClick={() => setSnap(snap === 'peek' ? 'half' : snap === 'half' ? 'full' : 'peek')} aria-label="Resize the field panel" data-testid="grab"><i /></button>
+    <section className="panel fpanel docked talk" data-testid="field-panel">
       <header className="fp-head">
-        <div className="fp-title">
-          <h1>{fieldName(loc)}</h1>
-          <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
-        </div>
-        <p className="fp-facts"><b>{acres(loc)} acres</b>, {now.crop.toLowerCase()} in {now.year}, {county(loc)} County</p>
-        <p className="fp-id">{fieldCode(loc).replace('DWR ', 'State field no. ')}, {coords(loc)}</p>
+        <div className="fp-title"><h1>{fieldName(loc)}</h1></div>
+        <p className="fp-facts"><b>{acres(loc)} acres</b> · {now.crop.toLowerCase()} in {now.year}</p>
       </header>
       <div className="panel-scroll">
-        <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}<small>{isToday ? `Today, ${whenT(p.t)}. Pick another date under “Viewing” to look back.` : <button className="link" onClick={() => p.setT(TODAY_T)}>Back to today</button>}</small></h2>
-        <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
-        <MoreDetail what="NASA data and sources, soil, slope and insurance, past seasons, 3D view" />
-        <div className="d-only">
-        <h2 className="fp-h" data-testid="nasa-section">NASA data behind this field<small>What each one tells you, how coarse it is, and whether it is live.</small></h2>
-        <ISSFigure iss={p.iss} />
-        {p.nasa ? <NasaList list={p.nasa} /> : <p className="muted">Loading…</p>}
-        <h2 className="fp-h">About the ground<small><button className="link" onClick={() => p.onStep('drill')} data-testid="step-drill">Look under the field in 3D: crop, soil moisture, groundwater</button></small></h2>
-        <AboutField loc={loc} prov={p.prov} cal={p.cal} insurance={p.extras.insurance ?? loc.rma ?? null} />
-        <h2 className="fp-h">The last 3 seasons</h2>
-        <LastSeasons loc={loc} cal={p.cal} t={p.t} />
-        {p.events.length > 0 && <><h2 className="fp-h">What happened around here<small>Click one to move the timeline.</small></h2><EventLog events={p.events} setT={p.setT} /></>}
-        <button className="link sources-link" onClick={() => setSrc(true)} data-testid="sources-link">Sources</button>
-        {src && <SourcesSheet onClose={() => setSrc(false)} />}
-        </div>
-        <p className="footnote">CropLytics helps the grower and adviser decide; it does not replace either.</p>
+        <p className="talk-q">{isToday ? 'Will today’s plan fit your water?' : `What about ${whenT(p.t)}?`}
+          {!isToday && <button className="link" onClick={() => p.setT(TODAY_T)}>Today</button>}
+        </p>
+        <FieldNow {...shared} mode="takeaway" />
+        <button className="btn primary wide now-next" onClick={() => p.onStep('season')} data-testid="now-to-season">Next: season<Icon name="right" size={16} /></button>
       </div>
-      <footer className="fp-foot"><Actions onStep={p.onStep} /></footer>
+      <DockBottom>
+        <div className="bottom-inner">
+          <p className="bottom-label">At a glance</p>
+          <FieldNow {...shared} mode="glance" />
+        </div>
+      </DockBottom>
     </section>
   );
 }
 
-/** "Pick your field": one paper surface, one row per field with a satellite thumbnail (outline drawn), a 2023-2026 season strip,
- *  one line of facts in grower units and one line of what is notable. BC is a quiet text row at the bottom. */
 export function FieldPicker(p: { locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void }) {
   const thumbs = useThumbs();
   return (
-    <section className="picker2" data-testid="fields-panel">
+    <section className="picker2 docked talk" data-testid="fields-panel">
       <header className="pk-head">
-        <h1>Pick your field</h1>
-        <p>What is happening on it now, what this winter may bring, and what another rotation would cost in water.</p>
-        {p.onClose && <button className="pk-close" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>}
+        <h1>Which field?</h1>
+        <Workflow current="pick" problem hideSteps />
       </header>
-      {p.live === false && <p className="offline-note" data-testid="offline-note">The CropLytics server is not answering, so every number is an example. Start the API (see the README) and reload for real data.</p>}
-      {p.locations.length === 0 && <p className="loading-note">Loading the fields…</p>}
+      {p.live === false && <p className="offline-note" data-testid="offline-note">Server offline — example numbers.</p>}
+      {p.locations.length === 0 && <p className="loading-note">Finding fields…</p>}
       <ul className="pk-list" data-testid="field-table">
         {p.locations.map((l) => {
-          const now = latestCrop(l), th = thumbs?.[l.id], strip = p.strips[l.id];
+          const now = latestCrop(l), th = thumbs?.[l.id];
           return (
             <li key={l.id}>
               <button className={`pk-row ${p.selectedId === l.id ? 'on' : ''}`} onClick={() => p.onSelect(l.id)} data-testid={`row-${l.id}`}>
@@ -86,39 +71,28 @@ export function FieldPicker(p: { locations: Location[]; live: boolean | null; st
                 </span>
                 <span className="pk-body">
                   <b>{fieldName(l)}</b>
-                  <span className="pk-facts">{county(l)} County · {acres(l)} acres · {now.crop.toLowerCase()} in {now.year}</span>
-                  <span className="pk-note">{notable(l)}</span>
-                  <span className="pk-strip" title="Bare, green or flooded, 2023 to 2026, from satellites">
-                    {[2023, 2024, 2025, 2026].map((y) => <span key={y}><i>{(strip?.[y] ?? 'u'.repeat(36)).split('').map((c, k) => <em key={k} className={`c-${c}`} />)}</i><small>{y}</small></span>)}
-                  </span>
+                  <span className="pk-facts">{placeLabel(l)} · {acres(l)} acres · {now.crop.toLowerCase()} in {now.year}</span>
+                  {isBC(l) && <span className="pk-tag">BC Salmon River · near First Nations lands</span>}
                 </span>
               </button>
             </li>
           );
         })}
       </ul>
-      <button className="pk-bc" onClick={p.onBC}>British Columbia: not set up yet. <u>See why</u></button>
+      {p.locations.some(isBC) && (
+        <div className="pk-fn">
+          <FirstNationsCard loc={p.locations.find(isBC)!} />
+        </div>
+      )}
     </section>
   );
 }
-/** Field outline in thumbnail coordinates (360 x 240, plate carrée over a small box). */
+
 function outlinePts(l: Location, b: number[]) {
   return l.geometry.coordinates[0].map(([x, y]) => `${(((x - b[0]) / (b[2] - b[0])) * 360).toFixed(1)},${(((b[3] - y) / (b[3] - b[1])) * 240).toFixed(1)}`).join(' ');
 }
-/** One line of what is notable about the field, from its record. */
-function notable(l: Location) {
-  const notes: string[] = [];
-  const fallow = Object.entries(l.crop_history).filter(([y, c]) => +y >= 2016 && cropName(c) === 'Left fallow').map(([y]) => +y);
-  if (fallow.includes(2022)) notes.push('Left fallow in the 2022 drought');
-  else if (fallow.length) notes.push(`Left fallow in ${fallow[fallow.length - 1]}`);
-  if (l.water.source !== 'surface') notes.push('wells, in a basin under state groundwater probation since 2024');
-  else notes.push('surface water from the Sacramento River');
-  const s = notes.join('; ');
-  return s.charAt(0).toUpperCase() + s.slice(1) + '.';
-}
 
-let thumbsP: Promise<Record<string, { bbox: number[] }>> | null = null;
-/** Satellite thumbnails of each field (public/thumbs), with the bounds needed to draw the outline. */
+let thumbsP: Promise<Record<string, { bbox: number[] }> | null> | null = null;
 function useThumbs() {
   const [t, setT] = useState<Record<string, { bbox: number[] }> | null>(null);
   useEffect(() => { (thumbsP ??= fetch(`${import.meta.env.BASE_URL}thumbs/thumbs.json`).then((r) => r.json()).then((j) => j.fields).catch(() => ({}))).then(setT); }, []);

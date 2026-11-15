@@ -1,0 +1,28 @@
+{
+  "preset_id": "bsr_salmon_forage",
+  "by_year": {
+    "2018": "Pasture/forages",
+    "2019": "Pasture/forages",
+    "2020": "Pasture/forages",
+    "2021": "Pasture/forages",
+    "2022": "Pasture/forages",
+    "2023": "Pasture/forages",
+    "2024": "Pasture/forages",
+    "2025": "Pasture/forages",
+    "2008": "Pasture/forages",
+    "2009": "Pasture/forages",
+    "2010": "Pasture/forages",
+    "2011": "Pasture/forages",
+    "2012": "Pasture/forages",
+    "2013": "Pasture/forages",
+    "2014": "Pasture/forages",
+    "2015": "Pasture/forages",
+    "2016": "Pasture/forages",
+    "2017": "Pasture/forages"
+  },
+  "source": {
+    "id": "aafc_aci",
+    "verified": true
+  },
+  "method": "ImageServer identify at centroid"
+}

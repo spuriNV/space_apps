@@ -29,7 +29,7 @@ const STYLE: StyleSpecification = {
 /** Field marker: a paper-white map pin with a dark green edge and a crop-rows glyph (inline SVG). */
 const PIN_SVG = `<svg class="pin-svg" width="28" height="36" viewBox="0 0 28 36" aria-hidden="true"><path class="pin-body" d="M14 1.2C7.2 1.2 2 6.3 2 12.9c0 8.4 10.2 20 11.1 21a1.2 1.2 0 0 0 1.8 0C15.8 32.9 26 21.3 26 12.9 26 6.3 20.8 1.2 14 1.2z"/><rect class="pin-field" x="8.5" y="7.5" width="11" height="11" rx="1.5"/><path class="pin-rows" d="M11 9.5v7M14 9.5v7M17 9.5v7"/></svg>`;
 
-export const HOME = { center: [-119.9, 37.35] as [number, number], zoom: 5.75, pitch: 0, bearing: 0 };
+export const HOME = { center: [-119.35, 50.55] as [number, number], zoom: 8.2, pitch: 0, bearing: 0 };
 const EXPLODE_Z0 = 12.5, EXPLODE_Z1 = 14.2;
 const explodeExpr = (key: string) => ['interpolate', ['linear'], ['zoom'], EXPLODE_Z0, 0, EXPLODE_Z1, ['get', key]] as unknown as number;
 
@@ -126,7 +126,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.on('move', () => { updateLabels(); });
     map.on('zoom', report);
     report();
-    return () => map.remove();
+    const ro = new ResizeObserver(() => map.resize());
+    if (el.current) ro.observe(el.current);
+    return () => { ro.disconnect(); map.remove(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -148,7 +150,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     for (const pl of p.bc?.places ?? []) {
       const d = document.createElement('button');
       d.className = 'pin pin-bc';
-      d.innerHTML = `<span class="pin-dot"></span><span class="pin-text"><b>${pl.name}</b><i>British Columbia · not set up yet</i></span>`;
+      d.innerHTML = `<span class="pin-dot"></span><span class="pin-text"><b>${pl.name}</b><i>British Columbia</i></span>`;
       d.onclick = (ev) => { ev.stopPropagation(); live.current.onBC(); };
       ms.push(new maplibregl.Marker({ element: d, anchor: 'left', offset: [-9, 0] }).setLngLat([pl.lon, pl.lat]).addTo(map));
     }

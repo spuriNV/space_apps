@@ -1,4 +1,4 @@
-// "Sources": every dataset and model behind the field view, grouped like the brief's sources section. One line each.
+// Sources behind the field view — BC Salmon River demo (same groups as the CA build, BC datasets).
 import Icon from '../Icons';
 
 const GROUPS: { title: string; items: [string, string][] }[] = [
@@ -8,28 +8,24 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
     ['GPM IMERG, NASA/JAXA', 'Daily rain over the field; rain since 1 Oct and its 2001–2025 normal. 0.1°.'],
     ['GRACE-FO data assimilation, NASA', 'Groundwater and root-zone soil moisture percentiles, weekly. 0.25°.'],
     ['OPERA surface water (DSWx), NASA JPL', 'Standing water on the field in each clear image. 30 m.'],
-    ['NASA POWER', 'Sun, wind and humidity for crop water use (the rotation model). 0.5°.'],
+    ['NASA POWER', 'Sun, wind and humidity for crop water use (the rotation model). Real at this field. 0.5°.'],
     ['NASADEM, NASA JPL', 'Slope and low spots. 30 m.'],
-    ['Astronaut photography, NASA Johnson Space Center', 'The ISS photo of the valley. Image courtesy of the Earth Science and Remote Sensing Unit, NASA Johnson Space Center.'],
+    ['Astronaut photography, NASA Johnson Space Center', 'ISS photo of the region when available.'],
   ] },
   { title: 'Other satellites', items: [
     ['Sentinel-2, ESA (Copernicus)', '100 ft squares in the 3D view; also inside HLS. 10–20 m.'],
-    ['OpenET ensemble', 'Measured crop water use on this field, monthly, 2016–2025; the check on our model.'],
   ] },
   { title: 'Ground data', items: [
-    ['NOAA weather stations (GHCN-Daily)', 'Hot days (104 °F), frost nights, heavy-rain days.'],
-    ['USDA Cropland Data Layer', 'The crop grown each year, 2008–2025.'],
-    ['USDA soil survey (SSURGO)', 'Soil type, water held, drainage, salt.'],
-    ['DWR / Land IQ crop mapping 2023', 'The field outline and state field number.'],
-    ['USDA Risk Management Agency', 'Crop-insurance payouts by county, crop and cause.'],
-    ['NOAA Climate Prediction Center, US Drought Monitor', 'Winter outlooks and drought, county.'],
-    ['California Data Exchange Center (CDEC), Reclamation, DWR', 'Reservoir storage, allocations, snowpack.'],
+    ['AAFC Annual Crop Inventory', 'Crop grown each year at this point (pasture/forages for this demo), from 2011 on.'],
+    ['BC soil / SoilGrids', 'Soil type and water held for this illustrative outline.'],
+    ['Environment Canada / Salmon Arm CS', 'Nearest daily weather station; the engine uses NASA POWER at the field.'],
+    ['BC Water Sustainability Act / fish-protection orders', 'Licence story and the August 2023 forage irrigation stop on the Salmon River.'],
+    ['NOAA Climate Prediction Center', 'Winter rain and temperature outlooks at this location.'],
   ] },
   { title: 'Models', items: [
-    ['CropLytics rotation model', 'FAO-56 crop water use and the rules of thumb for soil, feed and pests; weather 2015–2025.'],
+    ['CropLytics rotation model', 'FAO-56 crop water use and rules of thumb for soil, feed and pests; NASA POWER weather at this point.'],
     ['Bare / green / flooded rule', 'Greenness below 0.2 is bare, 0.2–0.35 thin; water index for flooding.'],
-    ['Machine-learning calendar (random forest)', 'A second opinion on the rule, trained on neighbouring fields; tested on 2022.'],
-    ['Crop-stress weeks', 'Two statistical methods on greenness, heat and dry air, growing season only.'],
+    ['Machine-learning calendar (random forest)', 'Second opinion on the cover rule; treat agreement as illustrative on this BC field.'],
   ] },
 ];
 

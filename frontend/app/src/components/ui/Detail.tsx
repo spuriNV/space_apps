@@ -6,7 +6,8 @@ import { createContext, useContext, useState } from 'react';
 const KEY = 'croplytics.detail';
 const read = () => { try { return sessionStorage.getItem(KEY) === '1'; } catch { return false; } };
 export function useDetailState() {
-  const [on, setOn] = useState(read);
+  // Core path starts with detail off so the farmer sees only the decision.
+  const [on, setOn] = useState(false);
   const set = (v: boolean) => { setOn(v); try { sessionStorage.setItem(KEY, v ? '1' : '0'); } catch { /* private mode */ } };
   return [on, set] as const;
 }

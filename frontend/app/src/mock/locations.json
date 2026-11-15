@@ -1,613 +1,219 @@
 [
  {
-  "id": "car_colusa_rice",
-  "name": "Colusa County rice check (example)",
-  "short_name": "Colusa rice",
-  "valley": "Sacramento Valley",
-  "region_adapter": "ca",
-  "regime": "drought_then_flood",
-  "state_fips": "06",
-  "county_fips": "011",
-  "ground_data": "rich",
+  "id": "bsr_salmon_forage",
+  "name": "Salmon River forage field (illustrative BC)",
+  "short_name": "Salmon River forage",
+  "valley": "Salmon River / Shuswap",
+  "region_adapter": "bc",
+  "regime": "drought",
+  "ground_data": "sparse",
+  "headline": "Pasture and forage near the 2023 Salmon River irrigation orders. NASA weather and AAFC crops are real at this point.",
   "geometry": {
    "type": "Polygon",
    "coordinates": [
     [
      [
-      -122.105734,
-      39.147305
+      -119.3544674893354,
+      50.547161336687026
      ],
      [
-      -122.094266,
-      39.147305
+      -119.34553251066458,
+      50.547161336687026
      ],
      [
-      -122.094266,
-      39.152695
+      -119.34553251066458,
+      50.55283866331297
      ],
      [
-      -122.105734,
-      39.152695
+      -119.3544674893354,
+      50.55283866331297
      ],
      [
-      -122.105734,
-      39.147305
+      -119.3544674893354,
+      50.547161336687026
      ]
     ]
    ]
   },
   "centroid": {
-   "lon": -122.1,
-   "lat": 39.15
+   "lon": -119.35,
+   "lat": 50.55
   },
   "area_ha": {
-   "value": 59.4,
+   "value": 39.94,
+   "unit": "ha",
    "low": null,
    "high": null,
-   "unit": "ha",
    "method": "computed",
    "source": {
-    "id": "mock",
-    "title": "Illustrative mock value (frontend prototype)",
+    "id": "example_square",
+    "title": "Illustrative ~40 ha square on AAFC pasture/forage pixel",
     "url": null,
-    "accessed": "2026-11-14",
+    "accessed": "2026-11-15",
     "verified": false
    },
-   "note": "example polygon; spec B1: 60 ha laser-levelled rice check (U)"
+   "note": "Not a surveyed farm parcel; centred on a stable AAFC Pasture/forages pixel next to Splatsin / Salmon River 1"
   },
-  "crs_working": "EPSG:32610",
+  "county": "Columbia-Shuswap",
   "soil": {
-   "mukey": "mock",
-   "muname": "Willows silty clay (illustrative)",
-   "drainage_class": "Poorly drained",
-   "hydrologic_group": "D",
+   "mukey": null,
+   "muname": "Interior plateau forage soils (illustrative)",
+   "drainage_class": "Well drained",
+   "hydrologic_group": "C",
    "awc_mm_per_m": {
-    "value": 150,
-    "low": 130,
-    "high": 170,
+    "value": 120,
     "unit": "mm/m",
+    "low": 80,
+    "high": 160,
     "method": "assumed",
     "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
+     "id": "illustrative",
+     "title": "Illustrative AWC until SoilGrids/BC survey wired",
      "url": null,
-     "accessed": "2026-11-14",
+     "accessed": "2026-11-15",
      "verified": false
     },
-    "note": ""
+    "note": "Example soil water holding"
    },
    "om_pct": {
-    "value": 2.4,
-    "low": 1.8,
-    "high": 3,
+    "value": 2.5,
     "unit": "%",
+    "low": 1.5,
+    "high": 3.5,
     "method": "assumed",
     "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
+     "id": "illustrative",
      "verified": false
     },
-    "note": ""
+    "note": "Example"
    },
-   "texture_class": "Silty clay",
+   "texture_class": "loam",
+   "ec_ds_per_m": 0.5,
    "source": {
-    "id": "ssurgo_sda",
-    "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+    "id": "illustrative_bc_soil",
     "verified": false
    }
-  },
-  "terrain": {
-   "slope_mean_pct": {
-    "value": 0.1,
-    "low": 0,
-    "high": 0.2,
-    "unit": "%",
-    "method": "assumed",
-    "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
-     "verified": false
-    },
-    "note": ""
-   },
-   "slope_p90_pct": {
-    "value": 0.2,
-    "low": 0.1,
-    "high": 0.3,
-    "unit": "%",
-    "method": "assumed",
-    "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
-     "verified": false
-    },
-    "note": ""
-   },
-   "elev_m": {
-    "value": 24,
-    "low": 23,
-    "high": 25,
-    "unit": "m",
-    "method": "assumed",
-    "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
-     "verified": false
-    },
-    "note": ""
-   },
-   "low_spot_fraction": {
-    "value": 0.04,
-    "low": 0.02,
-    "high": 0.06,
-    "unit": "fraction",
-    "method": "assumed",
-    "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
-     "verified": false
-    },
-    "note": ""
-   },
-   "note": "Levelled field, slope zones not meaningful"
   },
   "water": {
    "source": "surface",
    "allocation_input": {
     "unit": "acre-ft/acre",
-    "value": 3.5
+    "value": 2.0
    },
-   "district": "Glenn-Colusa ID (U)",
-   "sgma_subbasin": "Colusa",
+   "district": "Lower Salmon River licences (illustrative allocation)",
+   "sgma_subbasin": "",
    "sgma_status": {
-    "text": "Colusa Subbasin: medium priority (U)",
-    "url": "https://sgma.water.ca.gov/",
-    "verified": false
+    "text": "BC Fish Population Protection Order area (Aug 2023)",
+    "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+    "verified": true
    },
-   "cdec_stations": [
-    "SHA",
-    "ORO"
-   ]
-  },
-  "market_preference": "sell",
-  "stations": [
-   {
-    "network": "CIMIS",
-    "id": 250,
-    "name": "Williams",
-    "distance_km": 8,
-    "years": [
-     2016,
-     2026
-    ]
-   },
-   {
-    "network": "NOAA",
-    "id": "U",
-    "name": "Colusa / Williams (U station id)"
-   }
-  ],
-  "regional_cell": {
-   "grid": "EASE2_G9km",
-   "row": 0,
-   "col": 0
-  },
-  "datasets": {
-   "power": {
-    "native_scale": "0.5° (~50 km)"
-   },
-   "imerg": {
-    "native_scale": "0.1° (~10 km)"
-   },
-   "smap_l3": {
-    "native_scale": "9 km"
-   },
-   "smap_l4": {
-    "native_scale": "9 km"
-   },
-   "hls": {
-    "native_scale": "30 m"
-   },
-   "s2": {
-    "native_scale": "10 m"
-   },
-   "modis": {
-    "native_scale": "250 m"
-   },
-   "ecostress": {
-    "native_scale": "70 m"
-   },
-   "grace": {
-    "native_scale": "0.25°"
-   },
-   "dem": {
-    "native_scale": "30 m"
-   },
-   "cdl": {
-    "native_scale": "30 m"
-   },
-   "openet": {
-    "native_scale": "30 m"
-   },
-   "cimis": {},
-   "cdec": {},
-   "dwr_wells": {},
-   "rma": {},
-   "usdm": {},
-   "news": {}
+   "cdec_stations": []
   },
   "crop_history": {
-   "2016": "Rice",
-   "2017": "Rice",
-   "2018": "Rice",
-   "2019": "Rice",
-   "2020": "Rice",
-   "2021": "Rice",
-   "2022": "Fallow/Idle",
-   "2023": "Rice",
-   "2024": "Rice",
-   "2025": "Rice (CDL pending)"
+   "2018": "Pasture/forages",
+   "2019": "Pasture/forages",
+   "2020": "Pasture/forages",
+   "2021": "Pasture/forages",
+   "2022": "Pasture/forages",
+   "2023": "Pasture/forages",
+   "2024": "Pasture/forages",
+   "2025": "Pasture/forages",
+   "2008": "Pasture/forages",
+   "2009": "Pasture/forages",
+   "2010": "Pasture/forages",
+   "2011": "Pasture/forages",
+   "2012": "Pasture/forages",
+   "2013": "Pasture/forages",
+   "2014": "Pasture/forages",
+   "2015": "Pasture/forages",
+   "2016": "Pasture/forages",
+   "2017": "Pasture/forages"
   },
   "observed_cover": {
    "typically_bare_doy_ranges": [
     [
-     290,
-     110
+     300,
+     365
+    ],
+    [
+     1,
+     60
     ]
    ],
    "years_used": [
-    2016,
-    2017,
     2018,
     2019,
     2020,
-    2021,
     2022,
     2023,
     2024,
     2025
    ],
-   "detector": "consensus",
-   "summary": "Bare mid-Oct to late Apr, except winter-flood years"
+   "detector": "illustrative forage phenology (not satellite rule calendar yet)",
+   "summary": "Usually pasture/forages; bare mainly in late fall and winter (illustrative)."
   },
-  "headline": "Rice every year since 2016, fallowed in 2022.",
   "events": [
    {
-    "date": "2022-05-01",
+    "date": "2023-08-16",
     "type": "drought_fallow",
-    "short": "2022 fallow",
-    "title": "Sacramento Valley rice acreage roughly halved",
-    "detail": "Colusa −84%, Glenn −75% vs 2021 (NASA Earth Observatory quoting UC Davis)",
-    "url": "https://science.nasa.gov/earth/earth-observatory/a-rough-year-for-rice-in-california-150412/",
+    "short": "Irrigation order",
+    "title": "Fish population protection order: stop irrigating forage, Salmon River / Bessette Creek",
+    "detail": "About 398 licence holders ordered mid-season.",
+    "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
     "verified": true
    },
    {
-    "date": "2023-01-09",
-    "type": "atmospheric_river",
-    "short": "Jan–Mar 2023 atmospheric rivers",
-    "title": "Jan–Mar 2023 atmospheric rivers",
-    "detail": "Wet winter, late planting; harvest pushed into the rainy season (152 days planting-to-harvest vs 145–150 average)",
-    "url": "https://www.agalert.com/california-ag-news/archives/january-3-2024/later-rice-harvest-deals-minor-yield-quality-impacts/",
-    "verified": true,
-    "end_date": "2023-03-20"
+    "date": "2023-06-15",
+    "type": "drought_fallow",
+    "short": "50% cut ask",
+    "title": "Mid-June letters asked for up to 50% irrigation cuts",
+    "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+    "verified": true
    }
-  ]
- },
- {
-  "id": "caf_tulare_forage",
-  "name": "Tulare/Kings forage field for dairy (example)",
-  "short_name": "Tulare/Kings forage",
-  "valley": "San Joaquin Valley",
-  "region_adapter": "ca",
-  "regime": "groundwater_limit_then_flood",
-  "state_fips": "06",
-  "county_fips": "031",
-  "ground_data": "rich",
-  "geometry": {
-   "type": "Polygon",
-   "coordinates": [
-    [
-     [
-      -119.603173,
-      36.19744
-     ],
-     [
-      -119.596827,
-      36.19744
-     ],
-     [
-      -119.596827,
-      36.20256
-     ],
-     [
-      -119.603173,
-      36.20256
-     ],
-     [
-      -119.603173,
-      36.19744
-     ]
-    ]
-   ]
-  },
-  "centroid": {
-   "lon": -119.6,
-   "lat": 36.2
-  },
-  "area_ha": {
-   "value": 32.5,
-   "low": null,
-   "high": null,
-   "unit": "ha",
-   "method": "computed",
-   "source": {
-    "id": "mock",
-    "title": "Illustrative mock value (frontend prototype)",
-    "url": null,
-    "accessed": "2026-11-14",
-    "verified": false
-   },
-   "note": "example polygon; spec B1: 32 ha quarter-section (U)"
-  },
-  "crs_working": "EPSG:32610",
-  "soil": {
-   "mukey": "mock",
-   "muname": "Lethent silt loam (illustrative)",
-   "drainage_class": "Moderately well drained",
-   "hydrologic_group": "C",
-   "awc_mm_per_m": {
-    "value": 165,
-    "low": 140,
-    "high": 180,
-    "unit": "mm/m",
-    "method": "assumed",
-    "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
-     "verified": false
-    },
-    "note": ""
-   },
-   "om_pct": {
-    "value": 1.1,
-    "low": 0.8,
-    "high": 1.5,
-    "unit": "%",
-    "method": "assumed",
-    "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
-     "verified": false
-    },
-    "note": ""
-   },
-   "texture_class": "Silt loam",
-   "source": {
-    "id": "ssurgo_sda",
-    "url": "https://sdmdataaccess.sc.egov.usda.gov/",
-    "verified": false
-   }
-  },
+  ],
+  "illustrative": true,
   "terrain": {
    "slope_mean_pct": {
-    "value": 0.2,
-    "low": 0.1,
-    "high": 0.4,
+    "value": 2.0,
     "unit": "%",
     "method": "assumed",
     "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
+     "id": "illustrative",
      "verified": false
     },
-    "note": ""
+    "verified": false
    },
    "slope_p90_pct": {
-    "value": 0.5,
-    "low": 0.3,
-    "high": 0.7,
+    "value": 4.0,
     "unit": "%",
     "method": "assumed",
     "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
+     "id": "illustrative",
      "verified": false
     },
-    "note": ""
+    "verified": false
    },
    "elev_m": {
-    "value": 66,
-    "low": 65,
-    "high": 68,
+    "value": 450,
     "unit": "m",
-    "method": "assumed",
+    "method": "approx",
     "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
+     "id": "illustrative",
      "verified": false
     },
-    "note": ""
+    "verified": false
    },
    "low_spot_fraction": {
-    "value": 0.12,
-    "low": 0.08,
-    "high": 0.18,
+    "value": 0.05,
     "unit": "fraction",
     "method": "assumed",
     "source": {
-     "id": "mock",
-     "title": "Illustrative mock value (frontend prototype)",
-     "url": null,
-     "accessed": "2026-11-14",
+     "id": "illustrative",
      "verified": false
     },
-    "note": ""
-   },
-   "note": "Low south-west corner: ponding candidate (U)"
-  },
-  "water": {
-   "source": "groundwater",
-   "allocation_input": {
-    "unit": "acre-ft/acre",
-    "value": 3
-   },
-   "district": "GSA allocation (your number)",
-   "sgma_subbasin": "Tulare Lake",
-   "sgma_status": {
-    "text": "Tulare Lake Subbasin placed on SGMA probation 16 Apr 2024; in litigation since",
-    "url": "https://water.waterboards.ca.gov/press_room/press_releases/2024/pr20240415-tulare-lake-probationary-hearing.html",
-    "verified": true
-   },
-   "cdec_stations": [
-    "PNF"
-   ]
-  },
-  "market_preference": "feed_own_herd",
-  "stations": [
-   {
-    "network": "CIMIS",
-    "id": 15,
-    "name": "Stratford (U)",
-    "distance_km": 14,
-    "years": [
-     2016,
-     2026
-    ]
-   },
-   {
-    "network": "NOAA",
-    "id": "U",
-    "name": "Hanford (U station id)"
-   }
-  ],
-  "regional_cell": {
-   "grid": "EASE2_G9km",
-   "row": 0,
-   "col": 0
-  },
-  "datasets": {
-   "power": {
-    "native_scale": "0.5° (~50 km)"
-   },
-   "imerg": {
-    "native_scale": "0.1° (~10 km)"
-   },
-   "smap_l3": {
-    "native_scale": "9 km"
-   },
-   "smap_l4": {
-    "native_scale": "9 km"
-   },
-   "hls": {
-    "native_scale": "30 m"
-   },
-   "s2": {
-    "native_scale": "10 m"
-   },
-   "modis": {
-    "native_scale": "250 m"
-   },
-   "ecostress": {
-    "native_scale": "70 m"
-   },
-   "grace": {
-    "native_scale": "0.25°"
-   },
-   "dem": {
-    "native_scale": "30 m"
-   },
-   "cdl": {
-    "native_scale": "30 m"
-   },
-   "openet": {
-    "native_scale": "30 m"
-   },
-   "cimis": {},
-   "cdec": {},
-   "dwr_wells": {},
-   "rma": {},
-   "usdm": {},
-   "news": {}
-  },
-  "crop_history": {
-   "2016": "Alfalfa",
-   "2017": "Alfalfa",
-   "2018": "Alfalfa",
-   "2019": "Alfalfa",
-   "2020": "Winter wheat / Corn",
-   "2021": "Alfalfa",
-   "2022": "Alfalfa",
-   "2023": "Alfalfa (flooded Apr–Jun)",
-   "2024": "Alfalfa",
-   "2025": "Alfalfa (CDL pending)"
-  },
-  "observed_cover": {
-   "typically_bare_doy_ranges": [],
-   "years_used": [
-    2016,
-    2017,
-    2018,
-    2019,
-    2020,
-    2021,
-    2022,
-    2023,
-    2024,
-    2025
-   ],
-   "detector": "consensus",
-   "summary": "Covered most of the year; short dips after each cutting"
-  },
-  "headline": "Alfalfa for dairy under a groundwater pumping limit.",
-  "events": [
-   {
-    "date": "2022-07-01",
-    "type": "drought_fallow",
-    "short": "2021–22 drought",
-    "title": "2021–22 drought and heavy pumping",
-    "detail": "Groundwater-dependent forage; GRACE storage percentile at its lowest of the record shown",
-    "url": null,
     "verified": false
    },
-   {
-    "date": "2023-03-15",
-    "type": "atmospheric_river",
-    "short": "Spring 2023 Tulare Lake re-floods",
-    "title": "Tulare Lake re-floods",
-    "detail": "Peaked near 114,000 acres (46,000 ha) by DWR satellite measurement",
-    "url": "https://www.nbcnews.com/science/science-news/dormant-california-lake-reappeared-isnt-going-anywhere-fast-rcna92452",
-    "verified": true,
-    "end_date": "2023-06-30"
-   },
-   {
-    "date": "2024-04-16",
-    "type": "sgma_probation",
-    "short": "Apr 2024 SGMA probation",
-    "title": "Tulare Lake Subbasin placed on SGMA probation",
-    "detail": "State Water Board action for subsidence from over-pumping; litigation since",
-    "url": "https://water.waterboards.ca.gov/press_room/press_releases/2024/pr20240415-tulare-lake-probationary-hearing.html",
-    "verified": true
-   }
-  ]
+   "note": "Illustrative Interior BC slopes until NASADEM wired for this point."
+  }
  }
 ]

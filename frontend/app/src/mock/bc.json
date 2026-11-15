@@ -1,33 +1,33 @@
 {
- "title": "Why not BC yet",
- "intro": "The idea started in British Columbia: the August 2023 Salmon River forage-water orders and the November 2021 Sumas Prairie flood. The ground data there is too thin to check a field-level answer, so the tool is built and tested in California first.",
+ "title": "About this BC demo",
+ "intro": "CropLytics runs the same pick → now → season → compare → print path here on an illustrative Salmon River forage field. NASA POWER weather and AAFC crop history are real at this point. Soil, the field outline, and some regional layers are illustrative until denser BC ground data is wired.",
  "lines": [
   {
-   "label": "No OpenET",
-   "text": "Field-scale measured crop water use covers western US states only."
+   "label": "Weather",
+   "text": "NASA POWER at the field point drives the rotation water model (Salmon Arm CS is the nearest Environment Canada station)."
   },
   {
-   "label": "No field-soil API",
-   "text": "BC soil comes from survey polygons or a 250 m global model."
+   "label": "Crops",
+   "text": "AAFC Annual Crop Inventory labels this point as pasture/forages across recent years."
   },
   {
-   "label": "One station per valley",
-   "text": "Salmon Arm CS is the only active daily weather station in its valley."
+   "label": "Water story",
+   "text": "Lower Salmon River surface licences; August 2023 fish-protection orders stopped forage irrigation in this valley."
   },
   {
-   "label": "Crop labels since 2011",
-   "text": "AAFC crop inventory starts in 2011, with thin BC ground sampling in 2021."
+   "label": "Still illustrative",
+   "text": "Field outline is a square on a stable forage pixel (not a surveyed parcel). Soil and some satellite calendars are labelled when they are examples."
   }
  ],
- "limit": "BC is out of scope; transferability is a claim to test.",
+ "limit": "Sumas Prairie is not a second field yet. Gaps stay in the source lines, not as a dead end.",
  "places": [
   {
-   "name": "Salmon River / Shuswap",
-   "lat": 50.62,
-   "lon": -119.33
+   "name": "Salmon River / Shuswap (this demo)",
+   "lat": 50.55,
+   "lon": -119.35
   },
   {
-   "name": "Sumas Prairie",
+   "name": "Sumas Prairie (coming later)",
    "lat": 49.06,
    "lon": -122.17
   }
@@ -49,7 +49,7 @@
   }
  ],
  "next_step": {
-  "label": "Next step: BC appendix",
+  "label": "Same workflow as the CA build; this field is the BC demo",
   "ref": "planner-spec.md, Appendix A"
  }
 }
