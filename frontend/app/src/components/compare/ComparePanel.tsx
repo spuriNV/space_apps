@@ -6,10 +6,10 @@ import type { Calendar, CoverClass, Location, RotationStrategy, ScoreKey, Source
 import { scoreStrategies, type Scenario } from '../../api';
 import { BARE_DEF, observedBare } from '../../bare';
 import { What } from '../ui/What';
-import { MoreDetail, useDetail } from '../ui/Detail';
-import { CLASS_COLOR, RAIN_FED, isRainFed, mmToAfac, needText } from '../../lib';
-import Icon from '../Icons';
-import { StepLine, openetText } from '../ui/shared';
+import { useDetail } from '../ui/Detail';
+import { Answer, StepShell } from '../ui/StepShell';
+import { CLASS_COLOR, RAIN_FED, isRainFed, mmToAfac } from '../../lib';
+import { fieldName, openetText } from '../ui/shared';
 import { HOT_F, hotBareDays, type Daily } from '../../season';
 import { SimRun } from './SimRun';
 import type { SimMode } from '../ui/FieldTimeline';
@@ -99,7 +99,7 @@ const HEAT: [number, string][] = [[0, 'Normal heat'], [2, '4 °F warmer'], [4, '
 /** Scores that are the same for every rotation on this field carry no information: list them as "not scored yet". */
 const constantScores = (ss: RotationStrategy[]) => new Set(SCORE.filter((m) => { const v = ss.map((s) => s.scores[m.key as ScoreKey]?.value); return v.every((x) => x == null || x === v[0]); }).map((m) => m.key));
 
-export default function ComparePanel(p: { loc: Location; strategies: RotationStrategy[]; daily: Daily | null; cal: Calendar | null; live: boolean; allocation: number; exampleLimit: boolean; setAllocation: (v: number) => void; onBrief: (id: string) => void; sim: SimMode; simRunning: boolean; onRunSim: (sim: NonNullable<SimMode>, startT: number) => void; onStopSim: () => void; onClose: () => void }) {
+export default function ComparePanel(p: { loc: Location; strategies: RotationStrategy[]; daily: Daily | null; cal: Calendar | null; live: boolean; allocation: number; exampleLimit: boolean; setAllocation: (v: number) => void; onBrief: (id: string) => void; sim: SimMode; simRunning: boolean; onRunSim: (sim: NonNullable<SimMode>, startT: number) => void; onStopSim: () => void; onClose: () => void; onBack: () => void; onSheet?: (px: number) => void }) {
   // farmer priorities (0-4) and a rain / temperature what-if, re-scored by the rotation model (POST /score)
   const [weights, setWeights] = useState<Partial<Record<ScoreKey, number>>>({});
   const [scen, setScen] = useState<Scenario>({ dT_c: 0, dP_pct: 0 });
@@ -120,13 +120,11 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
   const today = strategies.find((s) => s.is_baseline) ?? strategies[0];
   const detail = useDetail().on;
   const allAlts = strategies.filter((s) => s.id !== today.id);
-  // farmer default: the two best-scoring alternatives; every option behind "See all options" or More detail
-  const alts = detail ? allAlts : [...allAlts].sort((a, b) => b.composite.value - a.composite.value).slice(0, 2);
+  // every alternative, least water first: the question a grower under a water limit asks first
+  const alts = [...allAlts].sort((a, b) => a.water.irrigation_need_mm.value - b.water.irrigation_need_mm.value);
   // open on the alternative that saves the most water: the question a grower under a water limit asks first
   const [id, setId] = useState(() => [...alts].sort((a, b) => a.water.irrigation_need_mm.value - b.water.irrigation_need_mm.value)[0]?.id);
   const [weather, setWeather] = useState<Weather>('typical');
-  const [table, setTable] = useState(false);
-  const [tune, setTune] = useState(false);
   const alt = alts.find((s) => s.id === id) ?? alts[0];
   const heavy = p.loc.soil.hydrologic_group === 'D';
   const label = (m: Metric) => (m.key === 'infiltration' && heavy ? { ...m, gain: `${m.gain} (small effect on this heavy, slow-draining soil)`, loss: `${m.loss} (small effect on this heavy soil)` } : m);
@@ -141,91 +139,29 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
   const ranked = [...strategies].sort((a, b) => b.composite.value - a.composite.value);
   const tie = ranked.length > 1 && (ranked[0].composite.low ?? 0) <= (ranked[1].composite.high ?? 0);
 
+  const fitTone = (s: RotationStrategy) => { const f = fits(s); return f === 'Fits your limit' ? 'good' : f === 'Over your limit' ? 'warn' : 'maybe'; };
+  const wa = water(alt), wt = water(today);
+  const lim = `${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}`;
+  const short = (r: (typeof rows)[number], k: 'gain' | 'loss') => <li key={r.m.key}><b>{r.m[k]}</b><span>{delta(r.m, r.a, r.b)}</span></li>;
   return (
-    <section className="sheet compare2" data-testid="compare">
-      <header className="sheet-head">
-        <div>
-          <StepLine id="compare" purpose="Pick another rotation and set your water limit to see what you would gain or give up. Then print it in step 5." />
-          <h2>{alt.short_name} vs {today.short_name.split(' +')[0].replace(/\s*\(current\)$/i, '').toLowerCase()} today</h2>
-        </div>
-        <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button>
-      </header>
-      <div className="c2-bar">
-        <div className="c2-tabs">
-          {alts.map((s) => (
-            <button key={s.id} className={s.id === alt.id ? 'on' : ''} onClick={() => { setId(s.id); setTable(false); }} data-alt={s.id}>
-              <b>{s.short_name}</b>
-              <span className="month-strip">{s.month_cover.split('').map((c, m) => <i key={m} title={s.calendar_months[m]} style={{ background: CLASS_COLOR[c as CoverClass] }} />)}</span>
-              <small>{needText(s, water(s).v ?? 0)} · {fits(s).toLowerCase()}</small>
-            </button>
-          ))}
-          <button className={`see-all ${table ? 'on' : ''}`} onClick={() => setTable(!table)} data-testid="see-all"><b>{table ? 'Back to gain / give up' : 'See all options'}</b><small>Every rotation, every factor</small></button>
-        </div>
-        <div className="c2-ctl">
-          <label>Your water limit <b>{p.allocation.toFixed(1)} acre-ft/acre</b>{p.exampleLimit && <em className="status example ex-limit">example, change to yours</em>}
-            <input type="range" min={0.5} max={6} step={0.1} value={p.allocation} onChange={(e) => p.setAllocation(+e.target.value)} data-testid="alloc" /></label>
-          <Seg className="small" label="Weather year for irrigation need" value={weather} onChange={setWeather} options={(Object.keys(wLabels) as Weather[]).map((w) => ({ v: w, label: wLabels[w], testid: `replay-${w}` }))} />
-          <button className={`link tune-btn d-only ${tune ? 'on' : ''}`} onClick={() => setTune(!tune)} data-testid="tune">{tune ? 'Hide priorities and what-ifs' : 'Your priorities, and what if it’s drier or hotter'}</button>
-        </div>
-      </div>
-      {tune && detail && (
-        <div className="c2-tune" data-testid="tune-panel">
-          <div className="tune-pri">
-            <h4>What matters to you</h4>
-            {PRIORITIES.map(([k, lab]) => {
-              const v = weights[k] ?? (k === 'pest_break' ? 0 : 1);
-              return (
-                <div key={k} className="pri-row"><span>{lab}</span>
-                  <Seg className="small" label={lab} value={v} onChange={(i) => setWeights({ ...weights, [k]: i })} options={LEVEL.map((l, i) => ({ v: i, label: l, disabled: !p.live }))} />
-                </div>
-              );
-            })}
-          </div>
-          <div className="tune-what">
-            <h4>What if the year is</h4>
-            <Seg className="small" label="Rain" value={scen.dP_pct} onChange={(v) => setScen({ ...scen, dP_pct: v })} options={RAIN.map(([v, l]) => ({ v, label: l, disabled: !p.live, testid: `rain-${v}` }))} />
-            <Seg className="small" label="Heat" value={scen.dT_c} onChange={(v) => setScen({ ...scen, dT_c: v })} options={HEAT.map(([v, l]) => ({ v, label: l, disabled: !p.live }))} />
-            <p className="how">{!p.live ? 'Needs the CropLytics server; showing the saved scores.' : busy ? 'Re-scoring…' : custom ? 'Water need and ranking below use your settings.' : 'Default: every priority counts the same, normal weather.'}</p>
-            <h4>Best fit for what matters to you</h4>
-            <ol className="rank">{ranked.map((s, i) => <li key={s.id} className={s.is_baseline ? 'base' : ''}>{s.short_name}{s.is_baseline ? ' (today)' : ''}{i === 0 && tie ? <small> too close to call with the next one</small> : null}</li>)}</ol>
-          </div>
-        </div>
-      )}
-
-      {!table ? (
-        <div className="c2-body">
-          <div className="gl-col">
-            <h3 className="gain">You gain</h3>
-            <ul>{gains.map((r) => <li key={r.m.key} className="gl-item"><div className="gl-head"><b>{r.m.gain}</b><span>{delta(r.m, r.a, r.b)}</span></div><Bars m={r.m} a={r.a} b={r.b} kind="gain" /></li>)}</ul>
-            {!gains.length && <p className="muted">Nothing clearly better than today.</p>}
-          </div>
-          <div className="gl-col">
-            <h3 className="loss">You give up</h3>
-            <ul>{losses.map((r) => <li key={r.m.key} className="gl-item"><div className="gl-head"><b>{r.m.loss}</b><span>{delta(r.m, r.a, r.b)}</span></div><Bars m={r.m} a={r.a} b={r.b} kind="loss" /></li>)}</ul>
-            {!losses.length && <p className="muted">Nothing clearly worse than today.</p>}
-          </div>
-          <aside className="gl-col side">
-            <p className="scenario-sum how" data-testid="scenario-summary" key={weather} role="status">{scenario}</p>
-            <h3>Water against your limit <What k="waterBalance" /></h3>
-            <p data-testid="water-against-limit"><b>{fits(alt)}.</b> {isRainFed(alt) ? RAIN_FED : `Needs ${water(alt).v?.toFixed(1)} acre-ft/acre`}. Your limit: {p.allocation.toFixed(1)}.{!isRainFed(alt) && weather !== 'typical' && water(alt).v != null && (() => { const typ = waterOfAf(alt, 'typical').v ?? 0; const d = (water(alt).v ?? 0) - typ; return Math.abs(d) >= 0.05 ? ` (${d > 0 ? '+' : ''}${d.toFixed(1)} vs typical year)` : ''; })()}</p>
-            <p className="how d-only">{rng(UNIT[0], water(alt)) ? `${rng(UNIT[0], water(alt)).replace(/^likely/, 'Likely')} acre-ft/acre, ` : ''}{WEATHER[weather].toLowerCase()}. {isRainFed(today) ? `Today is ${RAIN_FED.toLowerCase()}.` : `Today needs ${water(today).v?.toFixed(1)}.`}{/safflower|wheat/i.test(alt.name) ? ' An upper bound: soil water stored over winter is not counted.' : ''}</p>
-            <p className="how d-only">{openetText(p.strategies)} That checks crop water use for today’s crop only; irrigation need and the other rotations use the same method, unchecked.</p>
-            <div className="d-only">
-            <h3>Bare days <What k="bare" /></h3>
-            <p className="how">Today: {ctx.bare[today.id]?.v != null ? `${ctx.bare[today.id].v} days a year, seen by satellite ${ctx.bareYears[0]}–${ctx.bareYears[ctx.bareYears.length - 1]}` : `${Math.round(today.exposure.bare_days_per_year.value)} days a year (estimated)`}. Other rotations: estimated by the rotation model. {BARE_DEF}</p>
-            <p className="how">Bars: the span of likely values; the tick is the best estimate. A gain counts only when the two spans don’t overlap.</p>
-            </div>
-            <SimRun loc={p.loc} strategies={p.strategies} allocation={p.allocation} pickId={alt.id} weather={weather} onRun={p.onRunSim} running={p.simRunning} onStop={p.onStopSim} />
-            <MoreDetail what="All rotations and what-ifs" />
-            <button className="btn btn-primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Next: print this for your adviser<Icon name="right" size={16} /></button>
-          </aside>
-        </div>
-      ) : (
-        <div className="c1-body">
+    <StepShell id="compare" testid="compare" resetKey={p.loc.id} onSheet={p.onSheet} onClose={p.onClose} onBack={p.onBack}
+      field={<><b>{fieldName(p.loc)}</b> · today: {today.short_name.replace(/\s*\(current\)$/i, '').toLowerCase()}</>}
+      title="Which rotation would fit your water?"
+      answer={<Answer tone={fitTone(alt) === 'good' ? 'good' : fitTone(alt) === 'warn' ? 'warn' : 'neutral'}
+        headline={`${alt.short_name} ${fits(alt) === 'Fits your limit' ? 'fits your water limit' : fits(alt) === 'Over your limit' ? 'is over your water limit' : 'may go over your water limit'}.`}
+        sub={wa.rf ? `${RAIN_FED}.` : `Needs about ${wa.v?.toFixed(1)} acre-ft per acre a year${wt.rf ? '' : `, against ${wt.v?.toFixed(1)} today`}. Your limit is ${lim}.`} />}
+      next={{ label: 'Next: print for your adviser', sub: `One page on ${alt.short_name.toLowerCase()}`, onClick: () => p.onBrief(alt.id), testid: 'to-brief' }}
+      detailWhat="Every factor, priorities, play a year on the map"
+      detail={<>
+        <h2 className="fp-h">Water against your limit <What k="waterBalance" /></h2>
+        <p className="how">{rng(UNIT[0], wa) ? `${rng(UNIT[0], wa).replace(/^likely/, 'Likely')} acre-ft/acre, ` : ''}{WEATHER[weather].toLowerCase()}.{/safflower|wheat/i.test(alt.name) ? ' An upper bound: soil water stored over winter is not counted.' : ''} {openetText(p.strategies)}</p>
+        <h2 className="fp-h">Bare days <What k="bare" /></h2>
+        <p className="how">Today: {ctx.bare[today.id]?.v != null ? `${ctx.bare[today.id].v} days a year, seen by satellite ${ctx.bareYears[0]}–${ctx.bareYears[ctx.bareYears.length - 1]}` : `${Math.round(today.exposure.bare_days_per_year.value)} days a year (estimated)`}. Other rotations: estimated by the rotation model. {BARE_DEF}</p>
+        <h2 className="fp-h">Every option, every factor</h2>
+        <div className="c1-body scroll-x">
           <table className="tt">
-            <thead><tr><th /><th className="today">What you do now<small>{today.short_name}</small></th>{allAlts.map((s) => <th key={s.id}>Alternative<small>{s.short_name}</small></th>)}</tr></thead>
+            <thead><tr><th /><th className="today">Today<small>{today.short_name}</small></th>{allAlts.map((s) => <th key={s.id}>Option<small>{s.short_name}</small></th>)}</tr></thead>
             <tbody>
-              <tr className="grp"><td colSpan={allAlts.length + 2}>Water, days and weather · {WEATHER[weather].toLowerCase()}</td></tr>
               {[...UNIT, ...SCORE.filter((m) => !flat.has(m.key)).map(label)].map((m, i) => {
                 const b = m.get(today, weather, ctx);
                 return (
@@ -242,9 +178,48 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
             </tbody>
           </table>
         </div>
-      )}
-      <footer className="sheet-foot">Better / worse = the whole likely range is above or below today’s. Water need: rotation model with NASA POWER weather, 2015–2025. {p.loc.region === 'bc' ? HEAT_NOTE.replace('NOAA', 'Environment Canada') : HEAT_NOTE} Supports, doesn’t replace, your adviser.</footer>
-    </section>
+        <h2 className="fp-h">What matters to you</h2>
+        <div className="c2-tune stacked" data-testid="tune-panel">
+          {PRIORITIES.map(([k, lab]) => {
+            const v = weights[k] ?? (k === 'pest_break' ? 0 : 1);
+            return <div key={k} className="pri-row"><span>{lab}</span><Seg className="small" label={lab} value={v} onChange={(i) => setWeights({ ...weights, [k]: i })} options={LEVEL.map((l, i) => ({ v: i, label: l, disabled: !p.live }))} /></div>;
+          })}
+          <h4>What if the year is</h4>
+          <Seg className="small" label="Rain" value={scen.dP_pct} onChange={(v) => setScen({ ...scen, dP_pct: v })} options={RAIN.map(([v, l]) => ({ v, label: l, disabled: !p.live, testid: `rain-${v}` }))} />
+          <Seg className="small" label="Heat" value={scen.dT_c} onChange={(v) => setScen({ ...scen, dT_c: v })} options={HEAT.map(([v, l]) => ({ v, label: l, disabled: !p.live }))} />
+          <p className="how">{!p.live ? 'Needs the CropLytics server; showing the saved scores.' : busy ? 'Re-scoring…' : custom ? 'Water need and ranking use your settings.' : 'Default: every priority counts the same, normal weather.'}</p>
+          <h4>Best fit for what matters to you</h4>
+          <ol className="rank">{ranked.map((s, i) => <li key={s.id} className={s.is_baseline ? 'base' : ''}>{s.short_name}{s.is_baseline ? ' (today)' : ''}{i === 0 && tie ? <small> too close to call with the next one</small> : null}</li>)}</ol>
+        </div>
+        <SimRun loc={p.loc} strategies={p.strategies} allocation={p.allocation} pickId={alt.id} weather={weather} onRun={p.onRunSim} running={p.simRunning} onStop={p.onStopSim} />
+        <p className="how">Better / worse = the whole likely range is above or below today’s. Water need: rotation model with NASA POWER weather, 2015–2025. {p.loc.region === 'bc' ? HEAT_NOTE.replace('NOAA', 'Environment Canada') : HEAT_NOTE} Supports, doesn’t replace, your adviser.</p>
+      </>}>
+      <div className="opt-list" role="radiogroup" aria-label="Rotation to compare with today">
+        {alts.map((s) => {
+          const w = water(s), on = s.id === alt.id, tone = fitTone(s);
+          return (
+            <button key={s.id} role="radio" aria-checked={on} className={`opt-row ${on ? 'on' : ''}`} onClick={() => setId(s.id)} data-alt={s.id}>
+              <span className="opt-radio" aria-hidden="true" />
+              <span className="opt-body">
+                <b>{s.short_name}</b>
+                <span className="month-strip" aria-hidden="true">{s.month_cover.split('').map((c, m) => <i key={m} title={s.calendar_months[m]} style={{ background: CLASS_COLOR[c as CoverClass] }} />)}</span>
+              </span>
+              <span className={`opt-fit ${tone}`}><b>{w.rf ? 'Rain-fed' : `${w.v?.toFixed(1)}`}</b><small>{w.rf ? 'fits' : tone === 'good' ? 'fits' : tone === 'warn' ? 'over' : 'may go over'}</small></span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="limit-ctl">
+        <label htmlFor="alloc">Your water limit <b>{p.allocation.toFixed(1)} acre-ft per acre</b>{p.exampleLimit && <em className="status example ex-limit">example, change to yours</em>}</label>
+        <input id="alloc" type="range" min={0.5} max={6} step={0.1} value={p.allocation} onChange={(e) => p.setAllocation(+e.target.value)} data-testid="alloc" />
+        <Seg className="small" label="Weather year for irrigation need" value={weather} onChange={setWeather} options={(Object.keys(wLabels) as Weather[]).map((w) => ({ v: w, label: wLabels[w], testid: `replay-${w}` }))} />
+      </div>
+      <p className="how scenario-sum" data-testid="scenario-summary" key={weather} role="status">{scenario}</p>
+      <div className="gl-short">
+        <div><h3 className="gain">You gain</h3>{gains.length ? <ul>{gains.slice(0, 3).map((r) => short(r, 'gain'))}</ul> : <p className="muted">Nothing clearly better than today.</p>}</div>
+        <div><h3 className="loss">You give up</h3>{losses.length ? <ul>{losses.slice(0, 3).map((r) => short(r, 'loss'))}</ul> : <p className="muted">Nothing clearly worse than today.</p>}</div>
+      </div>
+    </StepShell>
   );
 }
 

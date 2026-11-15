@@ -13,6 +13,7 @@ import ComingSeason from './components/season/ComingSeason';
 import ComparePanel from './components/compare/ComparePanel';
 import { FieldTimeline, type SimMode } from './components/ui/FieldTimeline';
 import RotationBrief from './components/brief/RotationBrief';
+import BriefStep from './components/brief/BriefStep';
 import { BCCard, LayersDrawer } from './components/Panels';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
 import { setGlossary } from './components/ui/What';
@@ -75,6 +76,7 @@ export default function App() {
   const [reserves, setReserves] = useState<{ id: string; fc: GeoJSON.FeatureCollection | null } | null>(null);
   const [allocation, setAllocation] = useState<Record<string, number>>({});
   const [briefOpen, setBriefOpen] = useState(false);
+  const [briefPreview, setBriefPreview] = useState(false);
   const [briefPick, setBriefPick] = useState<string | null>(null);
   const [bcOpen, setBcOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -274,11 +276,13 @@ export default function App() {
   const yearExpanded = yearOpen && !!selected && panel !== 'compare' && panel !== 'season';
   // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
   const toolPanel = panel === 'fields' ? panel : null;
-  const leftPanel = yearExpanded || drawing ? null : toolPanel ?? (panel === 'none' && selected && cardOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
+  const leftPanel = yearExpanded || drawing ? null : toolPanel ?? (panel === 'none' && selected && cardOpen && !briefOpen ? 'card' : panel === 'none' && !selected && !bcOpen ? 'fields' : null);
   const phone = usePhone();
-  const leftInset = phone ? 0 : leftPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
+  // steps 3 to 5 sit in the same left slot as step 2 (one frame for the whole flow)
+  const stepPanel = !!selected && !!d && !yearExpanded && !drawing && (briefOpen || panel === 'season' || panel === 'compare');
+  const leftInset = phone ? 0 : leftPanel || stepPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
   const rightInset = layersOpen ? 396 : 0;
-  const bottomInset = phone ? 64 + (leftPanel === 'card' ? sheetPx : leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
+  const bottomInset = phone ? 64 + (leftPanel === 'card' || stepPanel ? sheetPx : leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
   const stackReady = !!d?.cells && !!d.cal && !!regional && d.cal.location_id === selected!.id;
   const stackField = !!selected && (stackReady || (!api.isLite(selected.id) && (!selected.spot || selected.spot.state === 'ready')));
   const drilled = stackField && view.zoom > 13.4;
@@ -307,7 +311,7 @@ export default function App() {
   const goStep = (id: FlowId) => {
     setSwitchOpen(false); setMenuOpen(false);
     if (id === 'pick' || !selected) { setBriefOpen(false); setYearOpen(false); setPanel('fields'); return; }
-    setBriefOpen(id === 'brief'); setYearOpen(false);
+    setBriefOpen(id === 'brief'); setBriefPreview(false); setYearOpen(false);
     if (id === 'brief') { if (panel === 'fields') setPanel('none'); return; }
     if (id === 'now') { setPanel('none'); setCardOpen(true); return; }
     setPanel(id);
@@ -389,13 +393,13 @@ export default function App() {
 
       {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.mine ? () => mf.retry(selected.id) : selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} onMine={(a) => draw.current?.[a === 'delete' ? 'del' : a](selected)} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
-        t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
+        t={t} setT={setT} events={events} onStep={onStep} onBack={() => goStep('pick')} onClose={() => setCardOpen(false)} />}
       {leftPanel === 'fields' && <FieldPicker mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onNationExample={() => tapSpot(33.51, -116.12)} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {selected && !leftPanel && !yearExpanded && !drawing && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
-      {panel === 'season' && selected && d && <ComingSeason nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}
-      {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} daily={dl?.daily ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} live={!!live} cal={d.cal} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
-        onBrief={(id) => { setBriefPick(id); setBriefOpen(true); }} sim={sim} simRunning={!!sim && playing} onRunSim={runSim} onStopSim={stopSim} onClose={() => { if (sim) stopSim(); setPanel('none'); }} />}
+      {stepPanel && !briefOpen && panel === 'season' && selected && d && <ComingSeason onSheet={setSheetPx} onBack={() => goStep('now')} nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => { if (sim) stopSim(); setPanel('none'); setBriefOpen(false); setCardOpen(false); }} />}
+      {stepPanel && !briefOpen && panel === 'compare' && selected && d && <ComparePanel onSheet={setSheetPx} onBack={() => goStep('season')} loc={selected} strategies={d.strategies} daily={dl?.daily ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} live={!!live} cal={d.cal} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
+        onBrief={(id) => { setBriefPick(id); setBriefOpen(true); }} sim={sim} simRunning={!!sim && playing} onRunSim={runSim} onStopSim={stopSim} onClose={() => { if (sim) stopSim(); setPanel('none'); setBriefOpen(false); setCardOpen(false); }} />}
 
       {sim && selected && d?.cal && (
         <div className="sim-dock" data-testid="sim-dock" style={phone ? undefined : { left: `calc(50% + ${(leftInset - rightInset) / 2}px)` }}>
@@ -443,7 +447,9 @@ export default function App() {
         </div>
       )}
 
-      {briefOpen && selected && d && <RotationBrief loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} outlook={ol} nasaNow={d.nasaNow} cal={d.cal} daily={dl?.daily ?? null} onClose={() => setBriefOpen(false)} />}
+      {stepPanel && briefOpen && selected && d && <BriefStep loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} exampleLimit={exampleLimit} onPreview={() => setBriefPreview(true)} onSheet={setSheetPx}
+        onBack={() => goStep('compare')} onClose={() => { if (sim) stopSim(); setPanel('none'); setBriefOpen(false); setCardOpen(false); }} />}
+      {briefOpen && selected && d && <RotationBrief preview={briefPreview} loc={selected} strategies={d.strategies} pick={briefPick} setPick={setBriefPick} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} outlook={ol} nasaNow={d.nasaNow} cal={d.cal} daily={dl?.daily ?? null} onClose={() => setBriefPreview(false)} />}
     </div>
     </DetailCtx.Provider>
   );

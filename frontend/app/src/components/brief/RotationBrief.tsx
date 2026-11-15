@@ -18,7 +18,7 @@ const lean = (c?: { category: string; prob: number | null } | null) => (!c || c.
 const plain = (t: string) => t.replace(/(\d[\d,]*)\s?mm/g, (_, n) => `${(Number(n.replace(/,/g, '')) / 304.8).toFixed(1)} acre-ft/acre`);
 const SEASON: Record<string, string> = { NDJ: 'Nov–Jan', DJF: 'Dec–Feb', JFM: 'Jan–Mar', FMA: 'Feb–Apr' };
 
-export default function RotationBrief(p: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; exampleLimit: boolean; prov: ProvMap; outlook: Outlook | null; nasaNow: NasaNow | null; cal: Calendar | null; daily: Daily | null; onClose: () => void }) {
+export default function RotationBrief(p: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; exampleLimit: boolean; prov: ProvMap; outlook: Outlook | null; nasaNow: NasaNow | null; cal: Calendar | null; daily: Daily | null; onClose: () => void; /** false: kept in the page for printing only (step 5's Print button), not shown */ preview?: boolean }) {
   const { loc, strategies } = p;
   const s = strategies.find((x) => x.id === p.pick) ?? strategies.find((x) => !x.is_baseline) ?? strategies[0];
   const base = strategies.find((x) => x.is_baseline) ?? strategies[0];
@@ -52,7 +52,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
   const checks = (s.constraints_check ?? []).filter((c) => c.status !== 'ok');
 
   return (
-    <div className="briefwrap" role="dialog" aria-label="Summary for your adviser" data-testid="brief">
+    <div className={`briefwrap ${p.preview === false ? 'print-only' : ''}`} role="dialog" aria-label="Summary for your adviser" aria-hidden={p.preview === false} data-testid="brief">
       <div className="brief-stage">
         <article className="paper">
           <header className="p-head">
@@ -128,7 +128,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
       </div>
 
       <aside className="brief-rail glass">
-        <div className="br-head"><h2>Summary for your adviser</h2><button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button></div>
+        <div className="br-head"><h2>Preview of your page</h2><button className="icon-btn" onClick={p.onClose} title="Close the preview" aria-label="Close the preview"><Icon name="close" size={16} /></button></div>
         <p className="muted">One page, Letter size. <Src p={p.prov.strategies} /></p>
         <label className="br-field"><span>Option to print</span>
           <select value={s.id} onChange={(e) => p.setPick(e.target.value)} data-testid="brief-pick">{strategies.map((x) => <option key={x.id} value={x.id}>{x.short_name}{x.is_baseline ? ' (today)' : ''}</option>)}</select>

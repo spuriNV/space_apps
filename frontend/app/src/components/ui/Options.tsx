@@ -6,18 +6,18 @@ import { bcGap, isBC, type Extras, type ISSPhoto, type NasaNow, type ProvMap, ty
 import type { NasaDataset } from '../../nasa';
 import { ISSFigure, NasaList } from './NasaSection';
 import { SourcesSheet } from './Sources';
-import { MoreDetail } from './Detail';
 import type { Daily } from '../../season';
 import Icon from '../Icons';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent, type KeyboardEvent as RKeyboardEvent } from 'react';
-import { AboutField, Actions, StepLine, Workflow, CROP_COL, EventLog, NextSteps, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
+import { useEffect, useState } from 'react';
+import { AboutField, StepLine, Workflow, CROP_COL, EventLog, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
+import { Answer, KeyFacts, StepShell, type Tone } from './StepShell';
 import { FirstNationsCard } from './FirstNations';
 import { SalmonPanel } from '../salmon/SalmonPanel';
 import { NationTools } from '../week/NationTools';
 import { CatalogGroup } from '../week/CatalogGroup';
 import type { Catalog, CatalogItem } from '../week/catalog';
-import { FieldNow, LastSeasons, whenT, type LoadState } from './FieldNow';
-import { MONTHS, TODAY_T, isRainFed, mmToAfac } from '../../lib';
+import { FieldNow, LastSeasons, latestClearT, rainNow, stage, whenT, type LoadState } from './FieldNow';
+import { MONTHS, TODAY_T, isRainFed, latestAt, mmToAfac } from '../../lib';
 import { MineFacts, MineHead, MineNotices, MyFieldsGroup, type MineAction } from '../draw/MyFieldBits';
 
 export interface FieldPanelProps {
@@ -27,6 +27,8 @@ export interface FieldPanelProps {
   onStep: (s: Step) => void; onClose: () => void;
   /** phone: how much of the sheet shows above the tab bar, so the map keeps the field in view */
   onSheet?: (visiblePx: number) => void;
+  /** back to step 1 */
+  onBack?: () => void;
   /** a tapped spot whose analysis failed: try again */
   onSpotRetry?: () => void;
   /** a field the user drew: Rename, Redraw (also "Fix the outline") and Delete */
@@ -37,189 +39,87 @@ export function FieldPanel(p: FieldPanelProps) {
   const { loc } = p;
   const thumbs = useThumbs();
   const [src, setSrc] = useState(false);
-  const sheet = useSheet(p.onSheet);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const headRef = useRef<HTMLElement>(null);
-  const [stuck, setStuck] = useState(false); // the field name has scrolled under the top: show the one-line bar
-  const [footStuck, setFootStuck] = useState(false); // content runs on under the footer
-  const onScroll = useCallback(() => {
-    const el = scrollRef.current, h = headRef.current;
-    if (!el) return;
-    setStuck(el.scrollTop > (h ? h.offsetHeight - 40 : 8));
-    setFootStuck(el.scrollTop + el.clientHeight < el.scrollHeight - 1);
-  }, []);
-  // a new field: back to the top, the sources sheet closed, the content cross-fades in (.fp-content is keyed by field)
-  useEffect(() => { scrollRef.current?.scrollTo({ top: 0 }); setSrc(false); onScroll(); }, [loc.id, onScroll]);
-  useEffect(() => { const h = setTimeout(onScroll, 400); return () => clearTimeout(h); }, [p.dataState, p.dailyState, onScroll]);
-  // below full the sheet's content does not scroll: bring it back to the top
-  useEffect(() => { if (sheet.snap !== 'full') scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); }, [sheet.snap]);
+  useEffect(() => { setSrc(false); }, [loc.id]);
   const now = latestCrop(loc);
   const sp = loc.spot;
   const isToday = p.t === TODAY_T;
   const crop = cropName(now.crop);
+  const loading = sp?.state === 'loading';
+  const fieldLine = <><b>{fieldName(loc)}</b> · {acres(loc)} acres{now.year != null && Number.isFinite(now.year) ? <> · <span className="nw"><i className="crop-sw" style={{ background: CROP_COL(crop) }} />{now.crop.toLowerCase()} in {now.year}</span></> : null}</>;
+  const facts = nowFacts(p);
   return (
-    <section ref={sheet.ref} className={`panel fpanel sheet-${sheet.snap} ${stuck ? 'stuck' : ''}`} data-testid="field-panel" aria-label={fieldName(loc)} {...sheet.handlers}>
-      <button className="fp-grab" onClick={sheet.cycle} onKeyDown={sheet.onKey} aria-label="Resize the field panel" data-testid="grab"><i /></button>
-      <div className="fp-body">
-        <div className="fp-bar" aria-hidden={!stuck}><span className="fp-bar-title">{fieldName(loc)}</span></div>
-        <button className="icon-btn fp-close" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={20} /></button>
-        <div className="panel-scroll" ref={scrollRef} onScroll={onScroll}>
-          <div className="fp-content" key={loc.id}>
-            <header className="fp-head" ref={headRef}>
-              <StepLine id="now" purpose="Check whether what you grow today fits the water you have. The next steps build on this." />
-              {loc.mine ? <MineHead loc={loc} onAction={(a) => p.onMine?.(a)} /> : sp && <p className="spot-label" data-testid="spot-label"><i className={`live-dot ${sp.state}`} />Tapped spot · live data</p>}
-              <h1>{fieldName(loc)}</h1>
-              {sp?.state === 'loading' ? <><p className="fp-facts"><span className="skel skel-chip" /><span className="skel skel-chip" /></p><p className="spot-progress" role="status" data-testid="spot-progress">Reading weather, soil and crop maps…</p></> : sp?.state === 'error' ? null : (
-              <p className="fp-facts">
-                <span className="fact-chip"><b>{acres(loc)}</b> acres</span>
-                {now.year != null && Number.isFinite(now.year) && <span className="fact-chip"><i style={{ background: CROP_COL(crop) }} />{now.crop.charAt(0).toUpperCase() + now.crop.slice(1).toLowerCase()} in {now.year}</span>}
-                <span className="fact-chip">{place(loc)}</span>
-              </p>)}
-              <p className="fp-id">{loc.mine ? 'Drawn by you' : sp ? (sp.fallbackSquare || sp.state !== 'ready' ? '200 m square around your tap, not a field outline' : loc.dwr_id ? `State field no. ${loc.dwr_id}` : 'Field outline at your tap') : isBC(loc) ? 'British Columbia' : fieldCode(loc).replace('DWR ', 'State field no. ')}, {coords(loc)}</p>
-            </header>
-            {loc.mine && <MineNotices loc={loc} onRetry={p.onSpotRetry} onFix={() => p.onMine?.('redraw')} />}
-            {sp?.state === 'error' && !loc.mine && <div className="notice spot-notice" role="alert" data-testid="spot-error"><span>{sp.error}</span>{p.onSpotRetry && <button className="btn btn-outline btn-sm" onClick={p.onSpotRetry}>Try again</button>}</div>}
-            {sp?.state === 'ready' && sp.cropland === false && <div className="notice spot-notice" data-testid="spot-not-farm"><b>This may not be farmland.</b> The USDA crop map shows little or no cropping here, so the rotations below are a stand-in.</div>}
-            <Actions onStep={p.onStep} />
-            {isToday && <WaterAnswer strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} state={p.dataState} />}
-            <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}</h2>
-            <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
-            {loc.mine && <MineFacts loc={loc} />}
-            {isBC(loc) && !loc.mine && <FirstNationsCard loc={loc} />}
-            {isBC(loc) && !loc.mine && <SalmonPanel locId={loc.id} />}
-            {!loc.mine && <NationTools loc={loc} />}{/* Nation tools, components/week */}
-            <NextSteps onStep={p.onStep} />
-            <MoreDetail what="Sources, past seasons, 3D" />
-            <div className="fp-more">
-              <div className="fp-more-in">
-                <h2 className="fp-h" data-testid="nasa-section">NASA data behind this field</h2>
-                <ISSFigure iss={p.iss} />
-                {p.nasa ? <NasaList list={p.nasa} /> : <p className="muted">Loading…</p>}
-                <h2 className="fp-h">About the ground<button className="btn btn-text btn-sm" onClick={() => p.onStep('drill')} data-testid="step-drill"><Icon name="cube" />Look under the field in 3D</button></h2>
-                <AboutField loc={loc} prov={p.prov} cal={p.cal} insurance={p.extras.insurance ?? loc.rma ?? null} insGap={bcGap(loc, 'insurance')} />
-                {!sp && <><h2 className="fp-h">The last 3 seasons</h2>
-                <LastSeasons loc={loc} cal={p.cal} t={p.t} /></>}
-                {p.events.length > 0 && <><h2 className="fp-h">What happened around here</h2><p className="fp-sub">Click one to move the timeline.</p><EventLog events={p.events} setT={p.setT} /></>}
-                <button className="btn btn-text sources-link" onClick={() => setSrc(true)} data-testid="sources-link">Sources</button>
-              </div>
-            </div>
-            <p className="footnote">CropLytics helps the grower and adviser decide; it does not replace either.</p>
-          </div>
-        </div>
-      </div>
-      <footer className={`fp-foot ${footStuck ? 'stuck' : ''}`}>
-        <button className="btn btn-primary btn-block next-step" onClick={() => p.onStep('season')} data-testid="now-to-season">
-          <span><b>Next: coming season</b><small>Winter rain and whether next year still fits</small></span><Icon name="right" size={20} />
-        </button>
-      </footer>
-      {src && <SourcesSheet bc={isBC(loc)} onClose={() => setSrc(false)} />}
-    </section>
+    <StepShell id="now" testid="field-panel" resetKey={loc.id} onSheet={p.onSheet} onClose={p.onClose} onBack={p.onBack}
+      field={fieldLine}
+      title={isToday ? 'Does today’s plan fit your water?' : `Your field in ${whenT(p.t)}`}
+      top={<>
+        {loc.mine ? <MineHead loc={loc} onAction={(a) => p.onMine?.(a)} /> : sp && <p className="spot-label" data-testid="spot-label"><i className={`live-dot ${sp.state}`} />Tapped spot · live data</p>}
+        {loading && <p className="spot-progress" role="status" data-testid="spot-progress">Reading weather, soil and crop maps…</p>}
+        {loc.mine && <MineNotices loc={loc} onRetry={p.onSpotRetry} onFix={() => p.onMine?.('redraw')} />}
+        {sp?.state === 'error' && !loc.mine && <div className="notice spot-notice" role="alert" data-testid="spot-error"><span>{sp.error}</span>{p.onSpotRetry && <button className="btn btn-outline btn-sm" onClick={p.onSpotRetry}>Try again</button>}</div>}
+        {sp?.state === 'ready' && sp.cropland === false && <div className="notice spot-notice" data-testid="spot-not-farm"><b>This may not be farmland.</b> The USDA crop map shows little or no cropping here, so the rotations below are a stand-in.</div>}
+      </>}
+      answer={isToday ? <WaterAnswer strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} state={p.dataState} /> : <Answer headline={facts.stage ?? 'Loading…'} sub="Pick Today in the Viewing control to check your water." loading={!facts.stage && p.dataState === 'loading'} />}
+      detailWhat="Meters, this week, soil, NASA sources, 3D"
+      detail={<>
+        <h2 className="fp-h">{isToday ? 'Your field now, in numbers' : 'Your field in ' + whenT(p.t)}</h2>
+        <p className="fp-id">{loc.mine ? 'Drawn by you' : sp ? (sp.fallbackSquare || sp.state !== 'ready' ? '200 m square around your tap, not a field outline' : loc.dwr_id ? `State field no. ${loc.dwr_id}` : 'Field outline at your tap') : isBC(loc) ? 'British Columbia' : fieldCode(loc).replace('DWR ', 'State field no. ')}, {coords(loc)} · {place(loc)}</p>
+        <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
+        {loc.mine && <MineFacts loc={loc} />}
+        {isBC(loc) && !loc.mine && <FirstNationsCard loc={loc} />}
+        {isBC(loc) && !loc.mine && <SalmonPanel locId={loc.id} />}
+        {!loc.mine && <NationTools loc={loc} />}
+        {!sp && <button className="btn btn-text" onClick={() => p.onStep('year')} data-testid="step-year"><Icon name="cube" />See this field’s year on the map</button>}
+        <h2 className="fp-h" data-testid="nasa-section">NASA data behind this field</h2>
+        <ISSFigure iss={p.iss} />
+        {p.nasa ? <NasaList list={p.nasa} /> : <p className="muted">Loading…</p>}
+        <h2 className="fp-h">About the ground<button className="btn btn-text btn-sm" onClick={() => p.onStep('drill')} data-testid="step-drill"><Icon name="cube" />Look under the field in 3D</button></h2>
+        <AboutField loc={loc} prov={p.prov} cal={p.cal} insurance={p.extras.insurance ?? loc.rma ?? null} insGap={bcGap(loc, 'insurance')} />
+        {!sp && <><h2 className="fp-h">The last 3 seasons</h2><LastSeasons loc={loc} cal={p.cal} t={p.t} /></>}
+        {p.events.length > 0 && <><h2 className="fp-h">What happened around here</h2><p className="fp-sub">Click one to move the timeline.</p><EventLog events={p.events} setT={p.setT} /></>}
+        <button className="btn btn-text sources-link" onClick={() => setSrc(true)} data-testid="sources-link">Sources</button>
+      </>}
+      next={{ label: 'Next: coming season', sub: 'Will next year still fit?', onClick: () => p.onStep('season'), testid: 'now-to-season' }}
+      after={<>
+        <p className="footnote">CropLytics helps the grower and adviser decide; it does not replace either.</p>
+        {src && <SourcesSheet bc={isBC(loc)} onClose={() => setSrc(false)} />}
+      </>}>
+      <KeyFacts facts={loading ? [] : [
+        { label: 'Growing now', value: facts.stage ?? pend(p.dataState) },
+        { label: 'Rain since 1 Oct', value: facts.rain ?? pend(p.dailyState), tone: facts.rainTone },
+        { label: 'Groundwater', value: facts.gw ?? pend(p.dataState), tone: facts.gwTone },
+      ]} />
+    </StepShell>
   );
 }
 
-/** Step 2's lead: the question the step answers, and the answer in one line before the meters. */
+const pend = (s: LoadState) => (s === 'timeout' ? <span className="na">Not available right now</span> : <span className="skel" aria-label="Loading" />);
+const bandOf = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi : v > 33 ? mid : lo);
+/** Step 2's three facts in the grower's words, for the viewing date. */
+function nowFacts(p: FieldPanelProps) {
+  const cal = p.cal;
+  const dt = cal ? latestClearT(cal, p.t) : null;
+  const stageText = cal && dt != null ? stage(cal, dt).text : null;
+  const rain = rainNow(p.nasaNow, p.daily, p.t);
+  const gr = p.regional ? latestAt(p.regional.grace_gw_pct.values, p.t) : null;
+  return {
+    stage: stageText,
+    rain: rain ? <>{rain.inches.toFixed(1)} in <small>{Math.round(rain.pct ?? 0)}% of normal</small></> : null,
+    rainTone: (rain && (rain.pct ?? 100) < 85 ? 'warn' : undefined) as Tone | undefined,
+    gw: gr ? <>{bandOf(gr.v, 'Above usual', 'About usual', 'Below usual')} <small>whole basin</small></> : null,
+    gwTone: (gr && gr.v <= 33 ? 'warn' : undefined) as Tone | undefined,
+  };
+}
+
+/** Step 2's answer: will today's rotation fit the water limit? */
 function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; state: LoadState }) {
   const base = strategies?.find((s) => s.is_baseline);
-  if (!base) return state === 'timeout' ? null : <div className="water-answer"><p className="wa-q">Will today’s plan fit your water?</p><span className="skel" /></div>;
+  if (!base) return state === 'timeout' ? <Answer headline="Water check not available right now." /> : <Answer headline="" loading />;
   const need = mmToAfac(base.water.irrigation_need_mm.value);
   const rf = isRainFed(base), short = !rf && allocation != null && need > allocation;
-  return (
-    <div className={`water-answer ${short ? 'short' : ''}`} data-testid="now-takeaway">
-      <p className="wa-q">Will today’s plan fit your water?</p>
-      <b>{rf ? 'Yes. It is rain-fed, so it needs no irrigation' : allocation == null ? `It needs about ${need.toFixed(1)} acre-ft/acre a year` : short ? `No. Short by about ${(need - allocation).toFixed(1)} acre-ft/acre` : 'Yes. It fits your water limit'}.</b>
-      {!rf && allocation != null && <span>Today’s rotation needs about {need.toFixed(1)} acre-ft/acre a year; your limit is {allocation.toFixed(1)}{exampleLimit ? ' (an example, set yours in step 4)' : ''}.</span>}
-    </div>
-  );
-}
-
-type Snap = 'peek' | 'half' | 'full';
-const SNAPS: Snap[] = ['peek', 'half', 'full'];
-const PHONE = '(max-width: 640px)';
-/** Phone bottom sheet: snap points peek (128px), half (52% of the screen) and full. The sheet follows the finger by
- *  transform only; on release it goes to the nearest snap point, or to the next one in the direction of a fling
- *  (faster than 0.5 px/ms). Tap the handle to cycle; arrow keys on the handle step. Content scrolls only at full;
- *  below that, a drag anywhere on the sheet moves the sheet (the Google Maps behaviour). */
-function useSheet(onSheet?: (visiblePx: number) => void) {
-  const ref = useRef<HTMLElement>(null);
-  const [snap, setSnap] = useState<Snap>('half');
-  const drag = useRef<{ id: number; y0: number; off0: number; last: number; t: number; v: number; on: boolean } | null>(null);
-  const dragged = useRef(false);
-  const phone = () => window.matchMedia(PHONE).matches;
-  const offOf = (s: Snap) => {
-    const h = ref.current?.offsetHeight ?? 0;
-    return s === 'full' ? 0 : Math.max(0, h - (s === 'half' ? Math.round(window.innerHeight * 0.52) : 128));
-  };
-  const curOff = () => { const el = ref.current; return el ? new DOMMatrixReadOnly(getComputedStyle(el).transform).m42 : 0; };
-  const go = useCallback((s: Snap) => {
-    const el = ref.current;
-    if (!el || !phone()) return;
-    el.style.setProperty('--sheet-off', `${offOf(s)}px`);
-    setSnap(s);
-    onSheet?.((el.offsetHeight ?? 0) - offOf(s));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onSheet]);
-  // place the sheet before the first paint (the CSS entrance then slides it up from below), and again on resize
-  useLayoutEffect(() => {
-    const fit = () => { if (phone()) go(snap); else ref.current?.style.removeProperty('--sheet-off'); };
-    fit();
-    window.addEventListener('resize', fit);
-    return () => window.removeEventListener('resize', fit);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snap]);
-  const onPointerDown = (e: RPointerEvent) => {
-    if (!phone() || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    const handle = (e.target as Element).closest('.fp-grab, .fp-bar, .fp-head');
-    if (snap === 'full' && !handle) return; // at full the content scrolls; the handle and header still move the sheet
-    drag.current = { id: e.pointerId, y0: e.clientY, off0: curOff(), last: e.clientY, t: e.timeStamp, v: 0, on: false };
-    // a mouse drag from the handle or header keeps its moves even when it leaves the sheet (touch has implicit capture)
-    if (handle && e.pointerType === 'mouse') (handle as HTMLElement).setPointerCapture(e.pointerId);
-  };
-  const onPointerMove = (e: RPointerEvent) => {
-    const d = drag.current, el = ref.current;
-    if (!d || !el || e.pointerId !== d.id) return;
-    const dy = e.clientY - d.y0;
-    if (!d.on) {
-      if (Math.abs(dy) < 6) return;
-      if (snap === 'full' && dy < 0) { drag.current = null; return; } // already at the top: let the content scroll
-      d.on = true; if (!el.hasPointerCapture(e.pointerId) && !(e.target as Element).hasPointerCapture?.(e.pointerId)) el.setPointerCapture(e.pointerId); el.classList.add('dragging');
-    }
-    const max = offOf('peek');
-    let off = d.off0 + dy;
-    if (off < 0) off = -Math.pow(-off, 0.7); // rubber band past the top and past peek
-    else if (off > max) off = max + Math.pow(off - max, 0.7);
-    el.style.setProperty('--sheet-off', `${off}px`);
-    const dt = e.timeStamp - d.t;
-    if (dt > 0) d.v = 0.7 * ((e.clientY - d.last) / dt) + 0.3 * d.v;
-    d.last = e.clientY; d.t = e.timeStamp;
-  };
-  const onPointerUp = (e: RPointerEvent) => {
-    const d = drag.current, el = ref.current;
-    drag.current = null;
-    if (!d || !d.on || !el) return;
-    el.classList.remove('dragging');
-    dragged.current = true; setTimeout(() => { dragged.current = false; }, 0);
-    const off = curOff(), v = e.timeStamp - d.t > 90 ? 0 : d.v;
-    const offs = SNAPS.map(offOf);
-    let target: Snap;
-    if (Math.abs(v) > 0.5) {
-      // fling: the next snap point in that direction (down = a larger offset)
-      const order = SNAPS.map((s, i) => ({ s, o: offs[i] })).sort((a, b) => a.o - b.o);
-      const next = v > 0 ? order.find((x) => x.o > off + 1) ?? order[order.length - 1] : [...order].reverse().find((x) => x.o < off - 1) ?? order[0];
-      target = next.s;
-    } else target = SNAPS.reduce((a, s, i) => (Math.abs(offs[i] - off) < Math.abs(offs[SNAPS.indexOf(a)] - off) ? s : a), snap);
-    go(target);
-  };
-  const handlers = {
-    onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp,
-    // a drag that started on a button must not also press it
-    onClickCapture: (e: React.MouseEvent) => { if (dragged.current) { e.stopPropagation(); e.preventDefault(); } },
-  };
-  const cycle = () => { if (!dragged.current) go(snap === 'peek' ? 'half' : snap === 'half' ? 'full' : 'peek'); };
-  const onKey = (e: RKeyboardEvent) => {
-    const i = SNAPS.indexOf(snap), j = e.key === 'ArrowUp' ? Math.min(2, i + 1) : e.key === 'ArrowDown' ? Math.max(0, i - 1) : i;
-    if (j !== i) { e.preventDefault(); go(SNAPS[j]); }
-  };
-  return { ref, snap, handlers, cycle, onKey };
+  const lim = allocation != null ? `${allocation.toFixed(1)}${exampleLimit ? ' (an example; set yours in step 4)' : ''}` : '';
+  return <Answer tone={rf || (allocation != null && !short) ? 'good' : short ? 'warn' : 'neutral'}
+    headline={rf ? 'Yes. It’s rain-fed, so it needs no irrigation.' : allocation == null ? `It needs about ${need.toFixed(1)} acre-ft per acre a year.` : short ? `No. Short by about ${(need - allocation).toFixed(1)} acre-ft per acre.` : 'Yes. It fits your water limit.'}
+    sub={!rf && allocation != null ? `Today’s crop needs about ${need.toFixed(1)} a year. Your limit is ${lim}.` : undefined} />;
 }
 
 /** "Pick your field": one paper surface, one row per field with a satellite thumbnail (outline drawn), a 2023-2026 season strip,

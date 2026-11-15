@@ -7,10 +7,9 @@ import type { Daily } from '../../season';
 import { bareWindow } from '../../season';
 import { RAIN_FED, TODAY_T, fmtDate, isRainFed, latestAt, mmToAfac, ordinal } from '../../lib';
 const band = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi : v > 33 ? mid : lo);
-import Icon from '../Icons';
-import { GapLine, Src, StepLine, place, stationsName } from '../ui/shared';
+import { GapLine, Src, acres, fieldName, place, stationsName } from '../ui/shared';
+import { Answer, KeyFacts, StepShell } from '../ui/StepShell';
 import { What } from '../ui/What';
-import { MoreDetail } from '../ui/Detail';
 import { BARE_DEF } from '../../bare';
 
 const SEASON: Record<string, string> = { OND: 'Oct–Dec', NDJ: 'Nov–Jan', DJF: 'Dec–Feb', JFM: 'Jan–Mar', FMA: 'Feb–Apr', MAM: 'Mar–May', AMJ: 'Apr–Jun' };
@@ -25,7 +24,7 @@ const maf = (af: number) => (af >= 1e6 ? `${(af / 1e6).toFixed(2)} million acre-
 const title = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 const words = (s: string) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 
-export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Regional | null; regionalLive: RegionalLive; loc: Location; outlook: Outlook | null; cal: Calendar | null; daily: Daily | null; strategies: RotationStrategy[]; allocation: number; exampleLimit: boolean; prov: ProvMap; onCompare: () => void; onClose: () => void }) {
+export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Regional | null; regionalLive: RegionalLive; loc: Location; outlook: Outlook | null; cal: Calendar | null; daily: Daily | null; strategies: RotationStrategy[]; allocation: number; exampleLimit: boolean; prov: ProvMap; onCompare: () => void; onClose: () => void; onBack: () => void; onSheet?: (px: number) => void }) {
   const o = p.outlook;
   const soil = p.regional ? latestAt(p.regional.smap_rootzone_pct.values, TODAY_T, 14) : null, gw = p.regional ? latestAt(p.regional.grace_gw_pct.values, TODAY_T, 14) : null;
   const rainLean = o?.seasons.slice(0, 4).map((s) => lean(s.rain, 'rain').tilt) ?? [];
@@ -45,28 +44,24 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
   const today = p.strategies.find((s) => s.is_baseline);
   const nxt = today ? o?.irrigation?.[today.id]?.value ?? mmToAfac(today.water.irrigation_need_mm.value) : null;
   const nextNeed = nxt == null ? (p.strategies.length ? 'Need not available right now.' : 'Loading…') : today && isRainFed(today) ? `${RAIN_FED}. Fits any limit.` : `Needs ${nxt.toFixed(1)} acre-ft/acre. Limit ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}. ${nxt > p.allocation ? `${(nxt - p.allocation).toFixed(1)} short.` : 'It fits.'}`;
-  const headline = !o ? 'Loading the outlooks…' : notReady ? gapWords : wetLean > dryLean ? 'Wetter than normal this winter' : dryLean > wetLean ? 'Drier than normal this winter' : 'No clear lean this winter';
   const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const allYearsBw = bw;
+  const rainFed = !!today && isRainFed(today);
+  const short = nxt != null && !rainFed && nxt > p.allocation;
+  const rainWords = !o ? null : notReady && gOut ? <GapLine gap={gOut} missing /> : notReady ? 'Not ready for this field yet' : wetLean > dryLean ? 'Leans wetter than normal' : dryLean > wetLean ? 'Leans drier than normal' : 'No clear lean either way';
+  const fieldLine = <><b>{fieldName(p.loc)}</b> · {acres(p.loc)} acres</>;
   return (
-    <section className="sheet season" data-testid="coming-season">
-      <header className="sheet-head">
-        <div>
-          <StepLine id="season" purpose="See what this winter and next year may bring, so you know whether today’s plan will still fit." />
-          <h2>Coming season: what’s likely this winter and next year</h2>
-          <p className="sheet-lede">{headline}.{!notReady && <> <span className="outlook-tag">{o?.prov.cpc.origin === 'estimate' ? 'Past weather, not a forecast.' : 'An outlook, not a forecast.'}</span></>}</p>
-        </div>
-        <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button>
-      </header>
-      <div className="cs-sum" data-testid="season-summary">
-        <div><h3>Winter rain</h3><p>{!o ? 'Loading…' : notReady && gOut ? <GapLine gap={gOut} missing /> : notReady ? `${gapWords}.` : wetLean > dryLean ? 'Leans wetter than normal this winter.' : dryLean > wetLean ? 'Leans drier than normal this winter.' : 'No clear lean either way this winter.'}</p></div>
-        <div><h3>Water supply</h3><p>{supply}</p></div>
-        <div><h3>Next season, today’s rotation</h3><p>{nextNeed}</p></div>
-      </div>
-      <div className="cs-more"><MoreDetail what="Outlooks, reservoirs, every rotation" />
-        <button className="btn btn-primary next-step" onClick={p.onCompare} data-testid="season-to-compare"><span><b>Next: compare rotations</b><small>What you would gain or give up by changing</small></span><Icon name="right" size={20} /></button>
-      </div>
-      <div className="sheet-cols three d-only">
+    <StepShell id="season" testid="coming-season" resetKey={p.loc.id} onSheet={p.onSheet} onClose={p.onClose} onBack={p.onBack}
+      field={fieldLine}
+      title="Will next year still fit your water?"
+      answer={nxt == null ? <Answer headline="" loading /> : rainFed
+        ? <Answer tone="good" headline="Yes. Today’s crop is rain-fed." sub="It needs no irrigation, so it fits any limit." />
+        : short
+          ? <Answer tone="warn" headline={`Probably not. About ${(nxt - p.allocation).toFixed(1)} acre-ft per acre short.`} sub={`With this winter’s outlook, today’s crop needs about ${nxt.toFixed(1)} next season. Your limit is ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}.`} />
+          : <Answer tone="good" headline="Yes. It should fit next season." sub={`Today’s crop needs about ${nxt.toFixed(1)}; your limit is ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}.`} />}
+      detailWhat="Outlooks, reservoirs, bare weeks, every rotation"
+      next={{ label: 'Next: compare rotations', sub: short ? 'Find one that fits your water' : 'See what else could work', onClick: p.onCompare, testid: 'season-to-compare' }}
+      detail={<div className="sheet-cols stacked">
         <div className="sheet-col">
           <h3>Rain and temperature outlook</h3>
           {gOut && <p><GapLine gap={gOut} missing={notReady} /></p>}
@@ -171,9 +166,13 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
           </table>
           <p className="how">Acre-feet per acre a year. Your limit: {p.allocation.toFixed(1)}{p.exampleLimit ? ' (example, change to yours on Compare)' : ''}; brown means over it. {o?.irrigation ? (() => { const sp = Math.max(...Object.values(o.irrigation).map((x) => x.high - x.low)); return sp < 0.15 ? `In the model, this winter’s outlook moves irrigation need by ${sp < 0.1 ? 'less than 0.1' : 'about 0.1'} acre-foot per acre: rain falls mostly before the crop needs water.` : `Outlook range: up to ${sp.toFixed(1)} acre-feet per acre between scenarios.`; })() : ''}</p>
           <cite>Rotation model driven by NASA POWER sun, wind and humidity, weather 2015–2025. Safflower and wheat are upper bounds (stored soil water not counted). <Src p={p.prov.strategies} /></cite>
-          <button className="btn btn-secondary wide" onClick={p.onCompare}>Compare rotations<Icon name="right" size={16} /></button>
         </div>
-      </div>
-    </section>
+      </div>}>
+      <KeyFacts facts={[
+        { label: 'Winter rain', value: rainWords ?? <span className="skel" />, tone: dryLean > wetLean ? 'warn' : undefined },
+        { label: 'Water supply', value: supply },
+      ]} />
+      {!notReady && o && <p className="step-note">{o.prov.cpc.origin === 'estimate' ? 'Past weather, not a forecast.' : 'Outlooks, not forecasts.'}</p>}
+    </StepShell>
   );
 }

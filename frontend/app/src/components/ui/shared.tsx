@@ -97,8 +97,9 @@ export const FLOW: { n: number; id: FlowId; label: string; short: string; does: 
   { n: 4, id: 'compare', label: 'Compare rotations', short: 'Compare', does: 'What you’d gain or give up' },
   { n: 5, id: 'brief', label: 'Print for your adviser', short: 'Print', does: 'One page to take with you' },
 ];
-/** Top of each step's screen: where you are and one sentence on what the step is for. */
-export function StepLine({ id, purpose }: { id: FlowId; purpose: string }) {
+/** Top of each step's screen: where you are ("Step 2 of 5", with a 5-segment bar) and one sentence on what the step is for.
+ *  After the USWDS step indicator and the GOV.UK one-question-per-page heading. */
+export function StepLine({ id, purpose }: { id: FlowId; purpose?: string }) {
   const i = FLOW.findIndex((s) => s.id === id);
   return (
     <div className="step-line" data-testid={`step-line-${id}`}>
@@ -106,7 +107,7 @@ export function StepLine({ id, purpose }: { id: FlowId; purpose: string }) {
         <b>Step {i + 1} of {FLOW.length}</b>
         <span className="step-bar" aria-hidden="true">{FLOW.map((s, k) => <i key={s.id} className={k < i ? 'done' : k === i ? 'on' : ''} />)}</span>
       </p>
-      <p className="step-purpose">{purpose}</p>
+      {purpose && <p className="step-purpose">{purpose}</p>}
     </div>
   );
 }

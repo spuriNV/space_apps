@@ -18,7 +18,7 @@ const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
 const band = (pct: number, hi: string, mid: string, lo: string) => (pct >= 67 ? hi : pct > 33 ? mid : lo);
 const vsNormal = (pct: number | null, wet: string, dry: string) => (pct == null ? '' : pct >= 115 ? wet : pct <= 85 ? dry : 'about normal');
 
-function stage(cal: Calendar, t: number) {
+export function stage(cal: Calendar, t: number) {
   const y = cal.years[Math.floor(t / 36)], d = t % 36, c = y.rule[d];
   const up = y.greenup_dekad, dn = y.senescence_dekad;
   if (c === 'w') return { sw: 'water', text: 'Under water', sub: d >= 30 || d <= 5 ? 'Flooded for the winter, as most years.' : 'Standing water on the field.' };
@@ -76,7 +76,7 @@ export type LoadState = 'loading' | 'ready' | 'timeout';
 /** Thin loading line for one answer. */
 const Skel = () => <span className="skel" aria-label="Loading" />;
 /** The latest 10-day step with a clear satellite reading at or before t, at most 6 weeks back. */
-function latestClearT(cal: Calendar, t: number, maxBack = 4): number | null {
+export function latestClearT(cal: Calendar, t: number, maxBack = 4): number | null {
   for (let k = t; k >= 0 && t - k <= maxBack; k--) { const y = cal.years[Math.floor(k / 36)]; const c = y?.rule[k % 36]; if (c && c !== 'u') return k; }
   return null;
 }
