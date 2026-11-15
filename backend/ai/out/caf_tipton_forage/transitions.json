@@ -1,6 +1,6 @@
 {
   "field_id": "caf_tipton_forage",
-  "generated_at": "2026-11-15T06:53:20+00:00",
+  "generated_at": "2026-11-15T15:12:50+00:00",
   "model_from": "caf_tulare_forage",
   "types": {
     "green_up": "first of 3 covered dates after bare or water",
@@ -291,11 +291,6 @@
         "regrowth": "2020-01-22"
       },
       {
-        "date": "2020-07-25",
-        "type": "cutting",
-        "regrowth": "2020-08-04"
-      },
-      {
         "date": "2020-11-27",
         "type": "senescence_harvest"
       },
@@ -312,6 +307,11 @@
         "date": "2021-07-15",
         "type": "cutting",
         "regrowth": "2021-07-25"
+      },
+      {
+        "date": "2021-09-13",
+        "type": "cutting",
+        "regrowth": "2021-09-23"
       },
       {
         "date": "2022-06-20",
@@ -357,7 +357,7 @@
         "type": "senescence_harvest"
       },
       {
-        "date": "2024-12-26",
+        "date": "2024-12-31",
         "type": "green_up"
       },
       {
@@ -432,11 +432,6 @@
         "regrowth": "2020-01-22"
       },
       {
-        "date": "2020-07-25",
-        "type": "cutting",
-        "regrowth": "2020-08-04"
-      },
-      {
         "date": "2020-11-27",
         "type": "senescence_harvest"
       },
@@ -453,6 +448,11 @@
         "date": "2021-07-15",
         "type": "cutting",
         "regrowth": "2021-07-25"
+      },
+      {
+        "date": "2021-09-13",
+        "type": "cutting",
+        "regrowth": "2021-09-23"
       },
       {
         "date": "2022-06-20",
@@ -740,13 +740,13 @@
       "transitions_reference": 47
     },
     "hist_gbt": {
-      "transition_mae_vs_scl_days": 4.84375,
-      "transitions_matched": 32,
+      "transition_mae_vs_scl_days": 3.0,
+      "transitions_matched": 30,
       "transitions_reference": 47
     },
     "consensus": {
-      "transition_mae_vs_scl_days": 4.9375,
-      "transitions_matched": 32,
+      "transition_mae_vs_scl_days": 3.2666666666666666,
+      "transitions_matched": 30,
       "transitions_reference": 47
     }
   },

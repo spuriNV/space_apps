@@ -248,5 +248,6 @@
       "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/EJ/2016/03/26/S2A_MSIL2A_20160326T185252_N0212_R113_T10SEJ_20210214T042337.SAFE/GRANULE/L2A_T10SEJ_A003971_20160326T185704/IMG_DATA/R10m/T10SEJ_20160326T185252_B03_10m.tif: Read failed. See previous exception for details."
     }
   ],
-  "seconds": 24269
+  "seconds": 24269,
+  "ndvi_out_of_range_dropped": []
 }

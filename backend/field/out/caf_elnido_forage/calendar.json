@@ -1,6 +1,6 @@
 {
   "preset_id": "caf_elnido_forage",
-  "generated_at": "2026-11-15T07:16:48+00:00",
+  "generated_at": "2026-11-15T07:53:00+00:00",
   "detector": "rule_ndvi",
   "data_through": "2026-11-11",
   "classes": {
@@ -3369,7 +3369,7 @@
           "end_doy": 365,
           "days": 341,
           "class": "covered",
-          "n_obs": 111
+          "n_obs": 110
         }
       ],
       "transitions": [
@@ -3417,10 +3417,10 @@
           "from_30d_max": 0.95
         },
         {
-          "date": "2019-10-04",
+          "date": "2019-10-09",
           "type": "senescence_harvest",
-          "ndvi": 0.918,
-          "from_30d_max": 1.807
+          "ndvi": 0.665,
+          "from_30d_max": 0.924
         }
       ],
       "summary": {
@@ -3431,9 +3431,9 @@
           "covered": 341,
           "water": 0
         },
-        "n_obs": 114,
+        "n_obs": 113,
         "n_obs_s2": 93,
-        "n_obs_landsat": 21
+        "n_obs_landsat": 20
       },
       "observations": [
         {
@@ -4216,15 +4216,6 @@
           "ndvi": 0.916,
           "ndwi": -0.774,
           "bsi": -0.385,
-          "clear_frac": 1.0,
-          "class": "covered"
-        },
-        {
-          "date": "2019-10-03",
-          "sensor": "landsat",
-          "ndvi": 1.807,
-          "ndwi": -3.596,
-          "bsi": 1.816,
           "clear_frac": 1.0,
           "class": "covered"
         },
@@ -6960,7 +6951,7 @@
           "end_doy": 195,
           "days": 18,
           "class": "covered",
-          "n_obs": 8
+          "n_obs": 7
         },
         {
           "start": "2022-07-15",
@@ -7129,7 +7120,7 @@
           "date": "2022-07-13",
           "type": "senescence_harvest",
           "ndvi": 0.566,
-          "from_30d_max": 0.975
+          "from_30d_max": 0.931
         },
         {
           "date": "2022-07-23",
@@ -7168,8 +7159,8 @@
           "covered": 337,
           "water": 0
         },
-        "n_obs": 119,
-        "n_obs_s2": 100,
+        "n_obs": 118,
+        "n_obs_s2": 99,
         "n_obs_landsat": 19
       },
       "observations": [
@@ -7719,15 +7710,6 @@
           "ndvi": 0.897,
           "ndwi": -0.776,
           "bsi": -0.372,
-          "clear_frac": 1.0,
-          "class": "covered"
-        },
-        {
-          "date": "2022-07-10",
-          "sensor": "s2",
-          "ndvi": 0.975,
-          "ndwi": -0.845,
-          "bsi": -0.422,
           "clear_frac": 1.0,
           "class": "covered"
         },
@@ -11108,7 +11090,7 @@
           "end_doy": 250,
           "days": 35,
           "class": "covered",
-          "n_obs": 16
+          "n_obs": 15
         },
         {
           "start": "2025-09-08",
@@ -11261,7 +11243,7 @@
           "date": "2025-08-28",
           "type": "senescence_harvest",
           "ndvi": 0.703,
-          "from_30d_max": 0.989
+          "from_30d_max": 0.972
         }
       ],
       "summary": {
@@ -11272,8 +11254,8 @@
           "covered": 216,
           "water": 0
         },
-        "n_obs": 118,
-        "n_obs_s2": 103,
+        "n_obs": 117,
+        "n_obs_s2": 102,
         "n_obs_landsat": 15
       },
       "observations": [
@@ -12021,15 +12003,6 @@
           "ndvi": 0.894,
           "ndwi": -0.776,
           "bsi": -0.368,
-          "clear_frac": 1.0,
-          "class": "covered"
-        },
-        {
-          "date": "2025-08-23",
-          "sensor": "s2",
-          "ndvi": 0.989,
-          "ndwi": -0.844,
-          "bsi": -0.404,
           "clear_frac": 1.0,
           "class": "covered"
         },

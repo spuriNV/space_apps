@@ -1,6 +1,6 @@
 {
   "field_id": "car_glenn_rice",
-  "generated_at": "2026-11-15T06:53:19+00:00",
+  "generated_at": "2026-11-15T15:12:40+00:00",
   "model_from": "car_colusa_rice",
   "types": {
     "green_up": "first of 3 covered dates after bare or water",
@@ -144,7 +144,7 @@
         "type": "green_up"
       },
       {
-        "date": "2021-09-21",
+        "date": "2021-09-19",
         "type": "senescence_harvest"
       },
       {
@@ -156,7 +156,7 @@
         "type": "senescence_harvest"
       },
       {
-        "date": "2024-06-10",
+        "date": "2024-06-12",
         "type": "green_up"
       },
       {
@@ -246,7 +246,7 @@
         "type": "senescence_harvest"
       },
       {
-        "date": "2025-06-10",
+        "date": "2025-06-12",
         "type": "green_up"
       },
       {
@@ -447,12 +447,12 @@
       "transitions_reference": 23
     },
     "random_forest": {
-      "transition_mae_vs_scl_days": 3.1904761904761907,
+      "transition_mae_vs_scl_days": 3.0952380952380953,
       "transitions_matched": 21,
       "transitions_reference": 23
     },
     "hist_gbt": {
-      "transition_mae_vs_scl_days": 3.0952380952380953,
+      "transition_mae_vs_scl_days": 3.0,
       "transitions_matched": 21,
       "transitions_reference": 23
     },

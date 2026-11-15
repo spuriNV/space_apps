@@ -139,6 +139,21 @@ class AppEEARS:
             raise RuntimeError(f"AppEEARS task submit HTTP {r.status_code}: {r.text[:400]}")
         return r.json()["task_id"]
 
+    def find_task(self, name: str) -> str | None:
+        """Newest task on the account with this task_name that is not failed/deleted; None if there is none."""
+        for attempt in range(5):   # never fall through to a duplicate submission on a transient error
+            try:
+                r = requests.get(f"{APPEEARS}/task", headers=self.h, params={"limit": 200}, timeout=60)
+                r.raise_for_status()
+                break
+            except Exception as e:  # noqa: BLE001
+                print(f"  AppEEARS task list failed ({type(e).__name__}); retry {attempt + 1}", flush=True)
+                time.sleep(20 * (attempt + 1))
+        else:
+            raise RuntimeError("AppEEARS task list unreachable; not submitting (a live task may already exist)")
+        live = [t for t in r.json() if t.get("task_name") == name and t.get("status") not in ("error", "failed", "deleted")]
+        return max(live, key=lambda t: t.get("created", ""))["task_id"] if live else None
+
     def multi_point(self, dataset: str, points: dict[str, tuple[float, float]], start: str, end: str,
                     layers: list[tuple[str, str]], resume: bool = True) -> tuple[dict[str, pd.DataFrame], dict]:
         """One AppEEARS point task for all points and the whole date range. The task id is saved in
@@ -158,6 +173,11 @@ class AppEEARS:
             if st.get("params") == json.loads(json.dumps(params)):
                 tid = st["task_id"]
                 print(f"  resuming AppEEARS task {tid} for {dataset}", flush=True)
+        if tid is None:   # state file lost (e.g. another checkout): reuse a live task with the same name on the account
+            tid = self.find_task(f"fs_{dataset}_{start}_{end}")
+            if tid:
+                state_f.write_text(json.dumps({"task_id": tid, "params": params, "submitted": "found on account"}, indent=1))
+                print(f"  reusing AppEEARS task {tid} for {dataset} (found by name)", flush=True)
         if tid is None:
             tid = self.submit_points(f"fs_{dataset}_{start}_{end}", points, start, end, layers)
             state_f.write_text(json.dumps({"task_id": tid, "params": params, "submitted": now_iso()}, indent=1))

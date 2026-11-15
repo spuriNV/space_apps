@@ -1,6 +1,6 @@
 {
   "preset_id": "car_robbins_rice",
-  "generated_at": "2026-11-15T07:16:43+00:00",
+  "generated_at": "2026-11-15T07:52:57+00:00",
   "detector": "rule_ndvi",
   "data_through": "2026-11-11",
   "classes": {
@@ -6157,28 +6157,28 @@
         },
         {
           "start": "2023-06-01",
-          "end": "2023-06-07",
+          "end": "2023-06-09",
           "start_doy": 152,
-          "end_doy": 158,
-          "days": 7,
+          "end_doy": 160,
+          "days": 9,
           "class": "bare",
           "n_obs": 2
         },
         {
-          "start": "2023-06-08",
-          "end": "2023-06-11",
-          "start_doy": 159,
-          "end_doy": 162,
+          "start": "2023-06-10",
+          "end": "2023-06-13",
+          "start_doy": 161,
+          "end_doy": 164,
           "days": 4,
-          "class": "water",
-          "n_obs": 1
+          "class": "partial",
+          "n_obs": 0
         },
         {
-          "start": "2023-06-12",
+          "start": "2023-06-14",
           "end": "2023-10-30",
-          "start_doy": 163,
+          "start_doy": 165,
           "end_doy": 303,
-          "days": 141,
+          "days": 139,
           "class": "covered",
           "n_obs": 42
         },
@@ -6284,14 +6284,14 @@
           "after_unknown_gap": false
         },
         {
-          "date": "2023-06-08",
+          "date": "2023-06-10",
           "from": "bare",
-          "to": "water",
+          "to": "partial",
           "after_unknown_gap": false
         },
         {
-          "date": "2023-06-12",
-          "from": "water",
+          "date": "2023-06-14",
+          "from": "partial",
           "to": "covered",
           "after_unknown_gap": false
         },
@@ -6354,13 +6354,13 @@
       "summary": {
         "days_by_class": {
           "unknown": 33,
-          "bare": 166,
-          "partial": 19,
-          "covered": 141,
-          "water": 6
+          "bare": 168,
+          "partial": 23,
+          "covered": 139,
+          "water": 2
         },
-        "n_obs": 80,
-        "n_obs_s2": 44,
+        "n_obs": 79,
+        "n_obs_s2": 43,
         "n_obs_landsat": 36
       },
       "observations": [
@@ -6633,15 +6633,6 @@
           "bsi": 0.025,
           "clear_frac": 1.0,
           "class": "bare"
-        },
-        {
-          "date": "2023-06-08",
-          "sensor": "s2",
-          "ndvi": -0.742,
-          "ndwi": 0.72,
-          "bsi": 0.396,
-          "clear_frac": 0.93,
-          "class": "water"
         },
         {
           "date": "2023-06-15",

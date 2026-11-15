@@ -168,8 +168,17 @@
   "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
   "n_items_found": 783,
   "n_rows_raw": 783,
-  "n_rows": 706,
+  "n_rows": 705,
   "duplicates_dropped": 77,
   "errors": [],
-  "seconds": 412
+  "seconds": 412,
+  "ndvi_out_of_range_dropped": [
+    {
+      "scene_id": "S2A_MSIL2A_20230608T184921_R113_T10SFJ_20240913T014258",
+      "date": "2023-06-08",
+      "ndvi_med": -0.742,
+      "ndvi_p10": -1.201,
+      "ndvi_p90": -0.439
+    }
+  ]
 }

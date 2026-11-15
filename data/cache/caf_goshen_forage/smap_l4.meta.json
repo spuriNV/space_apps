@@ -1,0 +1,182 @@
+{
+ "url": "https://opendap.earthdata.nasa.gov (CMR SPL4SMGP.008, provider NSIDC_CPRD)",
+ "collection": "SPL4SMGP.008",
+ "params": {
+  "point_lon_lat": [
+   -119.450698,
+   36.323595
+  ],
+  "start": "2015-03-31",
+  "end": "2026-11-15",
+  "variables": [
+   "/Geophysical_Data/sm_surface",
+   "/Geophysical_Data/sm_rootzone",
+   "/Geophysical_Data/sm_profile",
+   "/Geophysical_Data/sm_rootzone_pctl",
+   "/Geophysical_Data/sm_rootzone_wetness",
+   "/Geophysical_Data/precipitation_total_surface_flux"
+  ],
+  "ease2_row_col": [
+   330,
+   648
+  ]
+ },
+ "timestep": "daily mean of the 3-hourly granules (UTC day of granule centre time); n_granules per day",
+ "units": {
+  "sm_surface": "m3/m3",
+  "sm_rootzone": "m3/m3",
+  "sm_profile": "m3/m3",
+  "sm_rootzone_pctl": "percent",
+  "sm_rootzone_wetness": "1",
+  "precipitation_total_surface_flux": "kg m-2 s-1"
+ },
+ "native_res_m": 9000,
+ "fill_value": -9999.0,
+ "quality_handling": "SPL4SMGP is a gap-free model-assimilation product with no per-cell quality flag; only fill (-9999) -> NaN. Surface soil moisture over flooded rice is model-based, not retrieved.",
+ "access": "Cloud OPeNDAP DAP2 ascii hyperslab, one request per granule for all fields",
+ "n_granules": 33972,
+ "n_read_errors": 0,
+ "raw_dir": "data/cache/_smap_l4_opendap/fields_c6ac74da",
+ "fetched_at": "2026-11-15T08:44:22Z",
+ "n_rows": 4243,
+ "footprint_geojson": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     -119.44851982473729,
+     36.32014040322576
+    ],
+    [
+     -119.44847794797371,
+     36.320168956040156
+    ],
+    [
+     -119.44844558706389,
+     36.3202584244492
+    ],
+    [
+     -119.44845862161868,
+     36.32495651991402
+    ],
+    [
+     -119.44846842942495,
+     36.32584540011704
+    ],
+    [
+     -119.44847985150379,
+     36.325898699763606
+    ],
+    [
+     -119.44852934508269,
+     36.325938674655504
+    ],
+    [
+     -119.44864546311294,
+     36.325982457104516
+    ],
+    [
+     -119.44908137868939,
+     36.325991974962015
+    ],
+    [
+     -119.44919178612939,
+     36.32602243195348
+    ],
+    [
+     -119.4492374726481,
+     36.326045274508324
+    ],
+    [
+     -119.44925460262226,
+     36.32608715274938
+    ],
+    [
+     -119.44924508587013,
+     36.32714743972622
+    ],
+    [
+     -119.44924508676847,
+     36.327204546723806
+    ],
+    [
+     -119.44924874919985,
+     36.327210498638784
+    ],
+    [
+     -119.44926031500916,
+     36.32722929377601
+    ],
+    [
+     -119.45037377321057,
+     36.327237390809444
+    ],
+    [
+     -119.45262963333182,
+     36.32725403937287
+    ],
+    [
+     -119.45271339045232,
+     36.32725023185747
+    ],
+    [
+     -119.45275945785669,
+     36.327241019565506
+    ],
+    [
+     -119.45279905020452,
+     36.32723310056874
+    ],
+    [
+     -119.4528172931913,
+     36.32721713881583
+    ],
+    [
+     -119.45282950758423,
+     36.32720645084451
+    ],
+    [
+     -119.45282508338144,
+     36.32253133026181
+    ],
+    [
+     -119.45282466746148,
+     36.32209346211467
+    ],
+    [
+     -119.45281808460707,
+     36.32038025262144
+    ],
+    [
+     -119.4528161819753,
+     36.32028507365439
+    ],
+    [
+     -119.45278762812568,
+     36.32020512384018
+    ],
+    [
+     -119.45275336368582,
+     36.32017085960903
+    ],
+    [
+     -119.4521424850381,
+     36.32015941069125
+    ],
+    [
+     -119.44893863459411,
+     36.320119487842916
+    ],
+    [
+     -119.44860167922599,
+     36.320117560387715
+    ],
+    [
+     -119.44851982473729,
+     36.32014040322576
+    ]
+   ]
+  ]
+ },
+ "auth": "NASA Earthdata Login (credentials from repo-root .env, not stored)"
+}

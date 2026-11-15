@@ -63,10 +63,10 @@
     "note": "cover < bare threshold (0.20; range 0.15-0.30) and not water; modelled from the calendar"
    },
    "exposed_days_per_year": {
-    "value": 224.0,
+    "value": 225.0,
     "unit": "days/yr",
-    "low": 224.0,
-    "high": 224.0,
+    "low": 225.0,
+    "high": 225.0,
     "method": "computed",
     "source": {
      "id": "field_shift_engine",
@@ -110,10 +110,10 @@
     "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2021, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 0 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Frost: POWER T2M_MIN <= 0 C."
    },
    "exposed_heat_days": {
-    "value": 4.1,
+    "value": 4.5,
     "unit": "days/yr",
-    "low": 4.1,
-    "high": 4.1,
+    "low": 4.5,
+    "high": 4.5,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -126,10 +126,10 @@
     "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2021, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 0 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Heat: POWER T2M_MAX >= 35 C."
    },
    "exposed_dry_days": {
-    "value": 91.3,
+    "value": 92.1,
     "unit": "days/yr",
-    "low": 91.3,
-    "high": 91.3,
+    "low": 92.1,
+    "high": 92.1,
     "method": "computed",
     "source": {
      "id": "nasa_power_daily",
@@ -159,10 +159,10 @@
       "note": "cover < bare threshold (0.20; range 0.15-0.30) and not water; modelled from the calendar"
      },
      "exposed_days_per_year": {
-      "value": 224.0,
+      "value": 225.0,
       "unit": "days/yr",
-      "low": 224.0,
-      "high": 224.0,
+      "low": 225.0,
+      "high": 225.0,
       "method": "computed",
       "source": {
        "id": "field_shift_engine",
@@ -206,10 +206,10 @@
       "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2021, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 0 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Frost: POWER T2M_MIN <= 0 C."
      },
      "exposed_heat_days": {
-      "value": 6.0,
+      "value": 7.0,
       "unit": "days/yr",
-      "low": 6.0,
-      "high": 6.0,
+      "low": 7.0,
+      "high": 7.0,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -222,10 +222,10 @@
       "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2021, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 0 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Heat: POWER T2M_MAX >= 35 C."
      },
      "exposed_dry_days": {
-      "value": 117.0,
+      "value": 118.0,
       "unit": "days/yr",
-      "low": 117.0,
-      "high": 117.0,
+      "low": 118.0,
+      "high": 118.0,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",
@@ -287,10 +287,10 @@
       "note": "cover < bare threshold (0.20; range 0.15-0.30) and not water; modelled from the calendar"
      },
      "exposed_days_per_year": {
-      "value": 224.0,
+      "value": 225.0,
       "unit": "days/yr",
-      "low": 224.0,
-      "high": 224.0,
+      "low": 225.0,
+      "high": 225.0,
       "method": "computed",
       "source": {
        "id": "field_shift_engine",
@@ -350,10 +350,10 @@
       "note": "mean of 2015-2025 weather years. Observed consensus cover from backend/field (Sentinel-2/Landsat rule classes, calendar years 2016-2025 whose CDL crop is the baseline crop: [2016, 2017, 2018, 2019, 2020, 2021, 2023, 2024, 2025]; class->cover bare 0.10 / partial 0.35 / covered 0.80 is our assumption, U; 0 days with no observation keep modelled cover). Exposed = cover < 0.5 and not water. Heat: POWER T2M_MAX >= 35 C."
      },
      "exposed_dry_days": {
-      "value": 58.0,
+      "value": 59.0,
       "unit": "days/yr",
-      "low": 58.0,
-      "high": 58.0,
+      "low": 59.0,
+      "high": 59.0,
       "method": "computed",
       "source": {
        "id": "nasa_power_daily",

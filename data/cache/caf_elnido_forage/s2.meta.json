@@ -100,7 +100,7 @@
   "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
   "n_items_found": 1613,
   "n_rows_raw": 1573,
-  "n_rows": 1388,
+  "n_rows": 1386,
   "duplicates_dropped": 185,
   "errors": [
     {
@@ -264,5 +264,21 @@
       "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2018/01/05/S2A_MSIL2A_20180105T185751_N0212_R113_T10SGG_20201014T032848.SAFE/GRANULE/L2A_T10SGG_A013266_20180105T185748/IMG_DATA/R10m/T10SGG_20180105T185751_B08_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
     }
   ],
-  "seconds": 24635
+  "seconds": 24635,
+  "ndvi_out_of_range_dropped": [
+    {
+      "scene_id": "S2A_MSIL2A_20220710T183931_R070_T10SGG_20220712T161737",
+      "date": "2022-07-10",
+      "ndvi_med": 0.975,
+      "ndvi_p10": 0.871,
+      "ndvi_p90": 1.002
+    },
+    {
+      "scene_id": "S2C_MSIL2A_20250823T183941_R070_T10SGG_20250824T000120",
+      "date": "2025-08-23",
+      "ndvi_med": 0.989,
+      "ndvi_p10": 0.896,
+      "ndvi_p90": 1.006
+    }
+  ]
 }

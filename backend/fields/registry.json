@@ -1701,7 +1701,7 @@
    "polygon": "backend/field/polygons/caf_elnido_forage.geojson",
    "original": false,
    "water": {
-    "looked_up": "2026-11-14",
+    "looked_up": "2026-11-15",
     "point": [
      -120.475337,
      37.158544
@@ -1712,8 +1712,14 @@
     "district_source": {
      "title": "DWR i03 Water Districts",
      "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
-     "accessed": "2026-11-14",
+     "accessed": "2026-11-15",
      "verified": true
+    },
+    "nearest_district": {
+     "name": "Merced Irrigation District",
+     "within_m": 1000,
+     "others": [],
+     "note": "the field centroid is in no DWR water district; Merced Irrigation District is within 1000 m"
     },
     "subbasin": {
      "number": "5-022.04",
@@ -1723,21 +1729,21 @@
     "subbasin_source": {
      "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
      "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
-     "accessed": "2026-11-14",
+     "accessed": "2026-11-15",
      "verified": true
     },
     "sgma_priority": "High",
     "sgma_priority_source": {
      "title": "DWR SGMA 2019 Basin Prioritization",
      "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
-     "accessed": "2026-11-14",
+     "accessed": "2026-11-15",
      "verified": true
     },
     "critically_overdrafted": true,
     "critically_overdrafted_source": {
      "title": "DWR critically overdrafted basins",
      "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
-     "accessed": "2026-11-14",
+     "accessed": "2026-11-15",
      "verified": true
     },
     "gsa": [
@@ -1751,7 +1757,7 @@
     "gsa_source": {
      "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
      "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
-     "accessed": "2026-11-14",
+     "accessed": "2026-11-15",
      "verified": true
     },
     "gsp": [
@@ -1765,14 +1771,14 @@
     "gsp_source": {
      "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
      "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
-     "accessed": "2026-11-14",
+     "accessed": "2026-11-15",
      "verified": true
     },
     "adjudicated_area": null,
     "state_board": {
      "status": "not listed (DWR jurisdiction)",
      "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
-     "accessed": "2026-11-14",
+     "accessed": "2026-11-15",
      "verified": true,
      "listed": {
       "probationary": [

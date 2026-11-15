@@ -1,0 +1,136 @@
+{
+  "dataset": "s2",
+  "url": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-2-l2a",
+  "params": {
+    "collection": "sentinel-2-l2a",
+    "datetime": "2015-06-23/2026-11-15",
+    "intersects": "polygons/caf_newman_forage.geojson",
+    "bands": {
+      "blue": "B02",
+      "green": "B03",
+      "red": "B04",
+      "nir": "B08",
+      "swir1": "B11"
+    },
+    "mask": "SCL",
+    "clear_rule": "SCL in {2,4,5,6}",
+    "dedupe": "one row per date (S2) / per date+platform (Landsat), keeping most valid pixels"
+  },
+  "fetched_at": "2026-11-15T07:59:40+00:00",
+  "footprint_geojson": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -121.0084412927799,
+          37.36087669900518
+        ],
+        [
+          -121.01002180845376,
+          37.35939866171745
+        ],
+        [
+          -121.01005399778533,
+          37.35931097557214
+        ],
+        [
+          -121.0100605096728,
+          37.35917755114408
+        ],
+        [
+          -121.01002097391886,
+          37.3590910421663
+        ],
+        [
+          -121.00996257534054,
+          37.359039982993814
+        ],
+        [
+          -121.00719379336171,
+          37.35721686594745
+        ],
+        [
+          -121.00710970835617,
+          37.357346598700175
+        ],
+        [
+          -121.00707082657573,
+          37.35734832810693
+        ],
+        [
+          -121.00693930064172,
+          37.35723880559907
+        ],
+        [
+          -121.00680899372156,
+          37.3571960716131
+        ],
+        [
+          -121.00672139360832,
+          37.357232749096255
+        ],
+        [
+          -121.00349271732317,
+          37.360483252164975
+        ],
+        [
+          -120.99903198994771,
+          37.36478109292337
+        ],
+        [
+          -120.99904826023416,
+          37.364843366078595
+        ],
+        [
+          -120.99910602011029,
+          37.36491826500639
+        ],
+        [
+          -121.00192977808616,
+          37.3668116519383
+        ],
+        [
+          -121.0020189233017,
+          37.36682984982598
+        ],
+        [
+          -121.00209395867908,
+          37.36681681094603
+        ],
+        [
+          -121.0021330964794,
+          37.3668055498012
+        ],
+        [
+          -121.0084412927799,
+          37.36087669900518
+        ]
+      ]
+    ]
+  },
+  "native_res_m": 10,
+  "timestep": "per scene (irregular)",
+  "units": {
+    "ndvi": "unitless",
+    "ndwi": "unitless",
+    "bsi": "unitless",
+    "clear_frac": "fraction of polygon pixels"
+  },
+  "fill_value": "NaN",
+  "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
+  "n_items_found": 1608,
+  "n_rows_raw": 1608,
+  "n_rows": 1418,
+  "duplicates_dropped": 189,
+  "errors": [],
+  "seconds": 843,
+  "ndvi_out_of_range_dropped": [
+    {
+      "scene_id": "S2A_MSIL2A_20220404T184921_R113_T10SFG_20220406T151716",
+      "date": "2022-04-04",
+      "ndvi_med": 0.988,
+      "ndvi_p10": 0.942,
+      "ndvi_p90": 1.002
+    }
+  ]
+}

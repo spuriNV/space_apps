@@ -1,7 +1,7 @@
 {
   "field_id": "car_glenn_rice",
-  "generated_at": "2026-11-15T06:53:29+00:00",
-  "evidence": "The crop looked stressed in 11 weeks over 2015-2026 (both checks agree), mostly early September; most often weaker growth than in its other rice years (NASA MODIS and Sentinel-2) and dry soil (NASA GRACE-DA).",
+  "generated_at": "2026-11-15T15:13:13+00:00",
+  "evidence": "The crop looked stressed in 12 weeks over 2015-2026 (both checks agree), mostly late August; most often weaker growth than in its other rice years (Sentinel-2) and dry soil (NASA GRACE-DA).",
   "latest_season": {
     "year": 2026,
     "evidence": "Neither stress check flagged the same week over the 2026 season.",
@@ -12,20 +12,20 @@
   },
   "evaluation": {
     "weeks_scored": 187,
-    "flag_rate_zscore": 0.12834224598930483,
+    "flag_rate_zscore": 0.16042780748663102,
     "flag_rate_iforest": 0.10160427807486631,
-    "agreement": 0.8877005347593583,
+    "agreement": 0.8663101604278075,
     "usdm_d3_weeks": 34,
-    "usdm_no_d3_weeks": 136,
-    "recall_usdm_d3_zscore": 0.5294117647058824,
-    "flag_rate_no_drought_zscore": 0.04411764705882353,
-    "lift_usdm_d3_zscore": 12.0,
-    "recall_usdm_d3_iforest": 0.2647058823529412,
-    "flag_rate_no_drought_iforest": 0.07352941176470588,
-    "lift_usdm_d3_iforest": 3.6,
-    "recall_usdm_d3_zscore_field_only": 0.29411764705882354,
-    "flag_rate_no_drought_zscore_field_only": 0.07352941176470588,
-    "recall_usdm_d3_iforest_loyo": 0.38235294117647056,
+    "usdm_no_d3_weeks": 153,
+    "recall_usdm_d3_zscore": 0.5588235294117647,
+    "flag_rate_no_drought_zscore": 0.0718954248366013,
+    "lift_usdm_d3_zscore": 7.772727272727273,
+    "recall_usdm_d3_iforest": 0.23529411764705882,
+    "flag_rate_no_drought_iforest": 0.0718954248366013,
+    "lift_usdm_d3_iforest": 3.272727272727273,
+    "recall_usdm_d3_zscore_field_only": 0.23529411764705882,
+    "flag_rate_no_drought_zscore_field_only": 0.0784313725490196,
+    "recall_usdm_d3_iforest_loyo": 0.29411764705882354,
     "flag_rate_no_drought_iforest_loyo": 0.11764705882352941,
     "events": [
       {
@@ -34,11 +34,11 @@
         "start": "2015-06-01",
         "end": "2015-09-21",
         "weeks_in_window": 17,
-        "flagged_zscore": 7,
-        "flagged_iforest": 1,
-        "flagged_both": 1,
-        "recall_zscore": 0.4117647058823529,
-        "recall_iforest": 0.058823529411764705
+        "flagged_zscore": 11,
+        "flagged_iforest": 0,
+        "flagged_both": 0,
+        "recall_zscore": 0.6470588235294118,
+        "recall_iforest": 0.0
       },
       {
         "name": "2021 season, Drought Monitor D3+ weeks",
@@ -46,21 +46,21 @@
         "start": "2021-06-07",
         "end": "2021-09-27",
         "weeks_in_window": 17,
-        "flagged_zscore": 11,
+        "flagged_zscore": 8,
         "flagged_iforest": 8,
         "flagged_both": 8,
-        "recall_zscore": 0.6470588235294118,
+        "recall_zscore": 0.47058823529411764,
         "recall_iforest": 0.47058823529411764
       }
     ],
-    "wet_cool_weeks": 42,
-    "false_positive_proxy_zscore": 0.07142857142857142,
-    "false_positive_proxy_iforest": 0.16666666666666666
+    "wet_cool_weeks": 46,
+    "false_positive_proxy_zscore": 0.13043478260869565,
+    "false_positive_proxy_iforest": 0.15217391304347827
   },
   "checks": {
     "julaug_2021": {
       "applicable": true,
-      "flagged_zscore": 6,
+      "flagged_zscore": 4,
       "flagged_iforest": 4,
       "weeks": 9,
       "pass": true
@@ -89,19 +89,18 @@
   ],
   "events_source": "US Drought Monitor county statistics: weeks with >= 50% of the county in D3 (extreme) or D4 (exceptional) drought, cumulative statistic, max over the field's counties",
   "inputs": {
-    "lst_source": {
-      "modis_mod11a2": 191
-    },
+    "lst_source": {},
     "esi_source": {
       "openet_monthly_et_over_pm_eto": 170
     },
     "sm_source": {
-      "grace_da_rootzone_pctl": 201
+      "grace_da_rootzone_pctl": 134,
+      "smap_l4_rootzone_pctl": 67
     }
   },
   "input_coverage_scored_weeks": {
-    "z_ndvi": 187,
-    "z_lst": 175,
+    "z_ndvi": 168,
+    "z_lst": 0,
     "z_esi": 153,
     "z_sm": 184,
     "z_eto": 187,

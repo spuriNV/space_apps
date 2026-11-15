@@ -140,7 +140,7 @@
   "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
   "n_items_found": 507,
   "n_rows_raw": 505,
-  "n_rows": 476,
+  "n_rows": 473,
   "duplicates_dropped": 0,
   "errors": [
     {
@@ -152,5 +152,28 @@
       "error": "read failed https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/oli-tirs/2022/044/033/LC09_L2SP_044033_20220519_20220521_02_T1/LC09_L2SP_044033_20220519_20220521_02_T1_SR_B3.TIF: '/vsicurl/https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/oli-tirs/2022/044/0"
     }
   ],
-  "seconds": 161
+  "seconds": 161,
+  "ndvi_out_of_range_dropped": [
+    {
+      "scene_id": "LC08_L2SP_044033_20170121_02_T1",
+      "date": "2017-01-21",
+      "ndvi_med": -0.819,
+      "ndvi_p10": -1.111,
+      "ndvi_p90": -0.332
+    },
+    {
+      "scene_id": "LE07_L2SP_044032_20230817_02_T1",
+      "date": "2023-08-17",
+      "ndvi_med": 0.973,
+      "ndvi_p10": 0.914,
+      "ndvi_p90": 1.074
+    },
+    {
+      "scene_id": "LC09_L2SP_044033_20240101_02_T1",
+      "date": "2024-01-01",
+      "ndvi_med": -0.996,
+      "ndvi_p10": -1.46,
+      "ndvi_p90": 0.13
+    }
+  ]
 }

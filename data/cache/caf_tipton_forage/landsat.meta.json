@@ -108,5 +108,6 @@
       "error": "read failed https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/etm/2022/041/035/LE07_L2SP_041035_20220708_20220903_02_T1/LE07_L2SP_041035_20220708_20220903_02_T1_SR_B3.TIF: '/vsicurl/https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/etm/2022/041/035/LE07_L2"
     }
   ],
-  "seconds": 145
+  "seconds": 145,
+  "ndvi_out_of_range_dropped": []
 }

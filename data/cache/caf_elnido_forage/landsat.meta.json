@@ -100,8 +100,17 @@
   "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
   "n_items_found": 490,
   "n_rows_raw": 490,
-  "n_rows": 490,
+  "n_rows": 489,
   "duplicates_dropped": 0,
   "errors": [],
-  "seconds": 196
+  "seconds": 196,
+  "ndvi_out_of_range_dropped": [
+    {
+      "scene_id": "LC08_L2SP_043034_20191003_02_T1",
+      "date": "2019-10-03",
+      "ndvi_med": 1.807,
+      "ndvi_p10": 0.611,
+      "ndvi_p90": 2.324
+    }
+  ]
 }

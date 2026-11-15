@@ -52,10 +52,12 @@ def get(url, params=None, timeout=60):
         return r.read()
 
 
-def at_point(layer, lon, lat, fields="*"):
-    d = json.loads(get(L[layer] + "/query", {
-        "geometry": f"{lon},{lat}", "geometryType": "esriGeometryPoint", "inSR": 4326,
-        "spatialRel": "esriSpatialRelIntersects", "outFields": fields, "returnGeometry": "false", "f": "json"}))
+def at_point(layer, lon, lat, fields="*", distance_m=0):
+    q = {"geometry": f"{lon},{lat}", "geometryType": "esriGeometryPoint", "inSR": 4326,
+         "spatialRel": "esriSpatialRelIntersects", "outFields": fields, "returnGeometry": "false", "f": "json"}
+    if distance_m:
+        q.update(distance=distance_m, units="esriSRUnit_Meter")
+    d = json.loads(get(L[layer] + "/query", q))
     if "error" in d:
         raise RuntimeError(d["error"])
     return [f["attributes"] for f in d.get("features", [])]
@@ -105,6 +107,16 @@ def lookup(fid, probation, today):
         w["district"] = names[0] if names else None
         w["other_agencies"] = names[1:]
         w["district_source"] = {"title": "DWR i03 Water Districts", "url": L["districts"], "accessed": today, "verified": True}
+        if not names:   # no agency at the centroid: name the nearest one(s) so the panel can say "outside X, ~N km"
+            w["nearest_district"] = None
+            for m in (1000, 2000, 5000):
+                near = at_point("districts", lon, lat, "AGENCYNAME", distance_m=m)
+                nn = sorted({d["AGENCYNAME"].strip() for d in near if d.get("AGENCYNAME")},
+                            key=lambda n: (not any(k in n.lower() for k in AG_WORDS), n))
+                if nn:
+                    w["nearest_district"] = {"name": nn[0], "within_m": m, "others": nn[1:],
+                                             "note": f"the field centroid is in no DWR water district; {nn[0]} is within {m} m"}
+                    break
     except Exception as e:  # noqa: BLE001
         w["district"] = None
         w["errors"]["districts"] = str(e)[:200]

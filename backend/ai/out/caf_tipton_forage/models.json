@@ -1,6 +1,6 @@
 {
   "location_id": "caf_tipton_forage",
-  "generated_at": "2026-11-15T06:53:49+00:00",
+  "generated_at": "2026-11-15T15:13:53+00:00",
   "model_from": "caf_tulare_forage",
   "field_in_training_box": false,
   "distance_from_training_box_centre_km": 37.5,
@@ -73,8 +73,8 @@
       ],
       "feature_importance": [],
       "disagreement_with": {
-        "random_forest": 0.152,
-        "hist_gbt": 0.1499
+        "random_forest": 0.1518,
+        "hist_gbt": 0.1496
       },
       "notes": "Test 'unseen_fields': Fields it never saw (2.5 km blocks held out, all years). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Rule = backend/field B5.1 thresholds; its 'partial' (thin cover) is scored as covered. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
@@ -105,7 +105,6 @@
         "ndvi_60d_min",
         "ndvi_60d_max",
         "ndvi_30d_slope",
-        "ndvi_anom_modis",
         "doy_sin",
         "doy_cos",
         "tmax_7d_c",
@@ -142,37 +141,37 @@
         "blocks": "GroupKFold(4) over 2.5 km blocks; each cluster in exactly one test fold"
       },
       "metrics": {
-        "accuracy": 0.8481,
-        "f1_bare": 0.7611,
+        "accuracy": 0.8471,
+        "f1_bare": 0.7596,
         "n_test": 12175,
-        "accuracy_merged": 0.9931,
-        "f1_bare_merged": 0.9925,
-        "f1_macro_merged": 0.662,
+        "accuracy_merged": 0.9926,
+        "f1_bare_merged": 0.992,
+        "f1_macro_merged": 0.6617,
         "n_merged": 31318,
-        "agreement_scl": 0.9966,
+        "agreement_scl": 0.9964,
         "n_scl": 30989,
-        "transition_mae_days": 24.6867,
+        "transition_mae_days": 24.7814,
         "transitions_n": 940,
-        "transition_mae_vs_labels_days": 1.7727,
+        "transition_mae_vs_labels_days": 1.7404,
         "transitions_vs_labels_matched": 3925,
         "transitions_vs_labels_reference": 4265
       },
       "confusion": [
         [
-          2945,
-          519
+          2942,
+          522
         ],
         [
-          1330,
-          7381
+          1340,
+          7371
         ]
       ],
       "feature_importance": [],
       "disagreement_with": {
-        "rule_ndvi": 0.152,
-        "hist_gbt": 0.0051
+        "rule_ndvi": 0.1518,
+        "hist_gbt": 0.0049
       },
-      "notes": "Test 'unseen_fields': Fields it never saw (2.5 km blocks held out, all years). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.853, F1(bare) 0.767; agreement with S2 classes 0.996. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
+      "notes": "Test 'unseen_fields': Fields it never saw (2.5 km blocks held out, all years). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.852, F1(bare) 0.766; agreement with S2 classes 0.996. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
       "test": "unseen_fields",
       "test_title": "Fields it never saw (2.5 km blocks held out, all years)",
@@ -203,7 +202,6 @@
         "ndvi_60d_min",
         "ndvi_60d_max",
         "ndvi_30d_slope",
-        "ndvi_anom_modis",
         "doy_sin",
         "doy_cos",
         "tmax_7d_c",
@@ -240,37 +238,37 @@
         "blocks": "GroupKFold(4) over 2.5 km blocks; each cluster in exactly one test fold"
       },
       "metrics": {
-        "accuracy": 0.8526,
-        "f1_bare": 0.7665,
+        "accuracy": 0.8527,
+        "f1_bare": 0.7667,
         "n_test": 12175,
-        "accuracy_merged": 0.9936,
-        "f1_bare_merged": 0.993,
-        "f1_macro_merged": 0.6624,
+        "accuracy_merged": 0.9935,
+        "f1_bare_merged": 0.9929,
+        "f1_macro_merged": 0.6623,
         "n_merged": 31318,
-        "agreement_scl": 0.9961,
+        "agreement_scl": 0.996,
         "n_scl": 30989,
-        "transition_mae_days": 24.7473,
+        "transition_mae_days": 24.7963,
         "transitions_n": 940,
-        "transition_mae_vs_labels_days": 1.652,
-        "transitions_vs_labels_matched": 3920,
+        "transition_mae_vs_labels_days": 1.6834,
+        "transitions_vs_labels_matched": 3914,
         "transitions_vs_labels_reference": 4265
       },
       "confusion": [
         [
-          2944,
-          520
+          2947,
+          517
         ],
         [
-          1274,
-          7437
+          1276,
+          7435
         ]
       ],
       "feature_importance": [],
       "disagreement_with": {
-        "rule_ndvi": 0.1499,
-        "random_forest": 0.0051
+        "rule_ndvi": 0.1496,
+        "random_forest": 0.0049
       },
-      "notes": "Test 'unseen_fields': Fields it never saw (2.5 km blocks held out, all years). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.853, F1(bare) 0.767; agreement with S2 classes 0.996. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
+      "notes": "Test 'unseen_fields': Fields it never saw (2.5 km blocks held out, all years). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.852, F1(bare) 0.766; agreement with S2 classes 0.996. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
       "test": "unseen_fields",
       "test_title": "Fields it never saw (2.5 km blocks held out, all years)",
@@ -353,8 +351,8 @@
       ],
       "feature_importance": [],
       "disagreement_with": {
-        "random_forest": 0.1404,
-        "hist_gbt": 0.1413
+        "random_forest": 0.1411,
+        "hist_gbt": 0.1404
       },
       "notes": "Test 'unseen_years': Years it never saw (2023-2025). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Rule = backend/field B5.1 thresholds; its 'partial' (thin cover) is scored as covered. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
@@ -385,7 +383,6 @@
         "ndvi_60d_min",
         "ndvi_60d_max",
         "ndvi_30d_slope",
-        "ndvi_anom_modis",
         "doy_sin",
         "doy_cos",
         "tmax_7d_c",
@@ -411,31 +408,31 @@
         ]
       },
       "metrics": {
-        "accuracy": 0.8559,
-        "f1_bare": 0.7723,
+        "accuracy": 0.8554,
+        "f1_bare": 0.7715,
         "n_test": 3464,
-        "accuracy_merged": 0.991,
-        "f1_bare_merged": 0.9902,
-        "f1_macro_merged": 0.6606,
+        "accuracy_merged": 0.9915,
+        "f1_bare_merged": 0.9908,
+        "f1_macro_merged": 0.661,
         "n_merged": 10285,
-        "agreement_scl": 0.9942,
+        "agreement_scl": 0.9946,
         "n_scl": 10198,
-        "accuracy_2023": 0.8351,
-        "f1_bare_2023": 0.7153,
+        "accuracy_2023": 0.833,
+        "f1_bare_2023": 0.7128,
         "n_2023": 1443,
-        "accuracy_merged_2023": 0.9901,
+        "accuracy_merged_2023": 0.991,
         "accuracy_2024": 0.8519,
         "f1_bare_2024": 0.7749,
         "n_2024": 945,
-        "accuracy_merged_2024": 0.9898,
-        "accuracy_2025": 0.8875,
-        "f1_bare_2025": 0.8349,
+        "accuracy_merged_2024": 0.9904,
+        "accuracy_2025": 0.8885,
+        "f1_bare_2025": 0.8361,
         "n_2025": 1076,
-        "accuracy_merged_2025": 0.9929,
-        "transition_mae_days": 24.2823,
+        "accuracy_merged_2025": 0.9932,
+        "transition_mae_days": 24.3427,
         "transitions_n": 248,
-        "transition_mae_vs_labels_days": 1.8067,
-        "transitions_vs_labels_matched": 1226,
+        "transition_mae_vs_labels_days": 1.8088,
+        "transitions_vs_labels_matched": 1229,
         "transitions_vs_labels_reference": 1332
       },
       "confusion": [
@@ -444,37 +441,41 @@
           88
         ],
         [
-          411,
-          2119
+          413,
+          2117
         ]
       ],
       "feature_importance": [
         {
           "feature": "ndvi",
-          "importance": 0.076
+          "importance": 0.0378
         },
         {
           "feature": "bsi",
-          "importance": 0.0363
-        },
-        {
-          "feature": "ndvi_30d_min",
-          "importance": 0.0016
-        },
-        {
-          "feature": "ndwi",
-          "importance": 0.0012
+          "importance": 0.0333
         },
         {
           "feature": "doy_cos",
+          "importance": 0.0021
+        },
+        {
+          "feature": "ndwi",
+          "importance": 0.0019
+        },
+        {
+          "feature": "ndvi_30d_min",
+          "importance": 0.0015
+        },
+        {
+          "feature": "tmax_7d_c",
           "importance": 0.0012
         },
         {
-          "feature": "ndvi_anom_modis",
-          "importance": 0.0007
+          "feature": "ndvi_30d_max",
+          "importance": 0.0006
         },
         {
-          "feature": "ndvi_30d_max",
+          "feature": "ndvi_30d_mean",
           "importance": 0.0005
         },
         {
@@ -486,39 +487,31 @@
           "importance": 0.0004
         },
         {
-          "feature": "ndvi_30d_slope",
-          "importance": 0.0004
-        },
-        {
-          "feature": "tmax_7d_c",
-          "importance": 0.0003
-        },
-        {
-          "feature": "ndvi_30d_mean",
+          "feature": "ndvi_60d_min",
           "importance": 0.0002
         },
         {
-          "feature": "imerg_7d_mm",
-          "importance": 0.0001
-        },
-        {
           "feature": "smap_pct",
-          "importance": 0.0001
+          "importance": 0.0002
         },
         {
           "feature": "ndvi_60d_mean",
-          "importance": -0.0003
+          "importance": 0.0001
         },
         {
-          "feature": "ndvi_60d_min",
-          "importance": -0.0005
+          "feature": "ndvi_30d_slope",
+          "importance": -0.0001
+        },
+        {
+          "feature": "imerg_7d_mm",
+          "importance": -0.0003
         }
       ],
       "disagreement_with": {
-        "rule_ndvi": 0.1404,
-        "hist_gbt": 0.0045
+        "rule_ndvi": 0.1411,
+        "hist_gbt": 0.0047
       },
-      "notes": "Test 'unseen_years': Years it never saw (2023-2025). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.859, F1(bare) 0.776; agreement with S2 classes 0.994. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
+      "notes": "Test 'unseen_years': Years it never saw (2023-2025). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.860, F1(bare) 0.777; agreement with S2 classes 0.994. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
       "test": "unseen_years",
       "test_title": "Years it never saw (2023-2025)",
@@ -549,7 +542,6 @@
         "ndvi_60d_min",
         "ndvi_60d_max",
         "ndvi_30d_slope",
-        "ndvi_anom_modis",
         "doy_sin",
         "doy_cos",
         "tmax_7d_c",
@@ -575,30 +567,30 @@
         ]
       },
       "metrics": {
-        "accuracy": 0.8583,
-        "f1_bare": 0.7751,
+        "accuracy": 0.8597,
+        "f1_bare": 0.7769,
         "n_test": 3464,
-        "accuracy_merged": 0.9912,
-        "f1_bare_merged": 0.9904,
-        "f1_macro_merged": 0.6607,
+        "accuracy_merged": 0.9913,
+        "f1_bare_merged": 0.9906,
+        "f1_macro_merged": 0.6609,
         "n_merged": 10285,
         "agreement_scl": 0.9937,
         "n_scl": 10198,
-        "accuracy_2023": 0.8385,
-        "f1_bare_2023": 0.7203,
+        "accuracy_2023": 0.8399,
+        "f1_bare_2023": 0.722,
         "n_2023": 1443,
-        "accuracy_merged_2023": 0.9898,
-        "accuracy_2024": 0.8508,
-        "f1_bare_2024": 0.7737,
+        "accuracy_merged_2023": 0.9901,
+        "accuracy_2024": 0.855,
+        "f1_bare_2024": 0.7787,
         "n_2024": 945,
         "accuracy_merged_2024": 0.9904,
-        "accuracy_2025": 0.8913,
-        "f1_bare_2025": 0.8391,
+        "accuracy_2025": 0.8903,
+        "f1_bare_2025": 0.8379,
         "n_2025": 1076,
-        "accuracy_merged_2025": 0.9932,
-        "transition_mae_days": 24.4839,
+        "accuracy_merged_2025": 0.9935,
+        "transition_mae_days": 24.3831,
         "transitions_n": 248,
-        "transition_mae_vs_labels_days": 1.79,
+        "transition_mae_vs_labels_days": 1.7451,
         "transitions_vs_labels_matched": 1224,
         "transitions_vs_labels_reference": 1332
       },
@@ -608,81 +600,77 @@
           88
         ],
         [
-          403,
-          2127
+          398,
+          2132
         ]
       ],
       "feature_importance": [
         {
           "feature": "bsi",
-          "importance": 0.1168
+          "importance": 0.1305
         },
         {
           "feature": "ndvi",
-          "importance": 0.0306
+          "importance": 0.0296
         },
         {
           "feature": "ndwi",
-          "importance": 0.015
+          "importance": 0.009
         },
         {
           "feature": "ndvi_30d_min",
-          "importance": 0.0025
-        },
-        {
-          "feature": "ndvi_60d_max",
-          "importance": 0.0012
+          "importance": 0.0031
         },
         {
           "feature": "doy_cos",
-          "importance": 0.0011
+          "importance": 0.002
         },
         {
-          "feature": "ndvi_60d_mean",
+          "feature": "ndvi_30d_mean",
+          "importance": 0.0013
+        },
+        {
+          "feature": "ndvi_60d_max",
+          "importance": 0.0013
+        },
+        {
+          "feature": "tmax_7d_c",
           "importance": 0.001
         },
         {
           "feature": "doy_sin",
-          "importance": 0.0008
+          "importance": 0.0009
         },
         {
-          "feature": "ndvi_30d_max",
-          "importance": 0.0007
-        },
-        {
-          "feature": "tmax_7d_c",
-          "importance": 0.0007
-        },
-        {
-          "feature": "ndvi_60d_min",
+          "feature": "ndvi_60d_mean",
           "importance": 0.0006
         },
         {
-          "feature": "ndvi_anom_modis",
-          "importance": 0.0005
+          "feature": "smap_pct",
+          "importance": 0.0006
+        },
+        {
+          "feature": "ndvi_30d_max",
+          "importance": 0.0004
         },
         {
           "feature": "imerg_7d_mm",
-          "importance": 0.0005
-        },
-        {
-          "feature": "ndvi_30d_mean",
           "importance": 0.0002
         },
         {
-          "feature": "smap_pct",
-          "importance": 0.0002
+          "feature": "ndvi_60d_min",
+          "importance": -0.0001
         },
         {
           "feature": "ndvi_30d_slope",
-          "importance": -0.0002
+          "importance": -0.0004
         }
       ],
       "disagreement_with": {
-        "rule_ndvi": 0.1413,
-        "random_forest": 0.0045
+        "rule_ndvi": 0.1404,
+        "random_forest": 0.0047
       },
-      "notes": "Test 'unseen_years': Years it never saw (2023-2025). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.859, F1(bare) 0.776; agreement with S2 classes 0.994. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
+      "notes": "Test 'unseen_years': Years it never saw (2023-2025). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.860, F1(bare) 0.777; agreement with S2 classes 0.994. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
       "test": "unseen_years",
       "test_title": "Years it never saw (2023-2025)",
@@ -758,8 +746,8 @@
       ],
       "feature_importance": [],
       "disagreement_with": {
-        "random_forest": 0.1446,
-        "hist_gbt": 0.1443
+        "random_forest": 0.1437,
+        "hist_gbt": 0.142
       },
       "notes": "Test 'fallow_2022': 2022 drought-fallow year (easy test). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Rule = backend/field B5.1 thresholds; its 'partial' (thin cover) is scored as covered. Easy test: most 2022 labels are bare (drought fallow); do not quote as the headline. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
@@ -790,7 +778,6 @@
         "ndvi_60d_min",
         "ndvi_60d_max",
         "ndvi_30d_slope",
-        "ndvi_anom_modis",
         "doy_sin",
         "doy_cos",
         "tmax_7d_c",
@@ -819,19 +806,19 @@
         "accuracy": 0.7547,
         "f1_bare": 0.6876,
         "n_test": 1663,
-        "accuracy_merged": 0.9954,
-        "f1_bare_merged": 0.9946,
-        "f1_macro_merged": 0.6635,
+        "accuracy_merged": 0.9948,
+        "f1_bare_merged": 0.9939,
+        "f1_macro_merged": 0.6631,
         "n_merged": 3491,
-        "agreement_scl": 0.9986,
+        "agreement_scl": 0.998,
         "n_scl": 3460,
         "accuracy_2022": 0.7547,
         "f1_bare_2022": 0.6876,
         "n_2022": 1663,
-        "accuracy_merged_2022": 0.9954,
+        "accuracy_merged_2022": 0.9948,
         "transition_mae_days": 24.0975,
         "transitions_n": 118,
-        "transition_mae_vs_labels_days": 1.7218,
+        "transition_mae_vs_labels_days": 1.6804,
         "transitions_vs_labels_matched": 363,
         "transitions_vs_labels_reference": 383,
         "bare_label_share": 0.4242
@@ -848,8 +835,8 @@
       ],
       "feature_importance": [],
       "disagreement_with": {
-        "rule_ndvi": 0.1446,
-        "hist_gbt": 0.0042
+        "rule_ndvi": 0.1437,
+        "hist_gbt": 0.004
       },
       "notes": "Test 'fallow_2022': 2022 drought-fallow year (easy test). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.756, F1(bare) 0.689; agreement with S2 classes 0.997. Easy test: most 2022 labels are bare (drought fallow); do not quote as the headline. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
@@ -882,7 +869,6 @@
         "ndvi_60d_min",
         "ndvi_60d_max",
         "ndvi_30d_slope",
-        "ndvi_anom_modis",
         "doy_sin",
         "doy_cos",
         "tmax_7d_c",
@@ -911,19 +897,19 @@
         "accuracy": 0.7553,
         "f1_bare": 0.6881,
         "n_test": 1663,
-        "accuracy_merged": 0.9931,
-        "f1_bare_merged": 0.9919,
-        "f1_macro_merged": 0.662,
+        "accuracy_merged": 0.9934,
+        "f1_bare_merged": 0.9922,
+        "f1_macro_merged": 0.6622,
         "n_merged": 3491,
-        "agreement_scl": 0.9965,
+        "agreement_scl": 0.9968,
         "n_scl": 3460,
         "accuracy_2022": 0.7553,
         "f1_bare_2022": 0.6881,
         "n_2022": 1663,
-        "accuracy_merged_2022": 0.9931,
+        "accuracy_merged_2022": 0.9934,
         "transition_mae_days": 23.9703,
         "transitions_n": 118,
-        "transition_mae_vs_labels_days": 1.5608,
+        "transition_mae_vs_labels_days": 1.6298,
         "transitions_vs_labels_matched": 362,
         "transitions_vs_labels_reference": 383,
         "bare_label_share": 0.4242
@@ -940,8 +926,8 @@
       ],
       "feature_importance": [],
       "disagreement_with": {
-        "rule_ndvi": 0.1443,
-        "random_forest": 0.0042
+        "rule_ndvi": 0.142,
+        "random_forest": 0.004
       },
       "notes": "Test 'fallow_2022': 2022 drought-fallow year (easy test). accuracy / f1_bare and the confusion matrix (rows = crop-map label, cols = prediction, order [not_covered, covered]) are vs the USDA crop-map labels only, which do not come from the imagery; *_merged = vs the training labels (mostly Sentinel-2 SCL, 3 classes); agreement_scl = agreement with Sentinel-2 scene classification, not accuracy. transition_mae_days = vs the crop-map window midpoints (crude); transition_mae_vs_labels_days = vs the label sequence (ds). Majority vote of rule/RF/HGB on this test: crop-map accuracy 0.756, F1(bare) 0.689; agreement with S2 classes 0.997. Easy test: most 2022 labels are bare (drought fallow); do not quote as the headline. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
@@ -974,7 +960,6 @@
         "ndvi_60d_min",
         "ndvi_60d_max",
         "ndvi_30d_slope",
-        "ndvi_anom_modis",
         "doy_sin",
         "doy_cos",
         "tmax_7d_c",
@@ -1016,24 +1001,24 @@
         ]
       },
       "metrics": {
-        "accuracy": 0.8466,
-        "f1_bare": 0.7592,
+        "accuracy": 0.8471,
+        "f1_bare": 0.7598,
         "n_test": 12175,
         "accuracy_merged": 0.9934,
         "f1_bare_merged": 0.9928,
         "f1_macro_merged": 0.6622,
         "n_merged": 31318,
-        "agreement_scl": 0.9974,
+        "agreement_scl": 0.9973,
         "n_scl": 30989,
-        "transition_mae_days": 24.8367,
+        "transition_mae_days": 24.8261,
         "transitions_n": 940,
-        "transition_mae_vs_labels_days": 1.7836,
-        "transitions_vs_labels_matched": 3932,
+        "transition_mae_vs_labels_days": 1.7675,
+        "transitions_vs_labels_matched": 3931,
         "transitions_vs_labels_reference": 4265
       },
       "feature_importance": [],
       "disagreement_with": {
-        "rule_ndvi": 0.1524
+        "rule_ndvi": 0.152
       },
       "notes": "Ablation on the unseen-fields test: adds EVI, NBR2 and red/NIR/SWIR reflectance (clusters only; the field series stores no bands, so not used for the calendar). Not used for the calendar or the checks. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
@@ -1054,8 +1039,7 @@
         "ndvi_60d_mean",
         "ndvi_60d_min",
         "ndvi_60d_max",
-        "ndvi_30d_slope",
-        "ndvi_anom_modis"
+        "ndvi_30d_slope"
       ],
       "labels": "s2_scl_pseudo (>=80% agreement) > cdl_fallow > cdl_window (weight 0.5)",
       "split": {
@@ -1086,24 +1070,24 @@
         ]
       },
       "metrics": {
-        "accuracy": 0.8439,
-        "f1_bare": 0.7559,
+        "accuracy": 0.8421,
+        "f1_bare": 0.7536,
         "n_test": 12175,
-        "accuracy_merged": 0.9911,
-        "f1_bare_merged": 0.9903,
-        "f1_macro_merged": 0.6607,
+        "accuracy_merged": 0.9899,
+        "f1_bare_merged": 0.9891,
+        "f1_macro_merged": 0.6599,
         "n_merged": 31318,
-        "agreement_scl": 0.9956,
+        "agreement_scl": 0.9951,
         "n_scl": 30989,
-        "transition_mae_days": 24.8151,
-        "transitions_n": 941,
-        "transition_mae_vs_labels_days": 1.9397,
-        "transitions_vs_labels_matched": 3928,
+        "transition_mae_days": 24.8569,
+        "transitions_n": 940,
+        "transition_mae_vs_labels_days": 1.9106,
+        "transitions_vs_labels_matched": 3925,
         "transitions_vs_labels_reference": 4265
       },
       "feature_importance": [],
       "disagreement_with": {
-        "rule_ndvi": 0.1519
+        "rule_ndvi": 0.152
       },
       "notes": "Ablation on the unseen-fields test: drops DOY, Tmax, rain and soil moisture (seasonal proxies) to show how much of the score is spectral. Not used for the calendar or the checks. Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai. [Models trained around caf_tulare_forage; applied to this field without retraining; field outside that training box (37.5 km from its centre).]",
       "location_id": "caf_tulare_forage",
@@ -1154,39 +1138,39 @@
       },
       "metrics": {
         "weeks_scored": 312,
-        "flag_rate": 0.3141,
-        "agreement": 0.6731,
-        "recall_usdm_d3": 0.4519,
-        "flag_rate_no_drought": 0.2473,
-        "lift_usdm_d3": 1.8278,
+        "flag_rate": 0.2596,
+        "agreement": 0.7147,
+        "recall_usdm_d3": 0.3942,
+        "flag_rate_no_drought": 0.1923,
+        "lift_usdm_d3": 2.05,
         "usdm_d3_weeks": 104,
-        "false_positive_proxy_wet_cool": 0.4,
-        "wet_cool_weeks": 65,
-        "recall_usdm_d3_field_only": 0.1538,
-        "flag_rate_no_drought_field_only": 0.1484,
-        "julaug_2021_flagged_weeks": 7,
-        "julaug_2022_flagged_weeks": 3
+        "false_positive_proxy_wet_cool": 0.2195,
+        "wet_cool_weeks": 82,
+        "recall_usdm_d3_field_only": 0.1827,
+        "flag_rate_no_drought_field_only": 0.2115,
+        "julaug_2021_flagged_weeks": 4,
+        "julaug_2022_flagged_weeks": 6
       },
       "feature_importance": [],
       "disagreement_with": {
-        "isolation_forest": 0.3269
+        "isolation_forest": 0.2853
       },
       "notes": "composite z > 1.0 or two of (z_NDVI < -1, z_LST > +1, z_SM < -1). No labelled stress events, so no accuracy: recall_usdm_d3 = share of Drought Monitor D3+ crop weeks flagged; flag_rate_no_drought = the same in weeks with no D3; lift = their ratio. Stress method, reasons and evidence sentence: spuriNV (ds branch); real NASA inputs and Drought Monitor events: backend/ai.",
       "location_id": "caf_tipton_forage",
       "checks": {
         "julaug_2021": {
           "applicable": true,
-          "flagged_zscore": 7,
-          "flagged_iforest": 1,
+          "flagged_zscore": 4,
+          "flagged_iforest": 0,
           "weeks": 9,
           "pass": false
         },
         "julaug_2022": {
           "applicable": true,
-          "flagged_zscore": 3,
-          "flagged_iforest": 1,
+          "flagged_zscore": 6,
+          "flagged_iforest": 2,
           "weeks": 9,
-          "pass": false
+          "pass": true
         },
         "flood_2023_water_not_stress": {
           "water_weeks": 0,
@@ -1249,37 +1233,37 @@
       "metrics": {
         "weeks_scored": 312,
         "flag_rate": 0.1026,
-        "agreement": 0.6731,
-        "recall_usdm_d3": 0.1058,
-        "flag_rate_no_drought": 0.1099,
-        "lift_usdm_d3": 0.9625,
+        "agreement": 0.7147,
+        "recall_usdm_d3": 0.0673,
+        "flag_rate_no_drought": 0.1202,
+        "lift_usdm_d3": 0.56,
         "usdm_d3_weeks": 104,
-        "false_positive_proxy_wet_cool": 0.2462,
-        "wet_cool_weeks": 65,
-        "recall_usdm_d3_loyo": 0.125,
-        "julaug_2021_flagged_weeks": 1,
-        "julaug_2022_flagged_weeks": 1
+        "false_positive_proxy_wet_cool": 0.2439,
+        "wet_cool_weeks": 82,
+        "recall_usdm_d3_loyo": 0.0769,
+        "julaug_2021_flagged_weeks": 0,
+        "julaug_2022_flagged_weeks": 2
       },
       "feature_importance": [],
       "disagreement_with": {
-        "zscore": 0.3269
+        "zscore": 0.2853
       },
       "notes": "IsolationForest(n_estimators=200, contamination=0.1) fitted on crop-year weeks; flags unusual weeks in any direction; missing z = 0. No labelled stress events, so no accuracy: recall_usdm_d3 = share of Drought Monitor D3+ crop weeks flagged; flag_rate_no_drought = the same in weeks with no D3; lift = their ratio. Stress method, reasons and evidence sentence: spuriNV (ds branch); real NASA inputs and Drought Monitor events: backend/ai.",
       "location_id": "caf_tipton_forage",
       "checks": {
         "julaug_2021": {
           "applicable": true,
-          "flagged_zscore": 7,
-          "flagged_iforest": 1,
+          "flagged_zscore": 4,
+          "flagged_iforest": 0,
           "weeks": 9,
           "pass": false
         },
         "julaug_2022": {
           "applicable": true,
-          "flagged_zscore": 3,
-          "flagged_iforest": 1,
+          "flagged_zscore": 6,
+          "flagged_iforest": 2,
           "weeks": 9,
-          "pass": false
+          "pass": true
         },
         "flood_2023_water_not_stress": {
           "water_weeks": 0,

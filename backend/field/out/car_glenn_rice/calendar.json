@@ -1,6 +1,6 @@
 {
   "preset_id": "car_glenn_rice",
-  "generated_at": "2026-11-15T07:02:54+00:00",
+  "generated_at": "2026-11-15T07:52:56+00:00",
   "detector": "rule_ndvi",
   "data_through": "2026-11-12",
   "classes": {
@@ -2228,7 +2228,7 @@
           "end_doy": 365,
           "days": 64,
           "class": "water",
-          "n_obs": 15
+          "n_obs": 14
         }
       ],
       "transitions": [
@@ -2356,9 +2356,9 @@
           "covered": 119,
           "water": 114
         },
-        "n_obs": 115,
+        "n_obs": 114,
         "n_obs_s2": 74,
-        "n_obs_landsat": 41
+        "n_obs_landsat": 40
       },
       "observations": [
         {
@@ -3349,15 +3349,6 @@
           "ndwi": 0.204,
           "bsi": -0.09,
           "clear_frac": 0.99,
-          "class": "water"
-        },
-        {
-          "date": "2018-12-17",
-          "sensor": "landsat",
-          "ndvi": -0.102,
-          "ndwi": 0.167,
-          "bsi": 0.137,
-          "clear_frac": 0.93,
           "class": "water"
         },
         {

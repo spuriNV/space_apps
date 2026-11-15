@@ -1,32 +1,32 @@
 {
   "field_id": "caf_newman_forage",
-  "generated_at": "2026-11-15T06:53:55+00:00",
-  "evidence": "The crop looked stressed in 10 weeks over 2015-2026 (both checks agree), mostly late May; most often crop using less water than the weather allows (OpenET) and dry soil (NASA GRACE-DA).",
+  "generated_at": "2026-11-15T15:14:09+00:00",
+  "evidence": "The crop looked stressed in 12 weeks over 2015-2026 (both checks agree), mostly early April; most often crop using less water than the weather allows (OpenET) and dry soil (NASA GRACE-DA).",
   "latest_season": {
     "year": 2026,
     "evidence": "Neither stress check flagged the same week over the 2026 season.",
     "weeks_flagged_both": 0,
-    "weeks_flagged_one": 4,
+    "weeks_flagged_one": 2,
     "crop": "Alfalfa",
     "crop_assumed": true
   },
   "evaluation": {
     "weeks_scored": 312,
-    "flag_rate_zscore": 0.30448717948717946,
+    "flag_rate_zscore": 0.2724358974358974,
     "flag_rate_iforest": 0.10256410256410256,
-    "agreement": 0.657051282051282,
+    "agreement": 0.7019230769230769,
     "usdm_d3_weeks": 99,
-    "usdm_no_d3_weeks": 186,
-    "recall_usdm_d3_zscore": 0.5959595959595959,
-    "flag_rate_no_drought_zscore": 0.1935483870967742,
-    "lift_usdm_d3_zscore": 3.079124579124579,
-    "recall_usdm_d3_iforest": 0.12121212121212122,
-    "flag_rate_no_drought_iforest": 0.08064516129032258,
-    "lift_usdm_d3_iforest": 1.5030303030303032,
-    "recall_usdm_d3_zscore_field_only": 0.35353535353535354,
-    "flag_rate_no_drought_zscore_field_only": 0.21505376344086022,
-    "recall_usdm_d3_iforest_loyo": 0.15151515151515152,
-    "flag_rate_no_drought_iforest_loyo": 0.15591397849462366,
+    "usdm_no_d3_weeks": 212,
+    "recall_usdm_d3_zscore": 0.494949494949495,
+    "flag_rate_no_drought_zscore": 0.16981132075471697,
+    "lift_usdm_d3_zscore": 2.9147025813692484,
+    "recall_usdm_d3_iforest": 0.13131313131313133,
+    "flag_rate_no_drought_iforest": 0.08490566037735849,
+    "lift_usdm_d3_iforest": 1.5465768799102135,
+    "recall_usdm_d3_zscore_field_only": 0.2727272727272727,
+    "flag_rate_no_drought_zscore_field_only": 0.22641509433962265,
+    "recall_usdm_d3_iforest_loyo": 0.1919191919191919,
+    "flag_rate_no_drought_iforest_loyo": 0.12735849056603774,
     "events": [
       {
         "name": "2015 season, Drought Monitor D3+ weeks",
@@ -34,10 +34,10 @@
         "start": "2015-03-30",
         "end": "2015-09-21",
         "weeks_in_window": 26,
-        "flagged_zscore": 15,
+        "flagged_zscore": 17,
         "flagged_iforest": 3,
-        "flagged_both": 0,
-        "recall_zscore": 0.5769230769230769,
+        "flagged_both": 2,
+        "recall_zscore": 0.6538461538461539,
         "recall_iforest": 0.11538461538461539
       },
       {
@@ -46,11 +46,11 @@
         "start": "2016-04-04",
         "end": "2016-09-26",
         "weeks_in_window": 26,
-        "flagged_zscore": 14,
-        "flagged_iforest": 2,
-        "flagged_both": 2,
-        "recall_zscore": 0.5384615384615384,
-        "recall_iforest": 0.07692307692307693
+        "flagged_zscore": 6,
+        "flagged_iforest": 4,
+        "flagged_both": 3,
+        "recall_zscore": 0.23076923076923078,
+        "recall_iforest": 0.15384615384615385
       },
       {
         "name": "2021 season, Drought Monitor D3+ weeks",
@@ -58,11 +58,11 @@
         "start": "2021-05-03",
         "end": "2021-09-27",
         "weeks_in_window": 22,
-        "flagged_zscore": 10,
-        "flagged_iforest": 1,
+        "flagged_zscore": 12,
+        "flagged_iforest": 0,
         "flagged_both": 0,
-        "recall_zscore": 0.45454545454545453,
-        "recall_iforest": 0.045454545454545456
+        "recall_zscore": 0.5454545454545454,
+        "recall_iforest": 0.0
       },
       {
         "name": "2022 season, Drought Monitor D3+ weeks",
@@ -70,28 +70,28 @@
         "start": "2022-04-11",
         "end": "2022-09-26",
         "weeks_in_window": 25,
-        "flagged_zscore": 20,
+        "flagged_zscore": 14,
         "flagged_iforest": 6,
         "flagged_both": 5,
-        "recall_zscore": 0.8,
+        "recall_zscore": 0.56,
         "recall_iforest": 0.24
       }
     ],
-    "wet_cool_weeks": 74,
-    "false_positive_proxy_zscore": 0.24324324324324326,
-    "false_positive_proxy_iforest": 0.16216216216216217
+    "wet_cool_weeks": 76,
+    "false_positive_proxy_zscore": 0.18421052631578946,
+    "false_positive_proxy_iforest": 0.19736842105263158
   },
   "checks": {
     "julaug_2021": {
       "applicable": true,
-      "flagged_zscore": 2,
+      "flagged_zscore": 5,
       "flagged_iforest": 0,
       "weeks": 9,
       "pass": false
     },
     "julaug_2022": {
       "applicable": true,
-      "flagged_zscore": 7,
+      "flagged_zscore": 4,
       "flagged_iforest": 0,
       "weeks": 9,
       "pass": false
@@ -112,19 +112,18 @@
   "no_crop_years_excluded_from_evidence": [],
   "events_source": "US Drought Monitor county statistics: weeks with >= 50% of the county in D3 (extreme) or D4 (exceptional) drought, cumulative statistic, max over the field's counties",
   "inputs": {
-    "lst_source": {
-      "modis_mod11a2": 299
-    },
+    "lst_source": {},
     "esi_source": {
       "openet_monthly_et_over_pm_eto": 260
     },
     "sm_source": {
-      "grace_da_rootzone_pctl": 309
+      "grace_da_rootzone_pctl": 213,
+      "smap_l4_rootzone_pctl": 96
     }
   },
   "input_coverage_scored_weeks": {
-    "z_ndvi": 299,
-    "z_lst": 299,
+    "z_ndvi": 281,
+    "z_lst": 0,
     "z_esi": 260,
     "z_sm": 309,
     "z_eto": 312,

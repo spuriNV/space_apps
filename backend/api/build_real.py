@@ -173,6 +173,7 @@ def water_block(p: str, fix: dict) -> dict:
         "source_note": ("spec statement (U)" if fieldreg.is_original(p) else "surface vs groundwater use not looked up for this field"),
         "allocation_input": fix["water"]["allocation_input"],
         "district": w.get("district"),
+        "nearest_district": w.get("nearest_district"),
         "other_agencies": w.get("other_agencies", []),
         "sgma_subbasin": sb.get("name"),
         "sgma_subbasin_number": sb.get("number"),
@@ -264,7 +265,7 @@ def build_location(x: Ctx):
     loc = {
         "id": p, "name": NAMES[p], "dwr_unique_id": bs.get("dwr_unique_id"), "region_adapter": "ca", "regime": fix["regime"], "state_fips": "06", "county_fips": COUNTY[p],
         "geometry": x.poly["geometry"], "centroid": props["centroid"], "area_ha": area, "crs_working": "EPSG:32610",
-        "family": reg["family"], "farmer_name": reg["farmer_name"], "acres": reg["acres"], "county_name": reg["county"]["name"],
+        "family": reg["family"], "farmer_name": reg["farmer_name"], "acres": reg["acres"], "county": reg["county"], "county_name": reg["county"]["name"],
         "template": reg["template"], "why_chosen": reg["why"],
         "soil": soil, "terrain": terrain, "water": water_block(p, fix), "market_preference": fix["market_preference"],
         "stations": stations,
