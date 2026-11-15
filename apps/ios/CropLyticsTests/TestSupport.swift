@@ -105,6 +105,7 @@ enum TestAPI {
     }
 
     static let today = GrowerDate.parse("2026-11-14")!
+    static let todayPoint = TimePoint(iso: "2026-11-14")!
 }
 
 /// Thread-safe counter for events reported by the client.

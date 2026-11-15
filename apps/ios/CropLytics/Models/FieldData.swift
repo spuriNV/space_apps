@@ -130,6 +130,11 @@ struct Strategy: Decodable, Sendable, Identifiable {
     let composite: Composite?
     let brief: Brief?
     let filteredOut: Bool
+    /// The API's own short name ("Rice + winter flood").
+    var shortName: String? = nil
+
+    /// Dryland rotation: no calendar year is irrigated (e.g. BC sainfoin-grass).
+    var isRainFed: Bool { !calendar.isEmpty && calendar.allSatisfy { $0.irrigated == false } }
 
     struct CalendarEntry: Decodable, Sendable {
         let year: Int
@@ -137,8 +142,9 @@ struct Strategy: Decodable, Sendable, Identifiable {
         let plant: String
         let harvest: String
         let role: String?
+        var irrigated: Bool? = nil
         enum CodingKeys: String, CodingKey {
-            case year, plant, harvest, role
+            case year, plant, harvest, role, irrigated
             case cropId = "crop_id"
         }
     }
@@ -220,6 +226,7 @@ struct Strategy: Decodable, Sendable, Identifiable {
         case isBaseline = "is_baseline"
         case cycleYears = "cycle_years"
         case filteredOut = "filtered_out"
+        case shortName = "short_name"
     }
 
     init(id: String, name: String, isBaseline: Bool, cycleYears: Int? = 1, calendar: [CalendarEntry] = [], water: Water,
@@ -242,6 +249,7 @@ struct Strategy: Decodable, Sendable, Identifiable {
         composite = try? c.decodeIfPresent(Composite.self, forKey: .composite)
         brief = try? c.decodeIfPresent(Brief.self, forKey: .brief)
         filteredOut = (try? c.decodeIfPresent(Bool.self, forKey: .filteredOut)) ?? false
+        shortName = try? c.decodeIfPresent(String.self, forKey: .shortName)
     }
 }
 
@@ -249,9 +257,16 @@ struct StrategyList: Decodable, Sendable {
     let items: [Strategy]
 }
 
-/// POST /api/locations/{id}/score request body.
-struct ScoreRequest: Encodable, Sendable {
+/// POST /api/locations/{id}/score request body: the water limit, the grower's priorities (0-4) and a what-if.
+struct ScoreRequest: Encodable, Sendable, Equatable {
     let allocation: Double
+    var weights: [String: Int]? = nil
+    var scenario: Scenario? = nil
+
+    struct Scenario: Encodable, Sendable, Equatable {
+        var dT_c: Double
+        var dP_pct: Double
+    }
 }
 
 // MARK: - GET .../models (machine-learning comparison)
@@ -327,6 +342,18 @@ struct StressReport: Decodable, Sendable {
 
 struct WaterSeen: Decodable, Sendable {
     let summary: String?
+    let scenes: [Scene]
+    struct Scene: Decodable, Sendable {
+        let date: String
+        let waterFrac: Double?
+        enum CodingKeys: String, CodingKey { case date; case waterFrac = "water_frac" }
+    }
+    enum CodingKeys: String, CodingKey { case summary, scenes }
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        summary = try? c.decodeIfPresent(String.self, forKey: .summary)
+        scenes = (try? c.decodeIfPresent([Scene].self, forKey: .scenes)) ?? []
+    }
 }
 
 // MARK: - GET .../insurance (USDA RMA, county level)

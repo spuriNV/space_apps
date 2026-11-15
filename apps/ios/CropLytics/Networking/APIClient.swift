@@ -36,7 +36,9 @@ final class APIClient: Sendable {
     }
 
     func request(for endpoint: Endpoint) -> URLRequest {
-        var url = config.baseURL.appending(path: endpoint.path)
+        var url = endpoint.path.hasPrefix("/")
+            ? (URL(string: endpoint.path, relativeTo: config.baseURL)?.absoluteURL ?? config.baseURL)
+            : config.baseURL.appending(path: endpoint.path)
         if !endpoint.query.isEmpty { url.append(queryItems: endpoint.query) }
         var req = URLRequest(url: url, timeoutInterval: config.requestTimeout)
         req.httpMethod = endpoint.method

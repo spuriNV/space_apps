@@ -4,8 +4,9 @@ import Foundation
 protocol FieldRepository: Sendable {
     /// Offline-first: yields the saved copy (if any) at once, then the live answer.
     func stream<T: Decodable & Sendable>(_ endpoint: Endpoint, as type: T.Type) -> AsyncThrowingStream<Fetched<T>, Error>
-    /// Re-scores the rotations for a water limit (POST .../score). Falls back to the last saved score for that limit.
-    func score(fieldID: String, allocation: Double) async throws -> Fetched<[Strategy]>
+    /// Re-scores the rotations for a water limit, priorities and a what-if (POST .../score).
+    /// Falls back to the last saved score for the same request.
+    func score(fieldID: String, request: ScoreRequest) async throws -> Fetched<[Strategy]>
 }
 
 extension FieldRepository {
@@ -19,6 +20,17 @@ extension FieldRepository {
     func waterSeen(_ id: String) -> AsyncThrowingStream<Fetched<WaterSeen>, Error> { stream(.waterSeen(id), as: WaterSeen.self) }
     func insurance(_ id: String) -> AsyncThrowingStream<Fetched<InsuranceProfile>, Error> { stream(.insurance(id), as: InsuranceProfile.self) }
     func glossary() -> AsyncThrowingStream<Fetched<Glossary>, Error> { stream(.glossary, as: Glossary.self) }
+    func daily(_ id: String) -> AsyncThrowingStream<Fetched<DailyRecord>, Error> { stream(.daily(id), as: DailyRecord.self) }
+    func calendarML(_ id: String) -> AsyncThrowingStream<Fetched<MLCalendar>, Error> { stream(.calendarML(id), as: MLCalendar.self) }
+    func firstNations(_ id: String) -> AsyncThrowingStream<Fetched<FirstNationsDetail>, Error> { stream(.firstNations(id), as: FirstNationsDetail.self) }
+    func reserves(_ id: String) -> AsyncThrowingStream<Fetched<ReserveOutlines>, Error> { stream(.reserves(id), as: ReserveOutlines.self) }
+    func grid(_ id: String) -> AsyncThrowingStream<Fetched<FieldGrid>, Error> { stream(.grid(id), as: FieldGrid.self) }
+    func salmon(_ id: String) -> AsyncThrowingStream<Fetched<SalmonInfo>, Error> { stream(.salmon(id), as: SalmonInfo.self) }
+    func iss(_ id: String) -> AsyncThrowingStream<Fetched<ISSPhotos>, Error> { stream(.iss(id), as: ISSPhotos.self) }
+
+    func score(fieldID: String, allocation: Double) async throws -> Fetched<[Strategy]> {
+        try await score(fieldID: fieldID, request: ScoreRequest(allocation: allocation))
+    }
 
     private func mapped<Raw: Decodable & Sendable, Out: Sendable>(
         _ endpoint: Endpoint, _ raw: Raw.Type, _ transform: @escaping @Sendable (Raw) -> Out
@@ -81,8 +93,8 @@ final class LiveFieldRepository: FieldRepository {
         }
     }
 
-    func score(fieldID: String, allocation: Double) async throws -> Fetched<[Strategy]> {
-        let endpoint = Endpoint.score(fieldID, allocation: allocation)
+    func score(fieldID: String, request: ScoreRequest) async throws -> Fetched<[Strategy]> {
+        let endpoint = Endpoint.score(fieldID, request: request)
         do {
             let data = try await api.data(for: endpoint)
             let list = try APIClient.decode(StrategyList.self, from: data)

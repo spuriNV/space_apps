@@ -21,6 +21,64 @@ struct FieldLocation: Decodable, Identifiable, Sendable {
     let farmerName: String?
     let countyName: String?
     let acresValue: Double?
+    /// "ca" or "bc".
+    let region: String
+    /// "rice", "forage" (else from the id).
+    let family: String
+    /// BC: the watershed and the irrigation orders, in place of a California water district.
+    let waterContext: WaterContext?
+    /// BC: the First Nations summary; the full card comes from GET .../first_nations.
+    let firstNations: FirstNationsSummary?
+    /// BC: California datasets this field lacks, with the reason.
+    let dataGaps: [DataGap]
+    /// The example water limit the API suggests (acre-ft/acre), until the grower sets one.
+    let exampleLimit: Double?
+
+    var isBC: Bool { region == "bc" }
+
+    struct WaterContext: Decodable, Sendable {
+        let watershed: String?
+        let orders: [WaterOrder]
+        let note: String?
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            watershed = try? c.decodeIfPresent(String.self, forKey: .watershed)
+            orders = (try? c.decodeIfPresent([WaterOrder].self, forKey: .orders)) ?? []
+            note = try? c.decodeIfPresent(String.self, forKey: .note)
+        }
+        enum CodingKeys: String, CodingKey { case watershed, orders, note }
+    }
+
+    struct WaterOrder: Decodable, Sendable, Identifiable {
+        let date: String
+        let kind: String?
+        let title: String
+        let url: String?
+        var id: String { date + title }
+    }
+
+    struct FirstNationsSummary: Decodable, Sendable {
+        let statement: String?
+        let fieldOnReserve: Bool?
+        let nearestKm: Double?
+        let nearestNation: String?
+        let lowerRiverNation: String?
+        enum CodingKeys: String, CodingKey {
+            case statement
+            case fieldOnReserve = "field_on_reserve"
+            case nearestKm = "nearest_km"
+            case nearestNation = "nearest_nation"
+            case lowerRiverNation = "lower_river_nation"
+        }
+    }
+
+    struct DataGap: Decodable, Sendable, Identifiable {
+        let id: String
+        let what: String?
+        let reason: String?
+    }
+
+    func gap(_ id: String) -> DataGap? { isBC ? dataGaps.first { $0.id == id } : nil }
 
     struct Coordinate: Decodable, Sendable, Equatable {
         let lat: Double
@@ -36,6 +94,8 @@ struct FieldLocation: Decodable, Identifiable, Sendable {
         let ecDsPerM: Double?
         let awcMmPerM: SourcedNumber?
         let omPct: SourcedNumber?
+        let mix: SoilMix?
+        let sourceID: String?
 
         enum CodingKeys: String, CodingKey {
             case muname
@@ -45,7 +105,20 @@ struct FieldLocation: Decodable, Identifiable, Sendable {
             case ecDsPerM = "ec_ds_per_m"
             case awcMmPerM = "awc_mm_per_m"
             case omPct = "om_pct"
+            case textureDetail = "texture_detail"
+            case source
         }
+        private struct TextureDetail: Decodable {
+            let sand: Double?, silt: Double?, clay: Double?
+            enum CodingKeys: String, CodingKey { case sand = "sand_pct", silt = "silt_pct", clay = "clay_pct" }
+            init(from decoder: Decoder) throws {
+                let c = try decoder.container(keyedBy: CodingKeys.self)
+                sand = (try? c.decodeIfPresent(LossyDouble.self, forKey: .sand))?.value
+                silt = (try? c.decodeIfPresent(LossyDouble.self, forKey: .silt))?.value
+                clay = (try? c.decodeIfPresent(LossyDouble.self, forKey: .clay))?.value
+            }
+        }
+        private struct SourceRef: Decodable { let id: String? }
 
         init(from decoder: Decoder) throws {
             let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -56,6 +129,12 @@ struct FieldLocation: Decodable, Identifiable, Sendable {
             ecDsPerM = (try? c.decodeIfPresent(LossyDouble.self, forKey: .ecDsPerM))?.value
             awcMmPerM = try? c.decodeIfPresent(SourcedNumber.self, forKey: .awcMmPerM)
             omPct = try? c.decodeIfPresent(SourcedNumber.self, forKey: .omPct)
+            if let td = try? c.decodeIfPresent(TextureDetail.self, forKey: .textureDetail), let a = td.sand, let b = td.silt, let d = td.clay {
+                mix = SoilMix(sand: a, silt: b, clay: d)
+            } else {
+                mix = nil
+            }
+            sourceID = (try? c.decodeIfPresent(SourceRef.self, forKey: .source))?.id
         }
     }
 
@@ -72,9 +151,22 @@ struct FieldLocation: Decodable, Identifiable, Sendable {
         let source: String?
         let district: String?
         let sgmaSubbasin: String?
+        let sgmaStatus: String?
+        let exampleLimit: SourcedNumber?
         enum CodingKeys: String, CodingKey {
             case source, district
             case sgmaSubbasin = "sgma_subbasin"
+            case sgmaStatus = "sgma_status"
+            case exampleLimit = "example_limit_af_ac"
+        }
+        private struct Status: Decodable { let text: String? }
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            source = try? c.decodeIfPresent(String.self, forKey: .source)
+            district = try? c.decodeIfPresent(String.self, forKey: .district)
+            sgmaSubbasin = try? c.decodeIfPresent(String.self, forKey: .sgmaSubbasin)
+            sgmaStatus = (try? c.decodeIfPresent(Status.self, forKey: .sgmaStatus))?.text
+            exampleLimit = try? c.decodeIfPresent(SourcedNumber.self, forKey: .exampleLimit)
         }
         var isSurface: Bool { source == "surface" }
     }
@@ -83,6 +175,8 @@ struct FieldLocation: Decodable, Identifiable, Sendable {
         let date: String
         let title: String
         let url: String?
+        let type: String?
+        let short: String?
         var id: String { date + title }
     }
 
@@ -95,6 +189,10 @@ struct FieldLocation: Decodable, Identifiable, Sendable {
         case dwrUniqueId = "dwr_unique_id"
         case farmerName = "farmer_name"
         case countyName = "county_name"
+        case region, family
+        case waterContext = "water_context"
+        case firstNations = "first_nations"
+        case dataGaps = "data_gaps"
     }
 
     private struct CountyObject: Decodable { let name: String? }
@@ -128,6 +226,12 @@ struct FieldLocation: Decodable, Identifiable, Sendable {
         } else {
             acresValue = nil
         }
+        region = (try? c.decodeIfPresent(String.self, forKey: .region)) ?? (id.hasPrefix("bc") ? "bc" : "ca")
+        family = (try? c.decodeIfPresent(String.self, forKey: .family)) ?? (id.hasPrefix("car") ? "rice" : id.hasPrefix("caf") ? "forage" : "other")
+        waterContext = try? c.decodeIfPresent(WaterContext.self, forKey: .waterContext)
+        firstNations = try? c.decodeIfPresent(FirstNationsSummary.self, forKey: .firstNations)
+        dataGaps = (try? c.decodeIfPresent([DataGap].self, forKey: .dataGaps)) ?? []
+        exampleLimit = water?.exampleLimit?.value
     }
 }
 
@@ -185,6 +289,14 @@ struct NasaDataset: Decodable, Sendable, Identifiable {
         case tellsYou = "tells_you"
         case sourceURL = "source_url"
     }
+}
+
+/// Sand, silt and clay percentages (top metre or 3 feet).
+struct SoilMix: Sendable, Equatable {
+    let sand: Double, silt: Double, clay: Double
+    private var total: Double { max(sand + silt + clay, 1) }
+    var sandShare: Double { sand / total }
+    var siltShare: Double { silt / total }
 }
 
 struct LocationList: Decodable, Sendable {

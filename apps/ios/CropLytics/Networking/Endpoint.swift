@@ -36,10 +36,26 @@ extension Endpoint {
     static func waterSeen(_ id: String) -> Endpoint { Endpoint(path: "locations/\(id)/water_seen") }
     static func insurance(_ id: String) -> Endpoint { Endpoint(path: "locations/\(id)/insurance") }
 
+    static func daily(_ id: String) -> Endpoint { Endpoint(path: "locations/\(id)/daily", query: [URLQueryItem(name: "from", value: "2016-01-01")]) }
+    static func calendarML(_ id: String) -> Endpoint { Endpoint(path: "locations/\(id)/calendar_ml") }
+    static func firstNations(_ id: String) -> Endpoint { Endpoint(path: "locations/\(id)/first_nations") }
+    static func reserves(_ id: String) -> Endpoint { Endpoint(path: "locations/\(id)/first_nations/reserves.geojson") }
+    static func grid(_ id: String) -> Endpoint { Endpoint(path: "locations/\(id)/grid") }
+    static func salmon(_ id: String) -> Endpoint { Endpoint(path: "locations/\(id)/salmon") }
+    /// Astronaut photos sit beside the web app, not under /api (a leading "/" resolves from the host).
+    static func iss(_ id: String) -> Endpoint { Endpoint(path: "/iss/\(id)/iss.json") }
+
     /// POST .../score with the grower's water limit (acre-ft/acre). Saved per limit so it works offline too.
-    static func score(_ id: String, allocation: Double) -> Endpoint {
-        let body = try? JSONEncoder().encode(ScoreRequest(allocation: allocation))
-        return Endpoint(method: "POST", path: "locations/\(id)/score", body: body,
-                        cacheKey: "locations/\(id)/score?allocation=\(String(format: "%.1f", allocation))")
+    static func score(_ id: String, allocation: Double) -> Endpoint { score(id, request: ScoreRequest(allocation: allocation)) }
+
+    /// POST .../score with the limit, priorities and a what-if. Saved per request so it also works offline.
+    static func score(_ id: String, request: ScoreRequest) -> Endpoint {
+        let enc = JSONEncoder()
+        enc.outputFormatting = .sortedKeys
+        let body = try? enc.encode(request)
+        var key = "locations/\(id)/score?allocation=\(String(format: "%.1f", request.allocation))"
+        if let w = request.weights { key += "&w=" + w.keys.sorted().map { "\($0):\(w[$0]!)" }.joined(separator: ",") }
+        if let sc = request.scenario { key += "&dT=\(sc.dT_c)&dP=\(sc.dP_pct)" }
+        return Endpoint(method: "POST", path: "locations/\(id)/score", body: body, cacheKey: key)
     }
 }

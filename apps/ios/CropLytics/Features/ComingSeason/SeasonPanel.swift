@@ -1,79 +1,60 @@
 import SwiftUI
 import Charts
 
-/// "Coming season": three items, each a question, a plain answer and a small chart. Outlooks, not forecasts.
-struct ComingSeasonScreen: View {
-    let field: FieldLocation
+/// "Coming season" (web ComingSeason.tsx): leads with the decision in three items (winter rain, water supply,
+/// next season's need), each a plain answer with a small chart. Outlooks, not forecasts. The rest under More detail.
+struct SeasonPanel: View {
+    let session: FieldSession
+    @Environment(AppModel.self) private var app
     @Environment(AppEnvironment.self) private var env
-    @State private var model: ComingSeasonViewModel?
 
     var body: some View {
-        Group {
-            if let model { ComingSeasonContent(model: model) } else { Color.clear }
-        }
-        .task(id: field.id) {
-            let m = ComingSeasonViewModel(field: field, repository: env.repository, limits: env.limits)
-            model = m
-            await m.load()
-        }
-    }
-}
-
-private struct ComingSeasonContent: View {
-    let model: ComingSeasonViewModel
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                FieldHeader(field: model.field)
-                if let error = model.error {
-                    ErrorStateView(error: error) { Task { await model.load() } }
-                } else if let p = model.presentation {
-                    content(p)
+        VStack(alignment: .leading, spacing: 0) {
+            SectionHeader("Coming season")
+            if let o = session.outlook.value {
+                let p = ComingSeasonBuilder.build(outlook: o, field: session.field, nasaNow: session.nasaNow.value,
+                                                  strategies: session.currentStrategies, limit: env.limits.limit(for: session.field.id))
+                content(p, o)
+            } else if let e = session.outlook.error {
+                if e == .notFound {
+                    Text(session.field.isBC ? "The coming-season outlook is not ready for this field yet." : "Not ready for this field yet.")
+                        .font(.clBody).foregroundStyle(Palette.muted).padding(.top, 8)
                 } else {
-                    content(Self.placeholder).placeholder(true)
+                    ErrorStateView(error: e) { Task { await session.load(force: true) } }
                 }
-            }
-            .padding(Metrics.gutter)
-        }
-        .background(Palette.paper)
-        .refreshable { await model.load() }
-    }
-
-    @ViewBuilder private func content(_ p: ComingSeasonPresentation) -> some View {
-        Text(p.lede).font(.clBody).foregroundStyle(Palette.text2).fixedSize(horizontal: false, vertical: true)
-        Panel {
-            AnswerView(answer: p.rain)
-            if !p.leans.isEmpty { LeanChart(leans: p.leans) }
-        }
-        Panel {
-            AnswerView(answer: p.water)
-            if !p.storage.isEmpty { StorageChart(bars: p.storage) }
-        }
-        Panel {
-            AnswerView(answer: p.need)
-            if !p.needBars.isEmpty { NeedChart(bars: p.needBars, limit: p.limit) }
-        }
-        SavedNote(freshness: model.freshness)
-        if let o = model.outlook.value {
-            MoreDetail {
-                SeasonDetail(outlook: o, presentation: p)
-                FieldDetailSections(field: model.field)
+            } else {
+                VStack(alignment: .leading, spacing: 12) {
+                    AnswerView(answer: Answer(id: "a", question: "Will this winter be wetter or drier than normal?", headline: "NOAA's outlook leans one way this winter", detail: "Nov–Jan leans one way (40% chance).", cite: "NOAA"))
+                    AnswerView(answer: Answer(id: "b", question: "Will there be water for next season?", headline: "Reservoirs hold most of their average", detail: "Allocations not announced.", cite: "CDEC"))
+                }
+                .placeholder(true)
             }
         }
     }
 
-    static let placeholder = ComingSeasonPresentation(
-        lede: "Outlooks for winter and the next growing season.",
-        rain: Answer(id: "a", question: "Will this winter be wetter or drier than normal?", headline: "NOAA's outlook leans one way this winter", detail: "Nov–Jan leans one way (40% chance).", cite: "NOAA Climate Prediction Center"),
-        leans: [], water: Answer(id: "b", question: "Will there be water for next season?", headline: "Reservoirs hold most of their average", detail: "Allocations not announced.", cite: "CDEC"),
-        storage: [], need: Answer(id: "c", question: "How much water will next season need?", headline: "About 5 acre-feet per acre next year", detail: "Range across the outlook.", cite: "Rotation model"),
-        needBars: [], limit: 5
-    )
+    @ViewBuilder private func content(_ p: ComingSeasonPresentation, _ o: Outlook) -> some View {
+        Text(p.lede).font(.clBody).foregroundStyle(Palette.text2).fixedSize(horizontal: false, vertical: true).padding(.top, 4)
+        AnswerView(answer: p.rain)
+        if !p.leans.isEmpty { LeanChart(leans: p.leans).padding(.bottom, 12) }
+        Hairline()
+        AnswerView(answer: p.water)
+        if !p.storage.isEmpty && !session.field.isBC { StorageChart(bars: p.storage).padding(.bottom, 12) }
+        Hairline()
+        AnswerView(answer: p.need)
+        if !p.needBars.isEmpty { NeedChart(bars: p.needBars, limit: p.limit).padding(.bottom, 12) }
+        Button { app.select(tab: .compare) } label: { Label("Compare rotations", systemImage: "arrow.left.arrow.right") }
+            .buttonStyle(.pill(.tonal)).padding(.top, 8)
+        SavedNote(freshness: session.outlook.freshness?.savedAt != nil ? session.outlook.freshness : nil).padding(.top, 8)
+        MoreDetailRow(teaser: "Every outlook, bare stretch, allocations").padding(.top, Metrics.sectionGap)
+        if app.detailOn {
+            VStack(alignment: .leading, spacing: 14) { SeasonDetail(outlook: o, presentation: p) }
+                .padding(.top, 8).transition(.opacity)
+        }
+    }
 }
 
 /// The NOAA lean per 3-month season: chance of the favoured third; 33% is no lean.
-private struct LeanChart: View {
+struct LeanChart: View {
     let leans: [ComingSeasonPresentation.SeasonLean]
     var body: some View {
         Chart(leans) { l in
@@ -105,7 +86,7 @@ private struct LeanChart: View {
 }
 
 /// Reservoir storage as % of the average for the date; the line is average.
-private struct StorageChart: View {
+struct StorageChart: View {
     let bars: [ComingSeasonPresentation.StorageBar]
     var body: some View {
         Chart(bars) { b in
@@ -155,13 +136,13 @@ struct NeedChart: View {
 }
 
 /// Everything else from the outlook file, collapsed.
-private struct SeasonDetail: View {
+struct SeasonDetail: View {
     let outlook: Outlook
     let presentation: ComingSeasonPresentation
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SectionHeading(text: "Season by season")
+            SectionHeader("Season by season")
             ForEach(presentation.leans) { l in
                 FactRow(label: l.label, value: "Rain \(l.rainWords). Temperature \(l.tempWords).")
             }
@@ -169,7 +150,7 @@ private struct SeasonDetail: View {
         }
         if let bw = outlook.field?.bareWindow {
             VStack(alignment: .leading, spacing: 6) {
-                SectionHeading(text: "Longest bare stretch this winter")
+                SectionHeader("Longest bare stretch this winter")
                 if let s = GrowerDate.monthDayPart(bw.medianStart), let e = GrowerDate.monthDayPart(bw.medianEnd) {
                     Text("Usually bare from \(s) to \(e), about \(Int((bw.medianDays?.value ?? 0).rounded())) days.").font(.clBody)
                     if let c = outlook.field?.heavyRain?.climatology?.value {
@@ -184,7 +165,7 @@ private struct SeasonDetail: View {
         }
         if let rows = outlook.allocations?.history?.rows.filter({ $0.partialYear != true }).suffix(6), !rows.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
-                SectionHeading(text: "What Shasta storage has meant before")
+                SectionHeader("What Shasta storage has meant before")
                 Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 4) {
                     GridRow {
                         Text("Mid Nov of").font(.clCite); Text("Shasta full").font(.clCite); Text("Next year, south-of-Delta farms").font(.clCite)
@@ -203,14 +184,14 @@ private struct SeasonDetail: View {
         }
         if let snow = outlook.snow {
             VStack(alignment: .leading, spacing: 4) {
-                SectionHeading(text: "Snowpack and spring runoff")
+                SectionHeader("Snowpack and spring runoff")
                 Text("Statewide snowpack holds \(Units.oneDecimal(snow.statewide?.sweInches?.value ?? 0)) in of water (\(snow.statewide?.reportDate ?? "latest")); the snow season has barely started. DWR's runoff forecast (Bulletin 120) is \(snow.bulletin120?.status ?? "not out yet"); the first usually comes in February.")
                     .font(.clBody).fixedSize(horizontal: false, vertical: true)
             }
         }
         if !outlook.notYetPublished.isEmpty {
             VStack(alignment: .leading, spacing: 4) {
-                SectionHeading(text: "Not published yet")
+                SectionHeader("Not published yet")
                 ForEach(outlook.notYetPublished, id: \.item) { p in
                     Text("\(p.item): \(p.status ?? "not yet")").font(.clSecondary).foregroundStyle(Palette.text2)
                 }
@@ -218,7 +199,7 @@ private struct SeasonDetail: View {
         }
         if let s = outlook.plainLanguageSummary {
             VStack(alignment: .leading, spacing: 4) {
-                SectionHeading(text: "The whole outlook in one paragraph")
+                SectionHeader("The whole outlook in one paragraph")
                 Text(s).font(.clSecondary).foregroundStyle(Palette.text2).fixedSize(horizontal: false, vertical: true)
             }
         }

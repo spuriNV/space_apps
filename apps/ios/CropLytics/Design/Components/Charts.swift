@@ -1,12 +1,14 @@
 import SwiftUI
 import Charts
 
-/// One season as 36 ten-day steps: bare, thin, green, water; no clear view is hatched grey.
-/// Drawn with Canvas so "no clear view" can be hatched, as on the web timeline.
+/// One season as 36 ten-day steps: bare, thin, green, water; no clear view is hatched grey. Rounded 4pt ends.
+/// Canvas so "no clear view" can be hatched, as on the web.
 struct SeasonStripView: View {
     let classes: [CoverClass]
     var marker: Int?
     var height: CGFloat = 16
+    /// Small ticks on top of the strip (rain days, OPERA water, stress weeks), as 10-day positions.
+    var ticks: [StripTick] = []
 
     var body: some View {
         Canvas { ctx, size in
@@ -16,31 +18,36 @@ struct SeasonStripView: View {
                 let rect = CGRect(x: CGFloat(i) * w, y: 0, width: w + 0.5, height: size.height)
                 if c == .noView {
                     ctx.fill(Path(rect), with: .color(DataColor.noView.opacity(0.25)))
-                    var hatch = Path()
-                    var x = rect.minX - size.height
-                    while x < rect.maxX {
-                        hatch.move(to: CGPoint(x: x, y: size.height))
-                        hatch.addLine(to: CGPoint(x: x + size.height, y: 0))
-                        x += 4
-                    }
                     ctx.drawLayer { layer in
-                        layer.clip(to: Path(rect)) // keep the hatch inside the cell
-                        layer.stroke(hatch, with: .color(DataColor.noView), lineWidth: 1)
+                        layer.clip(to: Path(rect))
+                        layer.stroke(Hatch(spacing: 4).path(in: rect), with: .color(DataColor.noView), lineWidth: 1)
                     }
                 } else {
                     ctx.fill(Path(rect), with: .color(Self.color(c)))
                 }
             }
+            for t in ticks where t.index < n {
+                let x = (CGFloat(t.index) + 0.5) * w
+                switch t.kind {
+                case .rain(let hit):
+                    let dot = CGRect(x: x - 2.5, y: size.height * 0.5 - 2.5, width: 5, height: 5)
+                    ctx.fill(Path(ellipseIn: dot), with: .color(hit ? Color(hex: 0x1D3A9E) : .white))
+                    ctx.stroke(Path(ellipseIn: dot), with: .color(Color(hex: 0x1D3A9E)), lineWidth: 1)
+                case .water:
+                    ctx.fill(Path(CGRect(x: CGFloat(t.index) * w, y: 0, width: w, height: 3)), with: .color(DataColor.water))
+                case .stress:
+                    var p = Path()
+                    p.move(to: CGPoint(x: x, y: size.height - 1)); p.addLine(to: CGPoint(x: x - 3, y: size.height - 6)); p.addLine(to: CGPoint(x: x + 3, y: size.height - 6)); p.closeSubpath()
+                    ctx.fill(p, with: .color(Palette.bad))
+                }
+            }
             if let m = marker, m < n {
                 let x = (CGFloat(m) + 0.5) * w
-                var line = Path()
-                line.move(to: CGPoint(x: x, y: -2))
-                line.addLine(to: CGPoint(x: x, y: size.height + 2))
-                ctx.stroke(line, with: .color(Palette.mark), lineWidth: 2)
+                ctx.fill(Path(roundedRect: CGRect(x: x - 1, y: 0, width: 2, height: size.height), cornerRadius: 1), with: .color(Palette.mark))
             }
         }
         .frame(height: height)
-        .overlay(Rectangle().strokeBorder(Palette.lineSoft))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.xs, style: .continuous))
         .accessibilityElement()
         .accessibilityLabel(Self.describe(classes))
     }
@@ -55,7 +62,6 @@ struct SeasonStripView: View {
         }
     }
 
-    /// VoiceOver: "Green 12 steps, bare 6, ..." in days.
     static func describe(_ classes: [CoverClass]) -> String {
         let counted = CoverClass.allCases.compactMap { c -> String? in
             let n = classes.filter { $0 == c }.count
@@ -65,7 +71,34 @@ struct SeasonStripView: View {
     }
 }
 
-/// Month labels under a 36-step strip.
+struct StripTick: Sendable, Equatable {
+    enum Kind: Sendable, Equatable { case rain(hitBare: Bool), water, stress }
+    let index: Int
+    let kind: Kind
+}
+
+/// A strip that reports which 10-day step was tapped (This field's year: tap a square to move the date).
+struct TappableStrip: View {
+    let classes: [CoverClass]
+    var marker: Int?
+    var ticks: [StripTick] = []
+    var height: CGFloat = 18
+    let onTap: (Int) -> Void
+
+    var body: some View {
+        GeometryReader { g in
+            SeasonStripView(classes: classes, marker: marker, height: height, ticks: ticks)
+                .contentShape(Rectangle())
+                .onTapGesture(coordinateSpace: .local) { p in
+                    let i = Int(p.x / max(1, g.size.width) * CGFloat(classes.count))
+                    onTap(min(max(i, 0), classes.count - 1))
+                }
+        }
+        .frame(height: height)
+        .accessibilityAction(named: "Move the date to the latest step") { onTap(classes.count - 1) }
+    }
+}
+
 struct StripMonths: View {
     var body: some View {
         HStack {
@@ -77,14 +110,13 @@ struct StripMonths: View {
     }
 }
 
-/// Key for the strip colours.
 struct StripKey: View {
     var classes: [CoverClass] = [.covered, .partial, .bare, .water, .noView]
     var body: some View {
         FlowLayout(spacing: 10) {
             ForEach(classes, id: \.self) { c in
                 HStack(spacing: 4) {
-                    RoundedRectangle(cornerRadius: 1).fill(SeasonStripView.color(c).opacity(c == .noView ? 0.5 : 1)).frame(width: 10, height: 10)
+                    RoundedRectangle(cornerRadius: 2).fill(SeasonStripView.color(c).opacity(c == .noView ? 0.5 : 1)).frame(width: 10, height: 10)
                     Text(c.label).font(.clCite).foregroundStyle(Palette.muted)
                 }
             }
@@ -93,35 +125,36 @@ struct StripKey: View {
     }
 }
 
-/// One reading as a bar with a reference tick (normal, limit, full canopy). Swift Charts.
+/// One reading: value, a rounded 8pt track with a fill that glides, and a square-topped reference tick (normal, limit, canopy).
 struct MeterView: View {
     let meter: Meter
+    @Environment(\.accessibilityReduceMotion) private var reduce
+    @State private var shown = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(meter.label).font(.clSecondary).foregroundStyle(Palette.muted)
+        VStack(alignment: .leading, spacing: 5) {
+            Text(meter.label).font(.clCite).foregroundStyle(Palette.muted)
             Text(meter.valueText).font(.clNumber).foregroundStyle(meter.warn ? Palette.warn : Palette.text)
+                .lineLimit(1).minimumScaleFactor(0.7)
+                .contentTransition(.numericText())
             Chart {
                 BarMark(xStart: .value("Start", 0), xEnd: .value("Scale", meter.scaleMax), y: .value("Row", "track"), height: 8)
-                    .foregroundStyle(Palette.lineSoft)
-                BarMark(xStart: .value("Start", 0), xEnd: .value(meter.label, min(meter.value, meter.scaleMax)), y: .value("Row", "track"), height: 8)
-                    .foregroundStyle(meter.warn ? Palette.warn : Palette.accent)
+                    .foregroundStyle(Palette.stateStrong).clipShape(Capsule())
+                if meter.value > 0 {
+                    BarMark(xStart: .value("Start", 0), xEnd: .value(meter.label, shown ? min(meter.value, meter.scaleMax) : 0), y: .value("Row", "track"), height: 8)
+                        .foregroundStyle(meter.warn ? Palette.warn : Palette.accent).clipShape(Capsule())
+                }
                 if let ref = meter.reference {
-                    RuleMark(x: .value(meter.referenceLabel, min(ref, meter.scaleMax)), yStart: 0, yEnd: 18)
-                        .foregroundStyle(Palette.mark)
-                        .lineStyle(StrokeStyle(lineWidth: 2))
+                    RuleMark(x: .value(meter.referenceLabel, min(ref, meter.scaleMax)), yStart: 0, yEnd: 16)
+                        .foregroundStyle(Palette.mark).lineStyle(StrokeStyle(lineWidth: 2))
                 }
             }
             .chartXScale(domain: 0...max(meter.scaleMax, 0.01))
-            .chartXAxis(.hidden)
-            .chartYAxis(.hidden)
-            .chartLegend(.hidden)
-            .frame(height: 18)
-            Text(meter.note + (meter.reference != nil ? " · line = \(meter.referenceLabel)" : ""))
-                .font(.clCite)
-                .foregroundStyle(Palette.muted)
-                .fixedSize(horizontal: false, vertical: true)
+            .chartXAxis(.hidden).chartYAxis(.hidden).chartLegend(.hidden)
+            .frame(height: 16)
+            Text(meter.note).font(.clCite).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
         }
+        .onAppear { withAnimation(Motion.std(reduce, 0.5)) { shown = true } }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(meter.accessibilityText)
     }
@@ -131,49 +164,43 @@ struct MeterView: View {
 struct PercentileTrack: View {
     let soil: Double?
     let groundwater: Double?
-    let note: String
+    var note: String = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Soil and groundwater").font(.clSecondary).foregroundStyle(Palette.muted)
+        VStack(alignment: .leading, spacing: 5) {
+            Text("Soil and groundwater").font(.clCite).foregroundStyle(Palette.muted)
             Chart {
-                RectangleMark(xStart: .value("Low", 0), xEnd: .value("High", 100), y: .value("Row", "t"), height: 6)
-                    .foregroundStyle(Palette.lineSoft)
-                RectangleMark(xStart: .value("Usual low", 33), xEnd: .value("Usual high", 67), y: .value("Row", "t"), height: 6)
-                    .foregroundStyle(Palette.line)
+                RectangleMark(xStart: .value("Low", 0), xEnd: .value("High", 100), y: .value("Row", "t"), height: 8)
+                    .foregroundStyle(Palette.stateStrong).clipShape(Capsule())
                 RuleMark(x: .value("Normal", 50)).foregroundStyle(Palette.muted).lineStyle(StrokeStyle(lineWidth: 1, dash: [2, 2]))
                 if let soil {
-                    PointMark(x: .value("Soil", soil), y: .value("Row", "t"))
-                        .symbol(.circle).symbolSize(110).foregroundStyle(DataColor.soil)
+                    PointMark(x: .value("Soil", soil), y: .value("Row", "t")).symbol(.circle).symbolSize(120).foregroundStyle(DataColor.soil)
                 }
                 if let groundwater {
-                    PointMark(x: .value("Groundwater", groundwater), y: .value("Row", "t"))
-                        .symbol(.diamond).symbolSize(110).foregroundStyle(DataColor.groundwater)
+                    PointMark(x: .value("Groundwater", groundwater), y: .value("Row", "t")).symbol(.diamond).symbolSize(120).foregroundStyle(DataColor.groundwater)
                 }
             }
             .chartXScale(domain: 0...100)
-            .chartXAxis {
-                AxisMarks(values: [0, 50, 100]) { v in
-                    AxisValueLabel {
-                        if let n = v.as(Int.self) {
-                            Text(n == 0 ? "driest" : n == 100 ? "wettest" : "normal").font(.clCite)
-                        }
-                    }
-                }
+            .chartXAxis(.hidden).chartYAxis(.hidden)
+            .frame(height: 22)
+            HStack(spacing: 4) {
+                Text("driest").font(.clCite).foregroundStyle(Palette.muted)
+                Spacer()
+                Text("normal").font(.clCite).foregroundStyle(Palette.muted)
+                Spacer()
+                Text("wettest").font(.clCite).foregroundStyle(Palette.muted)
             }
-            .chartYAxis(.hidden)
-            .frame(height: 40)
-            HStack(spacing: 12) {
-                keyItem(shape: AnyShape(Circle()), color: DataColor.soil, text: "Soil \(soil.map { Units.ordinal(Int($0.rounded())) } ?? "–")")
-                keyItem(shape: AnyShape(Diamond()), color: DataColor.groundwater, text: "Groundwater \(groundwater.map { Units.ordinal(Int($0.rounded())) } ?? "–")")
+            FlowLayout(spacing: 10) {
+                key(AnyShape(Circle()), DataColor.soil, "Soil \(soil.map { Units.ordinal(Int($0.rounded())) } ?? "–")")
+                key(AnyShape(Diamond()), DataColor.groundwater, "Groundwater \(groundwater.map { Units.ordinal(Int($0.rounded())) } ?? "–")")
             }
-            Text(note).font(.clCite).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+            if !note.isEmpty { Text(note).font(.clCite).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true) }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Soil moisture \(soil.map { Units.ordinal(Int($0.rounded())) + " percentile" } ?? "not available"), groundwater \(groundwater.map { Units.ordinal(Int($0.rounded())) + " percentile" } ?? "not available"). \(note)")
+        .accessibilityLabel("Soil moisture \(soil.map { Units.ordinal(Int($0.rounded())) + " percentile" } ?? "not available"), groundwater \(groundwater.map { Units.ordinal(Int($0.rounded())) + " percentile" } ?? "not available"). 50 is normal.")
     }
 
-    private func keyItem(shape: AnyShape, color: Color, text: String) -> some View {
+    private func key(_ shape: AnyShape, _ color: Color, _ text: String) -> some View {
         HStack(spacing: 4) {
             shape.fill(color).frame(width: 9, height: 9)
             Text(text).font(.clCite).foregroundStyle(Palette.text2)
@@ -190,6 +217,36 @@ struct Diamond: Shape {
     }
 }
 
+/// Sand, silt and clay as one stacked bar with a key.
+struct SoilBar: View {
+    let mix: SoilMix
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            GeometryReader { g in
+                HStack(spacing: 0) {
+                    Rectangle().fill(DataColor.sand).frame(width: g.size.width * mix.sandShare)
+                    Rectangle().fill(DataColor.silt).frame(width: g.size.width * mix.siltShare)
+                    Rectangle().fill(DataColor.clay)
+                }
+            }
+            .frame(height: 14)
+            .clipShape(RoundedRectangle(cornerRadius: Radius.xs, style: .continuous))
+            HStack(spacing: 12) {
+                ForEach([("Sand", DataColor.sand, mix.sand), ("Silt", DataColor.silt, mix.silt), ("Clay", DataColor.clay, mix.clay)], id: \.0) { name, color, v in
+                    HStack(spacing: 4) {
+                        RoundedRectangle(cornerRadius: 2).fill(color).frame(width: 10, height: 10)
+                            .overlay(RoundedRectangle(cornerRadius: 2).strokeBorder(Palette.lineSoft))
+                        Text("\(name) \(Int(v.rounded()))%").font(.clCite).foregroundStyle(Palette.text2)
+                    }
+                }
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Sand \(Int(mix.sand.rounded())) percent, silt \(Int(mix.silt.rounded())) percent, clay \(Int(mix.clay.rounded())) percent")
+        .accessibilityIdentifier("soil-bar")
+    }
+}
+
 /// Twelve months of a rotation: what covers the field each month.
 struct MonthStrip: View {
     let months: [CoverClass]
@@ -199,31 +256,19 @@ struct MonthStrip: View {
                 Rectangle().fill(SeasonStripView.color(c)).frame(height: 10)
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: Radius.xs, style: .continuous))
         .accessibilityElement()
-        .accessibilityLabel(SeasonStripView.describe(months).replacingOccurrences(of: "about ", with: "").replacingOccurrences(of: "0 days", with: " months"))
+        .accessibilityLabel("Months: " + months.map(\.label).joined(separator: ", "))
     }
 }
 
-/// A simple wrapping row layout.
-struct FlowLayout: Layout {
-    var spacing: CGFloat = 8
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let width = proposal.width ?? .infinity
-        var x: CGFloat = 0, y: CGFloat = 0, row: CGFloat = 0, maxX: CGFloat = 0
-        for s in subviews {
-            let size = s.sizeThatFits(.unspecified)
-            if x + size.width > width, x > 0 { x = 0; y += row + spacing / 2; row = 0 }
-            x += size.width + spacing; row = max(row, size.height); maxX = max(maxX, x)
+struct MonthLetters: View {
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(Array("JFMAMJJASOND".enumerated()), id: \.offset) { _, ch in
+                Text(String(ch)).font(.clCite).foregroundStyle(Palette.muted).frame(maxWidth: .infinity)
+            }
         }
-        return CGSize(width: min(maxX, width), height: y + row)
-    }
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        var x = bounds.minX, y = bounds.minY, row: CGFloat = 0
-        for s in subviews {
-            let size = s.sizeThatFits(.unspecified)
-            if x + size.width > bounds.maxX, x > bounds.minX { x = bounds.minX; y += row + spacing / 2; row = 0 }
-            s.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
-            x += size.width + spacing; row = max(row, size.height)
-        }
+        .accessibilityHidden(true)
     }
 }
