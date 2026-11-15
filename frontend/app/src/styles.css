@@ -1822,3 +1822,71 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
   .gl-short { grid-template-columns: 1fr; }
 }
 .step-shell .fp-close { background: var(--panel); box-shadow: var(--e1); z-index: 3; }
+
+/* ---------- water limit on step 2; farm questions and ranked options on step 4 ---------- */
+.limit-ctl .lc-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.limit-ctl .lc-row label { flex-direction: column; align-items: flex-start; gap: 2px; font-size: var(--fs-body); font-weight: 600; color: var(--text); }
+.limit-ctl .lc-row label small { font-size: var(--fs-small); font-weight: 400; color: var(--muted); }
+.lc-step { display: flex; align-items: center; gap: var(--s-2); }
+.lc-step .icon-btn { background: var(--raised); box-shadow: var(--e1); }
+.lc-step output { display: flex; flex-direction: column; align-items: center; min-width: 64px; font-variant-numeric: tabular-nums lining-nums; }
+.lc-step output b { font: 600 var(--fs-answer)/1.1 var(--font-head); }
+.lc-step output small { font-size: var(--fs-fine); color: var(--muted); }
+.farm-q { display: flex; flex-direction: column; gap: var(--s-4); margin-top: var(--s-5); padding: var(--s-4); border-radius: var(--r-md); background: var(--panel-2); }
+.choice { border: 0; margin: 0; padding: 0; min-width: 0; }
+.choice legend { padding: 0; margin-bottom: var(--s-2); font-size: var(--fs-body); font-weight: 600; color: var(--text); }
+.choice legend small { display: block; font-size: var(--fs-small); font-weight: 400; color: var(--muted); }
+.choice-pills { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.choice-pills .chip { background: var(--panel); }
+.choice[disabled] { opacity: 0.6; }
+.opt-h { margin-top: var(--s-6); }
+.opt-h small { font-family: var(--font-ui); font-size: var(--fs-small); font-weight: 400; }
+.opt-h + .opt-list { margin-top: var(--s-2); }
+.opt-list.busy { opacity: 0.6; transition: opacity var(--dur-2) var(--ease-std); }
+.opt-best { display: inline-block; margin-left: var(--s-2); padding: 1px 8px; border-radius: var(--r-full); background: var(--accent); color: var(--accent-ink); font: 600 var(--fs-fine)/1.5 var(--font-ui); font-style: normal; vertical-align: 2px; }
+.opt-row.out { cursor: default; background: transparent; border-style: dashed; color: var(--muted); }
+.opt-row.out .opt-radio { visibility: hidden; }
+.opt-row.out b { font-weight: 400; }
+.limit-line { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); margin: var(--s-4) 0 var(--s-2); font-size: var(--fs-small); color: var(--muted); }
+.limit-line b { color: var(--text); margin-left: 4px; }
+.limit-line .ex-limit { margin-left: var(--s-2); }
+.opt-today { display: grid; grid-template-columns: 1fr auto; gap: var(--s-3); align-items: center; margin-top: var(--s-2); padding: var(--s-3) var(--s-4); border-radius: var(--r-md); background: var(--panel-2); }
+.opt-today .opt-body small { font-size: var(--fs-fine); font-weight: 600; color: var(--muted); }
+.opt-today + .opt-list { margin-top: var(--s-2); }
+.limit-ctl .lc-row label small + small { margin-top: 2px; }
+@media (max-width: 1919px) { .tb-date small { display: none; } .tb-date { padding-left: 14px; } }
+@media (max-width: 1420px) and (min-width: 641px) {
+  .tb-ask { width: 42px; padding: 0; justify-content: center; }
+  .tb-ask-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .tb-field { max-width: 196px; }
+}
+@media (max-width: 1296px) and (min-width: 641px) {
+  .tb-layers { font-size: 0; gap: 0; width: 42px; padding: 0; justify-content: center; } /* icon only; the text stays the accessible name */
+}
+.rot-src { display: block; font-size: var(--fs-small); font-weight: 400; color: var(--muted); }
+.link-btn { position: relative; padding: 0; border: 0; background: none; font: inherit; font-weight: 600; color: var(--link); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.link-btn::before { content: ''; position: absolute; inset: -12px -8px; }
+.rot-pick { margin: var(--s-2) 0 0; padding: var(--s-4); border-radius: var(--r-md); background: var(--panel-2); animation: content-in var(--dur-3) var(--ease-enter) backwards; }
+.rot-q { margin: 0; font-weight: 600; }
+.rot-pick .opt-list { margin-top: var(--s-3); }
+.rot-pick .opt-fit small { color: var(--muted); font-weight: 400; }
+@media (max-width: 1860px) { .tb-tabs .tb-long + .tb-short { display: inline; } .tb-tabs button:has(.tb-short) .tb-long { display: none; } }
+/* narrow desktop: number circles for the other steps, the name only on the current one (names stay readable to screen readers) */
+@media (max-width: 1180px) and (min-width: 641px) {
+  .tb-tabs button:not(.on) .tb-short, .tb-tabs button:not(.on) .tb-long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .tb-tabs button:not(.on) { padding: 0 6px; }
+}
+@media (max-width: 1000px) and (min-width: 641px) { .tb-brand { padding: 0 12px; font-size: var(--fs-head); } }
+/* tablet widths: the date control and Map layers move into the Menu button, as on a phone */
+@media (max-width: 940px) and (min-width: 641px) {
+  .tb-menu-btn { display: grid; place-items: center; width: 52px; flex: none; order: 3; border-left: 1px solid var(--line-soft); color: var(--text); }
+  .tb-right { display: none; position: absolute; top: calc(var(--bar-h) + 3px); right: 0; width: 360px; flex-direction: column; align-items: stretch; gap: 8px; padding: 10px; background: var(--panel); border-radius: 0 0 var(--r-lg) var(--r-lg); box-shadow: var(--e3); }
+  .tb-right.open { display: flex; }
+  .tb-right .tb-date, .tb-right .tb-layers { height: 46px; width: 100%; justify-content: flex-start; font-size: var(--fs-body); gap: 6px; padding: 0 14px; }
+  .tb-right .tb-datepop { position: static; width: 100%; margin-top: 6px; box-shadow: none; }
+  .tb-field { max-width: 170px; }
+  .tb-field small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 700px) and (min-width: 641px) { .tb-field { max-width: 136px; } .tb-brand { padding: 0 10px; } }
+@media (max-width: 660px) and (min-width: 641px) { .tb-field { max-width: 126px; } }
+.lc-step output small { white-space: nowrap; } .limit-ctl .lc-row label { min-width: 0; flex: 1; }

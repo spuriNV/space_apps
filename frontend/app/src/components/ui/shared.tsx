@@ -320,3 +320,10 @@ export function recordLine(l: Location) {
   const list = (a: number[]) => (a.length > 1 ? `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}` : String(a[0]));
   return `${main.split(',')[0]} in ${n} of the last ${ys.length} years${fallow.length ? `; left fallow ${list(fallow)}` : ''}.`;
 }
+/** A rotation's name in a sentence: "rice + winter flood" (no "(current)", lower case). */
+export const rotName = (s: { short_name: string }) => s.short_name.replace(/\s*\(current\)$/i, '').replace(/^\w/, (c) => c.toLowerCase());
+/** Water need against what the grower can get, compared at the one decimal the app shows (5.24 vs 5.2 is "about even", never "0.0 short"). */
+export function waterGap(need: number, have: number) {
+  const tenths = Math.round(need * 10) - Math.round(have * 10);
+  return { short: tenths > 0, even: tenths === 0, by: (Math.abs(tenths) / 10).toFixed(1) };
+}
