@@ -13,6 +13,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type Pointer
 import { AboutField, Actions, CROP_COL, EventLog, NextSteps, PrimaryAction, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
 import { FirstNationsCard } from './FirstNations';
 import { SalmonPanel } from '../salmon/SalmonPanel';
+import { NationTools } from '../week/NationTools';
 import { FieldNow, LastSeasons, whenT, type LoadState } from './FieldNow';
 import { MONTHS, TODAY_T } from '../../lib';
 
@@ -77,6 +78,7 @@ export function FieldPanel(p: FieldPanelProps) {
             <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
             {isBC(loc) && <FirstNationsCard loc={loc} />}
             {isBC(loc) && <SalmonPanel locId={loc.id} />}
+            <NationTools loc={loc} />{/* Nation tools, components/week */}
             <NextSteps onStep={p.onStep} />
             <MoreDetail what="Sources, past seasons, 3D" />
             <div className="fp-more">
