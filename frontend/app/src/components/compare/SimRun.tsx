@@ -1,20 +1,9 @@
-// Farmer-run year sim: pick a rotation + weather year, then watch cover and water play on the map timeline.
+// Farmer-run year sim: uses the same weather year as Compare (dry / wet / typical), then plays cover on the map.
 import type { Location, RotationStrategy } from '../../types';
-import { mmToAfac, tOf } from '../../lib';
-import { isBC } from '../../api';
+import { tOf } from '../../lib';
 import type { SimMode } from '../ui/FieldTimeline';
 import Icon from '../Icons';
-
-type Weather = 'typical' | '2022' | '2023';
-
-const labels = (bc: boolean): Record<Weather, string> => bc
-  ? { typical: 'Typical year', '2022': 'Drier year (2022 weather)', '2023': 'Restricted water (like 2023)' }
-  : { typical: 'Typical year', '2022': 'Dry like 2022', '2023': 'Wet like 2023' };
-
-function needAf(s: RotationStrategy, w: Weather) {
-  const r = w === 'typical' ? null : s.exposure.replay[w]?.irrigation_need_mm;
-  return mmToAfac((r ?? s.water.irrigation_need_mm).value);
-}
+import { type Weather, weatherLabels, waterOf } from './weatherReplay';
 
 export function SimRun(p: {
   loc: Location;
@@ -22,17 +11,15 @@ export function SimRun(p: {
   allocation: number;
   pickId: string | null;
   weather: Weather;
-  setWeather: (w: Weather) => void;
   onRun: (sim: NonNullable<SimMode>, startT: number) => void;
   running: boolean;
   onStop: () => void;
 }) {
-  const bc = isBC(p.loc);
-  const L = labels(bc);
+  const L = weatherLabels(p.loc);
   const s = p.strategies.find((x) => x.id === p.pickId) ?? p.strategies.find((x) => !x.is_baseline) ?? p.strategies[0];
   if (!s) return null;
   const year = p.weather === 'typical' ? 2024 : +p.weather;
-  const need = needAf(s, p.weather);
+  const need = waterOf(s, p.weather).v ?? 0;
   const start = () => {
     p.onRun({
       year,
@@ -46,15 +33,8 @@ export function SimRun(p: {
   return (
     <div className="sim-run" data-testid="sim-run">
       <h3>Play a year on the map</h3>
-      <p className="how">Watch the field’s cover change month by month, and its water use against your limit.</p>
-      <div className="seg small sim-seg" role="group" aria-label="Weather year for the sim">
-        {(['typical', '2022', '2023'] as Weather[]).map((w) => (
-          <button key={w} type="button" className={p.weather === w ? 'on' : ''} onClick={() => p.setWeather(w)} data-testid={`sim-weather-${w}`}>
-            {L[w]}
-          </button>
-        ))}
-      </div>
-      <p className="sim-preview">
+      <p className="how">Watch the field's cover change month by month. Weather year: <b>{L[p.weather]}</b> (change with the chips above).</p>
+      <p className="sim-preview" data-testid="sim-preview">
         <b>{s.short_name}</b> · ~{need.toFixed(1)} acre-ft/acre vs your {p.allocation.toFixed(1)} limit
         {need > p.allocation ? <em className="over"> · short by {(need - p.allocation).toFixed(1)}</em> : <em className="ok"> · fits</em>}
       </p>
