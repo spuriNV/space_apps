@@ -6,6 +6,7 @@
    "is_baseline": true,
    "cycle_years": 1,
    "name": "Continuous rice with winter flood (current)",
+   "short_name": "Rice + winter flood (current)",
    "calendar": [
     {
      "year": 1,
@@ -54,6 +55,7 @@
    "is_baseline": false,
    "cycle_years": 1,
    "name": "Rice + winter cover (cereal/vetch) instead of winter flood",
+   "short_name": "Rice + winter cover",
    "calendar": [
     {
      "year": 1,
@@ -102,6 +104,7 @@
    "is_baseline": false,
    "cycle_years": 1,
    "name": "Dry-year plan: safflower instead of rice (allocation < 50%)",
+   "short_name": "Dry-year safflower",
    "calendar": [
     {
      "year": 1,
@@ -161,6 +164,7 @@
    "is_baseline": false,
    "cycle_years": 2,
    "name": "Rice - winter wheat rotation (2-year)",
+   "short_name": "Rice\u2013wheat",
    "calendar": [
     {
      "year": 1,
@@ -212,6 +216,7 @@
    "is_baseline": true,
    "cycle_years": 1,
    "name": "Alfalfa hay, 7-8 cuts, 4-5 year stand (current)",
+   "short_name": "Alfalfa (current)",
    "calendar": [
     {
      "year": 1,
@@ -243,6 +248,7 @@
    "is_baseline": false,
    "cycle_years": 1,
    "name": "Winter small-grain silage + silage corn double crop",
+   "short_name": "Grain silage + corn",
    "calendar": [
     {
      "year": 1,
@@ -279,6 +285,7 @@
    "is_baseline": false,
    "cycle_years": 1,
    "name": "Winter small-grain silage + sorghum-sudan summer forage",
+   "short_name": "Grain silage + sorghum-sudan",
    "calendar": [
     {
      "year": 1,
@@ -317,6 +324,7 @@
    "is_baseline": false,
    "cycle_years": 4,
    "name": "Alfalfa 3-year stand, winter cereal break year, re-seed",
+   "short_name": "Alfalfa with break year",
    "calendar": [
     {
      "year": 4,

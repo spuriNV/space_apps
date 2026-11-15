@@ -3,6 +3,7 @@
   "id": "caf0_alfalfa",
   "location_id": "caf_elnido_forage",
   "name": "Alfalfa hay, 7-8 cuts, 4-5 year stand (current)",
+  "short_name": "Alfalfa (current)",
   "is_baseline": true,
   "cycle_years": 1,
   "calendar": [
@@ -1261,6 +1262,7 @@
   "id": "caf1_smallgrain_corn",
   "location_id": "caf_elnido_forage",
   "name": "Winter small-grain silage + silage corn double crop",
+  "short_name": "Grain silage + corn",
   "is_baseline": false,
   "cycle_years": 1,
   "calendar": [
@@ -2583,6 +2585,7 @@
   "id": "caf2_smallgrain_sorghumsudan",
   "location_id": "caf_elnido_forage",
   "name": "Winter small-grain silage + sorghum-sudan summer forage",
+  "short_name": "Grain silage + sorghum-sudan",
   "is_baseline": false,
   "cycle_years": 1,
   "calendar": [
@@ -3913,6 +3916,7 @@
   "id": "caf3_alfalfa_break",
   "location_id": "caf_elnido_forage",
   "name": "Alfalfa 3-year stand, winter cereal break year, re-seed",
+  "short_name": "Alfalfa with break year",
   "is_baseline": false,
   "cycle_years": 4,
   "calendar": [

@@ -472,14 +472,14 @@ SMALL_GRAIN = lambda y=1: e(y, "small_grain_silage", "10-25", "04-20", "forage",
 
 STRATEGIES = [
     {"id": "car0_rice_winterflood", "location_id": "car_colusa_rice", "is_baseline": True, "cycle_years": 1,
-     "name": "Continuous rice with winter flood (current)",
+     "name": "Continuous rice with winter flood (current)", "short_name": "Rice + winter flood (current)",
      "calendar": [
          e(1, "open_water_flood", "11-01", "02-01", "water", irrigated=True, timing_source=U_T,
            note="Winter flood for straw decomposition / waterfowl; flood dates U. Only ET is counted as need."),
          SPRING_FLOOD(), RICE()],
      "allocation_rule": None},
     {"id": "car1_rice_wintercover", "location_id": "car_colusa_rice", "is_baseline": False, "cycle_years": 1,
-     "name": "Rice + winter cover (cereal/vetch) instead of winter flood",
+     "name": "Rice + winter cover (cereal/vetch) instead of winter flood", "short_name": "Rice + winter cover",
      "calendar": [
          SPRING_FLOOD(), RICE(),
          e(1, "cereal_vetch_cover", "10-25", "03-20", "cover", irrigated=False, stage_mode="stretch_mid",
@@ -487,7 +487,7 @@ STRATEGIES = [
            note="Rainfed cover; ETc counted but not irrigation need")],
      "allocation_rule": None},
     {"id": "car2_dryyear_safflower", "location_id": "car_colusa_rice", "is_baseline": False, "cycle_years": 1,
-     "name": "Dry-year plan: safflower instead of rice (allocation < 50%)",
+     "name": "Dry-year plan: safflower instead of rice (allocation < 50%)", "short_name": "Dry-year safflower",
      "calendar": [
          e(1, "cereal_vetch_cover", "01-01", "03-01", "cover", irrigated=False, stage_mode="truncate",
            timing_source=U_T + ": cover sown the previous fall (spec 'cover/bare' Jan-Feb)",
@@ -502,7 +502,7 @@ STRATEGIES = [
                                                        "method": "assumed", "source": src("assumed"),
                                                        "note": "Spec B1 CAR2 trigger (U)"}}},
     {"id": "car3_rice_wheat", "location_id": "car_colusa_rice", "is_baseline": False, "cycle_years": 2,
-     "name": "Rice - winter wheat rotation (2-year)",
+     "name": "Rice - winter wheat rotation (2-year)", "short_name": "Rice–wheat",
      "calendar": [
          SPRING_FLOOD(1), RICE(1),
          e(1, "winter_wheat", "12-01", "05-30", "cash", irrigated=True, harvest_months=[6],
@@ -513,14 +513,14 @@ STRATEGIES = [
                       "the next rice flood. Confirm with the team.",
      "allocation_rule": None},
     {"id": "caf0_alfalfa", "location_id": "caf_tulare_forage", "is_baseline": True, "cycle_years": 1,
-     "name": "Alfalfa hay, 7-8 cuts, 4-5 year stand (current)",
+     "name": "Alfalfa hay, 7-8 cuts, 4-5 year stand (current)", "short_name": "Alfalfa (current)",
      "calendar": [
          e(1, "alfalfa_hay", "12-01", "12-01", "forage", irrigated=True, harvest_months=[3, 4, 5, 6, 7, 8, 9, 10],
            timing_source="uc_alfalfa (V: 28-day cutting schedule); stage dates read off spec B1 calendar (U)",
            note="Established stand in steady state; establishment year not modelled")],
      "allocation_rule": None},
     {"id": "caf1_smallgrain_corn", "location_id": "caf_tulare_forage", "is_baseline": False, "cycle_years": 1,
-     "name": "Winter small-grain silage + silage corn double crop",
+     "name": "Winter small-grain silage + silage corn double crop", "short_name": "Grain silage + corn",
      "calendar": [
          SMALL_GRAIN(),
          e(1, "silage_corn", "05-05", "08-23", "forage", irrigated=True, harvest_months=[8], stage_mode="scale",
@@ -528,14 +528,14 @@ STRATEGIES = [
                                "to the 110-d season (FAO-56 advises scaling stage lengths to the local season)")],
      "allocation_rule": None},
     {"id": "caf2_smallgrain_sorghumsudan", "location_id": "caf_tulare_forage", "is_baseline": False,
-     "cycle_years": 1, "name": "Winter small-grain silage + sorghum-sudan summer forage",
+     "cycle_years": 1, "name": "Winter small-grain silage + sorghum-sudan summer forage", "short_name": "Grain silage + sorghum-sudan",
      "calendar": [
          SMALL_GRAIN(),
          e(1, "sorghum_sudan", "05-05", "09-15", "forage", irrigated=True, harvest_months=[6, 7, 8],
            stage_mode="stretch_mid", timing_source=U_T + ": spec B1 'plant May, cuts Jun-Aug, terminate Sept'")],
      "allocation_rule": None},
     {"id": "caf3_alfalfa_break", "location_id": "caf_tulare_forage", "is_baseline": False, "cycle_years": 4,
-     "name": "Alfalfa 3-year stand, winter cereal break year, re-seed",
+     "name": "Alfalfa 3-year stand, winter cereal break year, re-seed", "short_name": "Alfalfa with break year",
      "calendar": [
          e(4, "alfalfa_hay", "09-20", "12-01", "establishing", irrigated=True, stage_mode="truncate",
            stage_override={"ini": 30, "dev": 42, "mid": 0, "late": 0},

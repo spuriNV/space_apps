@@ -70,7 +70,7 @@ FILLED_WITH = {
     "insurance": "Estimated from Salmon Arm station history: summer drought, rain at haying, heat and frost years as peril shares (/insurance).",
     "sgma": "BC water-order context (fish population protection orders, 2023 and 2026) as the reservoir_storage trend layer and the outlook's allocations_context.",
     "cdl": "AAFC Annual Crop Inventory crop history (one Pasture / Forages class).",
-    "soil_survey": "ISRIC SoilGrids v2 (250 m model) for texture and organic matter; drainage and hydrologic group stay unknown.",
+    "soil_survey": "AAFC Soil Landscapes of Canada v3.2 (1:1,000,000 polygon): texture, available water, organic matter and drainage weighted over the polygon's soils; hydrologic group derived. ISRIC SoilGrids v2 (250 m model) if SLC is not cached.",
     "outlook": "Estimated from ECCC 1991-2020 station climatology (equal chances) and a station rain-percentile drought index (/outlook, usdm_d2_weeks).",
     "ml_calendar": "Estimated with rule-based detectors on the field's S2/Landsat series: two-class NDVI calendar, transitions and z-score stress weeks (/calendar_ml, /transitions, /stress, /models).",
 }
@@ -114,8 +114,13 @@ class Ctx:
         self.ext = NB.extended_derived(self.derived, self.nasa, self.pmeta["params"]["latitude"])
         self.cal = jload(FIELD_OUT / "calendar.json") if have(FIELD_OUT / "calendar.json", "S2/Landsat calendar") else None
         self.hist = jload(FIELD_OUT / "crop_history.json") if have(FIELD_OUT / "crop_history.json", "AAFC ACI crop history") else None
+        slc = CACHE / "slc.json"   # soil: AAFC SLC v3.2 preferred, SoilGrids the fallback (whichever was fetched)
+        self.slc = jload(slc) if have(slc, "AAFC Soil Landscapes of Canada v3.2") else None
         sg = CACHE / "soilgrids.json"
-        self.soilgrids = jload(sg) if have(sg, "SoilGrids") else None
+        if self.slc:   # SoilGrids is only the fallback: not listed as skipped when SLC is there
+            self.soilgrids = jload(sg) if sg.exists() else None
+        else:
+            self.soilgrids = jload(sg) if have(sg, "SoilGrids") else None
         tf = REPO / "backend" / "nasa_open" / "out" / FID / "terrain.json"
         self.nasadem = jload(tf)["field_summary"] if have(tf, "NASADEM terrain") else None
         self.hls_cover = NB.hls_cover_by_date(FID)
@@ -143,12 +148,51 @@ def example_limit(family: str) -> dict:
     return BR.example_limit(family)
 
 
+def soil_slc(x: Ctx) -> dict:
+    """Soil block from the AAFC Soil Landscapes of Canada v3.2 polygon under the field (backend/bc/fetch_slc.py)."""
+    s = x.slc
+    m = s["summary"]
+    src = {k: s["source"][k] for k in ("id", "title", "url", "accessed", "verified")}
+    comps = s["components"]
+    mix = "; ".join(f"{c['soil_name']} {c['percent']}%" for c in comps)
+    return {
+        "mukey": f"slc_v3.2_{s['poly_id']}",
+        "muname": f"SLC v3.2 polygon {s['poly_id']}: {mix} (1:1,000,000 soil landscape, not a field-scale map unit)",
+        "drainage_class": m["drainage_class"] or "unknown",
+        "hydrologic_group": m["hydrologic_group"] or "unknown",
+        "awc_mm_per_m": BR.sn(m["awc_mm_per_m"], "mm/m", src, "0-100 cm water held between 33 and 1500 kPa (SLC layer table, % of soil "
+                              "volume), weighted by each soil's share of the polygon; low/high = the soils in the polygon that hold the least and the most water",
+                              low=m["awc_low"], high=m["awc_high"], method="lookup"),
+        "om_pct": BR.sn(m["om_pct"], "%", src, "0-100 cm depth-weighted organic carbon x 1.724 (van Bemmelen factor, assumed), weighted "
+                        "by each soil's share; low/high = lowest and highest soil", low=m["om_low"], high=m["om_high"], method="lookup"),
+        "texture_class": (m["texture_class"] or "unknown").lower(),
+        "texture_detail": {"sand_pct": m["sand_pct"], "silt_pct": m["silt_pct"], "clay_pct": m["clay_pct"],
+                           "method": "USDA triangle on 0-100 cm sand/silt/clay, weighted by each soil's share of the SLC polygon"},
+        "ph_0_30cm": m["ph_0_30cm"],
+        "dominant_component": {"compname": comps[0]["soil_name"], "comppct_r": str(comps[0]["percent"]),
+                               "drainage_class": comps[0]["drainage_class"], "hydrologic_group": comps[0]["hydrologic_group"]},
+        "components": [{k: c[k] for k in ("soil_name", "percent", "drainage_class", "hydrologic_group", "texture_class_0_100cm",
+                                          "awc_mm_per_m", "om_pct_0_100cm", "awhc_class_mm", "great_group_cssc3")} for c in comps],
+        "drainage_by_share": m["drainage_by_share"], "hydrologic_group_by_share": m["hydrologic_group_by_share"],
+        "hydrologic_group_method": "derived: NRCS NEH 630 ch. 7 Table 7-1 on SLC Ksat, water-table depth assumed from the drainage "
+                                   "class; dominant condition (largest share of the polygon)",
+        "scale": s["scale"],
+        "source": {"id": src["id"], "url": src["url"], "verified": bool(src["verified"])},
+        "note": (f"AAFC Soil Landscapes of Canada v3.2, a 1:1,000,000 map: the field lies in polygon {s['poly_id']} "
+                 f"({s['polygons_under_field'][0]['polygon_area_km2']} km2), a mix of soils whose positions are not mapped. Values are "
+                 "weighted by each soil's share; drainage and hydrologic group are the class with the largest share. A soil test or "
+                 "the BC 1:20,000 soil survey map is the field-scale answer."),
+    }
+
+
 def soil_block(x: Ctx) -> dict:
     gaps = x.reg.get("not_available", {})
+    if x.slc:
+        return soil_slc(x)
     sg = x.soilgrids
     if not sg:
-        why = "SoilGrids not fetched yet (backend/bc/fetch_soilgrids.py)"
-        return {"mukey": "pending", "muname": "SoilGrids v2.0 not fetched yet", "drainage_class": "unknown", "hydrologic_group": "unknown",
+        why = "no soil source fetched yet (backend/bc/fetch_slc.py or fetch_soilgrids.py)"
+        return {"mukey": "pending", "muname": "Soil not fetched yet", "drainage_class": "unknown", "hydrologic_group": "unknown",
                 "awc_mm_per_m": BR.blocked_sn("mm/m", why), "om_pct": BR.blocked_sn("%", why), "texture_class": "unknown",
                 "source": {"id": "soilgrids_v2", "url": "https://rest.isric.org/soilgrids/v2.0/properties/query", "verified": False},
                 "note": gaps.get("soil_survey", "")}
@@ -196,8 +240,7 @@ def observed_cover(x: Ctx) -> dict:
 # ------------------------------------------------------------------ First Nations context (facts and URLs from docs/bc-first-nations.md)
 FN_DOC = "docs/bc-first-nations.md"
 FN_STATEMENT = "Built to be co-developed with First Nations farmers; we'd only add a reserve field with the Nation's permission."
-NATION = {"Splatsin": "Splatsin", "Neskonlith": "Neskonlith", "Adams Lake": "Adams Lake",
-          "Skwlax te Secwepemculecw": "Skwlax te Secwépemc", "Okanagan": "Okanagan Indian Band (Syilx)"}
+from nations import NATION  # noqa: E402  band name -> Nation display name (also used by fetch_reserves.py)
 SPLATSIN_LAND = "https://splatsin.ca/your-government/land"
 FN_STEPS = [
     "Contact Splatsin first: its reserve, Salmon River 1, is on the lower Salmon River. Its public lands page lists the Lands Department and the Territorial Water Manager role.",
@@ -319,7 +362,8 @@ def build_location(x: Ctx) -> dict:
              "critically_overdrafted": None, "gsa": [],
              "sgma_status": {"text": gaps.get("sgma"), "url": None, "verified": False},
              "cdec_stations": []}
-    events = [{"date": o["date"], "type": "water_order", "title": o["title"], "url": o["url"], "verified": o["verified"]} for o in wc.get("orders", [])]
+    events = [{"date": o["date"], "type": "water_order_rescinded" if o.get("kind") == "rescission" else "water_order",
+               "title": o["title"], "url": o["url"], "verified": o["verified"]} for o in wc.get("orders", [])]
     loc = {
         "id": FID, "name": reg["name"], "region": "bc", "region_adapter": "bc", "regime": "summer_drought_water_order",
         "state_fips": reg["county"]["fips"][:2], "county_fips": reg["county"]["fips"][2:],
@@ -339,7 +383,7 @@ def build_location(x: Ctx) -> dict:
                       for k, v in gaps.items()],
         "_notes": {"region": "British Columbia field: CA-only layers are listed in data_gaps with what fills them; their API routes serve "
                              "estimates in the California shape with _source 'estimate'.",
-                   "water_and_market": "No water district or SGMA basin in BC; water_context holds the watershed and the 2023 orders. "
+                   "water_and_market": "No water district or SGMA basin in BC; water_context holds the watershed and the 2023 and 2026 orders (the 8 Aug 2026 rescission included, kind rescission). "
                                        "market_preference is not stated for this field (no_preference, U).",
                    "boundary": bs["title"], "crop_history": "AAFC Annual Crop Inventory majority class per year (no alfalfa class)",
                    "stations": x.emeta.get("note", "")},

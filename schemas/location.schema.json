@@ -41,6 +41,7 @@
       "properties": {
         "source": {"enum": ["surface", "groundwater", "mixed", null]},
         "allocation_input": {"type": "object", "required": ["unit", "value"], "properties": {"unit": {"const": "acre-ft/acre"}, "value": {"type": ["number", "null"]}}},
+        "example_limit_af_ac": {"$ref": "#/$defs/sn", "description": "example seasonal water limit for the field's family (rice 5.0, forage 3.0 acre-ft/acre), method assumed; a starting value for the allocation control, not the field's real allocation"},
         "district": {"type": ["string", "null"]},
         "sgma_subbasin": {"type": ["string", "null"]},
         "sgma_status": {"type": "object", "required": ["text", "url", "verified"], "properties": {"text": {"type": ["string", "null"]}, "url": {"type": ["string", "null"]}, "verified": {"type": "boolean"}}},

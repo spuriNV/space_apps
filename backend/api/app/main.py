@@ -14,6 +14,7 @@ FIX = ROOT / "fixtures"
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # backend/api, for nasa_build
 sys.path.insert(0, str(ROOT / "backend" / "fields"))
 import fieldreg  # noqa: E402  field registry (backend/fields/registry.json)
+from .sanitize import sanitize  # noqa: E402  internal markers out of user-facing text, repo-path links -> public pages
 
 PRESETS = fieldreg.ids(region=None)   # every registry field of every region; the original two first
 LAYERS = ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly", "usdm_d2_weeks", "reservoir_storage"]
@@ -111,11 +112,17 @@ def normalize_strategies(d: dict) -> dict:
 
 
 def send(resp: Response, data: dict, src: str):
+    """Every route returns through here. Real and estimate payloads are sanitized (app/sanitize.py): internal markers such as
+    "(U)", "(V)" and "spec B11" are stripped from user-facing text, and repo-path source links become the dataset's public page
+    or carry `internal: true`. `method` / `verified` are untouched, so the data status still comes from them. Fixtures are
+    served as written (dev placeholders whose "(U)" marks them as such)."""
     resp.headers["X-Data-Source"] = src
     data = dict(data)
     data["_source"] = src
     if src == "real":
         data.pop("_fixture", None)
+    if src != "fixture":
+        data = sanitize(data)
     return data
 
 

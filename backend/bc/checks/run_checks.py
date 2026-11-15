@@ -42,13 +42,15 @@ reg = fieldreg.get(FID)
 ok(fieldreg.region(FID) == "bc" and FID in fieldreg.ids(region=None) and FID not in fieldreg.ids(), "registry",
    "region bc; listed with region=None, hidden from the default (California) list")
 ok(set(reg.get("not_available", {})) >= {"openet", "insurance", "outlook", "ml_calendar", "sgma"}, "registry", "not_available reasons present")
-ok(bool((reg.get("water_context") or {}).get("orders")), "registry", "water_context has the 2023 orders")
+_od = {o["date"]: o.get("kind") for o in (reg.get("water_context") or {}).get("orders", [])}
+ok({"2023-08-16", "2026-07-28", "2026-08-19"} <= {d for d, k in _od.items() if k == "order"} and _od.get("2026-08-08") == "rescission",
+   "registry", "water_context has the 2023 order and the 2026 orders (28 Jul, 19 Aug) with the 8 Aug rescission")
 
 # ---- inputs (required ones FAIL, downloads still running are INFO)
 for f in ("power.parquet", "eccc.parquet"):
     ok((CACHE / f).exists(), "inputs", f"data/cache/{FID}/{f}")
 ok((REPO / "backend/field/polygons" / f"{FID}.geojson").exists(), "inputs", "field polygon")
-for rel in (f"data/cache/{FID}/soilgrids.json", f"data/cache/{FID}/imerg.parquet", f"data/cache/{FID}/smap_l4.parquet",
+for rel in (f"data/cache/{FID}/slc.json", f"data/cache/{FID}/imerg.parquet", f"data/cache/{FID}/smap_l4.parquet",
             f"data/cache/{FID}/power_nrt.parquet", f"backend/field/out/{FID}/calendar.json", f"backend/field/out/{FID}/grid.geojson",
             f"backend/engine/out/{FID}/strategies.json", f"data/cache/{FID}/reserves_nearby.geojson", f"backend/nasa_open/out/{FID}/terrain.json"):
     if not (REPO / rel).exists():
@@ -70,11 +72,22 @@ if (OUT / "location.json").exists():
     lim = loc["water"].get("example_limit_af_ac") or {}
     ok(lim.get("value") == 3.0 and lim.get("method") == "assumed" and bool(lim.get("note")), "location", "water.example_limit_af_ac 3.0 (assumed, noted)")
     soil = loc["soil"]
-    ok(soil["drainage_class"] == "unknown" and soil["hydrologic_group"] == "unknown", "location", "soil drainage / hydrologic group unknown")
-    if (CACHE / "soilgrids.json").exists():
+    if (CACHE / "slc.json").exists():
+        td = soil.get("texture_detail") or {}
+        ok(soil["mukey"].startswith("slc_v3.2_") and soil["source"]["id"] == "aafc_slc_v3_2", "location", f"soil from AAFC SLC v3.2: {soil['muname'][:60]}...")
+        ok(soil["drainage_class"] != "unknown" and soil["hydrologic_group"] != "unknown" and soil["texture_class"] != "unknown", "location",
+           f"soil drainage {soil['drainage_class']}, hydrologic group {soil['hydrologic_group']}, texture {soil['texture_class']}")
+        ok(soil["awc_mm_per_m"]["value"] is not None and soil["om_pct"]["value"] is not None and soil["awc_mm_per_m"].get("source"), "location",
+           f"soil AWC {soil['awc_mm_per_m']['value']} mm/m, OM {soil['om_pct']['value']}% (sourced)")
+        ok(abs(sum(td.get(k) or 0 for k in ("sand_pct", "silt_pct", "clay_pct")) - 100) < 0.5, "location", "soil sand + silt + clay = 100")
+    elif (CACHE / "soilgrids.json").exists():
+        ok(soil["drainage_class"] == "unknown" and soil["hydrologic_group"] == "unknown", "location", "soil drainage / hydrologic group unknown (SoilGrids)")
         ok(soil["mukey"] == "soilgrids_v2" and soil["om_pct"]["value"] is not None, "location", f"soil from SoilGrids: {soil['texture_class']}")
     else:
-        line("INFO", "location", "soil block is a placeholder until SoilGrids is fetched")
+        line("INFO", "location", "soil block is a placeholder until SLC (fetch_slc.py) or SoilGrids is fetched")
+if (CACHE / "reserves_nearby.geojson").exists():
+    _rf = load(CACHE / "reserves_nearby.geojson")["features"]
+    ok(bool(_rf) and all(f["properties"].get("nation") for f in _rf), "inputs", f"reserves_nearby.geojson: {len(_rf)} features, each with nation")
 if (OUT / "daily.json").exists():
     d = load(OUT / "daily.json")
     rows = d["rows"]

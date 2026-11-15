@@ -9,8 +9,9 @@ Builds the one field outside California, `bc_salmon_river_forage`: a forage (alf
 | `select_field.py` | `backend/field/polygons/bc_salmon_river_forage.geojson` (+ `_training_box.json`) | ParcelMap BC parcel in the ALR, clipped to AAFC ACI Pasture / Forages pixels. Off reserve land (see `docs/bc-first-nations.md`). |
 | `aci.py`, `crop_history.py` | `data/cache/<id>/aci*`, `backend/field/out/<id>/crop_history.json` | AAFC Annual Crop Inventory by year. ACI has no alfalfa class. |
 | `fetch_eccc.py` | `data/cache/<id>/eccc.parquet` | ECCC daily climate for Salmon Arm CS and Silver Creek (Silver Creek closed in 2021). Same columns as `ncei.parquet`. |
-| `fetch_soilgrids.py` | `data/cache/<id>/soilgrids.json` | ISRIC SoilGrids v2 at 5 points in the field. |
-| `fetch_reserves.py` | `data/cache/<id>/reserves_nearby.geojson` | Reserve outlines within 20 km (BC WFS `WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP`, simplified to 20 m). For the map, as context only. Run in the bc venv: `cd backend/bc && uv run python fetch_reserves.py`. |
+| `fetch_slc.py` | `data/cache/<id>/slc.json` | AAFC Soil Landscapes of Canada v3.2 (1:1,000,000): the polygon under the field (1004019, 39.8 km2), its 5 soils with their share, drainage, AWHC class and 0-100 cm layer data, plus a share-weighted summary. Preferred soil source. |
+| `fetch_soilgrids.py` | `data/cache/<id>/soilgrids.json` | ISRIC SoilGrids v2 at 5 points in the field. Fallback soil source, used only when `slc.json` is missing (the REST API returned 503 for hours in Nov 2026). |
+| `fetch_reserves.py` | `data/cache/<id>/reserves_nearby.geojson` | Reserve outlines within 20 km, each with `band` and `nation` (display name from `nations.py`, the same mapping as first_nations.json) (BC WFS `WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP`, simplified to 20 m). For the map, as context only. Run in the bc venv: `cd backend/bc && uv run python fetch_reserves.py`. |
 | `build_api.py` | `backend/api/out/<id>/*.json`, `backend/news/out/<id>.json` | API payloads. No network. |
 | `checks/run_checks.py` | stdout | PASS/FAIL/INFO lines. Exits 1 on any FAIL. |
 
@@ -30,7 +31,7 @@ uv run python checks/check_api.py         # every API route, CA and BC
 
 Both scripts run in the `backend/api` venv. They need pandas plus the API's `nasa_build.py` and `build_real.py` helpers, and the checks also need jsonschema.
 
-Every input is optional except the registry entry, the polygon, POWER and ECCC. The builder ends by printing what it **used** and what it **skipped**. Skipped inputs are still downloading or not built: SMAP L3/L4, MODIS, ECOSTRESS, HLS, SoilGrids, NASADEM, the S2/Landsat calendar and grid, and engine strategies. When one of them lands, rerun the same command. Nothing needs to change in the code.
+Every input is optional except the registry entry, the polygon, POWER and ECCC. The builder ends by printing what it **used** and what it **skipped**. Skipped inputs are still downloading or not built: SMAP L3/L4, MODIS, ECOSTRESS, HLS, NASADEM, the S2/Landsat calendar and grid, and engine strategies. When one of them lands, rerun the same command. Nothing needs to change in the code.
 
 ## What the payloads contain
 
@@ -38,11 +39,12 @@ Every input is optional except the registry entry, the polygon, POWER and ECCC. 
   - `region: "bc"` and `region_adapter: "bc"`.
   - `county_name` Columbia-Shuswap, with `state_fips` 59 and `county_fips` 39 (Statistics Canada census division 5939).
   - `stations[]` with network `ECCC`.
-  - A `soil` block from SoilGrids: `mukey` is `soilgrids_v2`, `om_pct` = SOC × 1.724, and `texture_class` comes from the USDA triangle on 0-30 cm. Drainage class and hydrologic group are `unknown`, and AWC is blocked.
+  - A `soil` block from AAFC SLC v3.2 when `slc.json` exists (else SoilGrids, else a placeholder). `mukey` is `slc_v3.2_<poly_id>`. Sand/silt/clay, AWC ((KP33 - KP1500) over 0-100 cm) and `om_pct` (OC × 1.724) are weighted by each soil's share of the polygon; low/high are the lowest and highest soil. `drainage_class` and `hydrologic_group` are the dominant condition (largest share). The hydrologic group is derived (NRCS NEH 630 ch. 7 Table 7-1 on SLC Ksat, water-table depth assumed from the drainage class). `components` lists the 5 soils. SLC is 1:1,000,000: which soil is in the field is not mapped.
+  - With SoilGrids instead: `mukey` is `soilgrids_v2`, `om_pct` = SOC × 1.724, `texture_class` from the USDA triangle on 0-30 cm, drainage class and hydrologic group `unknown`, AWC blocked.
   - `water` has no district, SGMA basin or CDEC stations. It carries `example_limit_af_ac`: 3.0 acre-ft/acre for forage, assumed (U). The same helper (`build_real.example_limit`) gives rice 5.0 to California fields when `build_real.py` is next run.
-  - `water_context` is copied from the registry: watershed, the 2023 orders and the licensing note.
+  - `water_context` is copied from the registry: watershed, the orders (16 Aug 2023; 28 Jul 2026; the 8 Aug 2026 rescission with `kind: "rescission"`; 19 Aug 2026, 458 licences) and the licensing note. Facts and URLs are those of first_nations.json `water_timeline`.
   - `data_gaps[]` has one entry per registry `not_available` key, as `{id, what, reason, routes, filled_with}`; `filled_with` says what estimate replaces the source.
-  - `events[]` holds the 2023 order.
+  - `events[]` holds the orders (type `water_order`) and the rescission (type `water_order_rescinded`).
   - `crop_history` comes from the ACI.
 - `daily.json`:
   - POWER plus Hargreaves ETo (FAO-56 eq. 52, the same as backend/regional), from 2015 to the latest POWER day.

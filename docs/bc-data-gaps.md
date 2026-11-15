@@ -68,15 +68,20 @@ This doc covers every data source the California fields use (for example `car_co
 
 ## What the app shows
 
-Every California-only route is meant to answer for the BC field with a 404 that says "not available in BC", using the registry's `not_available` text. The table below shows the planned mapping. When this doc was written, the wiring in `backend/api/app/main.py` (`_real_only`) was not yet done; see the handoff, step 5.
+The California-only routes no longer 404 for the BC field. Each one returns an **estimate** in the California shape, with `_source: "estimate"` in the body, the `X-Data-Source: estimate` header and an `estimate_note` (or `note`) saying what it was estimated from. Every estimated SourcedNumber has `method: "assumed"` and a note. The estimate files are built by `backend/bc/build_api.py` (`backend/bc/estimates.py`) into `backend/api/out/bc_salmon_river_forage/`; the full table is in `backend/bc/README.md` ("API payloads").
 
-| Route | Registry key | Reason text (from `backend/fields/registry.json`) |
+| Route | Registry key | Estimated from |
 |---|---|---|
-| `/openet` | `openet` | "OpenET covers the western United States only; there is no field-scale measured water use for BC." |
-| `/insurance` | `insurance` | "USDA RMA crop-insurance records cover the United States only; BC Production Insurance loss data is not public at field or county level." |
-| `/outlook` | `outlook` | "The coming-season outlooks (NOAA CPC, US Drought Monitor, CDEC) are US products; not built for BC." |
-| `/calendar_ml` | `ml_calendar` | "The machine-learning calendar and stress models were trained on California fields and were not run here." |
-| `/stress` | `ml_calendar` | Same text as `/calendar_ml` |
-| `/water_seen` | none yet | The registry has no reason for this route; one needs to be added. Suggested text: "OPERA DSWx water-on-field scenes were not processed for this BC field." DSWx itself does cover BC; it is a pipeline gap, not a data gap. |
+| `/openet` | `openet` | The engine's FAO-56 ETc of today's rotation (`bc0_alfalfa`) per month, 2015-2025, on station weather. OpenET does not cover BC. |
+| `/insurance` | `insurance` | Peril shares from station summers 1991-2025: drought (Jun-Aug rain < 50% of normal), rain at haying (> 150%), heat (Tmax >= 38 C), frost (Tmin <= -1 C, 10 May-15 Sep). Dollar fields are null. |
+| `/outlook` | `outlook` | ECCC 1991-2020 station climatology for the next seasons ("equal chances"); a station rain-percentile drought index (D0-D4 by the USDM percentile guide); engine irrigation need under climatology. |
+| `/trends?layer=usdm_d2_weeks` | `outlook` | Weeks per year with the station 90-day rain at or below the 10th percentile. |
+| `/trends?layer=reservoir_storage` | `sgma` | No reservoir: Salmon River water orders per year, with the orders as event markers. |
+| `/calendar_ml`, `/transitions` | `ml_calendar` | A two-class NDVI rule (0.275) on the Sentinel-2/Landsat observations; no ML model was run. Transitions also list the rule and an S2 scene-class reference. |
+| `/stress` | `ml_calendar` | z-scores of this field's NDVI, GRACE-DA soil moisture, ETo and IMERG 30-day rain (no isolation forest). |
+| `/models` | `ml_calendar` | Reports for the above, scored against this field's Sentinel-2 scene classes. |
+| `/water_seen` | none | Sentinel-2 SCL water and Landsat QA water shares per spring scene, plus NDWI; not OPERA DSWx. |
 
-The other `not_available` keys (`cimis`, `sgma`, `cdl`, `soil_survey`) have no route of their own. They belong in `location.json` `data_gaps`.
+`location.json` lists every registry `not_available` key in `data_gaps[]` as `{id, what, reason, routes, filled_with}`; `filled_with` names the estimate that replaces the source. The keys without a route of their own (`cimis`, `sgma`, `cdl`, `soil_survey`) appear there only.
+
+The app shows these responses with an "Estimated" tag. A route falls back to **404** `"<kind> not available in BC: <registry not_available reason>"` only when its estimate file is missing (`REGION_GAPS` / `ESTIMATE_FILE` in `backend/api/app/main.py`); the frontend shows one quiet "Not available in BC" line for those.

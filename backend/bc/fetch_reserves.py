@@ -17,6 +17,7 @@ from shapely.geometry import mapping, shape
 from shapely.ops import transform
 
 from common import CACHE, FID, get, now, polygon, write_json
+from nations import nation
 
 WFS = "https://openmaps.gov.bc.ca/geo/pub/wfs"
 LAYER = "WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP"
@@ -43,7 +44,8 @@ def main():
             continue
         pr = f["properties"]
         out.append({"type": "Feature",
-                    "properties": {"name": pr.get("ENGLISH_NAME"), "band": pr.get("BAND_NAME"), "band_number": str(pr.get("BAND_NUMBER")),
+                    "properties": {"name": pr.get("ENGLISH_NAME"), "band": pr.get("BAND_NAME"), "nation": nation(pr.get("BAND_NAME")),
+                                   "band_number": str(pr.get("BAND_NUMBER")),
                                    "area_ha": round(rw.area / 1e4, 1), "distance_to_field_km": round(d_km, 1), "context_only": True},
                     "geometry": mapping(transform(to_ll, rw.simplify(SIMPLIFY_M, preserve_topology=True)))})
     out.sort(key=lambda f: f["properties"]["distance_to_field_km"])

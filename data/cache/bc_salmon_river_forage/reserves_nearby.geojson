@@ -21,6 +21,7 @@
    "properties": {
     "name": "SWITSEMALPH INDIAN RESERVE NO. 3",
     "band": "Neskonlith",
+    "nation": "Neskonlith",
     "band_number": "690",
     "area_ha": 539.1,
     "distance_to_field_km": 6.5,
@@ -411,6 +412,7 @@
    "properties": {
     "name": "SWITSEMALPH 7",
     "band": "Adams Lake",
+    "nation": "Adams Lake",
     "band_number": "684",
     "area_ha": 146.8,
     "distance_to_field_km": 7.0,
@@ -855,6 +857,7 @@
    "properties": {
     "name": "SWITSEMALPH 6",
     "band": "Adams Lake",
+    "nation": "Adams Lake",
     "band_number": "684",
     "area_ha": 309.8,
     "distance_to_field_km": 9.0,
@@ -999,6 +1002,7 @@
    "properties": {
     "name": "SALMON RIVER 1 (SPLATSIN)",
     "band": "Splatsin",
+    "nation": "Splatsin",
     "band_number": "600",
     "area_ha": 1582.9,
     "distance_to_field_km": 14.2,
@@ -1241,6 +1245,7 @@
    "properties": {
     "name": "NORTH BAY 5",
     "band": "Skwlax te Secwepemculecw",
+    "nation": "Skwlax te Secw\u00e9pemc",
     "band_number": "689",
     "area_ha": 310.5,
     "distance_to_field_km": 14.3,
@@ -1613,6 +1618,7 @@
    "properties": {
     "name": "OKANAGAN 1",
     "band": "Okanagan",
+    "nation": "Okanagan Indian Band (Syilx)",
     "band_number": "616",
     "area_ha": 10682.2,
     "distance_to_field_km": 17.6,
@@ -3819,6 +3825,7 @@
    "properties": {
     "name": "ENDERBY 2",
     "band": "Splatsin",
+    "nation": "Splatsin",
     "band_number": "600",
     "area_ha": 2240.9,
     "distance_to_field_km": 17.7,

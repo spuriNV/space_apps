@@ -23,7 +23,7 @@ Fixture numbers are placeholders (`method: assumed`, `verified: false`, source `
 
 ## Routes
 
-Paths are relative to the repo root; first existing file wins. `{id}` is any field in `backend/fields/registry.json` of any region (14 California fields plus `bc_salmon_river_forage`; else 404). The BC field's payloads are built by `backend/bc/build_api.py`. Its California-only routes (`openet`, `insurance`, `outlook`, `calendar_ml`, `stress`, `transitions`, `models`, `water_seen`, and the trends `usdm_d2_weeks` and `reservoir_storage`) return 404 with `detail` `"<kind> not available in BC: <registry not_available reason>"` (see `backend/bc/README.md`). Fixtures live in `fixtures/{id}/<name>.json` (or `fixtures/<name>.json` for global routes) and exist only for the original two; a registry field without a built output gets 404, never another field's fixture. `/news` for a registry field falls back to its family template's news (same valley).
+Paths are relative to the repo root; first existing file wins. `{id}` is any field in `backend/fields/registry.json` of any region (14 California fields plus `bc_salmon_river_forage`; else 404). The BC field's payloads are built by `backend/bc/build_api.py`. Its California-only routes (`openet`, `insurance`, `outlook`, `calendar_ml`, `stress`, `transitions`, `models`, `water_seen`, and the trends `usdm_d2_weeks` and `reservoir_storage`) return estimates in the California shape with `_source: "estimate"` / `X-Data-Source: estimate`; only when an estimate file is missing do they return 404 `"<kind> not available in BC: <registry not_available reason>"` (see `backend/bc/README.md`). Fixtures live in `fixtures/{id}/<name>.json` (or `fixtures/<name>.json` for global routes) and exist only for the original two; a registry field without a built output gets 404, never another field's fixture. `/news` for a registry field falls back to its family template's news (same valley).
 
 | Route | Fixture | Real lookup |
 |---|---|---|
@@ -85,6 +85,18 @@ Paths are relative to the repo root; first existing file wins. `{id}` is any fie
 
 Known data caveats the UI should not hide: POWER overstates rain vs the NCEI stations (+54% CAR, +68% CAF in monthly totals) and runs warm in summer (JJA Tmax about +3.4 C CAR, +3.8 C CAF), so `heatwave_days`, `severe_heat_40c` and the engine's heat/dry-day counts are high-biased. See `backend/regional/README.md`.
 
+## Response clean-up (`app/sanitize.py`, applied in `send()` to real and estimate responses)
+
+- **Text:** internal markers are stripped from user-facing strings (names, notes, labels, `brief.local_review[].item`, source titles, timing notes): `(U)`, `(V)`, `U:`/`V:` inside brackets, `spec B11`, `(spec B4.4)`, `planner-spec B4`, bare section refs such as `B4.10`, plus a few repo-only phrases (table `PHRASES`). Source files keep their markers. `method`, `verified`, ids, units, dates and URLs are never rewritten, so the data status still comes from `method`/`verified`. Fixtures are served unchanged.
+- **Links:** a `url`/`source_url` that is a repo path (`backend/...`, `data/cache/...`, `planner-spec.md#...`), an internal `urn:fieldshift:*` id or a GitHub blob path becomes the dataset's public page when `PUBLIC_URLS` has one (e.g. `data/cache/<id>/cdec.parquet` -> https://cdec.water.ca.gov/, `.../ncei.parquet` -> NOAA GHCN-Daily, `power` -> NASA POWER). Otherwise the link is kept and its object gets **`internal: true`**: show the title, do not link it. A bare domain (`colusagroundwater.org`) gets `https://`.
+
+## Fields added for the apps
+
+- `location.water.example_limit_af_ac`: SourcedNumber, example seasonal water limit by family (rice 5.0, forage 3.0 acre-ft/acre, `method: assumed`, source `internal: true`). A starting value for the allocation control, not the field's allocation.
+- `strategies[].short_name` (GET `/strategies` and POST `/score`): short farmer-facing label from `backend/engine/build_data.py` (CA: "Rice + winter flood (current)", "Rice + winter cover", "Dry-year safflower", "Rice–wheat", "Alfalfa (current)", "Grain silage + corn", "Grain silage + sorghum-sudan", "Alfalfa with break year").
+- `Source.internal` (see above).
+- `/transitions` is served for every CA field with `backend/ai/out/<id>/transitions.json` (currently car_colusa_rice, caf_tulare_forage, car_glenn_rice, car_grimes_rice, car_zamora_rice, caf_tipton_forage); other CA fields get 404 until backend/ai builds theirs; BC gets the estimate.
+
 ## Schemas (`schemas/`)
 
 `sourced_number, location, crop, rotation_strategy, model_report, news_item, feature_row` (`*.schema.json`) per spec B3 / B2.14, plus `responses.schema.json` with one `$defs` envelope per route. Draft 2020-12, `$id` base `https://fieldshift.local/schemas/`.
@@ -94,7 +106,7 @@ Known data caveats the UI should not hide: POWER overstates rain vs the NCEI sta
 - `backend/regional/out/{id}/` has `eto_monthly.json`, `risk_days_by_year.json`, `daily_derived.parquet`, none a B3 payload; the builder turns them (plus POWER/NCEI/USDM/CDEC caches) into `backend/api/out/{id}/`. The API still has no parquet reader, only JSON.
 - `backend/news/out/{id}.json` matches (bare array, wrapped). BC items are in `bc_opener.json`.
 - Schema changes made for real data: `trends.layer` gained `usdm_d2_weeks`, `reservoir_storage`; `trends.grid` and `location.regional_cell.grid` are free strings (were const `EASE2_G9km`); `validation.checks[].id` gained `power_vs_ncei_{precip,tmax,tmin,heat40}` and `imerg_vs_power_precip`.
-- No chunk owns `models.json` (AI workstream) or `glossary.json`; both stay fixtures.
+- `models.json` comes from backend/ai; `glossary.json` is `backend/api/glossary.json` (committed, copied into the image by `COPY backend/api/`). The fixtures remain only as the fallback when those files are missing.
 
 ## Open questions
 

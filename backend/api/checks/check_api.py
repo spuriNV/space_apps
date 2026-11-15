@@ -122,6 +122,11 @@ for p in PRESETS:
         ok = len(j["scenes"]) > 0 and bool(j["summary"]) and all(0 <= s_["water_frac"] <= 1 for s_ in j["scenes"] if s_["water_frac"] is not None)
         fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /water_seen has {len(j['scenes'])} scenes and a summary")
     ri = client.get(L + "/insurance").json()
+    rt = check("GET", L + "/transitions", ANY)
+    if rt is not None and rt.status_code == 200:
+        j = rt.json()
+        ok = j["location_id"] == p and rt.headers["X-Data-Source"] == "real" and any(len(v) > 0 for v in j["methods"].values())
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /transitions: real, methods {sorted(j['methods'])}")
     ok = "share_peril_unattributed" in json.dumps(ri) or p == "car_colusa_rice"
     fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /insurance keeps share_peril_unattributed")
     ok = loc_ok = client.get(L).json()
@@ -278,6 +283,96 @@ if rg is not None and rg.status_code == 200:
     its = rg.json()["items"]
     ok = len(its) >= 15 and all(len(i["short"].split()) <= 60 and i.get("source_url") for i in its)
     fails += not ok; print(("PASS" if ok else "FAIL") + f" glossary: {len(its)} entries, each <= 60 words with a source URL")
+if rg is not None and rg.status_code == 200:   # the real glossary, not the fixture (backend/api/glossary.json, copied by the Dockerfile)
+    want = json.loads((ROOT / "backend/api/glossary.json").read_text())["items"]
+    ok = (rg.headers["X-Data-Source"] == "real" and "_fixture" not in rg.json() and [i["id"] for i in rg.json()["items"]] == [i["id"] for i in want]
+          and "COPY backend/api/ backend/api/" in (ROOT / "Dockerfile").read_text())
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" /api/glossary serves backend/api/glossary.json ({len(want)} entries, real) and the Dockerfile copies it")
+
+# ---- task 3 (API gaps found by the apps): example water limit, short_name, sanitized text, public source links
+import re  # noqa: E402
+LIMIT = {"rice": 5.0, "forage": 3.0}
+for p in BUILT:
+    if p not in CA_FIELDS:
+        continue
+    w = client.get(f"/api/locations/{p}").json()["water"].get("example_limit_af_ac") or {}
+    ok = w.get("value") == LIMIT[fieldreg.get(p)["family"]] and w.get("unit") == "acre-ft/acre" and w.get("method") == "assumed"
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} water.example_limit_af_ac = {w.get('value')} ({w.get('method')})")
+SHORT = {"car0_rice_winterflood": "Rice + winter flood (current)", "car1_rice_wintercover": "Rice + winter cover", "car2_dryyear_safflower": "Dry-year safflower",
+         "car3_rice_wheat": "Rice–wheat", "caf0_alfalfa": "Alfalfa (current)", "caf1_smallgrain_corn": "Grain silage + corn",
+         "caf2_smallgrain_sorghumsudan": "Grain silage + sorghum-sudan", "caf3_alfalfa_break": "Alfalfa with break year"}
+for p in BUILT:
+    if p not in CA_FIELDS:
+        continue
+    its = client.get(f"/api/locations/{p}/strategies").json()["items"]
+    sc = client.post(f"/api/locations/{p}/score", json={"weights": {"water_use": 3}}).json()["items"]
+    ok = len(its) == 4 and all(s_.get("short_name") == SHORT[s_["id"]] for s_ in its) and all(s_.get("short_name") == SHORT[s_["id"]] for s_ in sc)
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} every strategy (GET and POST /score) has its short_name")
+MARKER = re.compile(r"\((?:U|V)\)|\((?:U|V)[:;,]|[,;] (?:U|V)\)|\bspec B\d|planner-spec B\d")
+TEXT_SKIP = {"url", "source_url", "id", "meta_path", "method"}
+
+
+def _strings(x, key=None):
+    if isinstance(x, dict):
+        for k, v in x.items():
+            yield from _strings(v, k)
+    elif isinstance(x, list):
+        for v in x:
+            yield from _strings(v, key)
+    elif isinstance(x, str) and key not in TEXT_SKIP:
+        yield key, x
+
+
+def _links(x):
+    if isinstance(x, dict):
+        for k in ("url", "source_url"):
+            if isinstance(x.get(k), str):
+                yield x[k], x.get("internal") is True
+        for v in x.values():
+            yield from _links(v)
+    elif isinstance(x, list):
+        for v in x:
+            yield from _links(v)
+
+
+SAN_ROUTES = ["", "/strategies", "/zones", "/validation", "/calendar", "/news", "/insurance", "/outlook", "/models", "/water_seen",
+              "/trends?layer=heatwave_days", "/trends?layer=reservoir_storage", "/transitions", "/first_nations"]
+for p in ["car_colusa_rice", "caf_tulare_forage", "car_glenn_rice", *BC_FIELDS]:
+    bad, links, n_methods = [], [], 0
+    for route in SAN_ROUTES:
+        r = client.get(f"/api/locations/{p}{route}")
+        if r.status_code != 200 or r.headers.get("X-Data-Source") == "fixture":
+            continue
+        j = r.json()
+        bad += [(route, k, s_[:90]) for k, s_ in _strings(j) if MARKER.search(s_)]
+        links += [(route, u, internal) for u, internal in _links(j)]
+        n_methods += json.dumps(j).count('"method": "assumed"')
+    for u in ("/api/crops/alfalfa_hay", "/api/crops/rice_medium_grain"):
+        j = client.get(u).json()
+        bad += [(u, k, s_[:90]) for k, s_ in _strings(j) if MARKER.search(s_)]
+        links += [(u, l_, i_) for l_, i_ in _links(j)]
+    ok = not bad and n_methods > 0
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} no internal markers ((U), (V), spec Bx) in user-facing text; method fields kept ({n_methods} 'assumed')"
+                           + (f"  <- {bad[:3]}" if bad else ""))
+    unmarked = [(rt, u) for rt, u, internal in links if u and not u.startswith(("http://", "https://")) and not internal]
+    ok = not unmarked and not any(rt and "/blob/" in u and not i for rt, u, i in links)
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} every source link is public (http[s]) or marked internal: true ({sum(i for _, _, i in links)} internal of {len(links)})"
+                           + (f"  <- {unmarked[:3]}" if unmarked else ""))
+ro = client.get("/api/locations/car_colusa_rice/outlook").json()
+lk = {u for u, _ in _links(ro)}
+ok = "https://cdec.water.ca.gov/" in lk and not any(u.startswith("data/cache/") for u in lk)
+fails += not ok; print(("PASS" if ok else "FAIL") + " car_colusa_rice /outlook: data/cache/<id>/cdec.parquet link served as the public CDEC page")
+lw = client.get("/api/locations/car_colusa_rice").json()["water"]["lookup"]
+ok = all(g["url"].startswith("https://") for g in lw.get("gsa", []) if g.get("url"))
+fails += not ok; print(("PASS" if ok else "FAIL") + " car_colusa_rice water.lookup.gsa urls carry https:// (bare domains in the registry)")
+from app.sanitize import clean_text, public_url  # noqa: E402
+ok = (clean_text("Every alternative rotation needs review (spec B11).") == "Every alternative rotation needs review."
+      and clean_text("Estimate (U): 5 of 15 peril-years") == "Estimate: 5 of 15 peril-years"
+      and clean_text("Sentinel-2 L2A NDVI (B08, B04)") == "Sentinel-2 L2A NDVI (B08, B04)" and clean_text("U.S. county") == "U.S. county"
+      and public_url("planner-spec.md#b4-scoring-model") == ("planner-spec.md#b4-scoring-model", True)
+      and public_url("data/cache/x/power.meta.json") == ("https://power.larc.nasa.gov/", False))
+fails += not ok; print(("PASS" if ok else "FAIL") + " sanitizer unit cases (spec ref, (U), band names and U.S. untouched, link mapping)")
+
 # real vs fixture report
 print("\nroute data source (X-Data-Source over both presets):")
 for k in sorted(SOURCES):

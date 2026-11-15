@@ -12,6 +12,7 @@
     "id": {"type": "string"},
     "location_id": {"type": "string", "pattern": "^(ca[rf]|bc)_[a-z0-9_]+$"},
     "name": {"type": "string"},
+    "short_name": {"type": "string", "description": "short farmer-facing label, e.g. 'Rice + winter cover' (backend/engine build_data.py)"},
     "is_baseline": {"type": "boolean"},
     "cycle_years": {"type": "integer", "minimum": 1},
     "calendar": {
