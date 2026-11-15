@@ -2068,3 +2068,21 @@ html[data-outdoor="1"] .btn small, html[data-outdoor="1"] .btn-primary small { c
   .controls .ctl-group { grid-column: 1 / span 1; }
 }
 @media (max-width: 640px) { .controls .ctl-desk { display: none; } }
+
+/* featured example cards (step 1) and the guided tour */
+.ex-card { flex-direction: row; align-items: stretch; gap: var(--s-3); background: var(--raised); border-color: var(--line-soft); border-left: 4px solid var(--accent-outline); }
+.ex-card .ex-thumb { flex: none; width: 76px; height: 76px; object-fit: cover; border-radius: var(--r-md); align-self: flex-start; }
+.ex-card .ex-body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-2); min-width: 0; }
+.ex-card h2 { color: var(--text); }
+.ex-card p { color: var(--text-2); }
+.tb-tour { white-space: nowrap; }
+.tour-card { position: fixed; z-index: 70; width: min(300px, calc(100vw - 32px)); box-sizing: border-box; padding: var(--s-4); background: var(--panel); border: 1px solid var(--accent-outline); border-radius: var(--r-md); box-shadow: var(--e3); display: flex; flex-direction: column; gap: var(--s-2); left: 16px; right: 16px; width: auto; bottom: calc(var(--tabs-h, 56px) + 8px); }
+.tour-card.anch { right: auto; bottom: auto; width: 300px; }
+@media (min-width: 641px) { .tour-card:not(.anch) { left: 50%; right: auto; bottom: 24px; width: 320px; transform: translateX(-50%); } }
+.tour-card p { margin: 0; font-size: var(--fs-body); color: var(--text); }
+.tour-h { font: var(--head-weight) var(--fs-head)/1.2 var(--font-head); }
+.tour-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); flex-wrap: wrap; margin-top: var(--s-1); }
+.tour-act { display: flex; align-items: center; gap: var(--s-1); flex-wrap: wrap; margin-left: auto; }
+.tour-dots { display: flex; gap: 6px; } .tour-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); border: 1px solid var(--accent-outline); } .tour-dots i.on { background: var(--accent); }
+.tour-on { outline: 3px solid var(--accent-outline); outline-offset: 3px; border-radius: var(--r-md); }
+@media (min-width: 641px) { .tb-tour { display: none; } }

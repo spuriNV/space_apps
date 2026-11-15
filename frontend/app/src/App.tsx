@@ -28,6 +28,7 @@ import { AccessibilityPage } from './components/a11y/AccessibilityPage';
 import { MapList, type ReserveRow } from './components/a11y/MapList';
 import { usePrefs } from './components/a11y/prefs';
 import AskChat from './components/chat/AskChat';
+import Tour, { tourDismissed, TOUR_STOPS } from './components/ui/Tour';
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
 type Panel = 'none' | 'fields' | 'season' | 'compare';
@@ -307,6 +308,30 @@ export default function App() {
     nationsHash.current = false;
     openNationsExample();
   });
+  // Example field (#example): Colusa rice, then a short skippable tour
+  const EX_ID = 'car_colusa_rice';
+  const [tour, setTour] = useState<number | null>(null);
+  const openExample = (force = false) => {
+    if (!locations.some((l) => l.id === EX_ID)) return;
+    setSwitchOpen(false); setMenuOpen(false); setBriefOpen(false);
+    select(EX_ID);
+    if (force || !tourDismissed()) setTour(0); else setTour(null);
+  };
+  const exHash = useRef(location.hash === '#example');
+  useEffect(() => {
+    if (!exHash.current || !locations.some((l) => l.id === EX_ID)) return;
+    exHash.current = false;
+    openExample();
+  });
+  const tourGo = (i: number) => {
+    if (replaying) map.current?.cancelReplay();
+    const id = TOUR_STOPS[i].step;
+    setSwitchOpen(false); setMenuOpen(false);
+    if (id === 'now') { setBriefOpen(false); setPanel('none'); setCardOpen(true); setYearOpen(false); }
+    else if (id === 'compare') { setBriefOpen(false); setYearOpen(false); setPanel('compare'); }
+    else { setBriefOpen(true); setBriefPreview(false); setYearOpen(false); }
+    setTour(i);
+  };
   const goHome = () => { setSim(null); setPlaying(false); dropSpot(); setSelectedId(null); setPanel('none'); setYearOpen(false); setBcOpen(false); setBriefOpen(false); map.current?.flyHome(); };
   const goBC = () => { setBcOpen(true); setPanel('none'); setYearOpen(false); map.current?.flyTo(49.9, -121.0, 6.4); };
   const onStep = (s: Step) => {
@@ -408,6 +433,7 @@ export default function App() {
                   <b>{r.title}</b><small>{r.sub}</small>
                 </button>
               ))}
+              <button onClick={() => openExample(true)} data-testid="menu-tour"><b>Take the tour</b><small>A 4-stop walk through the Colusa rice example</small></button>
               {results.length === 0 && <p className="muted pad">No field matches.</p>}
             </div>
           )}
@@ -427,6 +453,7 @@ export default function App() {
           date={t === TODAY_T ? `Today, ${tLabel(t)}` : tLabel(t)} waterLimit={selected ? allocation[selected.id] : null} />
         <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} aria-haspopup="true" data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
         <div className={`tb-right ${menuOpen ? 'open' : ''}`}>
+          <button className="btn btn-text btn-sm tb-tour" onClick={() => openExample(true)} data-testid="take-tour">Take the tour</button>
           <div className="tb-date-wrap">
             <button className={`tb-date ${dateOpen ? 'open' : ''}`} onClick={() => setDateOpen(!dateOpen)} data-testid="date-control" aria-expanded={dateOpen}>
               <small>Viewing</small><b>{t === TODAY_T ? `Today, ${tLabel(t).charAt(0).toLowerCase()}${tLabel(t).slice(1)}` : tLabel(t)}</b><Icon name="down" size={16} />
@@ -454,6 +481,7 @@ export default function App() {
           {menuOpen && <MenuItems onList={() => { announce('draw'); setListOpen(true); }} onAbout={() => setAboutOpen(true)} onDone={() => setMenuOpen(false)} />}
         </div>
       </header>
+      {tour != null && selected?.id === EX_ID && <Tour idx={tour} go={tourGo} canReplay={canReplay} onReplay={startReplay} onClose={() => setTour(null)} />}
       <nav className="mob-tabs" aria-label="Steps">
         {FLOW.map((f) => <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} disabled={f.id !== 'pick' && !selected} data-testid={`mtab-${f.id}`}><span>{f.n} {f.short}</span></button>)}
       </nav>
@@ -462,7 +490,7 @@ export default function App() {
       {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.mine ? () => mf.retry(selected.id) : selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} onMine={(a) => draw.current?.[a === 'delete' ? 'del' : a](selected)} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={strats} onToday={(sid) => pickToday(selected.id, sid)} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onBack={() => goStep('pick')} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldPicker onSheet={setSheetPx} mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onNationExample={() => tapSpot(33.51, -116.12)} onNationsExample={openNationsExample} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {leftPanel === 'fields' && <FieldPicker onSheet={setSheetPx} mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onExample={() => openExample()} onNationExample={() => tapSpot(33.51, -116.12)} onNationsExample={openNationsExample} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {selected && !leftPanel && !yearExpanded && !drawing && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
       {stepPanel && !briefOpen && panel === 'season' && selected && d && <ComingSeason onSheet={setSheetPx} onBack={() => goStep('now')} nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={strats!} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => { if (sim) stopSim(); setPanel('none'); setBriefOpen(false); setCardOpen(false); }} />}

@@ -165,7 +165,7 @@ function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategi
  *  "British Columbia" heading (and chip); without one, BC is a quiet "not set up yet" row at the bottom. */
 /** Torres-Martinez Reservation farm field (check_api): opens Nation tools with tribal land status. */
 export const NATION_EXAMPLE = { lat: 33.51, lon: -116.12, label: 'Nation tools example', sub: 'Torres-Martinez Reservation farm field · tribal land · live tap' };
-export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onNationsExample?: () => void; onNationExample?: () => void; onSheet?: (visiblePx: number) => void }) {
+export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onExample?: () => void; onNationsExample?: () => void; onNationExample?: () => void; onSheet?: (visiblePx: number) => void }) {
   const sheet = useSheet(p.onSheet, { initial: 'peek', peek: () => Math.round(window.innerHeight * 0.35) });
   const thumbs = useThumbs();
   const [q, setQ] = useState('');
@@ -185,11 +185,24 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
         {p.onClose && <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={20} /></button>}
       </header>
       <StepLine id="pick" purpose="Tap a field below, or its pin on the map. Everything after this is about that field." />
+      {p.onExample && p.locations.some((l) => l.id === 'car_colusa_rice') && (
+        <div className="nx-card ex-card" data-testid="example-card">
+          <img className="ex-thumb" src={`${import.meta.env.BASE_URL}thumbs/car_colusa_rice.jpg`} alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <div className="ex-body">
+            <h2>Example field: Colusa rice, 149 acres</h2>
+            <p>A real Sacramento Valley rice field: ten years from orbit, the 2022 drought, this week’s water and better rotations.</p>
+            <button className="btn btn-primary" onClick={p.onExample} data-testid="example-open">Open the example</button>
+          </div>
+        </div>
+      )}
       {p.onNationsExample && p.locations.some(isBC) && (
-        <div className="nx-card" data-testid="nations-example-card">
-          <h2>First Nations example: Salmon River, BC</h2>
-          <p>See Nation tools on a real field: nearby Nations, drought rotation, salmon, funding and a grant-ready report</p>
-          <button className="btn btn-primary" onClick={p.onNationsExample} data-testid="nations-example">Open the example</button>
+        <div className="nx-card ex-card" data-testid="nations-example-card">
+          <img className="ex-thumb" src={`${import.meta.env.BASE_URL}thumbs/bc_salmon_river_forage.jpg`} alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <div className="ex-body">
+            <h2>First Nations example: Salmon River, BC</h2>
+            <p>See Nation tools on a real field: nearby Nations, drought rotation, salmon, funding and a grant-ready report</p>
+            <button className="btn btn-primary" onClick={p.onNationsExample} data-testid="nations-example">Open the example</button>
+          </div>
         </div>
       )}
       {p.locations.length > 1 && (
