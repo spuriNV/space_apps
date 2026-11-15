@@ -22,11 +22,19 @@ final class SafariShotTests: XCTestCase {
         // wait for the field's numbers (water need) before moving the sheet; the edit cuts the wait out
         let need = safari.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "acre-ft/acre")).firstMatch
         print("MARK loaded=\(need.waitForExistence(timeout: 60)) \(Date().timeIntervalSince1970)")
+        let na = safari.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "Not available")).firstMatch
+        print("MARK live=\(!na.exists)")
         sleep(2)
         // the sheet's handle cycles half -> full, so "Your field now" shows rain and water need
         let grab = safari.buttons["Resize the field panel"].firstMatch
         print("MARK grab=\(grab.exists) \(Date().timeIntervalSince1970)")
-        if grab.exists { grab.tap() }
+        // fling the sheet up from its handle (the redesign snaps peek / half / full by velocity)
+        let from = safari.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.378))
+        from.press(forDuration: 0.05, thenDragTo: safari.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.10)), withVelocity: .fast, thenHoldForDuration: 0)
+        sleep(1)
+        let rain = safari.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Rain since")).firstMatch
+        print("MARK rain-visible=\(rain.exists && rain.isHittable)")
+        if !(rain.exists && rain.isHittable) && grab.exists { grab.tap(); print("MARK grab-tap \(Date().timeIntervalSince1970)") }
         sleep(4)
         print("MARK end \(Date().timeIntervalSince1970)")
     }

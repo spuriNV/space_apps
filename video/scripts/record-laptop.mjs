@@ -48,8 +48,20 @@ await page.waitForFunction(() => window.__map && window.__map.loaded() && docume
 await page.evaluate(() => document.fonts.ready); await idle(1500);
 
 // Shot 7 setup: the field open, "Field now"
-await page.click('[data-testid="row-car_colusa_rice"]');
-await page.waitForFunction(() => window.__app?.ready, null, { timeout: 60000 }); await page.waitForTimeout(2500); await idle(1500);
+// the app falls back to bundled example numbers when the API is slow; only record the live data
+// (live: rain since 1 Oct is a number, and the field's water need matches /api/.../strategies)
+for (let attempt = 1; ; attempt++) {
+  await page.click('[data-testid="row-car_colusa_rice"]');
+  await page.waitForFunction(() => window.__app?.ready, null, { timeout: 60000 }); await page.waitForTimeout(2500); await idle(1500);
+  const txt = (await page.innerText('[data-testid="field-panel"]')).replace(/\s+/g, ' ');
+  const live = /Rain since 1 Oct \d+(\.\d)? in/.test(txt) && !/Not available/.test(txt.slice(0, 600));
+  console.log(`  field panel (attempt ${attempt}): ${live ? 'live data' : 'NOT live'} :: ${txt.slice(0, 260)}`);
+  if (live) break;
+  if (attempt >= 4) throw new Error('the app never showed live data');
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => window.__map && window.__map.loaded() && document.querySelector('[data-testid="fields-panel"]'), null, { timeout: 120000 });
+  await idle(1500);
+}
 
 if (want('s07')) {
   await page.click('[data-testid="field-panel"] [data-testid="more-detail"]'); await page.waitForTimeout(600);
