@@ -79,9 +79,10 @@ export const calSource = (p?: Prov) => (/HLS/.test(p?.detail ?? '') ? 'NASA/USGS
 export function GapLine({ gap, missing, className = '' }: { gap: DataGap | null; missing: boolean; className?: string }) {
   if (!gap) return null;
   if (missing) return <span className={`gap-line ${className}`} data-testid={`gap-${gap.id}`}>Not available in BC. {gap.reason}</span>;
-  return <span className={`gap-line d-only ${className}`} data-testid={`gap-${gap.id}`}>{gap.reason}{gap.filled_with ? ` ${cap1(gap.filled_with)}${/[.]$/.test(gap.filled_with) ? '' : '.'}` : ''}</span>;
+  return <span className={`gap-line d-only ${className}`} data-testid={`gap-${gap.id}`}>{gap.reason}{gap.filled_with ? ` ${cap1(gap.filled_with)}${/[.]$/.test(cap1(gap.filled_with)) ? '' : '.'}` : ''}</span>;
 }
-const cap1 = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
+// "(/insurance)" and similar API route names are for developers, not growers
+const cap1 = (x: string) => { const y = x.replace(/\s*\((?:\/[\w?=&/_-]+(?:,\s*)?)+\)/g, ''); return y.charAt(0).toUpperCase() + y.slice(1); };
 
 export type Step = 'drill' | 'year' | 'compare' | 'brief' | 'season';
 export const ACTIONS: { id: Step; label: string; sub: string }[] = [

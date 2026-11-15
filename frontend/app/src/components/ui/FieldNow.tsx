@@ -188,7 +188,7 @@ export function FieldNow(p: FieldNowProps) {
             <GapLine gap={gOpenet} missing={false} />
           </> : cw ? <>
             <b>{cw.period.current ? 'So far this year' : 'Last year'}: {vsNormal(cw.pct, 'more than normal', 'less than normal')}</b>
-            <span>About {fmtIn(cw.inches)} in of water {cw.period.label}, estimated; normal is {fmtIn(cw.normal)} in. That is {mmToAfac(cw.inches * 25.4).toFixed(1)} acre-feet per acre.{ms ? ` Measured on this field by OpenET for ${ms.label}: ${fmtIn(ms.inches)} in (our model for those months: ${fmtIn(ms.model)} in).` : ''}</span>
+            <span>About {fmtIn(cw.inches)} in of water {cw.period.label}, estimated; normal is {fmtIn(cw.normal)} in. That is {mmToAfac(cw.inches * 25.4).toFixed(1)} acre-feet per acre.{ms ? ` ${openetEst ? 'Estimated for this field' : 'Measured on this field by OpenET'} for ${ms.label}: ${fmtIn(ms.inches)} in (our model for those months: ${fmtIn(ms.model)} in).` : ''}</span>
             <cite>Estimate: rotation model driven by NASA POWER sun, wind and humidity{ms ? '; measured: OpenET satellite data, which ends a few months behind' : ''}. {gOpenet ? '' : openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
             <GapLine gap={gOpenet} missing={!p.extras.openet} />
           </> : !p.strategies || !p.daily ? pend(p.daily ? p.dataState : p.dailyState) : <b>No rotation model for this field</b>}

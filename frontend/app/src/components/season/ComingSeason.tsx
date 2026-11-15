@@ -50,7 +50,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
       <header className="sheet-head">
         <div>
           <h2>Coming season: what’s likely this winter and next year</h2>
-          <p className="sheet-lede">{headline}.{!notReady && <> <span className="outlook-tag">An outlook, not a forecast.</span></>}</p>
+          <p className="sheet-lede">{headline}.{!notReady && <> <span className="outlook-tag">{o?.prov.cpc.origin === 'estimate' ? 'Past weather, not a forecast.' : 'An outlook, not a forecast.'}</span></>}</p>
         </div>
         <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
       </header>
@@ -77,14 +77,16 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
             })}
           </ul>
           <p className="how">Each season is split into a wetter, a middle and a drier third. With no lean each has a 33% chance; 40% means the odds are tilted, not that rain is certain.</p>
-          <cite>NOAA Climate Prediction Center 3-month outlooks{o?.issued ? `, issued ${fmtDate(o.issued)}` : ''}, at this field. <Src p={o?.prov.cpc} /></cite>
+          <cite>{bc ? 'Environment Canada station climate, 1991–2020 (no seasonal outlook is built for BC)' : 'NOAA Climate Prediction Center 3-month outlooks'}{o?.issued ? `, issued ${fmtDate(o.issued)}` : ''}, at this field. <Src p={o?.prov.cpc} /></cite>
 
+          {!(bc && !o?.droughtNow && !o?.droughtOutlook) && <>
           <h3>Drought</h3>
           <dl className="facts">
             <div><dt>Now</dt><dd>{o?.droughtNow ? <>{o.droughtNow.category.startsWith('None') ? 'No drought' : title(o.droughtNow.category.replace(/^D\d /, ''))} in {o.droughtNow.county || place(p.loc)} <small>(map of {fmtDate(o.droughtNow.date)})</small></> : 'Not loaded'}</dd></div>
             <div><dt>Outlook</dt><dd>{o?.droughtOutlook ? <>{DROUGHT[o.droughtOutlook.category] ?? o.droughtOutlook.category.replace(/_/g, ' ')} through {o.droughtOutlook.target}</> : 'Not loaded'}</dd></div>
           </dl>
           <cite>US Drought Monitor (county) and NOAA seasonal drought outlook. <Src p={o?.prov.water} /></cite>
+          </>}
           </>}
         </div>
 

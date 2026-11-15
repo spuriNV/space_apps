@@ -100,8 +100,9 @@ if ((want('bc') || !only.length) && (await page.evaluate(() => window.__app && d
     if (want('bc-map-reserves') || !only.length || only.includes('bc')) {
       await page.click('[data-testid="layers-btn"]');
       await page.click('[data-testid="layer-reserves"]', { force: true });
+      // the soil-moisture and groundwater squares off, so the context outlines read clearly
+      for (const id of ['smap', 'grace']) await page.click(`[data-testid="layer-${id}"]`, { force: true });
       await page.waitForTimeout(400);
-      await shot('bc-map-reserves-drawer.png', false);
       await page.click('[data-testid="layers-btn"]');
       await page.waitForSelector('[data-testid="reserves-legend"]', { timeout: 20000 });
       await page.evaluate(() => window.__map.easeTo({ zoom: 10.1, duration: 0 }));

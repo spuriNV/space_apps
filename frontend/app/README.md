@@ -29,6 +29,17 @@ node ../../design/tools/shoot-app.mjs                         # screenshots -> d
 5. **Compare** (`compare/ComparePanel.tsx`): today vs the two best-scoring alternatives in acre-feet and days; "See all options" for the full table. More detail: every rotation, soil and feed scores, priorities and rain/heat what-ifs (`POST /score`).
 6. **Print** (`brief/RotationBrief.tsx`): one Letter page from fixed templates.
 
+## British Columbia
+
+The API's `region` ("ca" or "bc") drives the BC field (`bc_salmon_river_forage`). It sits under a "British Columbia" heading and chip in the pick list; the old "not set up yet" row, pins and card show only when the API serves no BC field.
+
+- **Gaps:** `data_gaps` on the location route. A route that answers with `_source: "estimate"` renders normally with an "Estimated." tag, and the gap's reason and `filled_with` sit under More detail. A route that still answers 404 gets one quiet "Not available in BC" line in its place.
+- **Weather:** `season.ts` falls back to the ECCC station columns (`eccc_*`) when the NOAA ones are null.
+- **Soil:** "unknown" values are hidden.
+- **Water:** the watershed and irrigation orders from `water_context` replace the California water district line.
+- **Working with First Nations:** a field-panel card from `GET .../first_nations` (`ui/FirstNations.tsx`).
+- **Map layer:** "Reserve boundaries (context)" draws `GET .../first_nations/reserves.geojson`. It is offered only for BC and is off by default.
+
 ## One definition per number
 
 - **Bare** = satellite greenness below 0.2 and not under water (`src/bare.ts`). Today's rotation: what the satellites saw over the last 3 processed years. Alternatives: the rotation model, labelled "est.".

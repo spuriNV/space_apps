@@ -92,8 +92,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
       for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves']) map.addSource(id, { type: 'geojson', data: fc() });
       // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
-      map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(10,12,8,0.45)', 'line-width': 3 } });
-      map.addLayer({ id: 'res-line', type: 'line', source: 'reserves', paint: { 'line-color': '#efe9d8', 'line-opacity': 0.9, 'line-width': 1.6, 'line-dasharray': [3, 2] } });
+      map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(10,12,8,0.5)', 'line-width': 3.6 } });
+      map.addLayer({ id: 'res-line', type: 'line', source: 'reserves', paint: { 'line-color': '#f1ecdd', 'line-opacity': 0.95, 'line-width': 2, 'line-dasharray': [3, 2] } });
       map.addLayer({ id: 'fp-fill', type: 'fill', source: 'fp', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.1, 13, 0.03] } });
       map.addLayer({ id: 'fp-line', type: 'line', source: 'fp', paint: { 'line-color': ['get', 'color'], 'line-width': 2, 'line-dasharray': [2, 1.5] } });
       map.addLayer({ id: 'fpgrid-line', type: 'line', source: 'fpgrid', minzoom: 11.5, paint: { 'line-color': ['get', 'color'], 'line-width': 1, 'line-opacity': 0.75 } });
@@ -172,16 +172,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const mk = feats.map((f) => {
       const g = f.geometry as GeoJSON.Polygon | GeoJSON.MultiPolygon;
       const polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
-      // label at the middle of the largest part (vertex average of its outer ring)
+      // label just east of the largest part, at its mid latitude, so the outline itself stays visible
       const ring = polys.map((pp) => pp[0]).sort((a, b) => b.length - a.length)[0] ?? [];
-      const at = ring.reduce((a, c) => [a[0] + c[0] / ring.length, a[1] + c[1] / ring.length], [0, 0]);
+      const ys = ring.map((c) => c[1]), midY = (Math.min(...ys) + Math.max(...ys)) / 2;
+      const at = [Math.max(...ring.map((c) => c[0])), midY];
       const pr = (f.properties ?? {}) as { name?: string; band?: string; distance_to_field_km?: number };
       const d = document.createElement('div');
       d.className = 'res-tag';
       d.innerHTML = `<b></b><i></i>`;
       d.querySelector('b')!.textContent = reserveName(pr.name ?? 'Reserve');
       d.querySelector('i')!.textContent = pr.band ?? '';
-      return { km: pr.distance_to_field_km ?? 99, m: new maplibregl.Marker({ element: d, anchor: 'center' }).setLngLat(at as [number, number]).addTo(map) };
+      return { km: pr.distance_to_field_km ?? 99, m: new maplibregl.Marker({ element: d, anchor: 'left', offset: [6, 0] }).setLngLat(at as [number, number]).addTo(map) };
     }).sort((a, b) => a.km - b.km);
     // neighbouring reserves: keep the nearer one's label when two boxes overlap
     const declutter = () => {

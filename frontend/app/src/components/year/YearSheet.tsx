@@ -37,6 +37,7 @@ export function mlVerdict(ml: MLInfo | null, gap?: DataGap | null) {
   if (!ml && gap) return { short: 'Not available in BC', long: `Not available in BC. ${gap.reason}` };
   if (!ml) return { short: 'Not ready for this field yet', long: 'The machine-learning calendar is not ready for this field yet.' };
   const agree = ml.disagreePct != null ? ` The two disagree on ${Math.round(ml.disagreePct)}% of clear satellite days.` : '';
+  if (ml.estimate) return { short: 'An estimate, not a trained model', long: `A simpler two-class greenness rule run on this field only.${ml.agreeScl != null ? ` It matches Sentinel-2’s own scene labels on ${pct(ml.agreeScl)} of clear views.` : ''}${agree}` };
   if (!ml.meetsTarget) return { short: 'Below accuracy target', long: `Below our accuracy target on this field: in 2022, a year it never trained on, it was right ${pct(ml.acc2022)} of the time against a target of 85%, and it misses bare ground too often. The rule calendar stays the answer; this is for comparison only.${agree}` };
   if (ml.inflated) return { short: 'Second opinion only', long: `In 2022, a year it never trained on, it scored ${pct(ml.acc2022)}. That is too good to take at face value: the model partly learned how its training labels were made. Shown as a second opinion next to the rule, not as the answer.${agree}` };
   return { short: 'Meets accuracy target', long: `Meets our accuracy target on this field (right ${pct(ml.acc2022)} of the time in 2022, a year it never trained on). Shown next to the rule as a comparison.${agree}` };
@@ -101,7 +102,7 @@ export default function YearSheet(p: YearSheetProps) {
         <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close" data-testid="year-close"><Icon name="down" /></button>
       </div>
       {gMl && <p className="ml-note d-only"><GapLine gap={gMl} missing={!p.ml} /></p>}
-      {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}
+      {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget && !p.ml.estimate ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}
       <div className="yr-grid">
         <div className="yr-row yr-months"><span /><span /><div className="yr-m">{MONTHS.map((m) => <span key={m}>{m}</span>)}</div><span className="yr-n">Bare days a year</span><span className="yr-n">1-inch rain days on bare ground</span></div>
         <div className="yr-row typical">

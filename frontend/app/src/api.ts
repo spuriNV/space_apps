@@ -290,12 +290,20 @@ export async function getStrips(ids: string[]): Promise<Record<string, Record<nu
 }
 
 // ---------- machine-learning calendar: how good is it? (GET .../models) ----------
-export interface MLInfo { acc2022: number | null; f1Bare2022: number | null; meetsTarget: boolean; inflated: boolean; disagreePct: number | null; model: string }
+/** estimate: the API's stand-in for a region the model was not trained for (BC): a simple rule checked against Sentinel-2's own scene labels (agreeScl). */
+export interface MLInfo { acc2022: number | null; f1Bare2022: number | null; meetsTarget: boolean; inflated: boolean; disagreePct: number | null; model: string; estimate?: boolean; agreeScl?: number | null }
 /** Accuracy target for the bare/cover detector, tested on 2022 (held out): accuracy >= 85% and bare-ground F1 >= 0.80 (backend/ai). */
 export const ML_TARGET = { acc: 0.85, f1: 0.8 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mlInfo(models: any, mlCal: any): MLInfo | null {
   if (!mlCal?.years) return null;
+  if (mlCal._source === 'estimate') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const it = (models?.items ?? []).filter((x: any) => x.task === 'bare_cover' && x.metrics?.agreement_scl != null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const m = it.find((x: any) => /twoclass/.test(x.id)) ?? it[0];
+    return { acc2022: null, f1Bare2022: null, meetsTarget: false, inflated: false, disagreePct: mlCal.disagreement_with_rule_obs_pct ?? null, model: 'two-class greenness rule (estimate)', estimate: true, agreeScl: m?.metrics?.agreement_scl ?? null };
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const m = (models?.items ?? []).find((x: any) => x.task === 'bare_cover' && x.method === (mlCal.detector ?? 'random_forest') && x.split?.type === 'year');
   const acc = m?.metrics?.accuracy_2022 ?? null, f1 = m?.metrics?.f1_bare_2022 ?? null;
