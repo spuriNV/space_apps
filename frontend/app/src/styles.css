@@ -1826,3 +1826,11 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 /* Ten years from orbit: the replay caption is one paper label box, top centre under the hint pill */
 .replay-cap { transform: translateX(-50%); width: auto; max-width: min(460px, calc(100% - 32px)); pointer-events: none; z-index: 20; }
 .replay-cap b { font-size: var(--fs-body); }
+
+/* rain layer (NASA GPM IMERG via GIBS) */
+.rain-box { position: absolute; z-index: 3; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); padding: 7px 10px 8px; display: flex; flex-direction: column; gap: 3px; font-size: var(--fs-small); color: var(--text); width: 230px; }
+.rain-row { display: flex; align-items: center; gap: 8px; }
+.rain-btn { border: 1px solid var(--line); background: #fff; color: var(--text); min-width: 32px; height: 28px; padding: 0 8px; cursor: pointer; font-size: var(--fs-fine); }
+.rain-bar { display: flex; height: 10px; } .rain-bar i { flex: 1; }
+.rain-ticks { display: flex; justify-content: space-between; font-size: var(--fs-fine); }
+.rain-box small { font-size: var(--fs-fine); color: var(--muted); }

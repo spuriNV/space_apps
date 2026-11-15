@@ -1,3 +1,4 @@
+import RainLayer from './components/RainLayer';
 import { addCatalogLayers, setCatalogData, type CatalogItem } from './components/week/catalog';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import maplibregl, { type GeoJSONSource, type StyleSpecification } from 'maplibre-gl';
@@ -580,6 +581,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   return (
     <div className={`map-wrap zoom-${zoomClass}`}>
       <div ref={el} className="map" />
+      <RainLayer map={mapRef.current} ready={ready} on={!!p.layersOn.rain} leftInset={p.leftInset} bottomInset={p.bottomInset} />
       {p.reserves && (
         <div className="res-legend" style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 }} data-testid="reserves-legend">
           <span><i />Reserve boundaries (context)</span>
