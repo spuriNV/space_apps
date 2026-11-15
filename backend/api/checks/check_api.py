@@ -273,6 +273,39 @@ for p in CA_FIELDS[:2]:   # First Nations context is BC only
         r = check("GET", f"/api/locations/{p}{route}", ANY, expect=404)
         ok = r is not None and "built for the BC example field only" in r.json().get("detail", "")
         fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} {route} 404 BC only")
+# ======================================================================== /salmon (BC only; backend/bc/salmon.py) ====
+def _sns(x, path=""):
+    if isinstance(x, dict):
+        if "value" in x and "method" in x:
+            yield path, x
+        for k_, v_ in x.items():
+            yield from _sns(v_, f"{path}/{k_}")
+    elif isinstance(x, list):
+        for i_, v_ in enumerate(x):
+            yield from _sns(v_, f"{path}/{i_}")
+
+
+for p in BC_FIELDS:
+    rs = check("GET", f"/api/locations/{p}/salmon", validator("salmon.schema.json"))
+    if rs is not None and rs.status_code == 200:
+        j = rs.json()
+        sns = list(_sns(j))
+        bad = [pa for pa, v_ in sns if v_["value"] is not None and not ((v_.get("source") or {}).get("url") and v_.get("unit") is not None)]
+        ok = bool(sns) and not bad
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /salmon: {len(sns)} SourcedNumbers, each with a unit and a source url" + (f"  <- {bad[:3]}" if bad else ""))
+        th = {t_["id"]: t_ for t_ in j["flow"]["thresholds"]}
+        ok = (th["order_2026_m311"]["value"]["value"] == 0.625 and th["order_2023_m238"]["value"]["value"] == 1.27
+              and {t_["value"]["value"] for t_ in j["temperature"]["thresholds"]} == {18.0, 20.0}
+              and j["series_meta"]["flow_daily"]["unit"] == "m3/s" and j["series_meta"]["flow_realtime_latest"]["datetime_utc"])
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /salmon: order thresholds 0.625 and 1.27 m3/s, 18/20 C, series_meta units and latest timestamp")
+        ok = (j["early_warning"]["label"] == "Rule of thumb, not a forecast model" and "Illustration" in j["water_for_salmon"]["scale_up"]["label"]
+              and not any("partner" in s_.lower() and "no partnership" not in s_.lower() for s_ in j["respect"]["statements"]))
+        fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /salmon: rule-of-thumb and illustration labels; respect block claims no partnership")
+for p in CA_FIELDS[:2]:
+    r = check("GET", f"/api/locations/{p}/salmon", ANY, expect=404)
+    ok = r is not None and "BC example field only" in r.json().get("detail", "")
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} /salmon 404 BC only")
+# ======================================================================== end /salmon ===================================
 for p in CA_FIELDS[:2]:   # California is untouched by the BC gate
     for route in ("/openet", "/insurance", "/water_seen"):
         check("GET", f"/api/locations/{p}{route}", ANY)

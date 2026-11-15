@@ -1,0 +1,28 @@
+{
+ "title": "MODIS/Terra Snow Cover 8-Day L3 Global 500m (MOD10A2 v061) over the Salmon River watershed (FWA group SALR)",
+ "url": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/modis-10A2-061",
+ "product_doi": "https://doi.org/10.5067/MODIS/MOD10A2.061",
+ "fetched_at": "2026-11-15T15:00:34Z",
+ "auth": "Planetary Computer anonymous SAS token",
+ "watershed": {
+  "code": "SALR",
+  "area_km2": 1794.3,
+  "wfs": "https://openmaps.gov.bc.ca/geo/pub/wfs"
+ },
+ "params": {
+  "years": [
+   2001,
+   2026
+  ],
+  "composite_start_doy": [
+   49,
+   177
+  ],
+  "platform": "terra"
+ },
+ "rows": 438,
+ "units": {
+  "snow_frac": "fraction of classified watershed pixels mapped as snow"
+ },
+ "quality_handling": "Maximum_Snow_Extent: 200 snow, 25 no snow are classified; cloud 50, night 11, missing 0/1, water 37/39/100, 254/255 excluded (unclassified_frac)."
+}

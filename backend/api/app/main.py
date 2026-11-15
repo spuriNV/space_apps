@@ -586,6 +586,17 @@ def first_nations(pid: str, resp: Response):
     return send(resp, d, "real")
 
 
+@app.get("/api/locations/{pid}/salmon")
+def salmon(pid: str, resp: Response):
+    """Salmon and the field (backend/bc/salmon.py; schema schemas/salmon.schema.json): Salmon River flow and temperature,
+    run timing, a spring early-warning table and each rotation's Aug-Sep irrigation draw. BC example field only."""
+    check_preset(pid)
+    f = ROOT / "backend" / "api" / "out" / pid / "salmon.json"
+    if fieldreg.region(pid) != "bc" or not f.is_file():
+        raise HTTPException(404, "Salmon context is built for the BC example field only (bc_salmon_river_forage)")
+    return send(resp, _read(f), "real")
+
+
 @app.get("/api/locations/{pid}/first_nations/reserves.geojson")
 def first_nations_reserves(pid: str, resp: Response):
     """Nearby reserve outlines (BC CLSS layer, ~20 km), for the map as context only. BC fields only."""
