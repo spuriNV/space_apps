@@ -6,7 +6,7 @@ import { acres, fieldName, latestCrop } from './components/ui/shared';
 import type { BCInfo, Calendar, CellGrid, Dataset, Location, Regional } from './types';
 import type { RegionalLive } from './api';
 import { reserveName } from './components/ui/FirstNations';
-import { atT, latestAt, dataT, CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
+import { atT, latestAt, dataT, tOf, TODAY_T, CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
 
 // Tile sources fixed by CONTRACT.md (no API keys).
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
@@ -47,6 +47,9 @@ export interface MapHandle {
   /** a field the user drew: fit its outline beside the panel (no zoom-out to the state view) */
   fitField: (loc: Location) => void;
   getMap: () => maplibregl.Map | null;
+  /** fly in from the California view, draw the outline, raise the squares and replay every quarter 2016-2026; false when the field has no grid */
+  replay: (loc: Location) => boolean;
+  cancelReplay: () => void;
 }
 interface Props {
   locations: Location[]; bc: BCInfo | null; datasets: Dataset[];
@@ -60,6 +63,8 @@ interface Props {
   catalog?: CatalogItem[] | null; catGroup?: string | null; onCatalogPick?: (it: { id: string; lat: number; lon: number }) => void;
   /** a tap, click or long-press on open map (not on a field or a pin): analyse that spot */
   onTap?: (lat: number, lon: number) => void;
+  /** the replay drives the app's time state (so the panel follows) and reports when it is running */
+  onReplayT?: (t: number) => void; onReplayRunning?: (on: boolean) => void;
   onView: (v: { zoom: number; pitch: number; bearing: number; lat: number; lon: number }) => void;
 }
 interface StackLabel { key: string; ax: number; ay: number; color: string; tag: string; title: string; value: string; note: string }
@@ -90,6 +95,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   live.current = p;
   const stackInfo = useRef<{ key: string; alt: number; color: string; tag: string; title: string; value: string; note: string; pad: number }[]>([]);
   const programmatic = useRef(false);
+  const replaying = useRef(false);
+  const replayStop = useRef<(() => void) | null>(null);
+  const [replayTick, setReplayTick] = useState(0);
+  const [replayOn, setReplayOn] = useState(false);
+  const [caption, setCaption] = useState<{ head: string; sub: string } | null>(null);
+  const reduceMotion = useRef(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   // ---------- create map ----------
   useEffect(() => {
@@ -100,7 +111,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: 'metric' }), 'bottom-right');
     map.on('load', () => {
       el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
-      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves']) map.addSource(id, { type: 'geojson', data: fc() });
+      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves', 'outline-draw']) map.addSource(id, id === 'cells' ? { type: 'geojson', data: fc(), promoteId: 'id' } : { type: 'geojson', data: fc() });
       addCatalogLayers(map, (it) => live.current.onCatalogPick?.(it));
       // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
       map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(10,12,8,0.5)', 'line-width': 3.6 } });
@@ -111,8 +122,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       map.addLayer({ id: 'shadow', type: 'fill', source: 'shadow', minzoom: EXPLODE_Z0, paint: { 'fill-color': '#000', 'fill-opacity': ['interpolate', ['linear'], ['zoom'], EXPLODE_Z0, 0, EXPLODE_Z1, 0.42] } });
       map.addLayer({ id: 'field-casing', type: 'line', source: 'field', paint: { 'line-color': 'rgba(0,0,0,0.65)', 'line-width': ['case', ['get', 'mine'], 6, 5] } });
       map.addLayer({ id: 'field-line', type: 'line', source: 'field', paint: { 'line-color': ['case', ['get', 'mine'], '#9be88a', ['get', 'selected'], '#ffffff', 'rgba(255,255,255,0.75)'], 'line-width': ['case', ['get', 'mine'], 3, 2] } }); // yours: a solid light-green line (presets are white)
+      map.addLayer({ id: 'outline-draw-casing', type: 'line', source: 'outline-draw', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': 'rgba(0,0,0,0.6)', 'line-width': 7 } });
+      map.addLayer({ id: 'outline-draw', type: 'line', source: 'outline-draw', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#ffd166', 'line-width': 3.5 } });
       map.addLayer({ id: 'field-hit', type: 'fill', source: 'field', paint: { 'fill-color': ['case', ['get', 'mine'], '#9be88a', '#fff'], 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, ['case', ['get', 'mine'], 0.16, 0.25], 11.5, ['case', ['get', 'mine'], ['case', ['get', 'selected'], 0.2, 0.12], 0.02]] } });
-      const ext = (id: string, opacity: number, minzoom: number) => map.addLayer({ id, type: 'fill-extrusion', source: id, minzoom, paint: { 'fill-extrusion-color': ['get', 'col'], 'fill-extrusion-base': explodeExpr('b'), 'fill-extrusion-height': explodeExpr('h'), 'fill-extrusion-opacity': opacity, 'fill-extrusion-vertical-gradient': true } });
+      // the replay writes feature-state (col, hs = full height at stack zoom) on the cells; with none set, the paint falls back to the baked properties
+      const ext = (id: string, opacity: number, minzoom: number) => map.addLayer({ id, type: 'fill-extrusion', source: id, minzoom, paint: { 'fill-extrusion-color': id === 'cells' ? ['to-color', ['coalesce', ['feature-state', 'col'], ['get', 'col']]] : ['get', 'col'], 'fill-extrusion-base': explodeExpr('b'), 'fill-extrusion-height': id === 'cells' ? ['interpolate', ['linear'], ['zoom'], EXPLODE_Z0, 0, EXPLODE_Z1, ['coalesce', ['feature-state', 'hs'], ['get', 'h']]] as unknown as number : explodeExpr('h'), 'fill-extrusion-opacity': opacity, 'fill-extrusion-vertical-gradient': true } });
       ext('posts', 0.55, EXPLODE_Z0 + 0.4);
       ext('slab-grace', 0.86, EXPLODE_Z0 + 0.1);
       ext('slab-smap', 0.84, EXPLODE_Z0 + 0.1);
@@ -151,6 +165,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       return pt.x >= -m && pt.y >= -m && pt.x <= w + m && pt.y <= h + m;
     };
     const applyExplodeTilt = () => {
+      if (replaying.current) return;
       const sel = live.current.selected;
       if (!sel || !fieldInView(sel)) return;
       const target = tiltForZoom(map.getZoom());
@@ -174,11 +189,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       live.current.onView({ zoom: z, pitch: map.getPitch(), bearing: map.getBearing(), lat: c.lat, lon: c.lng });
       setZoomClass(z < 8.2 ? 'far' : z < 12.4 ? 'mid' : 'near');
     };
+    for (const ev of ['dragstart', 'rotatestart', 'pitchstart'] as const) map.on(ev, (e) => { if ((e as { originalEvent?: unknown }).originalEvent) replayStop.current?.(); }); // programmatic jumps carry no originalEvent
     map.on('moveend', () => { programmatic.current = false; report(); });
     map.on('move', () => { updateLabels(); });
     map.on('zoom', report);
     report();
-    return () => map.remove();
+    return () => { replayStop.current?.(); map.remove(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -300,7 +316,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const set = (id: string, feats: unknown[]) => (map.getSource(id) as GeoJSONSource).setData(fc(feats));
     const { selected: loc, cells, cal, regional } = p;
     if (!loc || !cells || !cal) {
-      for (const id of ['cells', 'slab-smap', 'slab-grace', 'posts', 'shadow']) set(id, []);
+      for (const id of ['cells', 'slab-smap', 'slab-grace', 'posts', 'shadow']) if (!(replaying.current && id === 'cells')) set(id, []);
       stackInfo.current = [];
       updateLabels();
       return;
@@ -315,17 +331,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     if (p.layersOn.hls) {
       let sum = 0, n = 0;
       const layer = gridLayerFor(cells, tt);
-      set('cells', cells.features.map((f) => {
+      if (!replaying.current) set('cells', cells.features.map((f) => {
         const st = cells.layers ? realCellState(f.properties, layer, fs) : cellState(loc, fs, f.properties);
         if (st.cls !== 'u') { sum += p.metric === 'et' ? st.et : st.ndvi; n++; }
-        return { type: 'Feature', geometry: f.geometry, properties: { b: cellBase, h: cellBase + (8 + cellHeight(st, p.metric) * 175) * S, col: cellColor(st, f.properties, p.metric) } };
+        return { type: 'Feature', geometry: f.geometry, properties: { id: f.properties.id, b: cellBase, h: cellBase + (8 + cellHeight(st, p.metric) * 175) * S, col: cellColor(st, f.properties, p.metric) } };
       }));
       const mean = n ? sum / n : 0;
       const real = !!cells.layers;
       info.push({ key: 'hls', alt: cellBase + 60 * S, pad: 0, color: '#7ee081', tag: real ? `Sentinel-2 satellite, 100 ft squares${p.metric === 'et' ? ' · water use is example numbers' : ''}` : 'Landsat and Sentinel-2, 100 ft squares · example numbers', title: p.metric === 'et' ? 'The crop: water it is using' : `The crop: ${CLASS_LABEL[fs.cls].toLowerCase()}`,
         value: (real ? !n : fs.cls === 'u') ? 'No clear view (cloud)' : p.metric === 'et' ? `${mean.toFixed(1)} mm/day (${(mean / 25.4).toFixed(2)} in/day)` : `Greenness ${mean.toFixed(2)} on a 0 to 1 scale`,
         note: real ? `${cells.features.length} squares · ${gridLayerLabel(layer)}` : `${cells.features.length} cells inside your field · ${p.detector === 'rule' ? 'rule' : 'ML'} detector${fs.disagree ? ' · detectors disagree' : ''}` });
-    } else set('cells', []);
+    } else if (!replaying.current) set('cells', []);
     if (p.layersOn.smap) {
       const b = 235 * S, col = smap == null ? '#737a86' : ramp(SMAP_RAMP, smap);
       set('slab-smap', [padded(loc, 110 * S, { b, h: b + (14 + (smap ?? 10) * 0.42) * S, col })]);
@@ -345,7 +361,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     stackInfo.current = info;
     updateLabels();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, p.selected, p.cells, p.cal, p.regional, p.regionalLive, p.t, p.detector, p.metric, p.layersOn]);
+  }, [ready, p.selected, p.cells, p.cal, p.regional, p.regionalLive, p.t, p.detector, p.metric, p.layersOn, replayTick]);
+
+  // a different field ends the replay
+  useEffect(() => { replayStop.current?.(); }, [p.selected?.id]);
 
   // ---------- labels pinned to each slab (projected with altitude) ----------
   function updateLabels() {
@@ -369,6 +388,133 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const right = corners.reduce((a, c) => (c[0] > a[0] ? c : a));
       return { key: s.key, ax: right[0], ay: right[1], color: s.color, tag: s.tag, title: s.title, value: s.value, note: s.note };
     }));
+  }
+
+
+  // ---------- "Ten years from orbit": camera flight, outline draw, rising squares, then every quarter 2016-2026 ----------
+  function startReplay(loc: Location): boolean {
+    const map = mapRef.current, { cells, cal } = live.current;
+    if (!map || !cells?.layers || !cal) return false;
+    const frames = cells.layers.filter((l) => l.kind === 'quarter_median' && l.year != null && l.quarter != null && l.year >= 2016)
+      .sort((a, b) => a.year! * 4 + a.quarter! - b.year! * 4 - b.quarter!);
+    if (frames.length < 2) return false;
+    replayStop.current?.();
+    const RM = reduceMotion.current, S = (cells.cols * cells.cell_m) / 990, base = 430 * S, N = frames.length;
+    const c01 = (x: number) => clamp(x, 0, 1);
+    const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
+    const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+    const c = loc.centroid, small = loc.area_ha.value < 45;
+    const g = loc.geometry, ring = (g.type === 'Polygon' ? g.coordinates[0] : g.coordinates[0][0]) as number[][];
+    const cosLat = Math.cos((c.lat * Math.PI) / 180);
+    const len = [0]; for (let i = 1; i < ring.length; i++) len.push(len[i - 1] + Math.hypot((ring[i][0] - ring[i - 1][0]) * cosLat, ring[i][1] - ring[i - 1][1]));
+    const total = len[len.length - 1] || 1;
+    // per cell: id, distance from the middle (the wave of rising squares), and a gap-filled series
+    const feats = cells.features.map((f) => {
+      const r = f.geometry.coordinates[0];
+      const cx = r.reduce((a, q) => a + q[0], 0) / r.length, cy = r.reduce((a, q) => a + q[1], 0) / r.length;
+      let prev: number | null = null;
+      const v = frames.map((fr) => { const x = f.properties.nd?.[fr.key]; if (x != null) prev = x; return x ?? prev; });
+      const first = v.find((x) => x != null) ?? null;
+      return { f, id: f.properties.id, d: Math.hypot((cx - c.lon) * cosLat, cy - c.lat), v: v.map((x) => x ?? first) };
+    });
+    const maxD = Math.max(...feats.map((x) => x.d)) || 1;
+    feats.forEach((x) => (x.d /= maxD));
+    // state per frame: colour and height from the same functions the scrubber uses
+    const frameStates = frames.map((fr, i) => {
+      const tq = tOf(fr.year!, (fr.quarter! - 1) * 9 + 4), fs = fieldState(cal, dataT(cal, tq), live.current.detector);
+      return feats.map((x) => { const st = x.v[i] == null ? { cls: 'u' as const, ndvi: 0, et: 0 } : realCellState({ ...x.f.properties, nd: { [fr.key]: x.v[i] } }, fr, fs); return { col: cellColor(st, x.f.properties, 'cover'), h: base + (8 + cellHeight(st, 'cover') * 175) * S }; });
+    });
+    const meanOf = (i: number) => feats.reduce((a, x) => a + (x.v[i] ?? 0), 0) / feats.length;
+    const dry2022 = frames.map((fr, i) => (fr.year === 2022 ? meanOf(i) : null)).filter((x): x is number => x != null);
+    const dryYear = dry2022.length >= 3 && dry2022.every((x) => x < 0.2);
+    const hist = (loc.crop_history ?? {}) as Record<string, string>;
+    const QN = ['Jan to Mar', 'Apr to Jun', 'Jul to Sep', 'Oct to Dec'];
+    const captionFor = (year: number) => {
+      if (year === 2022 && dryYear) return { head: '2022: water ran short. The field stayed bare all year.', sub: 'No green-up in any quarter. Compare 2021 and 2023.' };
+      const crop = hist[String(year)];
+      return { head: crop ? `${year}: ${crop.replace('Fallow/Idle Cropland', 'fallow')}` : `${year}`, sub: crop ? 'USDA crop record, as the satellites saw it' : 'Satellite record only; USDA crop record not out yet' };
+    };
+    // timeline (s): fly, draw, rise, then the quarters; 2022 plays slowly where the data is dry
+    const T = RM ? { fly: [0, 0], line: [0, 0], rise: [0, 0] } : { fly: [0, 5.2], line: [3.8, 5.8], rise: [5.4, 6.6] };
+    const lapse = T.rise[1] + 1.0;
+    const keys: number[] = [lapse];
+    for (let i = 1; i < N; i++) keys.push(keys[i - 1] + (RM ? 0.9 : dryYear && (frames[i].year === 2022 || (frames[i].year === 2023 && frames[i].quarter === 1)) ? 0.8 : 0.28));
+    const END = keys[N - 1] + (RM ? 0.9 : 2.2);
+    const frameAtT = (t: number) => { let i = 0; while (i + 1 < N && keys[i + 1] <= t) i++; return i; };
+    // cameras: from the California view to the same camera as flyToField(loc, 'year')
+    const ex = live.current.rightInset + 330;
+    const pd = { ...pad(), right: ex };
+    const end = { center: [c.lon, c.lat - (small ? 0.0006 : 0.001)] as [number, number], zoom: (small ? 15.15 : 14.5) - 0.75, pitch: 52, bearing: -24 };
+    const start = { center: HOME.center, zoom: HOME.zoom };
+    const merc = (ll: [number, number]) => maplibregl.MercatorCoordinate.fromLngLat(ll);
+    const camAt = (t: number) => {
+      if (RM) return end;
+      const s = ease(c01((t - T.fly[0]) / (T.fly[1] - T.fly[0])));
+      const z = lerp(start.zoom, end.zoom, s), k = (1 - Math.pow(2, -(z - start.zoom))) / (1 - Math.pow(2, -(end.zoom - start.zoom)));
+      const a = merc(start.center), b = merc(end.center);
+      const m = new maplibregl.MercatorCoordinate(lerp(a.x, b.x, k), lerp(a.y, b.y, k));
+      const ll = m.toLngLat();
+      return { center: [ll.lng, ll.lat] as [number, number], zoom: z, pitch: end.pitch * c01((s - 0.35) / 0.65), bearing: end.bearing * c01((s - 0.25) / 0.75) };
+    };
+    const hide = (v: 'none' | 'visible') => { for (const id of ['field-casing', 'field-line']) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v); };
+    const src = (id: string) => map.getSource(id) as GeoJSONSource;
+    replaying.current = true; programmatic.current = true;
+    live.current.onReplayRunning?.(true); setReplayOn(true);
+    map.stop(); hide('none');
+    src('cells').setData(fc());
+    let raf = 0, done = false, shown = -1, lastFi = -1, lastT = -1, lastRise = -2;
+    const t0 = performance.now();
+    const finish = (toToday: boolean) => {
+      if (done) return;
+      done = true; cancelAnimationFrame(raf); replayStop.current = null;
+      try { map.removeFeatureState({ source: 'cells' }); } catch { /* source may be gone */ }
+      src('outline-draw')?.setData(fc()); hide('visible');
+      replaying.current = false; programmatic.current = false;
+      setCaption(null); setReplayOn(false); live.current.onReplayRunning?.(false);
+      if (toToday) live.current.onReplayT?.(TODAY_T);
+      setReplayTick((n) => n + 1);
+    };
+    replayStop.current = () => finish(false);
+    const frame = (t: number) => {
+      map.jumpTo({ ...camAt(t), padding: pd });
+      const lp = RM ? 1 : ease(c01((t - T.line[0]) / (T.line[1] - T.line[0]))), upto = lp * total, pts: number[][] = [];
+      if (lp < 1) { for (let i = 0; i < ring.length; i++) { if (len[i] <= upto) pts.push(ring[i]); else { const f = (upto - len[i - 1]) / ((len[i] - len[i - 1]) || 1); pts.push([lerp(ring[i - 1][0], ring[i][0], f), lerp(ring[i - 1][1], ring[i][1], f)]); break; } } }
+      else pts.push(...ring);
+      src('outline-draw').setData(fc(pts.length > 1 ? [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: pts } }] : []));
+      const fi = t < lapse && !RM ? 0 : frameAtT(t), st = frameStates[fi];
+      const rise = (x: { d: number }) => (RM ? 1 : (() => { const k = c01((t - T.rise[0] - x.d * 0.9) / 0.7); return 1 + 2.2 * Math.pow(k - 1, 3) + 1.2 * Math.pow(k - 1, 2); })());
+      const startedN = feats.filter((x) => RM || t - T.rise[0] - x.d * 0.9 > 0).length;
+      const riseDone = RM || t > T.rise[1] + 0.2;
+      if (startedN !== shown) {
+        shown = startedN;
+        const order = [...feats.keys()].sort((a, b) => feats[a].d - feats[b].d).slice(0, startedN);
+        src('cells').setData(fc(order.map((i) => ({ type: 'Feature', geometry: feats[i].f.geometry, properties: { id: feats[i].id, b: base, h: st[i].h, col: st[i].col } }))));
+      }
+      if (fi !== lastFi || !riseDone || lastRise !== (riseDone ? 1 : 0)) {
+        feats.forEach((x, i) => map.setFeatureState({ source: 'cells', id: x.id }, { col: st[i].col, hs: base + (st[i].h - base) * Math.max(0.02, rise(x)) }));
+        lastRise = riseDone ? 1 : 0;
+      }
+      if (fi !== lastFi) {
+        lastFi = fi;
+        const fr = frames[fi], tq = tOf(fr.year!, (fr.quarter! - 1) * 9 + 4);
+        if (tq !== lastT) { lastT = tq; live.current.onReplayT?.(tq); }
+        void QN;
+      }
+      const showCap = t >= lapse - 0.2;
+      setCaption((cur) => { const nx = showCap ? captionFor(frames[fi].year!) : null; return (cur?.head ?? '') === (nx?.head ?? '') ? cur : nx; });
+      return t >= END;
+    };
+    if (RM) {
+      // reduced motion: no flight or rise; the first quarter shows at once and each press-and-wait steps one quarter
+      let i = 0; const stepTo = (j: number) => { frame(keys[j]); };
+      stepTo(0);
+      const h = setInterval(() => { i++; if (i >= N) { clearInterval(h); finish(true); return; } stepTo(i); }, 900);
+      replayStop.current = () => { clearInterval(h); finish(false); };
+      return true;
+    }
+    const loop = (now: number) => { if (done) return; if (frame((now - t0) / 1000)) { finish(true); return; } raf = requestAnimationFrame(loop); };
+    raf = requestAnimationFrame(loop);
+    return true;
   }
 
   // ---------- camera ----------
@@ -420,6 +566,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       m.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: { ...pad(), top: 90, bottom: pad().bottom + 24, right: pad().right + 40, left: pad().left + 40 }, maxZoom: 16.2, pitch: 0, bearing: 0, duration: 900, easing: fly.easing });
     },
     getMap: () => mapRef.current,
+    cancelReplay() { replayStop.current?.(); },
+    replay(loc) { return startReplay(loc); },
     focusSpot(lat, lon) { const m = mapRef.current!; programmatic.current = true; m.easeTo({ center: [lon, lat], zoom: Math.max(m.getZoom(), 13.2), pitch: 0, bearing: 0, padding: pad(), duration: 900, easing: fly.easing }); },
   }));
 
@@ -438,7 +586,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
           <small>For context only. Not part of the analysis.</small>
         </div>
       )}
-      {placed.length > 0 && (
+      {caption && <div className="stack-label replay-cap" style={{ top: 176, left: p.leftInset + (el.current?.clientWidth ?? 1200) / 2 - p.leftInset / 2 }} role="status" aria-live="polite" data-testid="replay-caption"><b>{caption.head}</b><i>{caption.sub}</i></div>}
+      {placed.length > 0 && !replayOn && (
         <div className="stack-labels">
           <svg>
             {placed.map((l) => (

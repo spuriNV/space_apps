@@ -1822,3 +1822,7 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
   .gl-short { grid-template-columns: 1fr; }
 }
 .step-shell .fp-close { background: var(--panel); box-shadow: var(--e1); z-index: 3; }
+
+/* Ten years from orbit: the replay caption is one paper label box, top centre under the hint pill */
+.replay-cap { transform: translateX(-50%); width: auto; max-width: min(460px, calc(100% - 32px)); pointer-events: none; z-index: 20; }
+.replay-cap b { font-size: var(--fs-body); }

@@ -65,6 +65,7 @@ export default function App() {
   const [outlook, setOutlook] = useState<{ id: string; o: api.Outlook } | null>(null);
   const [iss, setISS] = useState<{ id: string; v: Awaited<ReturnType<typeof api.getISS>> } | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [replaying, setReplaying] = useState(false);
   const [sim, setSim] = useState<SimMode>(null); // Compare's "run a year on the map": a one-year playback with a water banner
   const [panel, setPanel] = useState<Panel>('none');
   const [cardOpen, setCardOpen] = useState(true);
@@ -157,6 +158,14 @@ export default function App() {
   const runSim = useCallback((next: NonNullable<SimMode>, startT: number) => { setSim(next); setT(startT); setPlaying(true); }, []);
 
   const d = data && data.id === selectedId ? data : null;
+  // ?replay=1: open the year view and start the replay once the field's grid has loaded
+  const replayLink = useRef(new URLSearchParams(location.search).get('replay') === '1');
+  useEffect(() => {
+    if (!replayLink.current || !selectedId || !d?.cells?.layers || !d.cal) return;
+    replayLink.current = false;
+    setYearOpen(true); setPanel('none'); setBriefOpen(false);
+    setTimeout(() => map.current?.replay(locations.find((l) => l.id === selectedId)!), 600);
+  }, [selectedId, d]);
   useEffect(() => { (window as unknown as Record<string, unknown>).__app = { setT, select: (id: string) => select(id), ready: !!d }; });
   const dl = daily && daily.id === selectedId ? daily : null;
   const ol = outlook && outlook.id === selectedId ? outlook.o : null;
@@ -283,6 +292,14 @@ export default function App() {
   const leftInset = phone ? 0 : leftPanel || stepPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
   const rightInset = layersOpen ? 396 : 0;
   const bottomInset = phone ? 64 + (leftPanel === 'card' || stepPanel ? sheetPx : leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
+  // "Ten years from orbit": needs the real quarterly grid (preset fields); the button is hidden elsewhere
+  const canReplay = !!selected && !!d?.cells?.layers && d.cells.layers.filter((l) => l.kind === 'quarter_median').length >= 8 && layersOn.hls;
+  const startReplay = () => {
+    if (!selected) return;
+    if (replaying) { map.current?.cancelReplay(); return; }
+    setPlaying(false); setYearOpen(true);
+    map.current?.replay(selected);
+  };
   const stackField = !!selected && !!d?.cells && !!d.cal;
   const drilled = stackField && view.zoom > 13.05;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
@@ -321,7 +338,7 @@ export default function App() {
     <div className={`app ${detail ? 'detail-on' : 'detail-off'}`}>
       <MapView ref={map} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
-        onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} />
+        onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onReplayT={setT} onReplayRunning={setReplaying} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} />
 
       <header className="topbar" data-testid="topbar">
         <button className="tb-brand" onClick={goHome} title="Back to all of California">CropLytics</button>
@@ -442,7 +459,7 @@ export default function App() {
       {yearExpanded && selected && d?.cal && (
         <div className="year-dock" data-testid="year-dock">
           <YearSheet t={t} setT={setT} loc={selected} cal={d.cal} daily={dl?.daily ?? null} ml={d.ml} extras={d.extras} calSource={calSource(d.prov.calendar)} events={events}
-            playing={playing} setPlaying={setPlaying} showEarlier={showEarlier} setShowEarlier={setShowEarlier} setExpanded={(b) => setYearOpen(b)} />
+            canReplay={canReplay} replaying={replaying} onReplay={startReplay} playing={playing} setPlaying={setPlaying} showEarlier={showEarlier} setShowEarlier={setShowEarlier} setExpanded={(b) => setYearOpen(b)} />
         </div>
       )}
 

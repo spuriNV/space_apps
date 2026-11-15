@@ -30,7 +30,7 @@ function typical(years: CalendarYear[]) {
   return s;
 }
 
-export interface YearSheetProps { events: FieldEvent[]; playing: boolean; setPlaying: (b: boolean) => void; extras: Extras | null; calSource: string; t: number; setT: (t: number) => void; loc: Location; cal: Calendar; daily: Daily | null; ml: MLInfo | null; showEarlier: boolean; setShowEarlier: (b: boolean) => void; setExpanded: (b: boolean) => void }
+export interface YearSheetProps { events: FieldEvent[]; playing: boolean; setPlaying: (b: boolean) => void; extras: Extras | null; calSource: string; t: number; setT: (t: number) => void; loc: Location; cal: Calendar; daily: Daily | null; ml: MLInfo | null; showEarlier: boolean; setShowEarlier: (b: boolean) => void; setExpanded: (b: boolean) => void; canReplay?: boolean; replaying?: boolean; onReplay?: () => void }
 
 const pct = (x: number | null) => (x == null ? '?' : `${Math.round(x * 100)}%`);
 /** What the machine-learning calendar is worth on this field, in plain words. */
@@ -97,6 +97,7 @@ export default function YearSheet(p: YearSheetProps) {
           {detail && p.extras?.stress && <span><i className="stress-key" />Crop-stress week (hover for why)</span>}
           {detail && p.extras?.water && <span><i className="opera-key" />Standing water seen by NASA OPERA</span>}
         </div>
+        {p.canReplay && <button className="ys-play ys-replay" onClick={p.onReplay} data-testid="replay-ten" title="Fly in and replay this field's satellite record, 2016 to 2026"><Icon name={p.replaying ? 'pause' : 'play'} size={18} />{p.replaying ? 'Stop replay' : 'Replay ten years'}</button>}
         <button className="ys-play" onClick={() => p.setPlaying(!p.playing)} data-testid="play" title={p.playing ? 'Pause' : 'Replay the seasons on the map'}><Icon name={p.playing ? 'pause' : 'play'} size={18} />{p.playing ? 'Pause' : 'Replay on the map'}</button>
         <button className="icon-btn" onClick={() => p.setExpanded(false)} title="Close" aria-label="Close" data-testid="year-close"><Icon name="down" /></button>
       </div>
