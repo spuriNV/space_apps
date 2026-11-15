@@ -7,7 +7,7 @@ import type { Daily } from '../../season';
 import { bareWindow } from '../../season';
 import { RAIN_FED, TODAY_T, fmtDate, isRainFed, latestAt, mmToAfac, ordinal } from '../../lib';
 const band = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi : v > 33 ? mid : lo);
-import { GapLine, Src, acres, fieldName, place, stationsName } from '../ui/shared';
+import { GapLine, Src, acres, fieldName, place, rotName, stationsName, waterGap } from '../ui/shared';
 import { Answer, KeyFacts, StepShell } from '../ui/StepShell';
 import { What } from '../ui/What';
 import { BARE_DEF } from '../../bare';
@@ -43,11 +43,12 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
     : gw ? `Basin groundwater: ${band(gw.v, 'above usual', 'about usual', 'below usual')}. Under state pumping rules.` : freeform && notReady ? 'Basin water supply is for the prepared fields for now.' : 'Groundwater reading not available right now.';
   const today = p.strategies.find((s) => s.is_baseline);
   const nxt = today ? o?.irrigation?.[today.id]?.value ?? mmToAfac(today.water.irrigation_need_mm.value) : null;
-  const nextNeed = nxt == null ? (p.strategies.length ? 'Need not available right now.' : 'Loading…') : today && isRainFed(today) ? `${RAIN_FED}. Fits any limit.` : `Needs ${nxt.toFixed(1)} acre-ft/acre. Limit ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}. ${nxt > p.allocation ? `${(nxt - p.allocation).toFixed(1)} short.` : 'It fits.'}`;
+  const nextNeed = nxt == null ? (p.strategies.length ? 'Need not available right now.' : 'Loading…') : today && isRainFed(today) ? `${RAIN_FED}. Fits any limit.` : `Needs ${nxt.toFixed(1)} acre-ft/acre. Limit ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}. ${waterGap(nxt, p.allocation).short ? `${waterGap(nxt, p.allocation).by} short.` : waterGap(nxt, p.allocation).even ? 'About even.' : 'It fits.'}`;
   const bw = p.cal ? bareWindow(p.cal, p.daily, (p.cal.years ?? []).map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const allYearsBw = bw;
   const rainFed = !!today && isRainFed(today);
-  const short = nxt != null && !rainFed && nxt > p.allocation;
+  const g = nxt != null ? waterGap(nxt, p.allocation) : null;
+  const short = !rainFed && !!g?.short, even = !rainFed && !!g?.even;
   const rainWords = !o ? null : notReady && gOut ? <GapLine gap={gOut} missing /> : notReady ? 'Not ready for this field yet' : wetLean > dryLean ? 'Leans wetter than normal' : dryLean > wetLean ? 'Leans drier than normal' : 'No clear lean either way';
   const fieldLine = <><b>{fieldName(p.loc)}</b> · {acres(p.loc)} acres</>;
   return (
@@ -55,10 +56,10 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
       field={fieldLine}
       title="Will next year still fit your water?"
       answer={nxt == null ? <Answer headline="" loading /> : rainFed
-        ? <Answer tone="good" headline="Yes. Today’s crop is rain-fed." sub="It needs no irrigation, so it fits any limit." />
+        ? <Answer tone="good" headline="Yes. Your current rotation is rain-fed." sub={`${today ? rotName(today).replace(/^\w/, (c) => c.toUpperCase()) : 'It'} needs no irrigation.`} />
         : short
-          ? <Answer tone="warn" headline={`Probably not. About ${(nxt - p.allocation).toFixed(1)} acre-ft per acre short.`} sub={`With this winter’s outlook, today’s crop needs about ${nxt.toFixed(1)} next season. Your limit is ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}.`} />
-          : <Answer tone="good" headline="Yes. It should fit next season." sub={`Today’s crop needs about ${nxt.toFixed(1)}; your limit is ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}.`} />}
+          ? <Answer tone="warn" headline={`Probably not. About ${g!.by} acre-ft per acre short.`} sub={`With this winter’s outlook, your current rotation, ${today ? rotName(today) : 'today’s crop'}, needs about ${nxt.toFixed(1)} acre-ft per acre next season. You can get ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}.`} />
+          : <Answer tone={even ? 'neutral' : 'good'} headline={even ? 'Just about. It needs about as much as you can get.' : 'Yes. You should have enough water next season.'} sub={`Your current rotation, ${today ? rotName(today) : 'today’s crop'}, needs about ${nxt.toFixed(1)} acre-ft per acre. You can get ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}.`} />}
       detailWhat="Outlooks, reservoirs, bare weeks, every rotation"
       next={{ label: 'Next: compare rotations', sub: short ? 'Find one that fits your water' : 'See what else could work', onClick: p.onCompare, testid: 'season-to-compare' }}
       detail={<div className="sheet-cols stacked">

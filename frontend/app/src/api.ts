@@ -424,8 +424,10 @@ const mockStrats = (id: string) => (mockStrategies as unknown as RotationStrateg
 
 /** POST /api/locations/{id}/score: allocation in acre-ft/acre; returns null if the API is down */
 export interface Scenario { dT_c: number; dP_pct: number }
-export async function scoreStrategies(id: string, allocation: number, weights?: Partial<Record<ScoreKey, number>>, scenario?: Scenario) {
-  const b = await apiReal(`/api/locations/${id}/score`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ allocation, ...(weights ? { weights } : {}), ...(scenario ? { scenario } : {}) }) });
+/** The grower's answers on step 4: what the crop is for (market score) and the equipment they have (filters rotations out). */
+export interface FarmAnswers { market_preference?: 'sell' | 'feed_own_herd' | 'no_preference'; constraints?: { has_seed_drill?: boolean } }
+export async function scoreStrategies(id: string, allocation: number, weights?: Partial<Record<ScoreKey, number>>, scenario?: Scenario, farm?: FarmAnswers) {
+  const b = await apiReal(`/api/locations/${id}/score`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ allocation, ...(weights ? { weights } : {}), ...(scenario ? { scenario } : {}), ...(farm ?? {}) }) });
   return b?.items ? (b.items as unknown[]).map(normStrategy) : null;
 }
 
@@ -810,3 +812,14 @@ export async function askChat(body: { question: string; history: ChatTurn[]; fie
     throw e instanceof Error ? e : new Error('The assistant could not answer. Please try again.');
   } finally { clearTimeout(h); }
 }
+
+// ---------- the grower's current rotation ----------
+/** Make `todayId` the current rotation ("today") when the grower picked one; the satellite-detected one keeps `detected`. */
+export function withToday(ss: RotationStrategy[], todayId?: string | null): RotationStrategy[] {
+  const pick = todayId && ss.some((s) => s.id === todayId) ? todayId : null;
+  return ss.map((s) => ({ ...s, detected: s.detected ?? s.is_baseline, is_baseline: pick ? s.id === pick : s.detected ?? s.is_baseline }));
+}
+const TODAY_KEY = 'croplytics.today';
+/** The grower's picks, remembered in this browser (per field id). */
+export function loadTodayPicks(): Record<string, string> { try { return JSON.parse(localStorage.getItem(TODAY_KEY) ?? '{}'); } catch { return {}; } }
+export function saveTodayPicks(v: Record<string, string>) { try { localStorage.setItem(TODAY_KEY, JSON.stringify(v)); } catch { /* private mode */ } }

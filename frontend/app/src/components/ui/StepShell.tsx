@@ -31,6 +31,36 @@ export function KeyFacts({ facts }: { facts: Fact[] }) {
   );
 }
 
+/** The grower's water limit, set where it is first used (step 2): − / + in tenths and a slider. "example" until changed. */
+export function LimitControl({ value, example, onChange }: { value: number; example: boolean; onChange: (v: number) => void }) {
+  const set = (v: number) => onChange(Math.round(Math.min(8, Math.max(0.5, v)) * 10) / 10);
+  return (
+    <div className="limit-ctl" data-testid="limit-ctl">
+      <div className="lc-row">
+        <label htmlFor="alloc">Water you can get each year<small>From your district or wells. 1 acre-ft per acre = 12 inches over the field.</small>{example && <small><em className="status example ex-limit">example, change to yours</em></small>}</label>
+        <div className="lc-step">
+          <button type="button" className="icon-btn" onClick={() => set(value - 0.1)} aria-label="Lower by 0.1"><Icon name="minus" size={18} /></button>
+          <output htmlFor="alloc" aria-live="polite"><b>{value.toFixed(1)}</b><small>acre-ft/acre</small></output>
+          <button type="button" className="icon-btn" onClick={() => set(value + 0.1)} aria-label="Raise by 0.1"><Icon name="plus" size={18} /></button>
+        </div>
+      </div>
+      <input id="alloc" type="range" min={0.5} max={8} step={0.1} value={value} onChange={(e) => set(+e.target.value)} data-testid="alloc" aria-label="Water you can get each year, acre-feet per acre" />
+    </div>
+  );
+}
+
+/** One question with two to four answers, as pills (step 4's farm questions). */
+export function Choice<T extends string>({ label, hint, value, options, onChange, disabled, testid }: { label: string; hint?: string; value: T; options: { v: T; label: string }[]; onChange: (v: T) => void; disabled?: boolean; testid?: string }) {
+  return (
+    <fieldset className="choice" data-testid={testid} disabled={disabled}>
+      <legend>{label}{hint && <small>{hint}</small>}</legend>
+      <div className="chips choice-pills">
+        {options.map((o) => <button key={o.v} type="button" className="chip" aria-pressed={value === o.v} onClick={() => onChange(o.v)}><Icon name="check" size={16} className="check" />{o.label}</button>)}
+      </div>
+    </fieldset>
+  );
+}
+
 export interface StepShellProps {
   id: FlowId;
   /** the field, small, above the question: keeps the grower oriented on every step */

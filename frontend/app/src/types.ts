@@ -104,6 +104,10 @@ export interface RotationStrategy {
   risk_profile: { rma_share_drought: SourcedNumber; rma_share_excess_moisture: SourcedNumber; rma_share_heat: SourcedNumber; rma_years: number[]; crop: string; note: string; blocked?: boolean };
   funding: { program: string; url: string; verified: boolean; rate_per_acre_usd?: SourcedNumber }[];
   constraints_check?: { constraint: string; status: string; detail: string; source?: Source }[];
+  /** true when the grower's answers rule this rotation out (e.g. it needs a grain drill they don't have) */
+  filtered_out?: boolean;
+  /** the rotation the satellite crop maps show (the engine's baseline); is_baseline may be the grower's own pick instead */
+  detected?: boolean;
   brief: { why: { text: string; author: string; checked: boolean }[]; evidence?: { text: string }[]; gaps?: { text: string }[] | string[]; local_review: { item: string; severity: string }[]; llm_report?: { sentences: number; numbers_checked: number; rejected: number } | null };
   uncertainty: { agronomic_gap_count: number };
 }

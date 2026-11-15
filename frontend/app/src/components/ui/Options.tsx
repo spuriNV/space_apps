@@ -8,10 +8,10 @@ import { ISSFigure, NasaList } from './NasaSection';
 import { SourcesSheet } from './Sources';
 import type { Daily } from '../../season';
 import Icon from '../Icons';
-import { useEffect, useState } from 'react';
-import { AboutField, StepLine, Workflow, CROP_COL, EventLog, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
+import { useEffect, useRef, useState } from 'react';
+import { AboutField, StepLine, Workflow, CROP_COL, rotName, waterGap, EventLog, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
 import { ThisWeek } from '../week/ThisWeek';
-import { Answer, KeyFacts, StepShell, type Tone } from './StepShell';
+import { Answer, KeyFacts, LimitControl, StepShell, type Tone } from './StepShell';
 import { useDetail } from './Detail';
 import { FirstNationsCard } from './FirstNations';
 import { SalmonPanel } from '../salmon/SalmonPanel';
@@ -31,6 +31,10 @@ export interface FieldPanelProps {
   onSheet?: (visiblePx: number) => void;
   /** back to step 1 */
   onBack?: () => void;
+  /** set the grower's water limit (acre-ft/acre) */
+  setAllocation?: (v: number) => void;
+  /** set the grower's current rotation (null: back to the one the satellites show) */
+  onToday?: (strategyId: string | null) => void;
   /** a tapped spot whose analysis failed: try again */
   onSpotRetry?: () => void;
   /** a field the user drew: Rename, Redraw (also "Fix the outline") and Delete */
@@ -42,7 +46,8 @@ export function FieldPanel(p: FieldPanelProps) {
   const thumbs = useThumbs();
   const detail = useDetail();
   const [src, setSrc] = useState(false);
-  useEffect(() => { setSrc(false); }, [loc.id]);
+  const [rotOpen, setRotOpen] = useState(false);
+  useEffect(() => { setSrc(false); setRotOpen(false); }, [loc.id]);
   const now = latestCrop(loc);
   const sp = loc.spot;
   const isToday = p.t === TODAY_T;
@@ -88,12 +93,37 @@ export function FieldPanel(p: FieldPanelProps) {
         {src && <SourcesSheet bc={isBC(loc)} onClose={() => setSrc(false)} />}
       </>}>
       <ThisWeek loc={loc} compact />
+      {isToday && p.allocation != null && p.setAllocation && p.strategies?.some((x) => x.is_baseline && !isRainFed(x)) && <LimitControl value={p.allocation} example={p.exampleLimit} onChange={p.setAllocation} />}
       <KeyFacts facts={loading ? [] : [
+        { label: 'Your rotation now', value: facts.rotation ? <>{facts.rotation}<small className="rot-src">{facts.picked ? 'Your choice' : 'From satellite crop maps'}{p.onToday && <> · <button type="button" className="link-btn" onClick={() => setRotOpen(!rotOpen)} aria-expanded={rotOpen} data-testid="change-rotation">{rotOpen ? 'Close' : 'Change'}</button></>}</small></> : pend(p.dataState) },
         { label: 'Growing now', value: facts.stage ?? pend(p.dataState) },
         { label: 'Rain since 1 Oct', value: facts.rain ?? pend(p.dailyState), tone: facts.rainTone },
         { label: 'Groundwater', value: facts.gw ?? pend(p.dataState), tone: facts.gwTone },
       ]} />
+      {rotOpen && p.strategies && p.onToday && <RotationPicker strategies={p.strategies} onPick={(id) => { p.onToday!(id); setRotOpen(false); }} />}
     </StepShell>
+  );
+}
+
+/** "What do you grow now?": every rotation on this field; the satellite-detected one is marked and is the way back. */
+function RotationPicker({ strategies, onPick }: { strategies: RotationStrategy[]; onPick: (id: string | null) => void }) {
+  const cur = strategies.find((s) => s.is_baseline);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => { ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, []);
+  return (
+    <div className="rot-pick" ref={ref} data-testid="rotation-picker">
+      <p className="rot-q">What do you grow on this field now?</p>
+      <div className="opt-list" role="radiogroup" aria-label="Your current rotation">
+        {[...strategies].sort((a, b) => Number(!!b.detected) - Number(!!a.detected)).map((s) => (
+          <button key={s.id} type="button" role="radio" aria-checked={s.id === cur?.id} className={`opt-row ${s.id === cur?.id ? 'on' : ''}`} onClick={() => onPick(s.detected ? null : s.id)} data-testid={`today-${s.id}`}>
+            <span className="opt-radio" aria-hidden="true" />
+            <span className="opt-body"><b>{s.short_name.replace(/\s*\(current\)$/i, '')}</b>{s.detected && <small>What the satellite crop maps show</small>}</span>
+            <span className="opt-fit"><b>{isRainFed(s) ? 'Rain-fed' : mmToAfac(s.water.irrigation_need_mm.value).toFixed(1)}</b><small>{isRainFed(s) ? '' : 'acre-ft/acre'}</small></span>
+          </button>
+        ))}
+      </div>
+      <p className="step-note">Your pick is used in every step and remembered in this browser. Bare days seen by satellite stay with the rotation the maps show.</p>
+    </div>
   );
 }
 
@@ -106,7 +136,10 @@ function nowFacts(p: FieldPanelProps) {
   const stageText = cal && dt != null ? stage(cal, dt).text : null;
   const rain = rainNow(p.nasaNow, p.daily, p.t);
   const gr = p.regional ? latestAt(p.regional.grace_gw_pct.values, p.t) : null;
+  const base = p.strategies?.find((x) => x.is_baseline);
   return {
+    rotation: base ? base.short_name.replace(/\s*\(current\)$/i, '') : null,
+    picked: !!base && base.detected === false,
     stage: stageText,
     rain: rain ? <>{rain.inches.toFixed(1)} in <small>{Math.round(rain.pct ?? 0)}% of normal</small></> : null,
     rainTone: (rain && (rain.pct ?? 100) < 85 ? 'warn' : undefined) as Tone | undefined,
@@ -120,11 +153,11 @@ function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategi
   const base = strategies?.find((s) => s.is_baseline);
   if (!base) return state === 'timeout' ? <Answer headline="Water check not available right now." /> : <Answer headline="" loading />;
   const need = mmToAfac(base.water.irrigation_need_mm.value);
-  const rf = isRainFed(base), short = !rf && allocation != null && need > allocation;
-  const lim = allocation != null ? `${allocation.toFixed(1)}${exampleLimit ? ' (an example; set yours in step 4)' : ''}` : '';
-  return <Answer tone={rf || (allocation != null && !short) ? 'good' : short ? 'warn' : 'neutral'}
-    headline={rf ? 'Yes. It’s rain-fed, so it needs no irrigation.' : allocation == null ? `It needs about ${need.toFixed(1)} acre-ft per acre a year.` : short ? `No. Short by about ${(need - allocation).toFixed(1)} acre-ft per acre.` : 'Yes. It fits your water limit.'}
-    sub={!rf && allocation != null ? `Today’s crop needs about ${need.toFixed(1)} a year. Your limit is ${lim}.` : undefined} />;
+  const rf = isRainFed(base), g = allocation != null ? waterGap(need, allocation) : null, short = !rf && !!g?.short, even = !rf && !!g?.even;
+  const lim = allocation != null ? `${allocation.toFixed(1)}${exampleLimit ? ' (an example; set yours below)' : ''}` : '';
+  return <Answer tone={short ? 'warn' : even || allocation == null ? 'neutral' : 'good'}
+    headline={rf ? 'Yes. It’s rain-fed, so it needs no irrigation.' : allocation == null ? `It needs about ${need.toFixed(1)} acre-ft per acre a year.` : short ? `No. Short by about ${g!.by} acre-ft per acre.` : even ? 'Just about. It needs about as much as you can get.' : 'Yes. You can get enough water for it.'}
+    sub={!rf && allocation != null ? `Your current rotation, ${rotName(base)}, needs about ${need.toFixed(1)} acre-ft per acre a year. You can get ${lim}.` : `Your current rotation is ${rotName(base)}.`} />;
 }
 
 /** "Pick your field": one paper surface, one row per field with a satellite thumbnail (outline drawn), a 2023-2026 season strip,

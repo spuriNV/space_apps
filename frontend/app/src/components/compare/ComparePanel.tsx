@@ -3,13 +3,13 @@
 import { Seg } from '../ui/Seg';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import type { Calendar, CoverClass, Location, RotationStrategy, ScoreKey, SourcedNumber } from '../../types';
-import { scoreStrategies, type Scenario } from '../../api';
+import { scoreStrategies, withToday, type Scenario } from '../../api';
 import { BARE_DEF, observedBare } from '../../bare';
 import { What } from '../ui/What';
 import { useDetail } from '../ui/Detail';
-import { Answer, StepShell } from '../ui/StepShell';
+import { Answer, Choice, StepShell } from '../ui/StepShell';
 import { CLASS_COLOR, RAIN_FED, isRainFed, mmToAfac } from '../../lib';
-import { fieldName, openetText } from '../ui/shared';
+import { fieldName, openetText, rotName } from '../ui/shared';
 import { HOT_F, hotBareDays, type Daily } from '../../season';
 import { SimRun } from './SimRun';
 import { WaterBars } from './WaterBars';
@@ -22,8 +22,8 @@ import { type Weather, WEATHER_LABEL, weatherLabels, waterOf as waterOfAf, scena
 export function fieldCtx(strategies: RotationStrategy[], daily: Daily | null, cal: Calendar | null): Ctx {
   const heat: Record<string, N> = {}, bare: Record<string, N> = {};
   if (daily) for (const s of strategies) { const h = hotBareDays(daily, s.month_cover); if (h) heat[s.id] = { v: h.value, lo: h.value, hi: h.value }; }
-  const ob = observedBare(cal), today = strategies.find((s) => s.is_baseline);
-  if (ob && today) bare[today.id] = { v: ob.value, lo: ob.value, hi: ob.value };
+  const ob = observedBare(cal), seen = strategies.find((s) => s.detected ?? s.is_baseline);
+  if (ob && seen) bare[seen.id] = { v: ob.value, lo: ob.value, hi: ob.value };
   return { heat, bare, bareYears: ob?.years ?? [] };
 }
 export const HEAT_NOTE = `Hot days = NOAA weather-station highs of ${HOT_F} °F or more, in months the rotation leaves the field bare.`;
@@ -101,33 +101,51 @@ const HEAT: [number, string][] = [[0, 'Normal heat'], [2, '4 °F warmer'], [4, '
 /** Scores that are the same for every rotation on this field carry no information: list them as "not scored yet". */
 const constantScores = (ss: RotationStrategy[]) => new Set(SCORE.filter((m) => { const v = ss.map((s) => s.scores[m.key as ScoreKey]?.value); return v.every((x) => x == null || x === v[0]); }).map((m) => m.key));
 
-export default function ComparePanel(p: { loc: Location; strategies: RotationStrategy[]; daily: Daily | null; cal: Calendar | null; live: boolean; allocation: number; exampleLimit: boolean; setAllocation: (v: number) => void; onBrief: (id: string) => void; sim: SimMode; simRunning: boolean; onRunSim: (sim: NonNullable<SimMode>, startT: number) => void; onStopSim: () => void; onClose: () => void; onBack: () => void; onSheet?: (px: number) => void }) {
+type Market = 'sell' | 'feed' | 'either';
+type Focus = 'water' | 'soil' | 'feed' | 'balanced';
+const MARKET_API = { sell: 'sell', feed: 'feed_own_herd', either: 'no_preference' } as const;
+/** "What matters most" as rotation-model weights (0-4; the rest stay 1). */
+const FOCUS_W: Record<Focus, Partial<Record<ScoreKey, number>>> = { water: { water_use: 4 }, soil: { erosion: 3, organic_matter: 3 }, feed: { forage_value: 4 }, balanced: {} };
+/** Why the grower's answers rule a rotation out, from the model's own constraint check. */
+const whyOut = (s: RotationStrategy) => (s.constraints_check?.some((c) => c.constraint === 'seed_drill' && c.status === 'conflict') ? 'Needs a grain drill' : 'Doesn’t fit your answers');
+
+export default function ComparePanel(p: { loc: Location; strategies: RotationStrategy[]; daily: Daily | null; cal: Calendar | null; live: boolean; allocation: number; exampleLimit: boolean; setAllocation: (v: number) => void; onBrief: (id: string) => void; sim: SimMode; simRunning: boolean; onRunSim: (sim: NonNullable<SimMode>, startT: number) => void; onStopSim: () => void; onClose: () => void; onBack: () => void; onSheet?: (px: number) => void; /** go to step 2, where the water limit is set */ onLimit?: () => void; /** the grower's own current rotation, if they changed it */ todayId?: string | null }) {
   // farmer priorities (0-4) and a rain / temperature what-if, re-scored by the rotation model (POST /score)
   const [weights, setWeights] = useState<Partial<Record<ScoreKey, number>>>({});
   const [scen, setScen] = useState<Scenario>({ dT_c: 0, dP_pct: 0 });
   const [rescored, setRescored] = useState<{ key: string; items: RotationStrategy[] } | null>(null);
   const [busy, setBusy] = useState(false);
-  const custom = Object.keys(weights).length > 0 || scen.dT_c !== 0 || scen.dP_pct !== 0;
-  const key = JSON.stringify([weights, scen, p.allocation, p.loc.id]);
+  // the grower's three answers: what the crop is for, a grain drill, and what matters most. They go to the rotation
+  // model (POST /score): the market answer and the focus re-rank the options, no drill rules out rotations that need one.
+  const [market, setMarket] = useState<Market>('either');
+  const [drill, setDrill] = useState<'yes' | 'no'>('yes');
+  const [focus, setFocus] = useState<Focus>('balanced');
+  const answered = market !== 'either' || drill !== 'yes' || focus !== 'balanced';
+  const custom = answered || Object.keys(weights).length > 0 || scen.dT_c !== 0 || scen.dP_pct !== 0;
+  const key = JSON.stringify([weights, scen, p.allocation, p.loc.id, market, drill, focus]);
   useEffect(() => {
     if (!custom || !p.live) return;
     setBusy(true);
-    const h = setTimeout(() => scoreStrategies(p.loc.id, p.allocation, { ...Object.fromEntries(PRIORITIES.map(([k]) => [k, k === 'pest_break' ? 0 : 1])), market: 0, ...weights }, scen)
+    const base = { ...Object.fromEntries(PRIORITIES.map(([k]) => [k, k === 'pest_break' ? 0 : 1])), market: market === 'either' ? 0 : 2, ...FOCUS_W[focus] };
+    const farm = { market_preference: MARKET_API[market], constraints: drill === 'no' ? { has_seed_drill: false } : {} };
+    const h = setTimeout(() => scoreStrategies(p.loc.id, p.allocation, { ...base, ...weights }, scen, farm)
       .then((st) => { if (st) setRescored({ key, items: st }); }).finally(() => setBusy(false)), 400);
     return () => clearTimeout(h);
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
-  const strategies = custom && rescored?.key === key ? rescored.items.map((s) => ({ ...s, water: { ...s.water, etc_vs_openet_pct: p.strategies.find((x) => x.id === s.id)?.water.etc_vs_openet_pct ?? null } })) : p.strategies;
+  const strategies = custom && rescored?.key === key ? withToday(rescored.items, p.todayId ?? p.strategies.find((x) => x.is_baseline)?.id).map((s) => ({ ...s, water: { ...s.water, etc_vs_openet_pct: p.strategies.find((x) => x.id === s.id)?.water.etc_vs_openet_pct ?? null } })) : p.strategies;
   const ctx = useMemo(() => fieldCtx(strategies, p.daily, p.cal), [strategies, p.daily, p.cal]);
   const flat = useMemo(() => constantScores(strategies), [strategies]);
   const today = strategies.find((s) => s.is_baseline) ?? strategies[0];
   const detail = useDetail().on;
   const allAlts = strategies.filter((s) => s.id !== today.id);
-  // every alternative, least water first: the question a grower under a water limit asks first
-  const alts = [...allAlts].sort((a, b) => a.water.irrigation_need_mm.value - b.water.irrigation_need_mm.value);
-  // open on the alternative that saves the most water: the question a grower under a water limit asks first
-  const [id, setId] = useState(() => [...alts].sort((a, b) => a.water.irrigation_need_mm.value - b.water.irrigation_need_mm.value)[0]?.id);
+  // best fit first (the model's overall score with the grower's answers); rotations their answers rule out go last
+  const alts = [...allAlts].sort((a, b) => Number(!!a.filtered_out) - Number(!!b.filtered_out) || b.composite.value - a.composite.value);
+  const avail = alts.filter((s) => !s.filtered_out);
+  const [id, setId] = useState<string | null>(null);
   const [weather, setWeather] = useState<Weather>('typical');
-  const alt = alts.find((s) => s.id === id) ?? alts[0];
+  const picked = avail.find((s) => s.id === id) ?? avail[0] ?? null;
+  const noneLeft = !picked;
+  const alt = picked ?? today;
   const heavy = p.loc.soil.hydrologic_group === 'D';
   const label = (m: Metric) => (m.key === 'infiltration' && heavy ? { ...m, gain: `${m.gain} (small effect on this heavy, slow-draining soil)`, loss: `${m.loss} (small effect on this heavy soil)` } : m);
   const all = detail ? [...UNIT, ...SCORE.filter((m) => !flat.has(m.key)).map(label)] : UNIT;
@@ -147,12 +165,12 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
   const short = (r: (typeof rows)[number], k: 'gain' | 'loss') => <li key={r.m.key}><b>{r.m[k]}</b><span>{delta(r.m, r.a, r.b)}</span></li>;
   return (
     <StepShell id="compare" testid="compare" resetKey={p.loc.id} onSheet={p.onSheet} onClose={p.onClose} onBack={p.onBack}
-      field={<><b>{fieldName(p.loc)}</b> · today: {today.short_name.replace(/\s*\(current\)$/i, '').toLowerCase()}</>}
+      field={<><b>{fieldName(p.loc)}</b> · your rotation now: {rotName(today)}</>}
       title="Which rotation would fit your water?"
-      answer={<Answer tone={fitTone(alt) === 'good' ? 'good' : fitTone(alt) === 'warn' ? 'warn' : 'neutral'}
-        headline={`${alt.short_name} ${fits(alt) === 'Fits your limit' ? 'fits your water limit' : fits(alt) === 'Over your limit' ? 'is over your water limit' : 'may go over your water limit'}.`}
-        sub={wa.rf ? `${RAIN_FED}.` : `Needs about ${wa.v?.toFixed(1)} acre-ft per acre a year${wt.rf ? '' : `, against ${wt.v?.toFixed(1)} today`}. Your limit is ${lim}.`} />}
-      next={{ label: 'Next: print for your adviser', sub: `One page on ${alt.short_name.toLowerCase()}`, onClick: () => p.onBrief(alt.id), testid: 'to-brief' }}
+      answer={noneLeft ? <Answer tone="warn" headline="No other rotation fits your answers here." sub={drill === 'no' ? 'Every option on this field needs a grain drill. Hiring one, or a custom seeding service, would bring them back.' : 'Change an answer below to see the options again.'} /> : <Answer tone={fitTone(alt) === 'good' ? 'good' : fitTone(alt) === 'warn' ? 'warn' : 'neutral'}
+        headline={`${alt.short_name} ${fits(alt) === 'Fits your limit' ? 'fits the water you can get' : fits(alt) === 'Over your limit' ? 'needs more water than you can get' : 'may need more water than you can get'}.`}
+        sub={<>{wa.rf ? `${alt.short_name} is ${RAIN_FED.toLowerCase()}.` : `${alt.short_name} needs about ${wa.v?.toFixed(1)} acre-ft per acre a year.`} Your current rotation, {rotName(today)}, needs {wt.rf ? 'no irrigation' : `${wt.v?.toFixed(1)}`}. You can get {lim}.</>} />}
+      next={{ label: 'Next: print for your adviser', sub: noneLeft ? 'One page on what you grow today' : `One page on ${alt.short_name.toLowerCase()}`, onClick: () => p.onBrief(alt.id), testid: 'to-brief' }}
       detailWhat="Every factor, priorities, play a year on the map"
       detail={<>
         <h2 className="fp-h">Water against your limit <What k="waterBalance" /></h2>
@@ -196,32 +214,46 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
         <SimRun loc={p.loc} strategies={p.strategies} allocation={p.allocation} pickId={alt.id} weather={weather} onRun={p.onRunSim} running={p.simRunning} onStop={p.onStopSim} />
         <p className="how">Better / worse = the whole likely range is above or below today’s. Water need: rotation model with NASA POWER weather, 2015–2025. {p.loc.region === 'bc' ? HEAT_NOTE.replace('NOAA', 'Environment Canada') : HEAT_NOTE} Supports, doesn’t replace, your adviser.</p>
       </>}>
-      <div className="opt-list" role="radiogroup" aria-label="Rotation to compare with today">
-        {alts.map((s) => {
-          const w = water(s), on = s.id === alt.id, tone = fitTone(s);
+      <div className="farm-q" data-testid="farm-questions">
+        <Choice testid="q-market" label="What will you do with the crop?" value={market} onChange={setMarket} disabled={!p.live}
+          options={[{ v: 'sell', label: 'Sell it' }, { v: 'feed', label: 'Feed my own herd' }, { v: 'either', label: 'Either' }]} />
+        <Choice testid="q-drill" label="Do you have a grain drill?" hint="Small grains and safflower are drilled." value={drill} onChange={setDrill} disabled={!p.live}
+          options={[{ v: 'yes', label: 'Yes, or I can hire one' }, { v: 'no', label: 'No' }]} />
+        <Choice testid="q-focus" label="What matters most to you?" value={focus} onChange={setFocus} disabled={!p.live}
+          options={[{ v: 'water', label: 'Saving water' }, { v: 'soil', label: 'Healthy soil' }, { v: 'feed', label: 'More feed' }, { v: 'balanced', label: 'All about equal' }]} />
+        {!p.live && <p className="how">Needs the CropLytics server to re-rank the options.</p>}
+      </div>
+      <h2 className="fp-h opt-h">{answered ? 'Best fit for your answers' : 'Options for this field'}{busy && <small className="muted"> Updating…</small>}</h2>
+      <div className="opt-today" data-testid="opt-today">
+        <span className="opt-body"><small>Your rotation now</small><b>{today.short_name.replace(/\s*\(current\)$/i, '')}</b>
+          <span className="month-strip" aria-hidden="true">{today.month_cover.split('').map((c, m) => <i key={m} title={today.calendar_months[m]} style={{ background: CLASS_COLOR[c as CoverClass] }} />)}</span></span>
+        <span className={`opt-fit ${fitTone(today)}`}><b>{wt.rf ? 'Rain-fed' : wt.v?.toFixed(1)}</b><small>{wt.rf || fitTone(today) === 'good' ? 'fits' : fitTone(today) === 'warn' ? 'over' : 'may go over'}</small></span>
+      </div>
+      <div className={`opt-list ${busy ? 'busy' : ''}`} role="radiogroup" aria-label="Rotation to compare with today" aria-busy={busy}>
+        {alts.map((s, i) => {
+          const w = water(s), on = !noneLeft && s.id === alt.id, tone = fitTone(s), out = !!s.filtered_out;
           return (
-            <button key={s.id} role="radio" aria-checked={on} className={`opt-row ${on ? 'on' : ''}`} onClick={() => setId(s.id)} data-alt={s.id}>
+            <button key={s.id} role="radio" aria-checked={on} disabled={out} className={`opt-row ${on ? 'on' : ''} ${out ? 'out' : ''}`} onClick={() => setId(s.id)} data-alt={s.id}>
               <span className="opt-radio" aria-hidden="true" />
               <span className="opt-body">
-                <b>{s.short_name}</b>
-                <span className="month-strip" aria-hidden="true">{s.month_cover.split('').map((c, m) => <i key={m} title={s.calendar_months[m]} style={{ background: CLASS_COLOR[c as CoverClass] }} />)}</span>
+                <b>{s.short_name}{i === 0 && !out && <em className="opt-best">{answered ? 'Best fit for you' : 'Top pick'}</em>}</b>
+                {out ? <small>{whyOut(s)}</small> : <span className="month-strip" aria-hidden="true">{s.month_cover.split('').map((c, m) => <i key={m} title={s.calendar_months[m]} style={{ background: CLASS_COLOR[c as CoverClass] }} />)}</span>}
               </span>
-              <span className={`opt-fit ${tone}`}><b>{w.rf ? 'Rain-fed' : `${w.v?.toFixed(1)}`}</b><small>{w.rf ? 'fits' : tone === 'good' ? 'fits' : tone === 'warn' ? 'over' : 'may go over'}</small></span>
+              {!out && <span className={`opt-fit ${tone}`}><b>{w.rf ? 'Rain-fed' : `${w.v?.toFixed(1)}`}</b><small>{w.rf ? 'fits' : tone === 'good' ? 'fits' : tone === 'warn' ? 'over' : 'may go over'}</small></span>}
             </button>
           );
         })}
       </div>
-      <div className="limit-ctl">
-        <label htmlFor="alloc">Your water limit <b>{p.allocation.toFixed(1)} acre-ft per acre</b>{p.exampleLimit && <em className="status example ex-limit">example, change to yours</em>}</label>
-        <input id="alloc" type="range" min={0.5} max={6} step={0.1} value={p.allocation} onChange={(e) => p.setAllocation(+e.target.value)} data-testid="alloc" />
-        <Seg className="small" label="Weather year for irrigation need" value={weather} onChange={setWeather} options={(Object.keys(wLabels) as Weather[]).map((w) => ({ v: w, label: wLabels[w], testid: `replay-${w}` }))} />
+      <div className="limit-line">
+        <span>Water you can get <b>{p.allocation.toFixed(1)} acre-ft per acre a year</b>{p.exampleLimit && <em className="status example ex-limit">example</em>}</span>
+        {p.onLimit && <button className="btn btn-text btn-sm" onClick={p.onLimit} data-testid="change-limit">Change</button>}
       </div>
       <WaterBars strategies={strategies} selId={alt.id} todayId={today.id} weather={weather} allocation={p.allocation} acres={fieldAcres(p.loc)} />
       <p className="how scenario-sum" data-testid="scenario-summary" key={weather} role="status">{scenario}</p>
-      <div className="gl-short">
+      {!noneLeft && <div className="gl-short">
         <div><h3 className="gain">You gain</h3>{gains.length ? <ul>{gains.slice(0, 3).map((r) => short(r, 'gain'))}</ul> : <p className="muted">Nothing clearly better than today.</p>}</div>
         <div><h3 className="loss">You give up</h3>{losses.length ? <ul>{losses.slice(0, 3).map((r) => short(r, 'loss'))}</ul> : <p className="muted">Nothing clearly worse than today.</p>}</div>
-      </div>
+      </div>}
     </StepShell>
   );
 }
