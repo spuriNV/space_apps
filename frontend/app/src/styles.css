@@ -1650,7 +1650,8 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 .step-bar i.done { background: var(--accent-outline); }
 .step-bar i.on { background: var(--accent); }
 .step-purpose { margin: 4px 0 0; font-size: var(--fs-small); line-height: 1.4; color: var(--text-2); max-width: 46ch; }
-.pk-head + .step-line { padding: 0 var(--s-5); margin-bottom: var(--s-2); }
+.pk-head + .step-line, .pk-tabs + .step-line { padding: 0 var(--s-5); margin-bottom: var(--s-2); }
+.pk-tabs { padding-inline: var(--s-5); }
 .sheet-head .step-line { margin-bottom: var(--s-2); }
 .fp-head .step-line { margin-bottom: var(--s-2); }
 
