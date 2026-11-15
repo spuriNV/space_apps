@@ -4,6 +4,7 @@
 // Respectful and factual: public facts and links only, nothing that speaks for a Nation, no imagery of people.
 import { useEffect, useState } from 'react';
 import type { FirstNations, Location } from '../../types';
+import { linkOf } from '../../types';
 import { getFirstNations } from '../../api';
 import { fmtDate } from '../../lib';
 
@@ -30,7 +31,7 @@ export function FirstNationsCard({ loc }: { loc: Location }) {
       <p className="fn-statement">{statement}</p>
       <ul className="fn-lines">
         <li>{onReserve ? 'This field is on reserve land.' : `This field is not on reserve land; nearest reserve ${km} km (${nation}).`}</li>
-        {lower && <li>Nation on the lower {river}: {lower.nation}.{lower.url && <> <a href={lower.url} target="_blank" rel="noreferrer">{lower.nation} lands page</a></>}</li>}
+        {lower && <li>Nation on the lower {river}: {lower.nation}.{linkOf(lower) && <> <a href={linkOf(lower)!} target="_blank" rel="noreferrer">{lower.nation} lands page</a></>}</li>}
       </ul>
       <div className="d-only fn-more" data-testid="first-nations-detail">
         {fn === undefined ? <p className="muted">Loading…</p> : fn === null ? <p className="gap-line">More on the Nations is not available right now.</p> : <>
@@ -45,14 +46,14 @@ export function FirstNationsCard({ loc }: { loc: Location }) {
           <ol className="fn-steps">{fn.engagement_steps.map((x) => <li key={x}>{x}</li>)}</ol>
 
           <h3>Principles we follow</h3>
-          <ul className="fn-list">{fn.principles.map((x) => <li key={x.id}><a href={x.url} target="_blank" rel="noreferrer">{x.name}</a><span>{x.description}</span></li>)}</ul>
+          <ul className="fn-list">{fn.principles.map((x) => <li key={x.id}>{linkOf(x) ? <a href={linkOf(x)!} target="_blank" rel="noreferrer">{x.name}</a> : <b>{x.name}</b>}<span>{x.description}</span></li>)}</ul>
 
           <h3>Public contact pages</h3>
-          <ul className="fn-list">{fn.contacts.map((x) => <li key={x.url}><a href={x.url} target="_blank" rel="noreferrer">{x.nation}</a><span>{x.department}</span></li>)}</ul>
+          <ul className="fn-list">{fn.contacts.map((x) => <li key={x.url + x.nation}>{linkOf(x) ? <a href={linkOf(x)!} target="_blank" rel="noreferrer">{x.nation}</a> : <b>{x.nation}</b>}<span>{x.department}</span></li>)}</ul>
 
           <h3>Water and salmon, {fn.water_timeline[0]?.date.slice(0, 4)}–{fn.water_timeline[fn.water_timeline.length - 1]?.date.slice(0, 4)}</h3>
           <ul className="fn-time">
-            {fn.water_timeline.map((x) => <li key={x.date + x.title}><time>{when(x.date)}</time><span>{x.title}{x.url && <> <a href={x.url} target="_blank" rel="noreferrer">Source</a></>}</span></li>)}
+            {fn.water_timeline.map((x) => <li key={x.date + x.title}><time>{when(x.date)}</time><span>{x.title}{linkOf(x) && <> <a href={linkOf(x)!} target="_blank" rel="noreferrer">Source</a></>}</span></li>)}
           </ul>
           <cite>{fn.source?.title ?? 'BC Data Catalogue'}{fn.notes?.[1] ? `. ${fn.notes[1]}` : ''}</cite>
         </>}

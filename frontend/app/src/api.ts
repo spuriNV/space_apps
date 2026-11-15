@@ -122,13 +122,14 @@ function realLocation(base: Location, apiLoc?: any): { loc: Location; prov: Prov
     nasadem: a.terrain?.slope_mean_pct?.value != null ? { slope_mean_pct: a.terrain.slope_mean_pct.value, slope_p90_pct: a.terrain.slope_p90_pct?.value, low_spot_fraction: a.terrain.low_spot_fraction?.value } : undefined,
     region: a.region === 'bc' ? 'bc' : 'ca', county_kind: a.county_kind, data_gaps: a.data_gaps, water_context: a.water_context, first_nations: a.first_nations };
   if (loc.nasadem) prov.terrain = P('terrain', 'Slope and low spots (NASADEM)', 'api', 'NASA JPL elevation, 30 m');
-  // water district / GSA: use the API's only when it is looked up (the placeholder text carries "(U)"); a looked-up field may have no district
+  // water district / GSA: use the API's only when it is looked up or verified (status from lookup / verified, not text markers); a looked-up field may have no district
   const w = a.water;
-  if (w && (w.lookup || (w.district && !/\(U\)/.test(String(w.district)))) && w.verified !== false) { loc = { ...loc, water: { ...loc.water, ...w, allocation_input: loc.water.allocation_input }, water_real: true }; prov.water = P('water', 'Water source and district', 'api', String(w.district ?? w.sgma_subbasin ?? 'looked up')); }
+  if (w && (w.lookup || (w.district && w.verified === true)) && w.verified !== false) { loc = { ...loc, water: { ...loc.water, ...w, allocation_input: loc.water.allocation_input }, water_real: true }; prov.water = P('water', 'Water source and district', 'api', String(w.district ?? w.sgma_subbasin ?? 'looked up')); }
   if (loc.region === 'bc') {
-    // BC: a ParcelMap BC parcel clipped to AAFC forage pixels; AAFC crop inventory; SoilGrids; no California water district
+    // BC: a ParcelMap BC parcel clipped to AAFC forage pixels; AAFC crop inventory; AAFC Soil Landscapes of Canada; no California water district
     prov.outline = P('outline', 'Field outline', 'api', 'ParcelMap BC parcel inside the farmland reserve, clipped to AAFC forage pixels');
-    prov.soil = P('soil', 'Soil (SoilGrids global model)', 'api', a.soil?.mukey === 'pending' ? 'not fetched yet' : 'ISRIC SoilGrids v2');
+    const slc = /aafc|slc/i.test(a.soil?.source?.id ?? a.soil?.awc_mm_per_m?.source?.id ?? '');
+    prov.soil = P('soil', slc ? 'Soil (AAFC Soil Landscapes of Canada)' : 'Soil (SoilGrids global model)', 'api', a.soil?.mukey === 'pending' ? 'not fetched yet' : slc ? 'AAFC Soil Landscapes of Canada v3.2, 1:1,000,000' : 'ISRIC SoilGrids v2');
     if (a.crop_history) prov.crop_history = P('crop_history', 'Crop on record (AAFC Annual Crop Inventory)', 'api', 'AAFC ACI 2011–2025');
     prov.water = P('water', 'Watershed and irrigation orders', 'api', a.water_context?.watershed ?? 'BC Water Sustainability Act');
     loc = { ...loc, water: { ...loc.water, source: a.water?.source ?? null } }; // not the forage example's wells

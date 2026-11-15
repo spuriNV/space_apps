@@ -176,12 +176,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const ring = polys.map((pp) => pp[0]).sort((a, b) => b.length - a.length)[0] ?? [];
       const ys = ring.map((c) => c[1]), midY = (Math.min(...ys) + Math.max(...ys)) / 2;
       const at = [Math.max(...ring.map((c) => c[0])), midY];
-      const pr = (f.properties ?? {}) as { name?: string; band?: string; distance_to_field_km?: number };
+      const pr = (f.properties ?? {}) as { name?: string; band?: string; nation?: string; distance_to_field_km?: number };
       const d = document.createElement('div');
       d.className = 'res-tag';
       d.innerHTML = `<b></b><i></i>`;
       d.querySelector('b')!.textContent = reserveName(pr.name ?? 'Reserve');
-      d.querySelector('i')!.textContent = pr.band ?? '';
+      d.querySelector('i')!.textContent = pr.nation ?? pr.band ?? '';
       return { km: pr.distance_to_field_km ?? 99, m: new maplibregl.Marker({ element: d, anchor: 'left', offset: [6, 0] }).setLngLat(at as [number, number]).addTo(map) };
     }).sort((a, b) => a.km - b.km);
     // neighbouring reserves: keep the nearer one's label when two boxes overlap

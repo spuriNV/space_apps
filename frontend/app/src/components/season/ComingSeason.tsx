@@ -1,5 +1,6 @@
 // "Coming season": outlooks for this winter and next season, always labelled as outlooks, not forecasts.
 import type { Calendar, Location, Regional, RotationStrategy } from '../../types';
+import { linkOf } from '../../types';
 import { bcGap, isBC, type NasaNow, type Outlook, type OutlookCat, type ProvMap, type RegionalLive } from '../../api';
 import { whenT } from '../ui/FieldNow';
 import type { Daily } from '../../season';
@@ -94,7 +95,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
           {bc ? <>
           <h3>Irrigation orders in this watershed</h3>
           <ul className="olist">
-            {(wc?.orders ?? []).map((x) => <li key={x.date + x.title}><b>{fmtDate(x.date)}</b><span>{x.title}.{x.url && <> <a href={x.url} target="_blank" rel="noreferrer">Source</a></>}</span></li>)}
+            {(wc?.orders ?? []).map((x) => <li key={x.date + x.title} className={x.kind === 'rescission' ? 'rescind' : ''}><b>{fmtDate(x.date)}</b><span>{x.kind === 'rescission' ? 'Rescinded. ' : ''}{x.title}.{linkOf(x) && <> <a href={linkOf(x)!} target="_blank" rel="noreferrer">Source</a></>}</span></li>)}
             {!wc?.orders?.length && <li><span>None on record.</span></li>}
           </ul>
           {wc?.note && <p className="how">{wc.note}</p>}

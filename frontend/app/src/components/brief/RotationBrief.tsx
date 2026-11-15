@@ -14,7 +14,8 @@ import { BARE_DEF, observedBare, usuallyBareMonths } from '../../bare';
 
 const lean = (c?: { category: string; prob: number | null } | null) => (!c || c.category.startsWith('equal') || (c.prob ?? 40) <= 35 ? 'no clear lean' : c.category.startsWith('above') ? 'leans wetter than normal' : 'leans drier than normal');
 /** Engine review notes are written for the team; strip spec references and convert mm to acre-feet per acre. */
-const plain = (t: string) => t.replace(/\s*\((spec [^)]*|U)\)/g, '').replace(/(\d[\d,]*)\s?mm/g, (_, n) => `${(Number(n.replace(/,/g, '')) / 304.8).toFixed(1)} acre-ft/acre`);
+// the API strips internal markers ((U), spec refs) from user-facing text; only the unit conversion is left here
+const plain = (t: string) => t.replace(/(\d[\d,]*)\s?mm/g, (_, n) => `${(Number(n.replace(/,/g, '')) / 304.8).toFixed(1)} acre-ft/acre`);
 const SEASON: Record<string, string> = { NDJ: 'Nov–Jan', DJF: 'Dec–Feb', JFM: 'Jan–Mar', FMA: 'Feb–Apr' };
 
 export default function RotationBrief(p: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; exampleLimit: boolean; prov: ProvMap; outlook: Outlook | null; nasaNow: NasaNow | null; cal: Calendar | null; daily: Daily | null; onClose: () => void }) {
@@ -118,7 +119,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <footer className="p-foot">
             <div className="p-sources"><b>Sources</b>
               {sources.map((src, i) => <span key={src.id}>{i + 1}. {src.title ?? src.id}{src.verified ? '' : ' (unverified)'}</span>)}
-              <span>NASA: Landsat (NASA/USGS) for the field calendar with Sentinel-2 (ESA), cross-checked with HLS; NASA POWER sun, wind and humidity for crop water use; NASADEM for slope. {bc ? <>Weather: Environment Canada (ECCC) stations. Crop record: AAFC Annual Crop Inventory. Soil: SoilGrids global model. Water orders: BC Gov News. {BARE_DEF} {HEAT_NOTE.replace('NOAA', 'Environment Canada')}</> : <>Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Soil: USDA soil survey (SSURGO). {BARE_DEF} {HEAT_NOTE}</>}</span>
+              <span>NASA: Landsat (NASA/USGS) for the field calendar with Sentinel-2 (ESA), cross-checked with HLS; NASA POWER sun, wind and humidity for crop water use; NASADEM for slope. {bc ? <>Weather: Environment Canada (ECCC) stations. Crop record: AAFC Annual Crop Inventory. Soil: AAFC Soil Landscapes of Canada (1:1,000,000). Water orders: BC Gov News. {BARE_DEF} {HEAT_NOTE.replace('NOAA', 'Environment Canada')}</> : <>Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Soil: USDA soil survey (SSURGO). {BARE_DEF} {HEAT_NOTE}</>}</span>
             </div>
             <div className="p-disclaimer">This summary supports a conversation between grower and adviser; it does not replace one.</div>
             <div>CropLytics, made for the NASA Space Apps challenge “Field Shift: Adapting Farms with NASA Data”.</div>

@@ -1,7 +1,8 @@
 // Building blocks for the farmer-first field panel and the printable brief.
 // Rule of thumb (see .claude/skills/fieldshift-visual-design): lead with the grower's words and units,
 // answer a question in a sentence, and put the satellite / pixel size / percentile in the "where this comes from" line.
-import type { Calendar, DataGap, FieldEvent, Location, RotationStrategy } from '../../types';
+import type { Calendar, DataGap, FieldEvent, Location, RotationStrategy, WaterOrder } from '../../types';
+import { linkOf } from '../../types';
 import { BARE_DEF, observedBare, usuallyBareMonths } from '../../bare';
 import type { ProvMap, Prov } from '../../api';
 import { SOIL_COLOR, dateToT, fmtDate, haToAc, yearOf, dekadOf } from '../../lib';
@@ -103,7 +104,7 @@ export function Actions({ onStep }: { onStep: (s: Step) => void }) {
   );
 }
 
-/** Soil facts in plain words, from the location route's soil (SSURGO; BC from SoilGrids may lack some). Missing values return null. */
+/** Soil facts in plain words, from the location route's soil (SSURGO; BC from AAFC Soil Landscapes of Canada, or SoilGrids). Missing values return null. */
 export function soilFacts(soil: Location['soil'] | null | undefined) {
   const s = soil ?? null;
   const td = s?.texture_detail;
@@ -112,7 +113,8 @@ export function soilFacts(soil: Location['soil'] | null | undefined) {
   const texture = known(s?.texture_class) ? s!.texture_class.charAt(0).toUpperCase() + s!.texture_class.slice(1).toLowerCase() : null;
   const awc = s?.awc_mm_per_m?.value, inFt = ok(awc) ? (awc / 1000) * 12 : null;
   const dc = known(s?.drainage_class) ? s!.drainage_class.toLowerCase() : '', hg = known(s?.hydrologic_group) ? s!.hydrologic_group.toUpperCase().charAt(0) : '';
-  const drain: 'slow' | 'fast' | 'well' | null = !dc && !hg ? null : hg === 'D' || /poorly/.test(dc) ? 'slow' : /excessive/.test(dc) || hg === 'A' ? 'fast' : 'well';
+  // imperfectly, somewhat poorly, poorly and very poorly drained all drain slowly, whatever the runoff group
+  const drain: 'slow' | 'fast' | 'well' | null = !dc && !hg ? null : hg === 'D' || /poorly|imperfectly/.test(dc) ? 'slow' : /excessive/.test(dc) || hg === 'A' ? 'fast' : 'well';
   const ec = ok(s?.ec_ds_per_m) ? s!.ec_ds_per_m! : null, salty = ec != null && ec >= 4;
   const clayey = (mix ? mix.clay >= 35 : false) || /clay/.test(texture?.toLowerCase() ?? '') && !/sandy clay loam/.test(texture?.toLowerCase() ?? '');
   const sandy = (mix ? mix.sand >= 60 : /sand/.test(texture?.toLowerCase() ?? ''));
@@ -126,8 +128,16 @@ export function soilFacts(soil: Location['soil'] | null | undefined) {
     drains: drain == null ? null : drain === 'slow' ? 'Drains slowly.' : drain === 'fast' ? 'Drains fast.' : 'Drains well.',
     salt: ec == null ? null : salty ? `Salty: ${ec.toFixed(1)} dS/m.` : 'Salt is low.',
     rotation,
-    source: /soilgrids/i.test(s?.awc_mm_per_m?.source?.id ?? '') || /soilgrids/i.test((s as { source?: { id?: string } } | null)?.source?.id ?? '') || (!dc && mix) ? 'SoilGrids global soil model (ISRIC), 800 ft squares' : 'USDA soil survey (SSURGO), top 3 feet',
+    source: soilSourceName(s?.source?.id ?? s?.awc_mm_per_m?.source?.id),
   };
+}
+/** The soil map behind the soil facts, from the soil's source id. */
+export function soilSourceName(id?: string | null) {
+  const k = (id ?? '').toLowerCase();
+  if (/aafc|slc/.test(k)) return 'AAFC Soil Landscapes of Canada v3.2, a 1:1,000,000 map (not field scale)';
+  if (/soilgrids|isric/.test(k)) return 'SoilGrids global soil model (ISRIC), 800 ft squares';
+  if (/ssurgo|usda|nrcs/.test(k)) return 'USDA soil survey (SSURGO), top 3 feet';
+  return 'Soil survey';
 }
 /** Sand / silt / clay as one stacked bar with a key underneath. */
 export function SoilBar({ mix }: { mix: { sand: number; silt: number; clay: number } }) {
@@ -143,6 +153,9 @@ export function SoilBar({ mix }: { mix: { sand: number; silt: number; clay: numb
   );
 }
 
+/** One BC order in a few words, from its kind: an order to stop irrigating (with its licence count) or a rescission. */
+export const orderText = (o: WaterOrder) => o.kind === 'rescission' ? 'order rescinded'
+  : `order to stop irrigating forage${o.licences ? ` (${o.licences} licences)` : ''}${o.effective && o.effective !== o.date ? `, from ${fmtDate(o.effective)}` : ''}`;
 /** Water source, district, GSA and groundwater-basin status from the looked-up location (empty values left out). */
 export function WaterLine({ loc }: { loc: Location }) {
   const w = loc.water;
@@ -152,7 +165,7 @@ export function WaterLine({ loc }: { loc: Location }) {
     if (!wc) return <small className="na-line">watershed not looked up yet</small>;
     return (
       <>{wc.watershed.split(';')[0]}.
-        {wc.orders.map((o) => <span key={o.date + o.title} className="water-order"> {fmtDate(o.date)}: order to stop irrigating forage.{o.url && <> <a href={o.url} target="_blank" rel="noreferrer">Source</a></>}</span>)}
+        {wc.orders.map((o) => <span key={o.date + o.title} className="water-order"> {fmtDate(o.date)}: {orderText(o)}.{linkOf(o) && <> <a href={linkOf(o)!} target="_blank" rel="noreferrer">Source</a></>}</span>)}
       </>
     );
   }
@@ -163,7 +176,7 @@ export function WaterLine({ loc }: { loc: Location }) {
   return (
     <>{parts.join('. ')}{parts.length ? '.' : ''}
       {w.sgma_status?.text && <span className="water-sgma"> {w.sgma_status.text}.</span>}
-      {w.sgma_status?.url && <> <a href={w.sgma_status.url} target="_blank" rel="noreferrer">Source</a></>}
+      {linkOf(w.sgma_status) && <> <a href={linkOf(w.sgma_status)!} target="_blank" rel="noreferrer">Source</a></>}
     </>
   );
 }
@@ -216,7 +229,7 @@ export function EventLog({ events, setT }: { events: FieldEvent[]; setT: (t: num
         <button key={e.date} onClick={() => setT(dateToT(e.date))} title="Move the timeline to this date">
           <time>{fmtDate(e.date)}</time>
           <span><b>{e.title}</b>{e.detail && <small>{e.detail}</small>}</span>
-          {e.url && <a href={e.url} target="_blank" rel="noreferrer" onClick={(ev) => ev.stopPropagation()} title="Source"><Icon name="link" size={13} /></a>}
+          {linkOf(e) && <a href={linkOf(e)!} target="_blank" rel="noreferrer" onClick={(ev) => ev.stopPropagation()} title="Source"><Icon name="link" size={13} /></a>}
         </button>
       ))}
     </div>

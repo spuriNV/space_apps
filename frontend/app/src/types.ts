@@ -1,18 +1,24 @@
 // Shapes follow planner-spec.md B3. Only the fields this prototype reads are typed strictly.
-export interface Source { id: string; title?: string; url: string | null; accessed?: string; verified: boolean }
+export interface Source { id: string; title?: string; url: string | null; accessed?: string; verified: boolean; /** set by the API when url has no public page: show the title, no link */ internal?: boolean }
+/** A link the API may mark internal (a repo path or id with no public page): show its title without a link. */
+export type Linkable = { url?: string | null; internal?: boolean };
+export const linkOf = (x: Linkable | null | undefined) => (x?.url && !x.internal ? x.url : null);
 export interface SourcedNumber { value: number; low: number | null; high: number | null; unit: string; method: string; source?: Source; note?: string; blocked?: boolean }
 
-export interface FieldEvent { date: string; end_date?: string; type: 'drought_fallow' | 'atmospheric_river' | 'sgma_probation'; short: string; title: string; detail?: string; url: string | null; verified: boolean }
+export interface FieldEvent { date: string; end_date?: string; type: 'drought_fallow' | 'atmospheric_river' | 'sgma_probation'; short: string; title: string; detail?: string; url: string | null; verified: boolean; internal?: boolean }
+
+/** BC: one Province order on the watershed: an order to stop irrigating, or the rescission of one. */
+export interface WaterOrder { date: string; title: string; url: string | null; internal?: boolean; verified?: boolean; kind?: 'order' | 'rescission'; licences?: number; effective?: string }
 
 export interface Location {
   id: string; name: string; short_name: string; valley: string; ground_data: string; headline: string;
   geometry: { type: 'Polygon'; coordinates: number[][][] };
   centroid: { lon: number; lat: number };
   area_ha: SourcedNumber;
-  soil: { muname: string; drainage_class: string; hydrologic_group: string; texture_class: string; awc_mm_per_m: SourcedNumber; om_pct?: SourcedNumber; ec_ds_per_m?: number; texture_detail?: { sand_pct: number; silt_pct: number; clay_pct: number } };
+  soil: { source?: { id?: string; title?: string; url?: string | null; verified?: boolean }; muname: string; drainage_class: string; hydrologic_group: string; texture_class: string; awc_mm_per_m: SourcedNumber; om_pct?: SourcedNumber; ec_ds_per_m?: number; texture_detail?: { sand_pct: number; silt_pct: number; clay_pct: number } };
   county?: string; dwr_id?: string; boundary_title?: string; cdl_source?: Source;
   terrain: { slope_mean_pct: SourcedNumber; note: string };
-  water: { source: string | null; allocation_input: { unit: string; value: number }; district: string | null; sgma_subbasin: string | null; sgma_status: { text: string | null; url: string | null; verified: boolean }; gsa?: string[] | string | null };
+  water: { source: string | null; allocation_input: { unit: string; value: number }; district: string | null; sgma_subbasin: string | null; sgma_status: { text: string | null; url: string | null; verified: boolean; internal?: boolean }; gsa?: string[] | string | null };
   /** from GET /api/locations: crop family, the grower-facing name, county */
   family?: string; farmer_name?: string; county_name?: string;
   market_preference: string;
@@ -34,7 +40,7 @@ export interface Location {
   /** BC: what California data this field lacks, why, and what fills the gap (GET /api/locations/{id}) */
   data_gaps?: DataGap[];
   /** BC: the watershed and the irrigation orders, in place of a California water district */
-  water_context?: { watershed: string; orders: { date: string; title: string; url: string | null }[]; note?: string };
+  water_context?: { watershed: string; orders: WaterOrder[]; note?: string };
   /** BC: the First Nations summary on the location route; the full card comes from GET .../first_nations */
   first_nations?: { statement: string; field_on_reserve: boolean; nearest_km: number; nearest_reserve: string; nearest_nation: string; lower_river_nation: string; route?: string };
 }

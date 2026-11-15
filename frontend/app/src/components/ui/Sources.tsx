@@ -39,7 +39,7 @@ const BC_GROUND: { title: string; items: [string, string][] } = { title: 'Ground
   ['Environment and Climate Change Canada (ECCC) daily climate', 'Hot days, frost nights and station rain: Salmon Arm CS, and Silver Creek until 2021.'],
   ['AAFC Annual Crop Inventory', 'The crop grown each year, 2011–2025. One class for hay and pasture; no alfalfa class.'],
   ['ParcelMap BC and the Agricultural Land Reserve', 'The field outline: a farmland parcel clipped to forage pixels. No owner or parcel number kept.'],
-  ['SoilGrids v2, ISRIC', 'Sand, silt and clay from a global soil model (250 m), when fetched.'],
+  ['AAFC Soil Landscapes of Canada v3.2', 'Soil texture, water held and drainage from a 1:1,000,000 map; not field scale.'],
   ['BC Gov News, Water Sustainability Act orders', 'The 2023 and 2026 orders to stop irrigating in the Salmon River watershed.'],
   ['Indian reserves (CLSS boundaries), BC Data Catalogue', 'Reserve outlines and distances, for context only; no reserve land was analysed.'],
 ] };
