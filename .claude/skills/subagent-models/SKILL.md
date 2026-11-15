@@ -25,5 +25,12 @@ Rules of thumb:
 ## Also
 
 - One agent per coherent chunk, with disjoint file ownership. Use a git worktree when two agents would touch the same files.
-- Subagents don't commit or push; the coordinating session gates (check_api ALL PASS, engine checks unchanged, frontend build) and pushes.
+- Work is pushed to main automatically once it's green; the user asked for this. Pushing is allowed for the coordinating session, or for an agent whose brief says so, only through the gate:
+  - stage explicit paths;
+  - pass `check_api.py` ALL PASS for backend changes;
+  - keep the engine checks unchanged;
+  - pass the frontend typecheck and `VITE_API_BASE=/api npm run build`;
+  - `git pull --rebase` first; never force-push.
+
+  Agents sharing a checkout leave committing to the coordinator.
 - Running agents can't change model. Apply this to new spawns.
