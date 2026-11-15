@@ -22,6 +22,8 @@ COPY backend/news/out/ backend/news/out/
 COPY backend/regional/out/ backend/regional/out/
 COPY backend/nasa/out/ backend/nasa/out/
 COPY backend/ground/out/ backend/ground/out/
+COPY backend/nation/ backend/nation/
+COPY backend/bc/nations.py backend/bc/nations.py
 COPY data/cache/ data/cache/
 COPY schemas/ schemas/
 COPY fixtures/ fixtures/

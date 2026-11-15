@@ -54,7 +54,7 @@ class ScreensUiTest {
         }
         compose.onNodeWithText("Pick your field").assertIsDisplayed()
         compose.onNodeWithText("Rice field 3.5 miles east of Williams").assertIsDisplayed()
-        compose.onNodeWithTag("pk-search").performTextInput("kings")
+        compose.onNode(androidx.compose.ui.test.hasSetTextAction()).performTextInput("kings")
         assertEquals("kings", query)
         compose.onNodeWithTag("chip-rice").performClick()
         assertEquals("rice", family)

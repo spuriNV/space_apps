@@ -155,8 +155,8 @@ fun FootprintLabels(handle: MapHandle, tick: MutableState<Int>, footprints: List
 /** "Under the field": the colour key for the 3D cells. */
 @Composable
 fun UnderFieldHud(modifier: Modifier = Modifier) {
-    Surface(modifier.testTag("hud"), shape = RoundedCornerShape(3.dp), color = PAPER, border = androidx.compose.foundation.BorderStroke(1.dp, INK), shadowElevation = 2.dp) {
-        Column(Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) {
+    Surface(modifier.testTag("hud"), shape = RoundedCornerShape(16.dp), color = PAPER, shadowElevation = 6.dp) {
+        Column(Modifier.padding(horizontal = 14.dp, vertical = 8.dp)) {
             Text("Under the field", fontSize = 13.sp, color = INK, style = MaterialTheme.typography.titleSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 listOf('b' to "Bare", 'p' to "Thin", 'c' to "Crop", 'w' to "Flooded").forEach { (c, l) ->
@@ -179,7 +179,7 @@ fun MapControls(bearing: Double, pitch: Double, onHome: () -> Unit, onNorth: () 
         @Composable
         fun Btn(desc: String, onClick: () -> Unit, content: @Composable () -> Unit) = Surface(
             onClick = onClick, modifier = Modifier.size(44.dp).semantics { contentDescription = desc },
-            shape = RoundedCornerShape(3.dp), color = c.paper, border = androidx.compose.foundation.BorderStroke(1.dp, c.line), shadowElevation = 2.dp,
+            shape = androidx.compose.foundation.shape.CircleShape, color = c.raised, shadowElevation = 6.dp,
         ) { Box(contentAlignment = Alignment.Center) { content() } }
         Btn("Whole of California", onHome) { Icon(Icons.Filled.Home, null, tint = c.text, modifier = Modifier.size(20.dp)) }
         Btn("Reset north", onNorth) { Icon(Icons.Filled.KeyboardArrowUp, null, tint = c.text, modifier = Modifier.rotate(-bearing.toFloat())) }

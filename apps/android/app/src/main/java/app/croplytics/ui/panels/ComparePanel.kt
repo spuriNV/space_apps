@@ -25,6 +25,8 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -92,16 +94,16 @@ fun LazyListScope.comparePanel(state: MainUiState, data: FieldData, ui: CompareU
                 val on = s.id == alt.id && !ui.table
                 val ms = CompareLogic.monthStrip(s)
                 Column(
-                    Modifier.width(170.dp).border(if (on) 2.dp else 1.dp, if (on) c.accent else c.line, RoundedCornerShape(3.dp)).background(if (on) c.panel2 else c.paper)
-                        .clickable { ca.pick(s.id) }.padding(10.dp).semantics { selected = on }.testTag("alt-${s.id}"),
+                    Modifier.width(176.dp).clip(RoundedCornerShape(12.dp)).background(if (on) c.accentContainer else c.raised).border(1.dp, if (on) c.accentOutline else c.lineSoft, RoundedCornerShape(12.dp))
+                        .clickable { ca.pick(s.id) }.padding(12.dp).semantics { selected = on }.testTag("alt-${s.id}"),
                 ) {
                     Text(CompareLogic.shortName(s), style = MaterialTheme.typography.labelLarge, color = c.text)
-                    CoverStrip(ms.cover.flatMap { ch -> listOf(ch, ch, ch) }.joinToString(""), null, Modifier.padding(vertical = 4.dp), height = 8f)
+                    CoverStrip(ms.cover.flatMap { ch -> listOf(ch, ch, ch) }.joinToString(""), null, Modifier.padding(vertical = 6.dp).clip(RoundedCornerShape(4.dp)), height = 8f)
                     Text("${Fmt.one(CompareLogic.water(s, ui.weather)?.value ?: 0.0)} acre-ft/acre · ${CompareLogic.fits(s, ui.weather, limit).lowercase()}", style = MaterialTheme.typography.labelSmall, color = c.muted)
                 }
             }
             Column(
-                Modifier.width(150.dp).border(1.dp, if (ui.table) c.accent else c.line, RoundedCornerShape(3.dp)).clickable { ca.toggleTable() }.padding(10.dp).testTag("see-all"),
+                Modifier.width(150.dp).clip(RoundedCornerShape(12.dp)).background(if (ui.table) c.accentContainer else c.panel2).clickable { ca.toggleTable() }.padding(12.dp).testTag("see-all"),
             ) {
                 Text(if (ui.table) "Back to gain / give up" else "See all options", style = MaterialTheme.typography.labelLarge, color = c.accent)
                 Text("Every rotation, every factor", style = MaterialTheme.typography.labelSmall, color = c.muted)
@@ -110,14 +112,13 @@ fun LazyListScope.comparePanel(state: MainUiState, data: FieldData, ui: CompareU
     }
     item(key = "cmp-ctl") {
         val c = CropLyticsTheme.colors
-        Column(Modifier.fillMaxWidth().padding(16.dp).border(1.dp, c.line, RoundedCornerShape(3.dp)).padding(12.dp)) {
+        Column(Modifier.fillMaxWidth().padding(16.dp).clip(RoundedCornerShape(12.dp)).background(c.panel2).padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row { Text("Your water limit ", style = MaterialTheme.typography.bodySmall, color = c.muted); Text("${Fmt.one(limit)} acre-ft/acre", style = MaterialTheme.typography.labelLarge, color = c.text, modifier = Modifier.testTag("limit-value")) }
             if (data.exampleLimit) ExampleNote()
-            Slider(limit.toFloat(), { ca.limit(it.toDouble()) }, valueRange = 0.5f..6f, steps = 54, modifier = Modifier.semantics { contentDescription = "Water limit, acre-feet per acre a year" }.testTag("alloc"),
+            Slider(limit.toFloat(), { ca.limit(it.toDouble()) }, valueRange = 0.5f..6f, modifier = Modifier.semantics { contentDescription = "Water limit, acre-feet per acre a year" }.testTag("alloc"),
                 colors = SliderDefaults.colors(thumbColor = c.accent, activeTrackColor = c.accent, inactiveTrackColor = c.track))
-            Segmented(Weather.entries.map { it to it.label }, ui.weather, ca.weather)
-            if (detail) Text(if (ui.tune) "Hide priorities and what-ifs" else "Your priorities, and what if it’s drier or hotter",
-                Modifier.clickable { ca.toggleTune() }.padding(vertical = 8.dp).testTag("tune"), style = MaterialTheme.typography.labelLarge, color = c.accent)
+            app.croplytics.ui.components.Segmented(Weather.entries.map { it to it.label }, ui.weather, label = "Weather year", onPick = ca.weather)
+            if (detail) app.croplytics.ui.components.PillButton(if (ui.tune) "Hide priorities and what-ifs" else "Your priorities, and what if it’s drier or hotter", app.croplytics.ui.components.PillKind.Text, Modifier.testTag("tune"), small = true) { ca.toggleTune() }
         }
     }
     if (ui.tune && detail) item(key = "cmp-tune") {
@@ -126,11 +127,11 @@ fun LazyListScope.comparePanel(state: MainUiState, data: FieldData, ui: CompareU
             Text("What matters to you", style = MaterialTheme.typography.titleSmall, color = c.text)
             CompareLogic.PRIORITIES.forEach { (k, label) ->
                 Text(label, style = MaterialTheme.typography.bodySmall, color = c.text2)
-                Segmented(CompareLogic.LEVEL.indices.map { it to CompareLogic.LEVEL[it] }, ui.weights[k] ?: CompareLogic.defaultWeight(k)) { ca.weight(k, it) }
+                app.croplytics.ui.components.Segmented(CompareLogic.LEVEL.indices.map { it to CompareLogic.LEVEL[it] }, ui.weights[k] ?: CompareLogic.defaultWeight(k), label = label) { ca.weight(k, it) }
             }
             Text("What if the year is", style = MaterialTheme.typography.titleSmall, color = c.text)
-            Segmented(CompareLogic.RAIN, ui.dP) { ca.rain(it) }
-            Segmented(CompareLogic.HEAT, ui.dT) { ca.heat(it) }
+            app.croplytics.ui.components.Segmented(CompareLogic.RAIN, ui.dP, label = "Rain") { ca.rain(it) }
+            app.croplytics.ui.components.Segmented(CompareLogic.HEAT, ui.dT, label = "Heat") { ca.heat(it) }
             Text(when { ui.busy -> "Re-scoring…"; ui.custom -> "Water need and ranking below use your settings."; else -> "Default: every priority counts the same, normal weather." }, style = MaterialTheme.typography.bodySmall, color = c.muted)
             Text("Best fit for what matters to you", style = MaterialTheme.typography.titleSmall, color = c.text)
             ranked.forEachIndexed { i, s -> Text("${i + 1}. ${CompareLogic.shortName(s)}${if (s.isBaseline) " (today)" else ""}${if (i == 0 && tie) "  too close to call with the next one" else ""}", style = MaterialTheme.typography.bodySmall, color = c.text) }
@@ -142,8 +143,7 @@ fun LazyListScope.comparePanel(state: MainUiState, data: FieldData, ui: CompareU
         item(key = "cmp-side") {
             val c = CropLyticsTheme.colors
             Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                HorizontalDivider(color = c.text, thickness = 2.dp)
-                Text("Water against your limit", style = MaterialTheme.typography.titleSmall, color = c.text)
+                Text("Water against your limit", style = MaterialTheme.typography.titleLarge, color = c.text, modifier = Modifier.padding(top = 16.dp))
                 What(Gloss.WaterBalance, glossary)
                 Text("${CompareLogic.fits(alt, ui.weather, limit)}. Needs ${Fmt.one(altW?.value ?: 0.0)} acre-ft/acre. Your limit: ${Fmt.one(limit)}.", style = MaterialTheme.typography.bodyMedium, color = c.text)
                 if (detail) {
@@ -161,8 +161,7 @@ fun LazyListScope.comparePanel(state: MainUiState, data: FieldData, ui: CompareU
         }
         item(key = "cmp-more") { MoreDetailButton(detail, "All rotations and what-ifs", a.toggleDetail) }
         item(key = "cmp-brief") {
-            Button({ ca.toBrief(alt.id) }, Modifier.fillMaxWidth().padding(16.dp).heightIn(min = 48.dp).testTag("to-brief"), shape = RoundedCornerShape(3.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = CropLyticsTheme.colors.accent, contentColor = CropLyticsTheme.colors.onAccent)) { Text("Print this comparison for your adviser") }
+            app.croplytics.ui.components.PillButton("Print this comparison for your adviser", app.croplytics.ui.components.PillKind.Primary, Modifier.fillMaxWidth().padding(16.dp).testTag("to-brief"), icon = androidx.compose.material.icons.Icons.Filled.Print) { ca.toBrief(alt.id) }
         }
     } else {
         item(key = "cmp-table") {
@@ -195,8 +194,7 @@ fun LazyListScope.comparePanel(state: MainUiState, data: FieldData, ui: CompareU
 private fun GainList(title: String, rows: List<CompareLogic.Row>, gain: Boolean, empty: String) {
     val c = CropLyticsTheme.colors
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        HorizontalDivider(color = if (gain) c.good else c.warn, thickness = 2.dp)
-        Text(title, style = MaterialTheme.typography.titleMedium, color = if (gain) c.good else c.warn, modifier = Modifier.semantics { heading() })
+        Text(title, style = MaterialTheme.typography.titleLarge, color = if (gain) c.good else c.warn, modifier = Modifier.semantics { heading() })
         if (rows.isEmpty()) Text(empty, style = MaterialTheme.typography.bodySmall, color = c.muted)
         rows.forEach { r ->
             Column {
@@ -208,15 +206,3 @@ private fun GainList(title: String, rows: List<CompareLogic.Row>, gain: Boolean,
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun <T> Segmented(options: List<Pair<T, String>>, selected: T, onPick: (T) -> Unit) {
-    val c = CropLyticsTheme.colors
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        options.forEach { (v, label) ->
-            val on = v == selected
-            Text(label, Modifier.border(1.dp, if (on) c.accent else c.line, RoundedCornerShape(2.dp)).background(if (on) c.accent else c.paper).clickable { onPick(v) }
-                .semantics { this.selected = on }.heightIn(min = 36.dp).padding(horizontal = 10.dp, vertical = 8.dp), style = MaterialTheme.typography.labelMedium, color = if (on) c.onAccent else c.text)
-        }
-    }
-}

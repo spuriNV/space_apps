@@ -11,11 +11,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -109,10 +116,15 @@ fun MeterView(m: Meter, modifier: Modifier = Modifier, unavailable: Boolean = fa
         Text(m.label, style = MaterialTheme.typography.labelSmall, color = c.muted)
         when {
             m.value != null -> {
-                Text(m.value, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = if (m.warn) c.warn else c.text)
-                Canvas(Modifier.fillMaxWidth().height(10.dp)) {
-                    drawRoundRect(c.track, cornerRadius = CornerRadius(1.dp.toPx()))
-                    m.fill?.let { drawRect(if (m.warn) c.warn else c.accent, size = Size(size.width * it.coerceIn(0f, 1f), size.height)) }
+                CountUpText(m.value, MaterialTheme.typography.titleMedium, if (m.warn) c.warn else c.text)
+                // bars glide to their value (spec motion); the reference mark is a square-topped tick
+                var shown by remember(m.value) { mutableStateOf(false) }
+                LaunchedEffect(m.value) { shown = true }
+                val fill by animateFloatAsState(if (shown) (m.fill ?: 0f) else 0f, motion(600), label = "fill")
+                Canvas(Modifier.fillMaxWidth().height(12.dp).padding(vertical = 2.dp)) {
+                    val r = CornerRadius(size.height / 2)
+                    drawRoundRect(c.track, cornerRadius = r)
+                    if (m.fill != null) drawRoundRect(if (m.warn) c.warn else c.accent, size = Size(size.width * fill.coerceIn(0f, 1f), size.height), cornerRadius = r)
                     m.mark?.let { k -> val x = size.width * k.coerceIn(0f, 1f); drawLine(c.mark, Offset(x, -3.dp.toPx()), Offset(x, size.height + 3.dp.toPx()), 2.dp.toPx()) }
                 }
                 if (m.note.isNotEmpty()) Text(m.note, style = MaterialTheme.typography.labelSmall, color = c.muted)
@@ -131,14 +143,18 @@ fun PercentileTrack(soil: Int?, gw: Int?, note: String, ready: Boolean, modifier
     Column(modifier.clearAndSetSemantics { contentDescription = if (ready) "Soil moisture ${soil ?: "no reading"} percentile, groundwater ${gw ?: "no reading"} percentile; 50 is normal" else "Soil and groundwater loading" }, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text("Soil and groundwater", style = MaterialTheme.typography.labelSmall, color = c.muted)
         if (!ready) { Skeleton(height = 18.dp); return@Column }
+        var shown by remember(soil, gw) { mutableStateOf(false) }
+        LaunchedEffect(soil, gw) { shown = true }
+        val sv by animateFloatAsState(if (shown) (soil ?: 50).toFloat() else 50f, motion(600), label = "soil")
+        val gv by animateFloatAsState(if (shown) (gw ?: 50).toFloat() else 50f, motion(600), label = "gw")
         Box(Modifier.fillMaxWidth().height(20.dp)) {
             Canvas(Modifier.fillMaxWidth().height(20.dp)) {
                 val y = size.height / 2
-                drawRoundRect(c.track, Offset(0f, y - 4.dp.toPx()), Size(size.width, 8.dp.toPx()), CornerRadius(1.dp.toPx()))
+                drawRoundRect(c.track, Offset(0f, y - 4.dp.toPx()), Size(size.width, 8.dp.toPx()), CornerRadius(4.dp.toPx()))
                 drawLine(c.muted, Offset(size.width / 2, y - 7.dp.toPx()), Offset(size.width / 2, y + 7.dp.toPx()), 1.5.dp.toPx())
                 val r = 6.dp.toPx()
-                soil?.let { drawCircle(soilCol, r, Offset(size.width * it / 100f, y)); drawCircle(c.paper, r, Offset(size.width * it / 100f, y), style = Stroke(1.5.dp.toPx())) }
-                gw?.let { drawCircle(gwCol, r, Offset(size.width * it / 100f, y)); drawCircle(c.paper, r, Offset(size.width * it / 100f, y), style = Stroke(1.5.dp.toPx())) }
+                if (soil != null) { drawCircle(soilCol, r, Offset(size.width * sv / 100f, y)); drawCircle(c.raised, r, Offset(size.width * sv / 100f, y), style = Stroke(1.5.dp.toPx())) }
+                if (gw != null) { drawCircle(gwCol, r, Offset(size.width * gv / 100f, y)); drawCircle(c.raised, r, Offset(size.width * gv / 100f, y), style = Stroke(1.5.dp.toPx())) }
             }
         }
         Text(note, style = MaterialTheme.typography.labelSmall, color = c.muted)

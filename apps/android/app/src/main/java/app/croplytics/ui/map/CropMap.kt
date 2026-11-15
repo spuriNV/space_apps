@@ -235,11 +235,11 @@ fun CropMap(
                 CameraPosition.Builder().target(LatLng(lat, lon)).zoom(zoom).tilt(tilt).bearing(bearing).padding(0.0, insets[0].toDouble(), 0.0, insets[1].toDouble()).build()
             when (cmd) {
                 is MapCommand.FlyToField -> {
-                    val f = latest.fields.firstOrNull { it.id.id == cmd.id } ?: return@collect
-                    val small = (f.loc.areaHa?.value ?: 60.0) < 45
+                    if (cmd.lat == 0.0 && cmd.lon == 0.0) return@collect
+                    val small = cmd.small
                     val p = when (cmd.mode) {
-                        MapCommand.FlyToField.Mode.Card -> pos(f.id.lat, f.id.lon, 10.6, 0.0, 0.0)
-                        else -> pos(f.id.lat - if (small) 0.0006 else 0.001, f.id.lon, (if (small) 15.15 else 14.5) - if (cmd.mode == MapCommand.FlyToField.Mode.Year) 0.75 else 0.0,
+                        MapCommand.FlyToField.Mode.Card -> pos(cmd.lat, cmd.lon, 10.6, 0.0, 0.0)
+                        else -> pos(cmd.lat - if (small) 0.0006 else 0.001, cmd.lon, (if (small) 15.15 else 14.5) - if (cmd.mode == MapCommand.FlyToField.Mode.Year) 0.75 else 0.0,
                             if (cmd.mode == MapCommand.FlyToField.Mode.Year) 52.0 else 60.0, -24.0)
                     }
                     m.animateCamera(CameraUpdateFactory.newCameraPosition(p), 1800)

@@ -54,7 +54,7 @@ fun Skeleton(modifier: Modifier = Modifier, height: Dp = 14.dp, widthFraction: F
             .fillMaxWidth(widthFraction)
             .height(height)
             .alpha(a)
-            .background(CropLyticsTheme.colors.track, RoundedCornerShape(2.dp)),
+            .background(CropLyticsTheme.colors.track, RoundedCornerShape(6.dp)),
     )
 }
 
@@ -84,9 +84,8 @@ fun WakingPanel(modifier: Modifier = Modifier) {
         modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .border(1.dp, c.line, RoundedCornerShape(3.dp))
-            .background(c.panel2, RoundedCornerShape(3.dp))
-            .padding(14.dp)
+            .background(c.panel2, RoundedCornerShape(12.dp))
+            .padding(16.dp)
             .semantics { liveRegion = LiveRegionMode.Polite }
             .testTag("waking"),
         verticalAlignment = Alignment.CenterVertically,
@@ -118,7 +117,7 @@ fun ErrorPanel(error: LoadError, onRetry: () -> Unit, modifier: Modifier = Modif
         modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .border(1.dp, c.line, RoundedCornerShape(3.dp))
+            .background(c.panel2, RoundedCornerShape(12.dp))
             .padding(16.dp)
             .semantics { liveRegion = LiveRegionMode.Polite }
             .testTag("error"),
@@ -127,7 +126,7 @@ fun ErrorPanel(error: LoadError, onRetry: () -> Unit, modifier: Modifier = Modif
         Text(title, style = MaterialTheme.typography.titleMedium, color = c.bad)
         Text(body, style = MaterialTheme.typography.bodyMedium, color = c.text2)
         Spacer(Modifier.height(4.dp))
-        OutlinedButton(onClick = onRetry) { Text("Try again") }
+        PillButton("Try again", PillKind.Outline, onClick = onRetry)
     }
 }
 
@@ -135,27 +134,9 @@ private val savedFormat = DateTimeFormatter.ofPattern("d MMM yyyy, h:mm a", Loca
 
 fun savedOn(at: Instant): String = savedFormat.format(at.atZone(ZoneId.systemDefault())).replace("AM", "am").replace("PM", "pm")
 
-/** "Saved on 14 Nov 2026, 4:38 pm. Can't reach the server right now." */
+/** "Saved on 14 Nov 2026, 4:38 pm. Can't reach the server right now." (the panel's one notice). */
 @Composable
-fun OfflineNote(savedAt: Instant, modifier: Modifier = Modifier) {
-    val c = CropLyticsTheme.colors
-    Row(
-        modifier
-            .fillMaxWidth()
-            .background(c.panel2)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .testTag("offline-note"),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Hatch(Modifier.size(12.dp), c.warn)
-        Spacer(Modifier.width(8.dp))
-        Text(
-            "Saved on ${savedOn(savedAt)}. Can't reach the server right now.",
-            style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
-            color = c.text2,
-        )
-    }
-}
+fun OfflineNote(savedAt: Instant, modifier: Modifier = Modifier) = Notice("Saved on ${savedOn(savedAt)}. Can't reach the server right now.", modifier.testTag("offline-note"))
 
 /** Small hatched square: "not measured / example" across the product. */
 @Composable

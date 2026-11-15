@@ -64,7 +64,8 @@ data class FieldItem(val loc: LocationDto, val id: FieldIdentity, val rings: Rin
 
 /** Camera moves the map performs (MapView.tsx MapHandle). */
 sealed interface MapCommand {
-    data class FlyToField(val id: String, val mode: Mode) : MapCommand { enum class Mode { Card, Drill, Year } }
+    /** Fly to a field; carries its centre so the map needs nothing else (a deep link can arrive before the map has the list). */
+    data class FlyToField(val id: String, val mode: Mode, val lat: Double = 0.0, val lon: Double = 0.0, val small: Boolean = false) : MapCommand { enum class Mode { Card, Drill, Year } }
     data object FlyHome : MapCommand
     data class FlyTo(val lat: Double, val lon: Double, val zoom: Double) : MapCommand
     data class ZoomBy(val delta: Double) : MapCommand
@@ -244,7 +245,13 @@ class MainViewModel @Inject constructor(
 
     fun select(id: String) {
         ui.update { it.copy(selectedId = id, panelOpen = true, bcOpen = false, tab = if (it.selectedId == null) Tab.Now else it.tab) }
-        commands.trySend(MapCommand.FlyToField(id, MapCommand.FlyToField.Mode.Card))
+        fly(id, MapCommand.FlyToField.Mode.Card)
+    }
+
+    private fun fly(id: String, mode: MapCommand.FlyToField.Mode) {
+        val f = state.value.fields.dataOrNull?.firstOrNull { it.id.id == id }
+            ?: (ui.value.fields.dataOrNull)?.firstOrNull { it.id.id == id }
+        commands.trySend(MapCommand.FlyToField(id, mode, f?.id?.lat ?: 0.0, f?.id?.lon ?: 0.0, (f?.loc?.areaHa?.value ?: 60.0) < 45))
     }
 
     /** Back to the whole state and the pick list (the wordmark / home button). */
@@ -263,14 +270,14 @@ class MainViewModel @Inject constructor(
         if (ui.value.selectedId == null) return
         ui.update { it.copy(tab = tab, panelOpen = true) }
         val id = ui.value.selectedId!!
-        if (tab == Tab.Year && ui.value.camera.zoom > 13.2) commands.trySend(MapCommand.FlyToField(id, MapCommand.FlyToField.Mode.Year))
+        if (tab == Tab.Year && ui.value.camera.zoom > 13.2) fly(id, MapCommand.FlyToField.Mode.Year)
     }
 
     fun closePanel() = ui.update { it.copy(panelOpen = false) }
     fun reopenPanel() = ui.update { it.copy(panelOpen = true) }
 
     /** "Look under the field in 3D": fly in, tilt, and the stack rises. */
-    fun drill() { ui.value.selectedId?.let { commands.trySend(MapCommand.FlyToField(it, MapCommand.FlyToField.Mode.Drill)) } }
+    fun drill() { ui.value.selectedId?.let { fly(it, MapCommand.FlyToField.Mode.Drill) } }
 
     fun onQuery(q: String) = ui.update { it.copy(query = q) }
     fun toggleFamily(f: String) = ui.update { it.copy(family = if (it.family == f) null else f) }
