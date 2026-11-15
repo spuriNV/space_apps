@@ -40,7 +40,7 @@ const orig = (b: any): Origin => (b?._source === 'estimate' ? 'estimate' : 'api'
 const usable = (b: any) => b && (b._source === 'real' || b._source === 'estimate' || b._source === 'live' || b._source === 'catalog' || b._source === 'user' || b._source === undefined);
 
 // ---------- fetch helpers ----------
-async function getJSON(url: string, init?: RequestInit, ms = 20000) {
+async function getJSONOnce(url: string, init?: RequestInit, ms = 20000) {
   const ctl = new AbortController();
   const h = setTimeout(() => ctl.abort(), ms);
   try {
@@ -48,6 +48,18 @@ async function getJSON(url: string, init?: RequestInit, ms = 20000) {
     if (!r.ok) throw new Error(`${r.status} ${url}`);
     return await r.json();
   } finally { clearTimeout(h); }
+}
+/** GET with up to two retries (0.6 s, then 1.5 s) for a network failure, a timeout or a 5xx; a 4xx is final. POSTs are never retried. */
+async function getJSON(url: string, init?: RequestInit, ms = 20000) {
+  const tries = !init?.method || init.method === 'GET' ? 3 : 1;
+  for (let k = 0; ; k++) {
+    try { return await getJSONOnce(url, init, ms); }
+    catch (e) {
+      const m = /^(\d{3}) /.exec(String((e as Error).message));
+      if (k + 1 >= tries || (m && +m[1] < 500) || init?.signal?.aborted) throw e;
+      await new Promise((r) => setTimeout(r, k === 0 ? 600 : 1500));
+    }
+  }
 }
 /** `route` is written as the API path (`/api/locations/...`); API_BASE replaces the `/api` prefix. */
 const get = (route: string, init?: RequestInit, ms?: number) => getJSON(`${API_BASE}${route.replace(/^\/api/, '')}`, init, ms);

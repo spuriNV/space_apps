@@ -42,7 +42,8 @@ export function ThisWeek({ loc, compact }: { loc: Location; compact?: boolean })
   return (
     <section className="tw" data-testid="this-week" aria-label="This week">
       <h3 className="tw-h">This week</h3>
-      {st.kind === 'loading' && SKEL(3)}
+      {st.kind === 'loading' && <div className="tw-skel" aria-busy="true" role="status"><span className="sr-only">Loading the week ahead</span><span className="skel skel-val" /><span className="skel skel-chart" /><span className="skel" /></div>}
+      {st.kind === 'ok' && st.stale && <p className="tw-tag" role="status">Showing the last update; the newest could not be loaded.</p>}
       <RouteProblem st={st} what="The week ahead" reload={st.reload} />
       {w && (compact ? <Glance w={w} /> : <Body w={w} pick={pick} setPick={setPick} />)}
     </section>
