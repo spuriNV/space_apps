@@ -1,0 +1,268 @@
+{
+  "dataset": "s2",
+  "url": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-2-l2a",
+  "params": {
+    "collection": "sentinel-2-l2a",
+    "datetime": "2015-06-23/2026-11-15",
+    "intersects": "polygons/caf_elnido_forage.geojson",
+    "bands": {
+      "blue": "B02",
+      "green": "B03",
+      "red": "B04",
+      "nir": "B08",
+      "swir1": "B11"
+    },
+    "mask": "SCL",
+    "clear_rule": "SCL in {2,4,5,6}",
+    "dedupe": "one row per date (S2) / per date+platform (Landsat), keeping most valid pixels"
+  },
+  "fetched_at": "2026-11-15T07:00:14+00:00",
+  "footprint_geojson": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -120.47561998918496,
+          37.160332933585735
+        ],
+        [
+          -120.47911184939049,
+          37.16033888208867
+        ],
+        [
+          -120.47916241286288,
+          37.1602853441134
+        ],
+        [
+          -120.4791743101505,
+          37.160196114309066
+        ],
+        [
+          -120.47920702769144,
+          37.156882715130315
+        ],
+        [
+          -120.47918620743812,
+          37.15679348488936
+        ],
+        [
+          -120.47913266964382,
+          37.15673697323201
+        ],
+        [
+          -120.47908210617142,
+          37.156728051126166
+        ],
+        [
+          -120.47156300871566,
+          37.15679348560533
+        ],
+        [
+          -120.47146782951636,
+          37.15683810109694
+        ],
+        [
+          -120.47144403494114,
+          37.156888664620695
+        ],
+        [
+          -120.47146188087254,
+          37.16019908963987
+        ],
+        [
+          -120.47148567634613,
+          37.160264524694284
+        ],
+        [
+          -120.47151541866684,
+          37.160309139569236
+        ],
+        [
+          -120.47154813800445,
+          37.16032401190427
+        ],
+        [
+          -120.47561998918496,
+          37.160332933585735
+        ]
+      ]
+    ]
+  },
+  "native_res_m": 10,
+  "timestep": "per scene (irregular)",
+  "units": {
+    "ndvi": "unitless",
+    "ndwi": "unitless",
+    "bsi": "unitless",
+    "clear_frac": "fraction of polygon pixels"
+  },
+  "fill_value": "NaN",
+  "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
+  "n_items_found": 1613,
+  "n_rows_raw": 1573,
+  "n_rows": 1388,
+  "duplicates_dropped": 185,
+  "errors": [
+    {
+      "scene_id": "S2B_MSIL2A_20260912T183919_R070_T10SGG_20260912T235112",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/09/12/S2B_MSIL2A_20260912T183919_N0512_R070_T10SGG_20260912T235112.SAFE/GRANULE/L2A_T10SGG_A049717_20260912T185056/IMG_DATA/R10m/T10SGG_20260912T183919_B02_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20261101T184529_R070_T10SGG_20261101T222626",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/11/01/S2B_MSIL2A_20261101T184529_N0513_R070_T10SGG_20261101T222626.SAFE/GRANULE/L2A_T10SGG_A050432_20261101T185329/IMG_DATA/R10m/T10SGG_20261101T184529_B04_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20261022T185821_R113_T10SGG_20261022T225221",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/10/22/S2A_MSIL2A_20261022T185821_N0513_R113_T10SGG_20261022T225221.SAFE/GRANULE/L2A_T10SGG_A059198_20261022T190348/IMG_DATA/R20m/T10SGG_20261022T185821_B11_20m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20260905T184919_R113_T10SGG_20260905T224919",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/09/05/S2B_MSIL2A_20260905T184919_N0512_R113_T10SGG_20260905T224919.SAFE/GRANULE/L2A_T10SGG_A049617_20260905T185254/IMG_DATA/R10m/T10SGG_20260905T184919_B02_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20260902T183919_R070_T10SGG_20260902T235237",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/09/02/S2B_MSIL2A_20260902T183919_N0512_R070_T10SGG_20260902T235237.SAFE/GRANULE/L2A_T10SGG_A049574_20260902T184903/IMG_DATA/R10m/T10SGG_20260902T183919_B04_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20261104T185549_R113_T10SGG_20261104T204820",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/11/04/S2B_MSIL2A_20261104T185549_N0513_R113_T10SGG_20261104T204820.SAFE/GRANULE/L2A_T10SGG_A050475_20261104T190124/IMG_DATA/R10m/T10SGG_20261104T185549_B04_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20260830T184831_R070_T10SGG_20260831T044811",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/08/30/S2A_MSIL2A_20260830T184831_N0512_R070_T10SGG_20260831T044811.SAFE/GRANULE/L2A_T10SGG_A058440_20260830T184827/IMG_DATA/R10m/T10SGG_20260830T184831_B04_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2C_MSIL2A_20260821T184911_R113_T10SGG_20260822T000756",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/08/21/S2C_MSIL2A_20260821T184911_N0512_R113_T10SGG_20260822T000756.SAFE/GRANULE/L2A_T10SGG_A010236_20260821T185305/IMG_DATA/R10m/T10SGG_20260821T184911_B04_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20260515T183919_R070_T10SGG_20260515T223128",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/05/15/S2B_MSIL2A_20260515T183919_N0512_R070_T10SGG_20260515T223128.SAFE/GRANULE/L2A_T10SGG_A048001_20260515T184411/IMG_DATA/R20m/T10SGG_20260515T183919_B11_20m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20260515T183919_R070_T10SGG_20260518T160719",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/05/15/S2B_MSIL2A_20260515T183919_N0512_R070_T10SGG_20260518T160719.SAFE/GRANULE/L2A_T10SGG_A048001_20260515T184411/IMG_DATA/R20m/T10SGG_20260515T183919_B11_20m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20260508T184919_R113_T10SGG_20260508T223807",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/05/08/S2B_MSIL2A_20260508T184919_N0512_R113_T10SGG_20260508T223807.SAFE/GRANULE/L2A_T10SGG_A047901_20260508T190318/IMG_DATA/R10m/T10SGG_20260508T184919_B04_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2C_MSIL2A_20260510T183921_R070_T10SGG_20260511T003312",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/05/10/S2C_MSIL2A_20260510T183921_N0512_R070_T10SGG_20260511T003312.SAFE/GRANULE/L2A_T10SGG_A008763_20260510T185341/IMG_DATA/R10m/T10SGG_20260510T183921_B08_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20260515T185831_R113_T10SGG_20260516T025522",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2026/05/15/S2A_MSIL2A_20260515T185831_N0512_R113_T10SGG_20260516T025522.SAFE/GRANULE/L2A_T10SGG_A056910_20260515T190036/IMG_DATA/R20m/T10SGG_20260515T185831_B11_20m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20220615T183919_R070_T10SGG_20240620T040857",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/15/S2B_MSIL2A_20220615T183919_N0510_R070_T10SGG_20240620T040857.SAFE/GRANULE/L2A_T10SGG_A027552_20220615T184335/IMG_DATA/R10m/T10SGG_20220615T183919_B04_10m.tif: HTTP response code: 403"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20220615T183919_R070_T10SGG_20220618T192311",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/15/S2B_MSIL2A_20220615T183919_N0400_R070_T10SGG_20220618T192311.SAFE/GRANULE/L2A_T10SGG_A027552_20220615T184335/IMG_DATA/R10m/T10SGG_20220615T183919_B03_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20220605T183919_R070_T10SGG_20220606T071703",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/05/S2B_MSIL2A_20220605T183919_N0400_R070_T10SGG_20220606T071703.SAFE/GRANULE/L2A_T10SGG_A027409_20220605T184755/IMG_DATA/R20m/T10SGG_20220605T183919_SCL_20m.tif: HTTP response code: 403"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20220625T183929_R070_T10SGG_20240629T110158",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/25/S2B_MSIL2A_20220625T183929_N0510_R070_T10SGG_20240629T110158.SAFE/GRANULE/L2A_T10SGG_A027695_20220625T184350/IMG_DATA/R20m/T10SGG_20220625T183929_B11_20m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20220610T183931_R070_T10SGG_20220611T195624",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/10/S2A_MSIL2A_20220610T183931_N0400_R070_T10SGG_20220611T195624.SAFE/GRANULE/L2A_T10SGG_A036389_20220610T185251/IMG_DATA/R20m/T10SGG_20220610T183931_SCL_20m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20220618T184919_R113_T10SGG_20220620T173542",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/18/S2B_MSIL2A_20220618T184919_N0400_R113_T10SGG_20220620T173542.SAFE/GRANULE/L2A_T10SGG_A027595_20220618T185515/IMG_DATA/R10m/T10SGG_20220618T184919_B08_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20220608T184919_R113_T10SGG_20220609T114159",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/08/S2B_MSIL2A_20220608T184919_N0400_R113_T10SGG_20220609T114159.SAFE/GRANULE/L2A_T10SGG_A027452_20220608T185932/IMG_DATA/R20m/T10SGG_20220608T184919_SCL_20m.tif: HTTP response code: 403"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20220623T184931_R113_T10SGG_20220624T094007",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/23/S2A_MSIL2A_20220623T184931_N0400_R113_T10SGG_20220624T094007.SAFE/GRANULE/L2A_T10SGG_A036575_20220623T185911/IMG_DATA/R10m/T10SGG_20220623T184931_B04_10m.tif: HTTP response code: 403"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20220630T183931_R070_T10SGG_20220701T123600",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/30/S2A_MSIL2A_20220630T183931_N0400_R070_T10SGG_20220701T123600.SAFE/GRANULE/L2A_T10SGG_A036675_20220630T184459/IMG_DATA/R10m/T10SGG_20220630T183931_B04_10m.tif: HTTP response code: 403"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20220628T184919_R113_T10SGG_20220629T110458",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2022/06/28/S2B_MSIL2A_20220628T184919_N0400_R113_T10SGG_20220629T110458.SAFE/GRANULE/L2A_T10SGG_A027738_20220628T185740/IMG_DATA/R20m/T10SGG_20220628T184919_B11_20m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20200105T185751_R113_T10SGG_20201002T231317",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2020/01/05/S2A_MSIL2A_20200105T185751_N0212_R113_T10SGG_20201002T231317.SAFE/GRANULE/L2A_T10SGG_A023705_20200105T185931/IMG_DATA/R10m/T10SGG_20200105T185751_B08_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20191118T184649_R070_T10SGG_20201003T175202",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/11/18/S2B_MSIL2A_20191118T184649_N0212_R070_T10SGG_20201003T175202.SAFE/GRANULE/L2A_T10SGG_A014110_20191118T184834/IMG_DATA/R10m/T10SGG_20191118T184649_B03_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20190904T183921_R070_T10SGG_20201004T091129",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/09/04/S2A_MSIL2A_20190904T183921_N0212_R070_T10SGG_20201004T091129.SAFE/GRANULE/L2A_T10SGG_A021946_20190904T184852/IMG_DATA/R10m/T10SGG_20190904T183921_B02_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20190902T184919_R113_T10SGG_20201004T083544",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/09/02/S2B_MSIL2A_20190902T184919_N0212_R113_T10SGG_20201004T083544.SAFE/GRANULE/L2A_T10SGG_A013009_20190902T185948/IMG_DATA/R10m/T10SGG_20190902T184919_B03_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20190828T184921_R113_T10SGG_20201005T055719",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/08/28/S2A_MSIL2A_20190828T184921_N0212_R113_T10SGG_20201005T055719.SAFE/GRANULE/L2A_T10SGG_A021846_20190828T185739/IMG_DATA/R10m/T10SGG_20190828T184921_B02_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20190818T184921_R113_T10SGG_20201005T015224",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/08/18/S2A_MSIL2A_20190818T184921_N0212_R113_T10SGG_20201005T015224.SAFE/GRANULE/L2A_T10SGG_A021703_20190818T190317/IMG_DATA/R10m/T10SGG_20190818T184921_B03_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20171221T185759_R113_T10SGG_20201014T153202",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2017/12/21/S2B_MSIL2A_20171221T185759_N0212_R113_T10SGG_20201014T153202.SAFE/GRANULE/L2A_T10SGG_A004143_20171221T190036/IMG_DATA/R10m/T10SGG_20171221T185759_B02_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20171226T190341_R113_T10SGG_20201014T162840",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2017/12/26/S2A_MSIL2A_20171226T190341_N0212_R113_T10SGG_20201014T162840.SAFE/GRANULE/L2A_T10SGG_A013123_20171226T190343/IMG_DATA/R20m/T10SGG_20171226T190341_B11_20m.tif: CURL error: Could not resolve host: sentinel2l2a01.b"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20190527T183921_R070_T10SGG_20201006T185933",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/05/27/S2A_MSIL2A_20190527T183921_N0212_R070_T10SGG_20201006T185933.SAFE/GRANULE/L2A_T10SGG_A020516_20190527T184435/IMG_DATA/R10m/T10SGG_20190527T183921_B02_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20190601T183929_R070_T10SGG_20201005T205821",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/06/01/S2B_MSIL2A_20190601T183929_N0212_R070_T10SGG_20201005T205821.SAFE/GRANULE/L2A_T10SGG_A011679_20190601T185229/IMG_DATA/R10m/T10SGG_20190601T183929_B03_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20190606T183921_R070_T10SGG_20201005T224851",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/06/06/S2A_MSIL2A_20190606T183921_N0212_R070_T10SGG_20201005T224851.SAFE/GRANULE/L2A_T10SGG_A020659_20190606T185237/IMG_DATA/R10m/T10SGG_20190606T183921_B03_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20190604T184929_R113_T10SGG_20201005T221122",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/06/04/S2B_MSIL2A_20190604T184929_N0212_R113_T10SGG_20201005T221122.SAFE/GRANULE/L2A_T10SGG_A011722_20190604T185537/IMG_DATA/R10m/T10SGG_20190604T184929_B02_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20190616T183921_R070_T10SGG_20201006T025515",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/06/16/S2A_MSIL2A_20190616T183921_N0212_R070_T10SGG_20201006T025515.SAFE/GRANULE/L2A_T10SGG_A020802_20190616T185133/IMG_DATA/R20m/T10SGG_20190616T183921_B11_20m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20190614T184929_R113_T10SGG_20201006T021757",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2019/06/14/S2B_MSIL2A_20190614T184929_N0212_R113_T10SGG_20201006T021757.SAFE/GRANULE/L2A_T10SGG_A011865_20190614T185449/IMG_DATA/R10m/T10SGG_20190614T184929_B08_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20171228T184749_R070_T10SGG_20201014T170541",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2017/12/28/S2B_MSIL2A_20171228T184749_N0212_R070_T10SGG_20201014T170541.SAFE/GRANULE/L2A_T10SGG_A004243_20171228T184751/IMG_DATA/R10m/T10SGG_20171228T184749_B03_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2B_MSIL2A_20180120T185709_R113_T10SGG_20201014T072508",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2018/01/20/S2B_MSIL2A_20180120T185709_N0212_R113_T10SGG_20201014T072508.SAFE/GRANULE/L2A_T10SGG_A004572_20180120T185704/IMG_DATA/R20m/T10SGG_20180120T185709_B11_20m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20180105T185751_R113_T10SGG_20201014T032848",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/10/S/GG/2018/01/05/S2A_MSIL2A_20180105T185751_N0212_R113_T10SGG_20201014T032848.SAFE/GRANULE/L2A_T10SGG_A013266_20180105T185748/IMG_DATA/R10m/T10SGG_20180105T185751_B08_10m.tif: '/vsicurl/https://sentinel2l2a01.blob.core.windows.n"
+    }
+  ],
+  "seconds": 24635
+}

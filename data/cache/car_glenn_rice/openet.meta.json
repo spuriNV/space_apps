@@ -1,0 +1,29 @@
+{
+ "url": "https://openet-api.org/raster/timeseries/polygon",
+ "params": {
+  "date_range": [
+   "2016-01-01",
+   "2025-12-31"
+  ],
+  "interval": "monthly",
+  "reducer": "mean",
+  "model": "Ensemble",
+  "variable": "ET",
+  "reference_et": "gridMET",
+  "units": "mm",
+  "file_format": "JSON",
+  "models": [
+   "Ensemble"
+  ],
+  "geometry_source": "backend/field/polygons/car_glenn_rice.geojson outer ring (flat lon,lat array; geojson param rejected as invalid)"
+ },
+ "fetched_at": "2026-11-14T23:50:03Z",
+ "rows": 120,
+ "columns": [
+  "date",
+  "et_mm",
+  "model"
+ ],
+ "source_note": "OpenET v2.1 monthly mean ET over the field polygon; validation only",
+ "verified": true
+}

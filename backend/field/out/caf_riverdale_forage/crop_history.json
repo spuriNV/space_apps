@@ -1,0 +1,490 @@
+{
+  "preset_id": "caf_riverdale_forage",
+  "generated_at": "2026-11-14T23:38:59+00:00",
+  "source": {
+    "id": "usda_nass_cdl",
+    "title": "USDA NASS Cropland Data Layer (via CroplandCROS image service)",
+    "url": "https://pdi.scinet.usda.gov/image/rest/services/CDL_WM/ImageServer",
+    "accessed": "2026-11-14",
+    "verified": true
+  },
+  "method": "Pixels whose centre lies inside the polygon (CDL native EPSG:5070 grid; 30 m to 2023, 10 m in 2024-2025). Majority class and its share (purity). Class names from the service raster attribute table.",
+  "first_year": 2008,
+  "last_year": 2025,
+  "by_year": {
+    "2008": "Dbl Crop WinWht/Corn",
+    "2009": "Dbl Crop WinWht/Corn",
+    "2010": "Cotton",
+    "2011": "Cotton",
+    "2012": "Winter Wheat",
+    "2013": "Fallow/Idle Cropland",
+    "2014": "Fallow/Idle Cropland",
+    "2015": "Winter Wheat",
+    "2016": "Alfalfa",
+    "2017": "Alfalfa",
+    "2018": "Alfalfa",
+    "2019": "Alfalfa",
+    "2020": "Winter Wheat",
+    "2021": "Alfalfa",
+    "2022": "Alfalfa",
+    "2023": "Alfalfa",
+    "2024": "Alfalfa",
+    "2025": "Triticale"
+  },
+  "years": [
+    {
+      "year": 2008,
+      "majority_code": 225,
+      "majority_name": "Dbl Crop WinWht/Corn",
+      "purity_pct": 91.8,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 225,
+          "name": "Dbl Crop WinWht/Corn",
+          "pct": 91.8
+        },
+        {
+          "code": 226,
+          "name": "Dbl Crop Oats/Corn",
+          "pct": 2.7
+        },
+        {
+          "code": 176,
+          "name": "Grassland/Pasture",
+          "pct": 1.6
+        }
+      ]
+    },
+    {
+      "year": 2009,
+      "majority_code": 225,
+      "majority_name": "Dbl Crop WinWht/Corn",
+      "purity_pct": 61.3,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 225,
+          "name": "Dbl Crop WinWht/Corn",
+          "pct": 61.3
+        },
+        {
+          "code": 226,
+          "name": "Dbl Crop Oats/Corn",
+          "pct": 26.8
+        },
+        {
+          "code": 28,
+          "name": "Oats",
+          "pct": 3.4
+        }
+      ]
+    },
+    {
+      "year": 2010,
+      "majority_code": 2,
+      "majority_name": "Cotton",
+      "purity_pct": 96.3,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 2,
+          "name": "Cotton",
+          "pct": 96.3
+        },
+        {
+          "code": 121,
+          "name": "Developed/Open Space",
+          "pct": 0.9
+        },
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 0.7
+        }
+      ]
+    },
+    {
+      "year": 2011,
+      "majority_code": 2,
+      "majority_name": "Cotton",
+      "purity_pct": 94.7,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 2,
+          "name": "Cotton",
+          "pct": 94.7
+        },
+        {
+          "code": 69,
+          "name": "Grapes",
+          "pct": 1.8
+        },
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 1.1
+        }
+      ]
+    },
+    {
+      "year": 2012,
+      "majority_code": 24,
+      "majority_name": "Winter Wheat",
+      "purity_pct": 48.5,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 24,
+          "name": "Winter Wheat",
+          "pct": 48.5
+        },
+        {
+          "code": 22,
+          "name": "Durum Wheat",
+          "pct": 46.9
+        },
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 2.3
+        }
+      ]
+    },
+    {
+      "year": 2013,
+      "majority_code": 61,
+      "majority_name": "Fallow/Idle Cropland",
+      "purity_pct": 66.8,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 66.8
+        },
+        {
+          "code": 217,
+          "name": "Pomegranates",
+          "pct": 32.3
+        },
+        {
+          "code": 121,
+          "name": "Developed/Open Space",
+          "pct": 0.9
+        }
+      ]
+    },
+    {
+      "year": 2014,
+      "majority_code": 61,
+      "majority_name": "Fallow/Idle Cropland",
+      "purity_pct": 98.9,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 98.9
+        },
+        {
+          "code": 121,
+          "name": "Developed/Open Space",
+          "pct": 0.9
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 0.2
+        }
+      ]
+    },
+    {
+      "year": 2015,
+      "majority_code": 24,
+      "majority_name": "Winter Wheat",
+      "purity_pct": 51.5,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 24,
+          "name": "Winter Wheat",
+          "pct": 51.5
+        },
+        {
+          "code": 22,
+          "name": "Durum Wheat",
+          "pct": 41.0
+        },
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 5.9
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 94.1,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 94.1
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 2.7
+        },
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 1.6
+        }
+      ]
+    },
+    {
+      "year": 2017,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 97.0,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 97.0
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 1.1
+        },
+        {
+          "code": 121,
+          "name": "Developed/Open Space",
+          "pct": 0.9
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 90.4,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 90.4
+        },
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 2.3
+        },
+        {
+          "code": 225,
+          "name": "Dbl Crop WinWht/Corn",
+          "pct": 2.3
+        }
+      ]
+    },
+    {
+      "year": 2019,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 95.4,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 95.4
+        },
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 1.6
+        },
+        {
+          "code": 121,
+          "name": "Developed/Open Space",
+          "pct": 0.9
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "majority_code": 24,
+      "majority_name": "Winter Wheat",
+      "purity_pct": 87.2,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 24,
+          "name": "Winter Wheat",
+          "pct": 87.2
+        },
+        {
+          "code": 28,
+          "name": "Oats",
+          "pct": 3.0
+        },
+        {
+          "code": 204,
+          "name": "Pistachios",
+          "pct": 3.0
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 92.4,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 92.4
+        },
+        {
+          "code": 54,
+          "name": "Tomatoes",
+          "pct": 2.3
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 1.4
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 95.4,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 95.4
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 1.4
+        },
+        {
+          "code": 204,
+          "name": "Pistachios",
+          "pct": 0.9
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 95.9,
+      "n_pixels": 437,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 95.9
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 1.6
+        },
+        {
+          "code": 204,
+          "name": "Pistachios",
+          "pct": 1.1
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 94.2,
+      "n_pixels": 3918,
+      "pixel_res_m": 10.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 94.2
+        },
+        {
+          "code": 69,
+          "name": "Grapes",
+          "pct": 3.0
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 2.1
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "majority_code": 205,
+      "majority_name": "Triticale",
+      "purity_pct": 97.3,
+      "n_pixels": 3918,
+      "pixel_res_m": 10.0,
+      "top_classes": [
+        {
+          "code": 205,
+          "name": "Triticale",
+          "pct": 97.3
+        },
+        {
+          "code": 121,
+          "name": "Developed/Open Space",
+          "pct": 0.7
+        },
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 0.5
+        }
+      ]
+    }
+  ],
+  "caveats": [
+    "CDL is a classification with per-class accuracy that varies by year and crop; purity is agreement among pixels, not accuracy.",
+    "2024-2025 CDL is 10 m, so pixel counts are ~9x those of earlier years."
+  ]
+}

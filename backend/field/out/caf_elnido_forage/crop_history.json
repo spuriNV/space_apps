@@ -1,0 +1,450 @@
+{
+  "preset_id": "caf_elnido_forage",
+  "generated_at": "2026-11-14T23:38:59+00:00",
+  "source": {
+    "id": "usda_nass_cdl",
+    "title": "USDA NASS Cropland Data Layer (via CroplandCROS image service)",
+    "url": "https://pdi.scinet.usda.gov/image/rest/services/CDL_WM/ImageServer",
+    "accessed": "2026-11-14",
+    "verified": true
+  },
+  "method": "Pixels whose centre lies inside the polygon (CDL native EPSG:5070 grid; 30 m to 2023, 10 m in 2024-2025). Majority class and its share (purity). Class names from the service raster attribute table.",
+  "first_year": 2008,
+  "last_year": 2025,
+  "by_year": {
+    "2008": "Corn",
+    "2009": "Tomatoes",
+    "2010": "Alfalfa",
+    "2011": "Alfalfa",
+    "2012": "Alfalfa",
+    "2013": "Alfalfa",
+    "2014": "Alfalfa",
+    "2015": "Alfalfa",
+    "2016": "Alfalfa",
+    "2017": "Winter Wheat",
+    "2018": "Cotton",
+    "2019": "Alfalfa",
+    "2020": "Alfalfa",
+    "2021": "Alfalfa",
+    "2022": "Alfalfa",
+    "2023": "Alfalfa",
+    "2024": "Alfalfa",
+    "2025": "Alfalfa"
+  },
+  "years": [
+    {
+      "year": 2008,
+      "majority_code": 1,
+      "majority_name": "Corn",
+      "purity_pct": 87.4,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 1,
+          "name": "Corn",
+          "pct": 87.4
+        },
+        {
+          "code": 54,
+          "name": "Tomatoes",
+          "pct": 5.3
+        },
+        {
+          "code": 225,
+          "name": "Dbl Crop WinWht/Corn",
+          "pct": 3.3
+        }
+      ]
+    },
+    {
+      "year": 2009,
+      "majority_code": 54,
+      "majority_name": "Tomatoes",
+      "purity_pct": 97.0,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 54,
+          "name": "Tomatoes",
+          "pct": 97.0
+        },
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 2.3
+        },
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 0.7
+        }
+      ]
+    },
+    {
+      "year": 2010,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 97.4,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 97.4
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 1.3
+        },
+        {
+          "code": 54,
+          "name": "Tomatoes",
+          "pct": 1.0
+        }
+      ]
+    },
+    {
+      "year": 2011,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 99.3,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 99.3
+        },
+        {
+          "code": 2,
+          "name": "Cotton",
+          "pct": 0.7
+        }
+      ]
+    },
+    {
+      "year": 2012,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 98.7,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 98.7
+        },
+        {
+          "code": 24,
+          "name": "Winter Wheat",
+          "pct": 1.3
+        }
+      ]
+    },
+    {
+      "year": 2013,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 99.3,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 99.3
+        },
+        {
+          "code": 2,
+          "name": "Cotton",
+          "pct": 0.7
+        }
+      ]
+    },
+    {
+      "year": 2014,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 99.7,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 99.7
+        },
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 0.3
+        }
+      ]
+    },
+    {
+      "year": 2015,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 100.0,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 100.0,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2017,
+      "majority_code": 24,
+      "majority_name": "Winter Wheat",
+      "purity_pct": 92.7,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 24,
+          "name": "Winter Wheat",
+          "pct": 92.7
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 2.6
+        },
+        {
+          "code": 225,
+          "name": "Dbl Crop WinWht/Corn",
+          "pct": 2.0
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "majority_code": 2,
+      "majority_name": "Cotton",
+      "purity_pct": 97.7,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 2,
+          "name": "Cotton",
+          "pct": 97.7
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 1.0
+        },
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 0.7
+        }
+      ]
+    },
+    {
+      "year": 2019,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 97.7,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 97.7
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 1.3
+        },
+        {
+          "code": 24,
+          "name": "Winter Wheat",
+          "pct": 0.3
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 92.7,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 92.7
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 3.6
+        },
+        {
+          "code": 24,
+          "name": "Winter Wheat",
+          "pct": 2.3
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 98.3,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 98.3
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 0.7
+        },
+        {
+          "code": 69,
+          "name": "Grapes",
+          "pct": 0.3
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 98.7,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 98.7
+        },
+        {
+          "code": 69,
+          "name": "Grapes",
+          "pct": 0.3
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 0.3
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 98.7,
+      "n_pixels": 302,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 98.7
+        },
+        {
+          "code": 69,
+          "name": "Grapes",
+          "pct": 0.3
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 0.3
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 93.1,
+      "n_pixels": 2725,
+      "pixel_res_m": 10.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 93.1
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 1.9
+        },
+        {
+          "code": 176,
+          "name": "Grassland/Pasture",
+          "pct": 1.4
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "majority_code": 36,
+      "majority_name": "Alfalfa",
+      "purity_pct": 95.0,
+      "n_pixels": 2725,
+      "pixel_res_m": 10.0,
+      "top_classes": [
+        {
+          "code": 36,
+          "name": "Alfalfa",
+          "pct": 95.0
+        },
+        {
+          "code": 4,
+          "name": "Sorghum",
+          "pct": 1.6
+        },
+        {
+          "code": 27,
+          "name": "Rye",
+          "pct": 1.2
+        }
+      ]
+    }
+  ],
+  "caveats": [
+    "CDL is a classification with per-class accuracy that varies by year and crop; purity is agreement among pixels, not accuracy.",
+    "2024-2025 CDL is 10 m, so pixel counts are ~9x those of earlier years."
+  ]
+}

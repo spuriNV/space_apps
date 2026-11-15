@@ -1,0 +1,13 @@
+{
+ "urls": [
+  "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06101&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+  "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06101&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2"
+ ],
+ "fetched_at": "2026-11-15T07:11:48Z",
+ "units": "percent of county area",
+ "auth": "none",
+ "timestep": "weekly (map dated Tuesday)",
+ "date_min": "2025-12-30",
+ "date_max": "2026-11-10",
+ "note": "extends usdm.parquet (2015-2025) from 2026-01-01; same column meanings"
+}

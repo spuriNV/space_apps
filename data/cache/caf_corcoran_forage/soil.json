@@ -1,0 +1,226 @@
+{
+ "mukey": "461777",
+ "muname": "Gepford clay, sandy substratum, partially drained",
+ "drainage_class": "Poorly drained",
+ "hydrologic_group": "D",
+ "dominant_component": {
+  "compname": "Gepford",
+  "comppct_r": "85",
+  "taxorder": "Mollisols"
+ },
+ "awc_mm_per_m": {
+  "value": 91.8,
+  "unit": "mm/m",
+  "low": 51.5,
+  "high": 128.9,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted awc_r (cm/cm x 1000), comppct-weighted, area-weighted over map units; low/high = awc_l/awc_h"
+ },
+ "om_pct": {
+  "value": 0.94,
+  "unit": "%",
+  "low": 0.71,
+  "high": 1.17,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted om_r"
+ },
+ "texture_class": "clay loam",
+ "texture_detail": {
+  "sand_pct": 37.6,
+  "silt_pct": 26.0,
+  "clay_pct": 36.4,
+  "surface_horizon_texture_code": "C",
+  "method": "USDA triangle on 0-100 cm weighted sand/silt/clay"
+ },
+ "ec_ds_per_m": 10.51,
+ "map_units": [
+  {
+   "mukey": "461777",
+   "muname": "Gepford clay, sandy substratum, partially drained",
+   "area_share": 0.51,
+   "components": [
+    {
+     "compname": "Gepford",
+     "comppct_r": "85",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Mollisols"
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Homeland",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Armona",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Vanguard",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Westcamp",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Tulare",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Gepford",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "1",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  },
+  {
+   "mukey": "461762",
+   "muname": "Armona loam, partially drained",
+   "area_share": 0.256,
+   "components": [
+    {
+     "compname": "Armona",
+     "comppct_r": "85",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "C/D",
+     "taxorder": "Mollisols"
+    },
+    {
+     "compname": "Boggs",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Homeland",
+     "comppct_r": "4",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Vanguard",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  },
+  {
+   "mukey": "461785",
+   "muname": "Homeland fine sandy loam, partially drained",
+   "area_share": 0.234,
+   "components": [
+    {
+     "compname": "Homeland",
+     "comppct_r": "85",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "B/D",
+     "taxorder": "Entisols"
+    },
+    {
+     "compname": "Armona",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Houser",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Tulare",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Westcamp",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Lakeside",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Rambla",
+     "comppct_r": "1",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  }
+ ],
+ "footprint": "field polygon backend/field/polygons/caf_corcoran_forage.geojson",
+ "source": {
+  "id": "ssurgo_sda",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+  "verified": true
+ }
+}

@@ -1,0 +1,131 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "preset_id": "caf_elnido_forage",
+        "name": "Alfalfa field 2 miles northeast of El Nido",
+        "area_ha": 27.24,
+        "centroid": {
+          "lon": -120.475337,
+          "lat": 37.158544
+        },
+        "crs": "EPSG:4326 (lon, lat)",
+        "crs_working": "EPSG:32610",
+        "boundary_source": {
+          "id": "dwr_landiq_crop_mapping_2023",
+          "title": "DWR Statewide Crop Mapping 2023 (Land IQ), final",
+          "url": "https://utility.arcgis.com/usrsvcs/servers/d94e891e00364e49a2ed9e9e2e27837d/rest/services/Planning/i15_Crop_Mapping_2023/MapServer/0",
+          "verified": true,
+          "dwr_unique_id": "2413970",
+          "dwr_attributes": {
+            "UniqueID": "2413970",
+            "ACRES": 67.27519554,
+            "COUNTY": "Merced",
+            "CLASS1": "**",
+            "SUBCLASS1": "**",
+            "CROPTYP1": "****",
+            "CROPTYP2": "P1",
+            "MAIN_CROP": "P1",
+            "MAIN_CROP_DATE": null
+          }
+        },
+        "selection_rule": "registry field (backend/fields/pick_fields.py): CDL Alfalfa in >= 3 and forage (alfalfa, corn, winter grain/corn double crop, hay) in >= 7 of 2016-2025; ranked by purity",
+        "cdl_majority_by_year": {
+          "2008": "Corn",
+          "2009": "Tomatoes",
+          "2010": "Alfalfa",
+          "2011": "Alfalfa",
+          "2012": "Alfalfa",
+          "2013": "Alfalfa",
+          "2014": "Alfalfa",
+          "2015": "Alfalfa",
+          "2016": "Alfalfa",
+          "2017": "Winter Wheat",
+          "2018": "Cotton",
+          "2019": "Alfalfa",
+          "2020": "Alfalfa",
+          "2021": "Alfalfa",
+          "2022": "Alfalfa",
+          "2023": "Alfalfa",
+          "2024": "Alfalfa",
+          "2025": "Alfalfa"
+        },
+        "selected_at": "2026-11-14T23:38:56+00:00",
+        "candidates_considered": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -120.47561998918496,
+              37.160332933585735
+            ],
+            [
+              -120.47911184939049,
+              37.16033888208867
+            ],
+            [
+              -120.47916241286288,
+              37.1602853441134
+            ],
+            [
+              -120.4791743101505,
+              37.160196114309066
+            ],
+            [
+              -120.47920702769144,
+              37.156882715130315
+            ],
+            [
+              -120.47918620743812,
+              37.15679348488936
+            ],
+            [
+              -120.47913266964382,
+              37.15673697323201
+            ],
+            [
+              -120.47908210617142,
+              37.156728051126166
+            ],
+            [
+              -120.47156300871566,
+              37.15679348560533
+            ],
+            [
+              -120.47146782951636,
+              37.15683810109694
+            ],
+            [
+              -120.47144403494114,
+              37.156888664620695
+            ],
+            [
+              -120.47146188087254,
+              37.16019908963987
+            ],
+            [
+              -120.47148567634613,
+              37.160264524694284
+            ],
+            [
+              -120.47151541866684,
+              37.160309139569236
+            ],
+            [
+              -120.47154813800445,
+              37.16032401190427
+            ],
+            [
+              -120.47561998918496,
+              37.160332933585735
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+ "preset_id": "caf_tipton_forage",
+ "years": [
+  2010,
+  2024
+ ],
+ "file_url_template": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip",
+ "page_url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss",
+ "layout_url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/COL_Summary_of_Business_with_Month_All_Years.pdf",
+ "grouping": {
+  "drought": [
+   "Drought",
+   "Failure of Irrigation Supply"
+  ],
+  "excess_moisture": [
+   "Excess Moisture/Precipitation/Rain",
+   "Flood",
+   "Cold Wet Weather"
+  ],
+  "heat": [
+   "Heat",
+   "Hot Wind"
+  ],
+  "other": "all remaining causes (incl. cold/frost/freeze, wind, hail, insects, disease, ARPI/SCO/ECO etc.)"
+ },
+ "profiles": {
+  "Tulare County|alfalfa_forage": {
+   "scope": "Tulare County",
+   "crop": "alfalfa_forage",
+   "commodity_names_matched": [
+    "PASTURE,RANGELAND,FORAGE",
+    "Pasture,Rangeland,Forage"
+   ],
+   "total_indemnity_usd": 12859674.0,
+   "years_with_indemnity": [
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2011": 410583.0,
+    "2012": 102796.0,
+    "2013": 714441.0,
+    "2014": 695961.0,
+    "2015": 1096163.0,
+    "2016": 4881.0,
+    "2017": 421267.0,
+    "2018": 284528.0,
+    "2019": 475.0,
+    "2020": 1475928.0,
+    "2021": 2605877.0,
+    "2022": 3772258.0,
+    "2023": 1268672.0,
+    "2024": 5844.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Tulare County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Tulare County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Tulare County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 1.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Tulare County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "ARPI/SCO/ECO/STAX/MP/HIP-WI/PACE Crops Only": 0.392,
+    "ARPI/SCO/ECO/STAX/MP/HIP WI Crops Only": 0.2026,
+    "ARPI/SCO/STAX/MP/HIP WI Crops Only": 0.1148,
+    "GRP/Grip Crops": 0.0955,
+    "ARPI/SCO/STAX Crops Only": 0.0852,
+    "ARPI/SCO/STAX/MP Crops Only": 0.0553,
+    "ARPI Crops Only": 0.0541,
+    "ARPI/SCO/ECO/STAX/MP/PACE Crops Only": 0.0005
+   },
+   "share_peril_unattributed": 1.0,
+   "caveat": "Insurance history, not a forecast. Alfalfa is insured in CA under Forage Production / Pasture,Rangeland,Forage (rainfall-index plan); matched names listed. Most forage indemnity is area-yield/index-plan (ARPI/SCO/GRP) with no peril attribution: see share_peril_unattributed; do NOT present the drought/moisture split as meaningful when that share is high."
+  },
+  "Tulare County|corn": {
+   "scope": "Tulare County",
+   "crop": "corn",
+   "commodity_names_matched": [
+    "Corn"
+   ],
+   "total_indemnity_usd": 2397350.0,
+   "years_with_indemnity": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2014": 350194.0,
+    "2015": 925645.0,
+    "2016": 284116.0,
+    "2017": 134433.0,
+    "2020": 22362.0,
+    "2021": 295509.0,
+    "2022": 314812.0,
+    "2023": 35099.0,
+    "2024": 35180.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.8415,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Tulare County corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.0087,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Tulare County corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.051,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Tulare County corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.0989,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Tulare County corn, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "Failure of Irrigation Supply": 0.8415,
+    "ARPI/SCO/STAX Crops Only": 0.0602,
+    "Heat": 0.051,
+    "ARPI/SCO/STAX/MP Crops Only": 0.0337,
+    "Excess Moisture/Precipitation/Rain": 0.0087,
+    "Failure of Irrigation Equipment": 0.0047,
+    "Wind/Excess Wind": 0.0003
+   },
+   "share_peril_unattributed": 0.0938,
+   "caveat": "Insurance history, not a forecast."
+  }
+ }
+}

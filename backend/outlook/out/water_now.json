@@ -1,6 +1,6 @@
 {
  "label": "Current conditions (observations)",
- "fetched_at": "2026-11-14T21:35:43Z",
+ "fetched_at": "2026-11-15T07:11:48Z",
  "presets": {
   "car_colusa_rice": {
    "drought_monitor": {
@@ -901,6 +901,5442 @@
        "title": "PNF vs own 2015-2025 same-day mean",
        "url": "data/cache/caf_tulare_forage/cdec.parquet",
        "accessed": "2026-11-14T21:35:43Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "car_glenn_rice": {
+   "drought_monitor": {
+    "county": "Glenn County",
+    "fips": "06021",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 100.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_glenn_county,_cumula",
+       "title": "US Drought Monitor, Glenn County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06021&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_glenn_county,_cumula",
+       "title": "US Drought Monitor, Glenn County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06021&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_glenn_county,_cumula",
+       "title": "US Drought Monitor, Glenn County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06021&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_glenn_county,_cumula",
+       "title": "US Drought Monitor, Glenn County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06021&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_glenn_county,_cumula",
+       "title": "US Drought Monitor, Glenn County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06021&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_glenn_county,_catego",
+      "title": "US Drought Monitor, Glenn County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06021&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 100.0,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06021&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "SHA": {
+     "name": "SHASTA",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 2243711.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_sh",
+       "title": "CDEC Daily Reservoir Storage Summary, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 4552000.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_sha",
+       "title": "CDEC reservoir capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 49.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_sha",
+       "title": "CDEC % of capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 2438661.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 92.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_sha",
+       "title": "CDEC % of average for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 2585096.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_sha",
+       "title": "CDEC storage a year ago, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 5338.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_sha",
+       "title": "CDEC inflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 5376.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_sha",
+       "title": "CDEC outflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 2243712.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_sha",
+       "title": "CDEC daily storage sensor 15, SHA",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 2316362.909090909,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_sha_storage_on_nov_13_over_2015-",
+       "title": "Mean of SHA storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_glenn_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 96.9,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "sha_vs_own_2015-2025_same-day_mean",
+       "title": "SHA vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_glenn_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    },
+    "ORO": {
+     "name": "OROVILLE",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 1433854.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_or",
+       "title": "CDEC Daily Reservoir Storage Summary, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 3424753.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_oro",
+       "title": "CDEC reservoir capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 42.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_oro",
+       "title": "CDEC % of capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 1785324.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 80.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_oro",
+       "title": "CDEC % of average for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 1771336.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_oro",
+       "title": "CDEC storage a year ago, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 3110.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_oro",
+       "title": "CDEC inflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 3359.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_oro",
+       "title": "CDEC outflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 1433855.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_oro",
+       "title": "CDEC daily storage sensor 15, ORO",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 1452490.7272727273,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_oro_storage_on_nov_13_over_2015-",
+       "title": "Mean of ORO storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_glenn_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 98.7,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "oro_vs_own_2015-2025_same-day_mean",
+       "title": "ORO vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_glenn_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "car_richvale_rice": {
+   "drought_monitor": {
+    "county": "Butte County",
+    "fips": "06007",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 100.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_butte_county,_catego",
+      "title": "US Drought Monitor, Butte County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 100.0,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "ORO": {
+     "name": "OROVILLE",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 1433854.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_or",
+       "title": "CDEC Daily Reservoir Storage Summary, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 3424753.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_oro",
+       "title": "CDEC reservoir capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 42.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_oro",
+       "title": "CDEC % of capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 1785324.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 80.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_oro",
+       "title": "CDEC % of average for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 1771336.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_oro",
+       "title": "CDEC storage a year ago, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 3110.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_oro",
+       "title": "CDEC inflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 3359.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_oro",
+       "title": "CDEC outflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 1433855.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_oro",
+       "title": "CDEC daily storage sensor 15, ORO",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 1452490.7272727273,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_oro_storage_on_nov_13_over_2015-",
+       "title": "Mean of ORO storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_richvale_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 98.7,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "oro_vs_own_2015-2025_same-day_mean",
+       "title": "ORO vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_richvale_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    },
+    "SHA": {
+     "name": "SHASTA",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 2243711.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_sh",
+       "title": "CDEC Daily Reservoir Storage Summary, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 4552000.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_sha",
+       "title": "CDEC reservoir capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 49.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_sha",
+       "title": "CDEC % of capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 2438661.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 92.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_sha",
+       "title": "CDEC % of average for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 2585096.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_sha",
+       "title": "CDEC storage a year ago, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 5338.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_sha",
+       "title": "CDEC inflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 5376.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_sha",
+       "title": "CDEC outflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 2243712.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_sha",
+       "title": "CDEC daily storage sensor 15, SHA",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 2316362.909090909,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_sha_storage_on_nov_13_over_2015-",
+       "title": "Mean of SHA storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_richvale_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 96.9,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "sha_vs_own_2015-2025_same-day_mean",
+       "title": "SHA vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_richvale_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "car_biggs_rice": {
+   "drought_monitor": {
+    "county": "Butte County",
+    "fips": "06007",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 100.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_butte_county,_cumula",
+       "title": "US Drought Monitor, Butte County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_butte_county,_catego",
+      "title": "US Drought Monitor, Butte County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 100.0,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06007&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "ORO": {
+     "name": "OROVILLE",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 1433854.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_or",
+       "title": "CDEC Daily Reservoir Storage Summary, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 3424753.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_oro",
+       "title": "CDEC reservoir capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 42.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_oro",
+       "title": "CDEC % of capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 1785324.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 80.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_oro",
+       "title": "CDEC % of average for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 1771336.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_oro",
+       "title": "CDEC storage a year ago, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 3110.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_oro",
+       "title": "CDEC inflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 3359.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_oro",
+       "title": "CDEC outflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 1433855.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_oro",
+       "title": "CDEC daily storage sensor 15, ORO",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 1452490.7272727273,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_oro_storage_on_nov_13_over_2015-",
+       "title": "Mean of ORO storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_biggs_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 98.7,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "oro_vs_own_2015-2025_same-day_mean",
+       "title": "ORO vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_biggs_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    },
+    "SHA": {
+     "name": "SHASTA",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 2243711.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_sh",
+       "title": "CDEC Daily Reservoir Storage Summary, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 4552000.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_sha",
+       "title": "CDEC reservoir capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 49.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_sha",
+       "title": "CDEC % of capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 2438661.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 92.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_sha",
+       "title": "CDEC % of average for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 2585096.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_sha",
+       "title": "CDEC storage a year ago, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 5338.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_sha",
+       "title": "CDEC inflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 5376.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_sha",
+       "title": "CDEC outflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 2243712.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_sha",
+       "title": "CDEC daily storage sensor 15, SHA",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 2316362.909090909,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_sha_storage_on_nov_13_over_2015-",
+       "title": "Mean of SHA storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_biggs_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 96.9,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "sha_vs_own_2015-2025_same-day_mean",
+       "title": "SHA vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_biggs_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "car_robbins_rice": {
+   "drought_monitor": {
+    "county": "Sutter County",
+    "fips": "06101",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 100.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_sutter_county,_cumul",
+       "title": "US Drought Monitor, Sutter County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06101&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_sutter_county,_cumul",
+       "title": "US Drought Monitor, Sutter County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06101&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_sutter_county,_cumul",
+       "title": "US Drought Monitor, Sutter County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06101&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_sutter_county,_cumul",
+       "title": "US Drought Monitor, Sutter County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06101&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_sutter_county,_cumul",
+       "title": "US Drought Monitor, Sutter County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06101&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_sutter_county,_categ",
+      "title": "US Drought Monitor, Sutter County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06101&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 100.0,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06101&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "ORO": {
+     "name": "OROVILLE",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 1433854.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_or",
+       "title": "CDEC Daily Reservoir Storage Summary, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 3424753.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_oro",
+       "title": "CDEC reservoir capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 42.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_oro",
+       "title": "CDEC % of capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 1785324.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 80.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_oro",
+       "title": "CDEC % of average for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 1771336.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_oro",
+       "title": "CDEC storage a year ago, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 3110.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_oro",
+       "title": "CDEC inflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 3359.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_oro",
+       "title": "CDEC outflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 1433855.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_oro",
+       "title": "CDEC daily storage sensor 15, ORO",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 1452490.7272727273,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_oro_storage_on_nov_13_over_2015-",
+       "title": "Mean of ORO storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_robbins_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 98.7,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "oro_vs_own_2015-2025_same-day_mean",
+       "title": "ORO vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_robbins_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    },
+    "SHA": {
+     "name": "SHASTA",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 2243711.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_sh",
+       "title": "CDEC Daily Reservoir Storage Summary, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 4552000.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_sha",
+       "title": "CDEC reservoir capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 49.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_sha",
+       "title": "CDEC % of capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 2438661.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 92.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_sha",
+       "title": "CDEC % of average for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 2585096.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_sha",
+       "title": "CDEC storage a year ago, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 5338.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_sha",
+       "title": "CDEC inflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 5376.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_sha",
+       "title": "CDEC outflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 2243712.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_sha",
+       "title": "CDEC daily storage sensor 15, SHA",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 2316362.909090909,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_sha_storage_on_nov_13_over_2015-",
+       "title": "Mean of SHA storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_robbins_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 96.9,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "sha_vs_own_2015-2025_same-day_mean",
+       "title": "SHA vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_robbins_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "car_zamora_rice": {
+   "drought_monitor": {
+    "county": "Yolo County",
+    "fips": "06113",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 96.04,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_yolo_county,_cumulat",
+       "title": "US Drought Monitor, Yolo County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06113&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_yolo_county,_cumulat",
+       "title": "US Drought Monitor, Yolo County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06113&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_yolo_county,_cumulat",
+       "title": "US Drought Monitor, Yolo County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06113&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_yolo_county,_cumulat",
+       "title": "US Drought Monitor, Yolo County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06113&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_yolo_county,_cumulat",
+       "title": "US Drought Monitor, Yolo County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06113&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 3.96,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_yolo_county,_categor",
+      "title": "US Drought Monitor, Yolo County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06113&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 96.04,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 88.23,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 88.23,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 88.23,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 88.23,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 88.23,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 96.04,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 96.04,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 96.04,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 96.04,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 96.04,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 96.04,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 96.04,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06113&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "SHA": {
+     "name": "SHASTA",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 2243711.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_sh",
+       "title": "CDEC Daily Reservoir Storage Summary, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 4552000.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_sha",
+       "title": "CDEC reservoir capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 49.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_sha",
+       "title": "CDEC % of capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 2438661.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 92.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_sha",
+       "title": "CDEC % of average for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 2585096.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_sha",
+       "title": "CDEC storage a year ago, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 5338.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_sha",
+       "title": "CDEC inflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 5376.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_sha",
+       "title": "CDEC outflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 2243712.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_sha",
+       "title": "CDEC daily storage sensor 15, SHA",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 2316362.909090909,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_sha_storage_on_nov_13_over_2015-",
+       "title": "Mean of SHA storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_zamora_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 96.9,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "sha_vs_own_2015-2025_same-day_mean",
+       "title": "SHA vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_zamora_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    },
+    "ORO": {
+     "name": "OROVILLE",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 1433854.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_or",
+       "title": "CDEC Daily Reservoir Storage Summary, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 3424753.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_oro",
+       "title": "CDEC reservoir capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 42.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_oro",
+       "title": "CDEC % of capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 1785324.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 80.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_oro",
+       "title": "CDEC % of average for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 1771336.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_oro",
+       "title": "CDEC storage a year ago, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 3110.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_oro",
+       "title": "CDEC inflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 3359.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_oro",
+       "title": "CDEC outflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 1433855.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_oro",
+       "title": "CDEC daily storage sensor 15, ORO",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 1452490.7272727273,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_oro_storage_on_nov_13_over_2015-",
+       "title": "Mean of ORO storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_zamora_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 98.7,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "oro_vs_own_2015-2025_same-day_mean",
+       "title": "ORO vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_zamora_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "car_grimes_rice": {
+   "drought_monitor": {
+    "county": "Colusa County",
+    "fips": "06011",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 100.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_colusa_county,_cumul",
+       "title": "US Drought Monitor, Colusa County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06011&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_colusa_county,_cumul",
+       "title": "US Drought Monitor, Colusa County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06011&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_colusa_county,_cumul",
+       "title": "US Drought Monitor, Colusa County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06011&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_colusa_county,_cumul",
+       "title": "US Drought Monitor, Colusa County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06011&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_colusa_county,_cumul",
+       "title": "US Drought Monitor, Colusa County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06011&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_colusa_county,_categ",
+      "title": "US Drought Monitor, Colusa County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06011&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 100.0,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 100.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06011&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "SHA": {
+     "name": "SHASTA",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 2243711.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_sh",
+       "title": "CDEC Daily Reservoir Storage Summary, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 4552000.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_sha",
+       "title": "CDEC reservoir capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 49.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_sha",
+       "title": "CDEC % of capacity, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 2438661.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 92.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_sha",
+       "title": "CDEC % of average for this date, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 2585096.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_sha",
+       "title": "CDEC storage a year ago, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 5338.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_sha",
+       "title": "CDEC inflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 5376.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_sha",
+       "title": "CDEC outflow, SHA",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 2243712.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_sha",
+       "title": "CDEC daily storage sensor 15, SHA",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 2316362.909090909,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_sha_storage_on_nov_13_over_2015-",
+       "title": "Mean of SHA storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_grimes_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 96.9,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "sha_vs_own_2015-2025_same-day_mean",
+       "title": "SHA vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_grimes_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    },
+    "ORO": {
+     "name": "OROVILLE",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 1433854.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_or",
+       "title": "CDEC Daily Reservoir Storage Summary, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 3424753.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_oro",
+       "title": "CDEC reservoir capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 42.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_oro",
+       "title": "CDEC % of capacity, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 1785324.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 80.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_oro",
+       "title": "CDEC % of average for this date, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 1771336.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_oro",
+       "title": "CDEC storage a year ago, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 3110.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_oro",
+       "title": "CDEC inflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 3359.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_oro",
+       "title": "CDEC outflow, ORO",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 1433855.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_oro",
+       "title": "CDEC daily storage sensor 15, ORO",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 1452490.7272727273,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_oro_storage_on_nov_13_over_2015-",
+       "title": "Mean of ORO storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/car_grimes_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 98.7,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "oro_vs_own_2015-2025_same-day_mean",
+       "title": "ORO vs own 2015-2025 same-day mean",
+       "url": "data/cache/car_grimes_rice/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "caf_corcoran_forage": {
+   "drought_monitor": {
+    "county": "Kings County",
+    "fips": "06031",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "None (no D0-D4 area)",
+    "worst_category_code": "None",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_kings_county,_cumula",
+       "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_kings_county,_cumula",
+       "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_kings_county,_cumula",
+       "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_kings_county,_cumula",
+       "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_kings_county,_cumula",
+       "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 100.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_kings_county,_catego",
+      "title": "US Drought Monitor, Kings County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 0.0,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 0.0,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "PNF": {
+     "name": "PINE FLAT",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 190190.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_pn",
+       "title": "CDEC Daily Reservoir Storage Summary, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 1000000.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_pnf",
+       "title": "CDEC reservoir capacity, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 19.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_pnf",
+       "title": "CDEC % of capacity, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 286702.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 66.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_pnf",
+       "title": "CDEC % of average for this date, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 275601.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_pnf",
+       "title": "CDEC storage a year ago, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 575.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_pnf",
+       "title": "CDEC inflow, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 174.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_pnf",
+       "title": "CDEC outflow, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 190190.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_pnf",
+       "title": "CDEC daily storage sensor 15, PNF",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 295986.0,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_pnf_storage_on_nov_13_over_2015-",
+       "title": "Mean of PNF storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/caf_corcoran_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 64.3,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "pnf_vs_own_2015-2025_same-day_mean",
+       "title": "PNF vs own 2015-2025 same-day mean",
+       "url": "data/cache/caf_corcoran_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "caf_goshen_forage": {
+   "drought_monitor": {
+    "county": "Tulare County",
+    "fips": "06107",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 78.79,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 21.21,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_tulare_county,_categ",
+      "title": "US Drought Monitor, Tulare County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 78.79,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "TRM": {
+     "name": "KAWEAH (TERMINUS)",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 19208.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_tr",
+       "title": "CDEC Daily Reservoir Storage Summary, TRM",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 185600.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_trm",
+       "title": "CDEC reservoir capacity, TRM",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 10.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_trm",
+       "title": "CDEC % of capacity, TRM",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 12570.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, TRM",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 153.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_trm",
+       "title": "CDEC % of average for this date, TRM",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 22027.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_trm",
+       "title": "CDEC storage a year ago, TRM",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 127.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_trm",
+       "title": "CDEC inflow, TRM",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 42.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_trm",
+       "title": "CDEC outflow, TRM",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 19208.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_trm",
+       "title": "CDEC daily storage sensor 15, TRM",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 16603.454545454544,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_trm_storage_on_nov_13_over_2015-",
+       "title": "Mean of TRM storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/caf_goshen_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 115.7,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "trm_vs_own_2015-2025_same-day_mean",
+       "title": "TRM vs own 2015-2025 same-day mean",
+       "url": "data/cache/caf_goshen_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "caf_tipton_forage": {
+   "drought_monitor": {
+    "county": "Tulare County",
+    "fips": "06107",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 78.79,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_tulare_county,_cumul",
+       "title": "US Drought Monitor, Tulare County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 21.21,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_tulare_county,_categ",
+      "title": "US Drought Monitor, Tulare County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 78.79,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 72.84,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 78.79,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06107&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "SCC": {
+     "name": "SUCCESS",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 9112.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_sc",
+       "title": "CDEC Daily Reservoir Storage Summary, SCC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 82300.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_scc",
+       "title": "CDEC reservoir capacity, SCC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 11.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_scc",
+       "title": "CDEC % of capacity, SCC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 6838.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, SCC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 133.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_scc",
+       "title": "CDEC % of average for this date, SCC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 12293.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_scc",
+       "title": "CDEC storage a year ago, SCC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 45.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_scc",
+       "title": "CDEC inflow, SCC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 2.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_scc",
+       "title": "CDEC outflow, SCC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 9113.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_scc",
+       "title": "CDEC daily storage sensor 15, SCC",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 7246.909090909091,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_scc_storage_on_nov_13_over_2015-",
+       "title": "Mean of SCC storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/caf_tipton_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 125.8,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "scc_vs_own_2015-2025_same-day_mean",
+       "title": "SCC vs own 2015-2025 same-day mean",
+       "url": "data/cache/caf_tipton_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "caf_riverdale_forage": {
+   "drought_monitor": {
+    "county": "Fresno County",
+    "fips": "06019",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 48.2,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_fresno_county,_cumul",
+       "title": "US Drought Monitor, Fresno County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06019&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_fresno_county,_cumul",
+       "title": "US Drought Monitor, Fresno County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06019&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_fresno_county,_cumul",
+       "title": "US Drought Monitor, Fresno County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06019&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_fresno_county,_cumul",
+       "title": "US Drought Monitor, Fresno County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06019&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_fresno_county,_cumul",
+       "title": "US Drought Monitor, Fresno County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06019&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 51.8,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_fresno_county,_categ",
+      "title": "US Drought Monitor, Fresno County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06019&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 48.2,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 44.76,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 44.76,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 44.76,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 44.76,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 44.76,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 48.2,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 48.2,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 48.2,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 48.2,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 48.2,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 48.2,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 48.2,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06019&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "PNF": {
+     "name": "PINE FLAT",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 190190.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_pn",
+       "title": "CDEC Daily Reservoir Storage Summary, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 1000000.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_pnf",
+       "title": "CDEC reservoir capacity, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 19.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_pnf",
+       "title": "CDEC % of capacity, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 286702.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 66.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_pnf",
+       "title": "CDEC % of average for this date, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 275601.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_pnf",
+       "title": "CDEC storage a year ago, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 575.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_pnf",
+       "title": "CDEC inflow, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 174.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_pnf",
+       "title": "CDEC outflow, PNF",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 190190.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_pnf",
+       "title": "CDEC daily storage sensor 15, PNF",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 295986.0,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_pnf_storage_on_nov_13_over_2015-",
+       "title": "Mean of PNF storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/caf_riverdale_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 64.3,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "pnf_vs_own_2015-2025_same-day_mean",
+       "title": "PNF vs own 2015-2025 same-day mean",
+       "url": "data/cache/caf_riverdale_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "caf_elnido_forage": {
+   "drought_monitor": {
+    "county": "Merced County",
+    "fips": "06047",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 19.56,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_merced_county,_cumul",
+       "title": "US Drought Monitor, Merced County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06047&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_merced_county,_cumul",
+       "title": "US Drought Monitor, Merced County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06047&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_merced_county,_cumul",
+       "title": "US Drought Monitor, Merced County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06047&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_merced_county,_cumul",
+       "title": "US Drought Monitor, Merced County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06047&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_merced_county,_cumul",
+       "title": "US Drought Monitor, Merced County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06047&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 80.44,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_merced_county,_categ",
+      "title": "US Drought Monitor, Merced County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06047&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 19.56,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 9.33,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 9.33,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 9.33,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 9.33,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 9.33,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 19.56,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 19.56,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 19.56,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 19.56,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 19.56,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 19.56,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 19.56,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06047&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "EXC": {
+     "name": "MC CLURE (EXCHEQUER)",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 498942.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_ex",
+       "title": "CDEC Daily Reservoir Storage Summary, EXC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 1024600.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_exc",
+       "title": "CDEC reservoir capacity, EXC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 49.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_exc",
+       "title": "CDEC % of capacity, EXC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 435099.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, EXC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 115.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_exc",
+       "title": "CDEC % of average for this date, EXC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 604914.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_exc",
+       "title": "CDEC storage a year ago, EXC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": 95.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_exc",
+       "title": "CDEC inflow, EXC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": 80.0,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_exc",
+       "title": "CDEC outflow, EXC",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 498942.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_exc",
+       "title": "CDEC daily storage sensor 15, EXC",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 453885.9090909091,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_exc_storage_on_nov_13_over_2015-",
+       "title": "Mean of EXC storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/caf_elnido_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 109.9,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "exc_vs_own_2015-2025_same-day_mean",
+       "title": "EXC vs own 2015-2025 same-day mean",
+       "url": "data/cache/caf_elnido_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+    }
+   }
+  },
+  "caf_newman_forage": {
+   "drought_monitor": {
+    "county": "Stanislaus County",
+    "fips": "06099",
+    "map_date": "2026-11-10",
+    "valid_end": "2026-11-16",
+    "worst_category": "D0 abnormally dry",
+    "worst_category_code": "D0",
+    "area_in_category_percent": {
+     "D0": {
+      "value": 29.92,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_stanislaus_county,_c",
+       "title": "US Drought Monitor, Stanislaus County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06099&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D1": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_stanislaus_county,_c",
+       "title": "US Drought Monitor, Stanislaus County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06099&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D2": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_stanislaus_county,_c",
+       "title": "US Drought Monitor, Stanislaus County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06099&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D3": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_stanislaus_county,_c",
+       "title": "US Drought Monitor, Stanislaus County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06099&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     },
+     "D4": {
+      "value": 0.0,
+      "unit": "% of county area",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "us_drought_monitor,_stanislaus_county,_c",
+       "title": "US Drought Monitor, Stanislaus County, cumulative (area in category or worse)",
+       "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06099&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "map dated 2026-11-10"
+     }
+    },
+    "area_none_percent": {
+     "value": 70.08,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_stanislaus_county,_c",
+      "title": "US Drought Monitor, Stanislaus County, categorical",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06099&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+    "weeks_ago_4_cumulative_D0": 29.92,
+    "history_2026": [
+     {
+      "map_date": "2026-08-25",
+      "D0": 18.26,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-01",
+      "D0": 18.26,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-08",
+      "D0": 18.26,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-15",
+      "D0": 18.26,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-22",
+      "D0": 18.26,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-09-29",
+      "D0": 29.92,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-06",
+      "D0": 29.92,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-13",
+      "D0": 29.92,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-20",
+      "D0": 29.92,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-10-27",
+      "D0": 29.92,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-03",
+      "D0": 29.92,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     },
+     {
+      "map_date": "2026-11-10",
+      "D0": 29.92,
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0
+     }
+    ],
+    "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06099&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true
+   },
+   "reservoirs": {
+    "SNL": {
+     "name": "SAN LUIS",
+     "cdec_report_date": "2026-11-13",
+     "latest_daily_date": "2026-11-13",
+     "storage_af": {
+      "value": 1322134.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_reservoir_storage_summary,_sn",
+       "title": "CDEC Daily Reservoir Storage Summary, SNL",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "report 'Ending at midnight 2026-11-13'"
+     },
+     "capacity_af": {
+      "value": 2041000.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_reservoir_capacity,_snl",
+       "title": "CDEC reservoir capacity, SNL",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "pct_of_capacity": {
+      "value": 65.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_capacity,_snl",
+       "title": "CDEC % of capacity, SNL",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "cdec_average_storage_af": {
+      "value": 974369.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_historical_average_storage_for_this",
+       "title": "CDEC historical average storage for this date, SNL",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+     },
+     "pct_of_cdec_average": {
+      "value": 136.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_%_of_average_for_this_date,_snl",
+       "title": "CDEC % of average for this date, SNL",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "storage_year_ago_af": {
+      "value": 1064386.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_storage_a_year_ago,_snl",
+       "title": "CDEC storage a year ago, SNL",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "inflow_cfs": {
+      "value": null,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_inflow,_snl",
+       "title": "CDEC inflow, SNL",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "outflow_cfs": {
+      "value": null,
+      "unit": "cfs",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_outflow,_snl",
+       "title": "CDEC outflow, SNL",
+       "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      }
+     },
+     "daily_series_latest_af": {
+      "value": 1322134.0,
+      "unit": "acre-feet",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "cdec_daily_storage_sensor_15,_snl",
+       "title": "CDEC daily storage sensor 15, SNL",
+       "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "date 2026-11-13"
+     },
+     "own_average_2015_2025_af": {
+      "value": 894398.8181818182,
+      "unit": "acre-feet",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "mean_of_snl_storage_on_nov_13_over_2015-",
+       "title": "Mean of SNL storage on Nov 13 over 2015-2025 (our cache)",
+       "url": "data/cache/caf_newman_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
+       "verified": true
+      },
+      "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+     },
+     "pct_of_own_average": {
+      "value": 147.8,
+      "unit": "percent",
+      "method": "computed",
+      "fetched_at": "2026-11-15T07:11:48Z",
+      "verified": true,
+      "source": {
+       "id": "snl_vs_own_2015-2025_same-day_mean",
+       "title": "SNL vs own 2015-2025 same-day mean",
+       "url": "data/cache/caf_newman_forage/cdec.parquet",
+       "accessed": "2026-11-15T07:11:48Z",
        "verified": true
       }
      },

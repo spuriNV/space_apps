@@ -1,0 +1,133 @@
+{
+ "preset_id": "car_glenn_rice",
+ "years": [
+  2010,
+  2024
+ ],
+ "file_url_template": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip",
+ "page_url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss",
+ "layout_url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/COL_Summary_of_Business_with_Month_All_Years.pdf",
+ "grouping": {
+  "drought": [
+   "Drought",
+   "Failure of Irrigation Supply"
+  ],
+  "excess_moisture": [
+   "Excess Moisture/Precipitation/Rain",
+   "Flood",
+   "Cold Wet Weather"
+  ],
+  "heat": [
+   "Heat",
+   "Hot Wind"
+  ],
+  "other": "all remaining causes (incl. cold/frost/freeze, wind, hail, insects, disease, ARPI/SCO/ECO etc.)"
+ },
+ "profiles": {
+  "Glenn County|rice": {
+   "scope": "Glenn County",
+   "crop": "rice",
+   "commodity_names_matched": [
+    "Rice"
+   ],
+   "total_indemnity_usd": 84899157.0,
+   "years_with_indemnity": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2014": 5930195.0,
+    "2015": 5541817.0,
+    "2016": 481417.0,
+    "2017": 1031804.0,
+    "2018": 217955.00000000003,
+    "2019": 799486.0,
+    "2020": 2295935.0,
+    "2021": 6432133.0,
+    "2022": 57149745.0,
+    "2023": 1630953.0,
+    "2024": 3387716.9999999995
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.9007,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Glenn County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.0837,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Glenn County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0049,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Glenn County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.0107,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Glenn County rice, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "Failure of Irrigation Supply": 0.9007,
+    "Excess Moisture/Precipitation/Rain": 0.0837,
+    "Heat": 0.0048,
+    "ARPI/SCO/STAX/MP Crops Only": 0.0028,
+    "Decline in Price": 0.0022,
+    "Wildlife": 0.002,
+    "Failure of Irrigation Equipment": 0.0018,
+    "Hail": 0.0006,
+    "Wind/Excess Wind": 0.0006,
+    "Plant Disease": 0.0002,
+    "Fire": 0.0002,
+    "Hot Wind": 0.0001,
+    "Frost": 0.0001
+   },
+   "share_peril_unattributed": 0.0028,
+   "caveat": "Insurance history, not a forecast."
+  }
+ }
+}

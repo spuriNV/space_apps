@@ -1,0 +1,133 @@
+{
+ "preset_id": "car_biggs_rice",
+ "years": [
+  2010,
+  2024
+ ],
+ "file_url_template": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip",
+ "page_url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss",
+ "layout_url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/COL_Summary_of_Business_with_Month_All_Years.pdf",
+ "grouping": {
+  "drought": [
+   "Drought",
+   "Failure of Irrigation Supply"
+  ],
+  "excess_moisture": [
+   "Excess Moisture/Precipitation/Rain",
+   "Flood",
+   "Cold Wet Weather"
+  ],
+  "heat": [
+   "Heat",
+   "Hot Wind"
+  ],
+  "other": "all remaining causes (incl. cold/frost/freeze, wind, hail, insects, disease, ARPI/SCO/ECO etc.)"
+ },
+ "profiles": {
+  "Butte County|rice": {
+   "scope": "Butte County",
+   "crop": "rice",
+   "commodity_names_matched": [
+    "Rice"
+   ],
+   "total_indemnity_usd": 126013251.00000001,
+   "years_with_indemnity": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2014": 641528.0,
+    "2015": 10701089.0,
+    "2016": 1061632.0,
+    "2017": 13395074.0,
+    "2018": 354905.0,
+    "2019": 6530982.0,
+    "2020": 40437.0,
+    "2021": 21609577.0,
+    "2022": 20355250.0,
+    "2023": 7056263.0,
+    "2024": 44266514.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.4133,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Butte County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.5566,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Butte County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0026,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Butte County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.0275,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Butte County rice, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "Excess Moisture/Precipitation/Rain": 0.5566,
+    "Failure of Irrigation Supply": 0.4133,
+    "Failure of Irrigation Equipment": 0.0073,
+    "Inability to Prepare Land for Irrigation": 0.0057,
+    "Decline in Price": 0.0052,
+    "ARPI/SCO/ECO/STAX/MP/PACE Crops Only": 0.003,
+    "Heat": 0.0024,
+    "ARPI/SCO/STAX/MP Crops Only": 0.0021,
+    "Wind/Excess Wind": 0.002,
+    "Insects": 0.0017,
+    "ARPI/SCO/ECO/STAX/MP/HIP-WI/PACE Crops Only": 0.0005,
+    "Hot Wind": 0.0002,
+    "Cold Wet Weather": 0.0
+   },
+   "share_peril_unattributed": 0.0057,
+   "caveat": "Insurance history, not a forecast."
+  }
+ }
+}

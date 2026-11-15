@@ -1,0 +1,260 @@
+{
+ "url": "https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USC00046168%2CUSW00023240%2CUSC00049073%2CUSW00023258%2CUSC00042389%2CUSC00047846%2CUSC00045118%2CUSC00045120%2CUSC00045532%2CUSC00048999%2CUSC00045119%2CUSC00045933&startDate=1981-01-01&endDate=2026-11-14&dataTypes=PRCP%2CTMAX%2CTMIN&units=metric&includeStationName=true&includeStationLocation=true&format=csv",
+ "search_url": "https://www.ncei.noaa.gov/access/services/search/v1/data",
+ "params": {
+  "dataset": "daily-summaries",
+  "stations": [
+   "USC00046168",
+   "USC00049073",
+   "USW00023258"
+  ],
+  "startDate": "1981-01-01",
+  "endDate": "2026-11-14",
+  "dataTypes": "PRCP,TMAX,TMIN",
+  "units": "metric"
+ },
+ "fetched_at": "2026-11-14T23:56:13Z",
+ "timestep": "daily (local station time, observation-day convention varies by station; compare monthly or +/-1 day)",
+ "units": {
+  "prcp_mm": "mm",
+  "tmax_c": "degC",
+  "tmin_c": "degC"
+ },
+ "fill_value": "blank/absent rows -> NaN",
+ "native_res": "point stations",
+ "native_res_m": null,
+ "auth": "none",
+ "selected_stations": [
+  {
+   "station": "USC00046168",
+   "name": "NEWMAN, CA US",
+   "lat": 37.2811,
+   "lon": -121.0177,
+   "dist_km": 9.0663,
+   "first_date": "1902-06-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.923,
+    "TMAX": 0.942,
+    "TMIN": 0.941
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00049073",
+   "name": "TURLOCK NUMBER 2, CA US",
+   "lat": 37.5019,
+   "lon": -120.8457,
+   "dist_km": 20.9558,
+   "first_date": "1893-01-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.947,
+    "TMAX": 0.835,
+    "TMIN": 0.835
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USW00023258",
+   "name": "MODESTO AIRPORT, CA US",
+   "lat": 37.6254,
+   "lon": -120.9549,
+   "dist_km": 29.6229,
+   "first_date": "1906-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.994,
+    "TMAX": 0.993,
+    "TMIN": 0.993
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  }
+ ],
+ "all_candidates_checked_nearest_12": [
+  {
+   "station": "USC00046168",
+   "name": "NEWMAN, CA US",
+   "lat": 37.2811,
+   "lon": -121.0177,
+   "dist_km": 9.0663,
+   "first_date": "1902-06-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.923,
+    "TMAX": 0.942,
+    "TMIN": 0.941
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USW00023240",
+   "name": "CROWS LANDING, CA US",
+   "lat": 37.4,
+   "lon": -121.1333,
+   "dist_km": 12.1358,
+   "first_date": "1945-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.041,
+    "TMAX": 0.041,
+    "TMIN": 0.041
+   },
+   "first_obs": "1982-01-04",
+   "last_obs": "1987-02-27"
+  },
+  {
+   "station": "USC00049073",
+   "name": "TURLOCK NUMBER 2, CA US",
+   "lat": 37.5019,
+   "lon": -120.8457,
+   "dist_km": 20.9558,
+   "first_date": "1893-01-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.947,
+    "TMAX": 0.835,
+    "TMIN": 0.835
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USW00023258",
+   "name": "MODESTO AIRPORT, CA US",
+   "lat": 37.6254,
+   "lon": -120.9549,
+   "dist_km": 29.6229,
+   "first_date": "1906-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.994,
+    "TMAX": 0.993,
+    "TMIN": 0.993
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  },
+  {
+   "station": "USC00042389",
+   "name": "DENAIR 3 NNE, CA US",
+   "lat": 37.5667,
+   "lon": -120.7833,
+   "dist_km": 29.991,
+   "first_date": "1899-06-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.073,
+    "TMAX": 0.071,
+    "TMIN": 0.071
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "1984-06-30"
+  },
+  {
+   "station": "USC00047846",
+   "name": "SAN LUIS DAM, CA US",
+   "lat": 37.0533,
+   "lon": -121.0578,
+   "dist_km": 34.6405,
+   "first_date": "1963-01-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.592,
+    "TMAX": 0.592,
+    "TMIN": 0.592
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2007-08-31"
+  },
+  {
+   "station": "USC00045118",
+   "name": "LOS BANOS, CA US",
+   "lat": 37.0563,
+   "lon": -120.8666,
+   "dist_km": 36.1186,
+   "first_date": "1906-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.99,
+    "TMAX": 0.99,
+    "TMIN": 0.986
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  },
+  {
+   "station": "USC00045120",
+   "name": "LOS BANOS DET RESV, CA US",
+   "lat": 36.9897,
+   "lon": -120.9297,
+   "dist_km": 41.92,
+   "first_date": "1968-07-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.594,
+    "TMAX": 0.592,
+    "TMIN": 0.592
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2007-12-31"
+  },
+  {
+   "station": "USC00045532",
+   "name": "MERCED, CA US",
+   "lat": 37.2888,
+   "lon": -120.5158,
+   "dist_km": 43.9792,
+   "first_date": "1899-06-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.924,
+    "TMAX": 0.918,
+    "TMIN": 0.915
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-03-18"
+  },
+  {
+   "station": "USC00048999",
+   "name": "TRACY CARBONA, CA US",
+   "lat": 37.6819,
+   "lon": -121.3466,
+   "dist_km": 46.6404,
+   "first_date": "1906-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.901,
+    "TMAX": 0.829,
+    "TMIN": 0.828
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00045119",
+   "name": "LOS BANOS ARBURUA RANCH, CA US",
+   "lat": 36.8749,
+   "lon": -120.9386,
+   "dist_km": 54.4744,
+   "first_date": "1932-09-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.947,
+    "TMAX": 0.0,
+    "TMIN": 0.0
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00045933",
+   "name": "MOUNT HAMILTON, CA US",
+   "lat": 37.3434,
+   "lon": -121.6347,
+   "dist_km": 55.7367,
+   "first_date": "1948-07-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.982,
+    "TMAX": 0.99,
+    "TMIN": 0.99
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-09"
+  }
+ ],
+ "rows": 48602,
+ "date_max": "2026-11-10",
+ "selection_rule": "nearest 3 of the 12 nearest candidate GHCN-D stations (bbox +/-0.8 deg, record starting <=1985) with >=70% daily coverage of PRCP,TMAX,TMIN over 1981-2025",
+ "footprint_geojson": null
+}

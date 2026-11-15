@@ -1,0 +1,143 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "preset_id": "caf_corcoran_forage",
+        "name": "Forage field 4 miles south of Corcoran (Tulare Lake bed)",
+        "area_ha": 56.69,
+        "centroid": {
+          "lon": -119.565686,
+          "lat": 36.038441
+        },
+        "crs": "EPSG:4326 (lon, lat)",
+        "crs_working": "EPSG:32610",
+        "boundary_source": {
+          "id": "dwr_landiq_crop_mapping_2023",
+          "title": "DWR Statewide Crop Mapping 2023 (Land IQ), final",
+          "url": "https://utility.arcgis.com/usrsvcs/servers/d94e891e00364e49a2ed9e9e2e27837d/rest/services/Planning/i15_Crop_Mapping_2023/MapServer/0",
+          "verified": true,
+          "dwr_unique_id": "1602930",
+          "dwr_attributes": {
+            "UniqueID": "1602930",
+            "ACRES": 139.86746698,
+            "COUNTY": "Kings",
+            "CLASS1": "**",
+            "SUBCLASS1": "**",
+            "CROPTYP1": "****",
+            "CROPTYP2": "X",
+            "MAIN_CROP": "X",
+            "MAIN_CROP_DATE": null
+          }
+        },
+        "selection_rule": "registry field (backend/fields/pick_fields.py): CDL Alfalfa in >= 3 and forage (alfalfa, corn, winter grain/corn double crop, hay) in >= 7 of 2016-2025; ranked by purity",
+        "cdl_majority_by_year": {
+          "2008": "Oats",
+          "2009": "Corn",
+          "2010": "Fallow/Idle Cropland",
+          "2011": "Cotton",
+          "2012": "Dbl Crop WinWht/Corn",
+          "2013": "Winter Wheat",
+          "2014": "Winter Wheat",
+          "2015": "Alfalfa",
+          "2016": "Alfalfa",
+          "2017": "Alfalfa",
+          "2018": "Alfalfa",
+          "2019": "Alfalfa",
+          "2020": "Dbl Crop WinWht/Corn",
+          "2021": "Dbl Crop WinWht/Corn",
+          "2022": "Corn",
+          "2023": "Fallow/Idle Cropland",
+          "2024": "Fallow/Idle Cropland",
+          "2025": "Alfalfa"
+        },
+        "selected_at": "2026-11-14T23:38:55+00:00",
+        "candidates_considered": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -119.569278913772,
+              36.03636478247669
+            ],
+            [
+              -119.55464308056445,
+              36.0365201542157
+            ],
+            [
+              -119.55460012492416,
+              36.036990291912154
+            ],
+            [
+              -119.55869887615586,
+              36.03829309833356
+            ],
+            [
+              -119.56194826938811,
+              36.039312460912434
+            ],
+            [
+              -119.56483502980814,
+              36.040217605770465
+            ],
+            [
+              -119.56730205690323,
+              36.04098284062702
+            ],
+            [
+              -119.56977479369029,
+              36.04175378673734
+            ],
+            [
+              -119.57173927806264,
+              36.04236768751175
+            ],
+            [
+              -119.5718020945555,
+              36.04236768751175
+            ],
+            [
+              -119.57184207138225,
+              36.04234769948829
+            ],
+            [
+              -119.57186491374331,
+              36.04229916034124
+            ],
+            [
+              -119.57186205799901,
+              36.0405174184464
+            ],
+            [
+              -119.57187062163862,
+              36.0377648575571
+            ],
+            [
+              -119.57187347828122,
+              36.036402853985656
+            ],
+            [
+              -119.571864912845,
+              36.03637144517368
+            ],
+            [
+              -119.57183064750681,
+              36.03636002371842
+            ],
+            [
+              -119.57162506266413,
+              36.036354314079716
+            ],
+            [
+              -119.569278913772,
+              36.03636478247669
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

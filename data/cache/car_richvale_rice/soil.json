@@ -1,0 +1,156 @@
+{
+ "mukey": "461191",
+ "muname": "Esquon-Neerdobe , 0 to 1 percent slopes",
+ "drainage_class": "Poorly drained",
+ "hydrologic_group": "D",
+ "dominant_component": {
+  "compname": "Esquon",
+  "comppct_r": "60",
+  "taxorder": "Vertisols"
+ },
+ "awc_mm_per_m": {
+  "value": 154.4,
+  "unit": "mm/m",
+  "low": 137.9,
+  "high": 165.4,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted awc_r (cm/cm x 1000), comppct-weighted, area-weighted over map units; low/high = awc_l/awc_h"
+ },
+ "om_pct": {
+  "value": 0.8,
+  "unit": "%",
+  "low": 0.5,
+  "high": 1.19,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted om_r"
+ },
+ "texture_class": "clay",
+ "texture_detail": {
+  "sand_pct": 16.7,
+  "silt_pct": 33.4,
+  "clay_pct": 49.8,
+  "surface_horizon_texture_code": "C",
+  "method": "USDA triangle on 0-100 cm weighted sand/silt/clay"
+ },
+ "ec_ds_per_m": 0.13,
+ "map_units": [
+  {
+   "mukey": "461191",
+   "muname": "Esquon-Neerdobe , 0 to 1 percent slopes",
+   "area_share": 0.781,
+   "components": [
+    {
+     "compname": "Esquon",
+     "comppct_r": "60",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Neerdobe",
+     "comppct_r": "30",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Urban land",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Esquon",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Lofgren",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Eastbiggs",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  },
+  {
+   "mukey": "461187",
+   "muname": "Lofgren-Blavo , 0 to 1 percent slopes",
+   "area_share": 0.219,
+   "components": [
+    {
+     "compname": "Lofgren",
+     "comppct_r": "45",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Blavo",
+     "comppct_r": "40",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Edjobe",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  }
+ ],
+ "footprint": "field polygon backend/field/polygons/car_richvale_rice.geojson",
+ "source": {
+  "id": "ssurgo_sda",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+  "verified": true
+ }
+}

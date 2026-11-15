@@ -1,0 +1,135 @@
+{
+ "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=GPM_3IMERGDF&version=07 and short_name=GPM_3IMERGDL&version=07 (Cloud OPeNDAP opendap.earthdata.nasa.gov, one hyperslab per day)",
+ "collection": [
+  "GPM_3IMERGDF.07 (Final run, C2723754864-GES_DISC)",
+  "GPM_3IMERGDL.07 (Late run)"
+ ],
+ "params": {
+  "point_lon_lat": [
+   -121.004591,
+   37.361966
+  ],
+  "start": "2000-06-01",
+  "end": "2026-11-14",
+  "final_run_last_granule": "2025-09-30",
+  "variables": [
+   "precipitation"
+  ],
+  "selection": "nearest 0.1 deg cell centre"
+ },
+ "timestep": "daily (UTC)",
+ "units": {
+  "precipitation": "mm/day"
+ },
+ "native_res_m": 11000,
+ "fill_value": -9999.9,
+ "quality_handling": "fill -> NaN. run='final' = research-grade Final run (gauge-adjusted); run='late' = Late run (near-real-time, satellite only) used only after the last Final granule. randomError not fetched (its daily values were far larger than the rain, e.g. 5206 on a 37.7 mm day, so unusable as labelled). grid_lon/grid_lat give the cell actually sampled.",
+ "final": {
+  "n_granules": 9253,
+  "n_read_errors": 0,
+  "access": "Cloud OPeNDAP (opendap.earthdata.nasa.gov) DAP2 ascii hyperslab",
+  "start": "2000-06-01",
+  "end": "2025-09-30"
+ },
+ "late": {
+  "n_granules": 409,
+  "n_read_errors": 0,
+  "access": "Cloud OPeNDAP (opendap.earthdata.nasa.gov) DAP2 ascii hyperslab",
+  "start": "2025-10-01",
+  "end": "2026-11-14"
+ },
+ "fetched_at": "2026-11-15T00:24:02Z",
+ "n_rows": 9662,
+ "footprint_geojson": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     -121.0084412927799,
+     37.36087669900518
+    ],
+    [
+     -121.01002180845376,
+     37.35939866171745
+    ],
+    [
+     -121.01005399778533,
+     37.35931097557214
+    ],
+    [
+     -121.0100605096728,
+     37.35917755114408
+    ],
+    [
+     -121.01002097391886,
+     37.3590910421663
+    ],
+    [
+     -121.00996257534054,
+     37.359039982993814
+    ],
+    [
+     -121.00719379336171,
+     37.35721686594745
+    ],
+    [
+     -121.00710970835617,
+     37.357346598700175
+    ],
+    [
+     -121.00707082657573,
+     37.35734832810693
+    ],
+    [
+     -121.00693930064172,
+     37.35723880559907
+    ],
+    [
+     -121.00680899372156,
+     37.3571960716131
+    ],
+    [
+     -121.00672139360832,
+     37.357232749096255
+    ],
+    [
+     -121.00349271732317,
+     37.360483252164975
+    ],
+    [
+     -120.99903198994771,
+     37.36478109292337
+    ],
+    [
+     -120.99904826023416,
+     37.364843366078595
+    ],
+    [
+     -120.99910602011029,
+     37.36491826500639
+    ],
+    [
+     -121.00192977808616,
+     37.3668116519383
+    ],
+    [
+     -121.0020189233017,
+     37.36682984982598
+    ],
+    [
+     -121.00209395867908,
+     37.36681681094603
+    ],
+    [
+     -121.0021330964794,
+     37.3668055498012
+    ],
+    [
+     -121.0084412927799,
+     37.36087669900518
+    ]
+   ]
+  ]
+ },
+ "auth": "NASA Earthdata Login (credentials from repo-root .env, not stored)"
+}

@@ -1,0 +1,1078 @@
+{
+  "source": "https://pdi.scinet.usda.gov/image/rest/services/CDL_WM/ImageServer/rasterAttributeTable",
+  "fetched_at": "2026-11-14T23:38:12+00:00",
+  "classes": {
+    "0": {
+      "name": "Background",
+      "rgb": [
+        0,
+        0,
+        0
+      ]
+    },
+    "1": {
+      "name": "Corn",
+      "rgb": [
+        255,
+        211,
+        0
+      ]
+    },
+    "2": {
+      "name": "Cotton",
+      "rgb": [
+        255,
+        38,
+        38
+      ]
+    },
+    "3": {
+      "name": "Rice",
+      "rgb": [
+        0,
+        168,
+        228
+      ]
+    },
+    "4": {
+      "name": "Sorghum",
+      "rgb": [
+        255,
+        158,
+        11
+      ]
+    },
+    "5": {
+      "name": "Soybeans",
+      "rgb": [
+        38,
+        112,
+        0
+      ]
+    },
+    "6": {
+      "name": "Sunflower",
+      "rgb": [
+        255,
+        255,
+        0
+      ]
+    },
+    "10": {
+      "name": "Peanuts",
+      "rgb": [
+        112,
+        165,
+        0
+      ]
+    },
+    "11": {
+      "name": "Tobacco",
+      "rgb": [
+        0,
+        175,
+        75
+      ]
+    },
+    "12": {
+      "name": "Sweet Corn",
+      "rgb": [
+        221,
+        165,
+        11
+      ]
+    },
+    "13": {
+      "name": "Pop or Orn Corn",
+      "rgb": [
+        221,
+        165,
+        11
+      ]
+    },
+    "14": {
+      "name": "Mint",
+      "rgb": [
+        126,
+        211,
+        255
+      ]
+    },
+    "21": {
+      "name": "Barley",
+      "rgb": [
+        226,
+        0,
+        124
+      ]
+    },
+    "22": {
+      "name": "Durum Wheat",
+      "rgb": [
+        137,
+        98,
+        84
+      ]
+    },
+    "23": {
+      "name": "Spring Wheat",
+      "rgb": [
+        216,
+        181,
+        107
+      ]
+    },
+    "24": {
+      "name": "Winter Wheat",
+      "rgb": [
+        165,
+        112,
+        0
+      ]
+    },
+    "25": {
+      "name": "Other Small Grains",
+      "rgb": [
+        214,
+        158,
+        188
+      ]
+    },
+    "26": {
+      "name": "Dbl Crop WinWht/Soybeans",
+      "rgb": [
+        112,
+        112,
+        0
+      ]
+    },
+    "27": {
+      "name": "Rye",
+      "rgb": [
+        172,
+        0,
+        124
+      ]
+    },
+    "28": {
+      "name": "Oats",
+      "rgb": [
+        160,
+        89,
+        137
+      ]
+    },
+    "29": {
+      "name": "Millet",
+      "rgb": [
+        112,
+        0,
+        73
+      ]
+    },
+    "30": {
+      "name": "Speltz",
+      "rgb": [
+        214,
+        158,
+        188
+      ]
+    },
+    "31": {
+      "name": "Canola",
+      "rgb": [
+        209,
+        255,
+        0
+      ]
+    },
+    "32": {
+      "name": "Flaxseed",
+      "rgb": [
+        126,
+        153,
+        255
+      ]
+    },
+    "33": {
+      "name": "Safflower",
+      "rgb": [
+        214,
+        214,
+        0
+      ]
+    },
+    "34": {
+      "name": "Rape Seed",
+      "rgb": [
+        209,
+        255,
+        0
+      ]
+    },
+    "35": {
+      "name": "Mustard",
+      "rgb": [
+        0,
+        175,
+        75
+      ]
+    },
+    "36": {
+      "name": "Alfalfa",
+      "rgb": [
+        255,
+        165,
+        226
+      ]
+    },
+    "37": {
+      "name": "Other Hay/Non Alfalfa",
+      "rgb": [
+        165,
+        242,
+        140
+      ]
+    },
+    "38": {
+      "name": "Camelina",
+      "rgb": [
+        0,
+        175,
+        75
+      ]
+    },
+    "39": {
+      "name": "Buckwheat",
+      "rgb": [
+        214,
+        158,
+        188
+      ]
+    },
+    "41": {
+      "name": "Sugarbeets",
+      "rgb": [
+        168,
+        0,
+        228
+      ]
+    },
+    "42": {
+      "name": "Dry Beans",
+      "rgb": [
+        165,
+        0,
+        0
+      ]
+    },
+    "43": {
+      "name": "Potatoes",
+      "rgb": [
+        112,
+        38,
+        0
+      ]
+    },
+    "44": {
+      "name": "Other Crops",
+      "rgb": [
+        0,
+        175,
+        75
+      ]
+    },
+    "45": {
+      "name": "Sugarcane",
+      "rgb": [
+        177,
+        126,
+        255
+      ]
+    },
+    "46": {
+      "name": "Sweet Potatoes",
+      "rgb": [
+        112,
+        38,
+        0
+      ]
+    },
+    "47": {
+      "name": "Misc Vegs & Fruits",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "48": {
+      "name": "Watermelons",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "49": {
+      "name": "Onions",
+      "rgb": [
+        255,
+        204,
+        102
+      ]
+    },
+    "50": {
+      "name": "Cucumbers",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "51": {
+      "name": "Chick Peas",
+      "rgb": [
+        0,
+        175,
+        75
+      ]
+    },
+    "52": {
+      "name": "Lentils",
+      "rgb": [
+        0,
+        221,
+        175
+      ]
+    },
+    "53": {
+      "name": "Peas",
+      "rgb": [
+        84,
+        255,
+        0
+      ]
+    },
+    "54": {
+      "name": "Tomatoes",
+      "rgb": [
+        242,
+        163,
+        119
+      ]
+    },
+    "55": {
+      "name": "Caneberries",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "56": {
+      "name": "Hops",
+      "rgb": [
+        0,
+        175,
+        75
+      ]
+    },
+    "57": {
+      "name": "Herbs",
+      "rgb": [
+        126,
+        211,
+        255
+      ]
+    },
+    "58": {
+      "name": "Clover/Wildflowers",
+      "rgb": [
+        232,
+        191,
+        255
+      ]
+    },
+    "59": {
+      "name": "Sod/Grass Seed",
+      "rgb": [
+        175,
+        255,
+        221
+      ]
+    },
+    "60": {
+      "name": "Switchgrass",
+      "rgb": [
+        0,
+        175,
+        75
+      ]
+    },
+    "61": {
+      "name": "Fallow/Idle Cropland",
+      "rgb": [
+        191,
+        191,
+        119
+      ]
+    },
+    "63": {
+      "name": "Forest",
+      "rgb": [
+        147,
+        204,
+        147
+      ]
+    },
+    "64": {
+      "name": "Shrubland",
+      "rgb": [
+        198,
+        214,
+        158
+      ]
+    },
+    "65": {
+      "name": "Barren",
+      "rgb": [
+        204,
+        191,
+        163
+      ]
+    },
+    "66": {
+      "name": "Cherries",
+      "rgb": [
+        255,
+        0,
+        255
+      ]
+    },
+    "67": {
+      "name": "Peaches",
+      "rgb": [
+        255,
+        142,
+        170
+      ]
+    },
+    "68": {
+      "name": "Apples",
+      "rgb": [
+        186,
+        0,
+        79
+      ]
+    },
+    "69": {
+      "name": "Grapes",
+      "rgb": [
+        112,
+        68,
+        137
+      ]
+    },
+    "70": {
+      "name": "Christmas Trees",
+      "rgb": [
+        0,
+        119,
+        119
+      ]
+    },
+    "71": {
+      "name": "Other Tree Crops",
+      "rgb": [
+        177,
+        154,
+        112
+      ]
+    },
+    "72": {
+      "name": "Citrus",
+      "rgb": [
+        255,
+        255,
+        126
+      ]
+    },
+    "74": {
+      "name": "Pecans",
+      "rgb": [
+        181,
+        112,
+        91
+      ]
+    },
+    "75": {
+      "name": "Almonds",
+      "rgb": [
+        0,
+        165,
+        130
+      ]
+    },
+    "76": {
+      "name": "Walnuts",
+      "rgb": [
+        233,
+        214,
+        175
+      ]
+    },
+    "77": {
+      "name": "Pears",
+      "rgb": [
+        177,
+        154,
+        112
+      ]
+    },
+    "81": {
+      "name": "Clouds/No Data",
+      "rgb": [
+        242,
+        242,
+        242
+      ]
+    },
+    "82": {
+      "name": "Developed",
+      "rgb": [
+        154,
+        154,
+        154
+      ]
+    },
+    "83": {
+      "name": "Water",
+      "rgb": [
+        75,
+        112,
+        163
+      ]
+    },
+    "87": {
+      "name": "Wetlands",
+      "rgb": [
+        126,
+        177,
+        177
+      ]
+    },
+    "88": {
+      "name": "Nonag/Undefined",
+      "rgb": [
+        232,
+        255,
+        191
+      ]
+    },
+    "92": {
+      "name": "Aquaculture",
+      "rgb": [
+        0,
+        255,
+        255
+      ]
+    },
+    "111": {
+      "name": "Open Water",
+      "rgb": [
+        75,
+        112,
+        163
+      ]
+    },
+    "112": {
+      "name": "Perennial Ice/Snow ",
+      "rgb": [
+        211,
+        226,
+        249
+      ]
+    },
+    "121": {
+      "name": "Developed/Open Space",
+      "rgb": [
+        154,
+        154,
+        154
+      ]
+    },
+    "122": {
+      "name": "Developed/Low Intensity",
+      "rgb": [
+        154,
+        154,
+        154
+      ]
+    },
+    "123": {
+      "name": "Developed/Med Intensity",
+      "rgb": [
+        154,
+        154,
+        154
+      ]
+    },
+    "124": {
+      "name": "Developed/High Intensity",
+      "rgb": [
+        154,
+        154,
+        154
+      ]
+    },
+    "131": {
+      "name": "Barren",
+      "rgb": [
+        204,
+        191,
+        163
+      ]
+    },
+    "141": {
+      "name": "Deciduous Forest",
+      "rgb": [
+        147,
+        204,
+        147
+      ]
+    },
+    "142": {
+      "name": "Evergreen Forest",
+      "rgb": [
+        147,
+        204,
+        147
+      ]
+    },
+    "143": {
+      "name": "Mixed Forest",
+      "rgb": [
+        147,
+        204,
+        147
+      ]
+    },
+    "152": {
+      "name": "Shrubland",
+      "rgb": [
+        198,
+        214,
+        158
+      ]
+    },
+    "176": {
+      "name": "Grassland/Pasture",
+      "rgb": [
+        232,
+        255,
+        191
+      ]
+    },
+    "190": {
+      "name": "Woody Wetlands",
+      "rgb": [
+        126,
+        177,
+        177
+      ]
+    },
+    "195": {
+      "name": "Herbaceous Wetlands",
+      "rgb": [
+        126,
+        177,
+        177
+      ]
+    },
+    "204": {
+      "name": "Pistachios",
+      "rgb": [
+        0,
+        255,
+        140
+      ]
+    },
+    "205": {
+      "name": "Triticale",
+      "rgb": [
+        214,
+        158,
+        188
+      ]
+    },
+    "206": {
+      "name": "Carrots",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "207": {
+      "name": "Asparagus",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "208": {
+      "name": "Garlic",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "209": {
+      "name": "Cantaloupes",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "210": {
+      "name": "Prunes",
+      "rgb": [
+        255,
+        142,
+        170
+      ]
+    },
+    "211": {
+      "name": "Olives",
+      "rgb": [
+        51,
+        73,
+        51
+      ]
+    },
+    "212": {
+      "name": "Oranges",
+      "rgb": [
+        228,
+        112,
+        38
+      ]
+    },
+    "213": {
+      "name": "Honeydew Melons",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "214": {
+      "name": "Broccoli",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "215": {
+      "name": "Avocados",
+      "rgb": [
+        102,
+        153,
+        76
+      ]
+    },
+    "216": {
+      "name": "Peppers",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "217": {
+      "name": "Pomegranates",
+      "rgb": [
+        177,
+        154,
+        112
+      ]
+    },
+    "218": {
+      "name": "Nectarines",
+      "rgb": [
+        255,
+        142,
+        170
+      ]
+    },
+    "219": {
+      "name": "Greens",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "220": {
+      "name": "Plums",
+      "rgb": [
+        255,
+        142,
+        170
+      ]
+    },
+    "221": {
+      "name": "Strawberries",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "222": {
+      "name": "Squash",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "223": {
+      "name": "Apricots",
+      "rgb": [
+        255,
+        142,
+        170
+      ]
+    },
+    "224": {
+      "name": "Vetch",
+      "rgb": [
+        0,
+        175,
+        75
+      ]
+    },
+    "225": {
+      "name": "Dbl Crop WinWht/Corn",
+      "rgb": [
+        255,
+        211,
+        0
+      ]
+    },
+    "226": {
+      "name": "Dbl Crop Oats/Corn",
+      "rgb": [
+        255,
+        211,
+        0
+      ]
+    },
+    "227": {
+      "name": "Lettuce",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "228": {
+      "name": "Dbl Crop Triticale/Corn",
+      "rgb": [
+        255,
+        210,
+        0
+      ]
+    },
+    "229": {
+      "name": "Pumpkins",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "230": {
+      "name": "Dbl Crop Lettuce/Durum Wht",
+      "rgb": [
+        137,
+        98,
+        84
+      ]
+    },
+    "231": {
+      "name": "Dbl Crop Lettuce/Cantaloupe",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "232": {
+      "name": "Dbl Crop Lettuce/Cotton",
+      "rgb": [
+        255,
+        38,
+        38
+      ]
+    },
+    "233": {
+      "name": "Dbl Crop Lettuce/Barley",
+      "rgb": [
+        226,
+        0,
+        124
+      ]
+    },
+    "234": {
+      "name": "Dbl Crop Durum Wht/Sorghum",
+      "rgb": [
+        255,
+        158,
+        11
+      ]
+    },
+    "235": {
+      "name": "Dbl Crop Barley/Sorghum",
+      "rgb": [
+        255,
+        158,
+        11
+      ]
+    },
+    "236": {
+      "name": "Dbl Crop WinWht/Sorghum",
+      "rgb": [
+        165,
+        112,
+        0
+      ]
+    },
+    "237": {
+      "name": "Dbl Crop Barley/Corn",
+      "rgb": [
+        255,
+        211,
+        0
+      ]
+    },
+    "238": {
+      "name": "Dbl Crop WinWht/Cotton",
+      "rgb": [
+        165,
+        112,
+        0
+      ]
+    },
+    "239": {
+      "name": "Dbl Crop Soybeans/Cotton",
+      "rgb": [
+        38,
+        112,
+        0
+      ]
+    },
+    "240": {
+      "name": "Dbl Crop Soybeans/Oats",
+      "rgb": [
+        38,
+        112,
+        0
+      ]
+    },
+    "241": {
+      "name": "Dbl Crop Corn/Soybeans",
+      "rgb": [
+        255,
+        211,
+        0
+      ]
+    },
+    "242": {
+      "name": "Blueberries",
+      "rgb": [
+        0,
+        0,
+        153
+      ]
+    },
+    "243": {
+      "name": "Cabbage",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "244": {
+      "name": "Cauliflower",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "245": {
+      "name": "Celery",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "246": {
+      "name": "Radishes",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "247": {
+      "name": "Turnips",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "248": {
+      "name": "Eggplants",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "249": {
+      "name": "Gourds",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "250": {
+      "name": "Cranberries",
+      "rgb": [
+        255,
+        102,
+        102
+      ]
+    },
+    "254": {
+      "name": "Dbl Crop Barley/Soybeans",
+      "rgb": [
+        38,
+        112,
+        0
+      ]
+    }
+  }
+}

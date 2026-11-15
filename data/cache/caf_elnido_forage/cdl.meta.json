@@ -1,0 +1,172 @@
+{
+  "dataset": "cdl",
+  "url": "https://pdi.scinet.usda.gov/image/rest/services/CDL_WM/ImageServer/exportImage",
+  "params": {
+    "bbox_epsg5070": [
+      -2131455.0,
+      1842255.0,
+      -2127465.0,
+      1846275.0
+    ],
+    "interpolation": "RSP_NearestNeighbor",
+    "mosaicRule": "esriMosaicLockRaster per year",
+    "years": [
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "fetched_at": "2026-11-14T23:38:34+00:00",
+  "native_res_m": {
+    "2008": 30,
+    "2009": 30,
+    "2010": 30,
+    "2011": 30,
+    "2012": 30,
+    "2013": 30,
+    "2014": 30,
+    "2015": 30,
+    "2016": 30,
+    "2017": 30,
+    "2018": 30,
+    "2019": 30,
+    "2020": 30,
+    "2021": 30,
+    "2022": 30,
+    "2023": 30,
+    "2024": 10,
+    "2025": 10
+  },
+  "timestep": "year",
+  "units": "CDL class code (see cdl_legend.json)",
+  "fill_value": 0,
+  "auth": "none",
+  "crs": "EPSG:5070",
+  "files": {
+    "2008": {
+      "file": "rasters/cdl_2008.tif",
+      "raster_id": 12,
+      "raster_name": "2008_30m_cdls",
+      "res_m": 30
+    },
+    "2009": {
+      "file": "rasters/cdl_2009.tif",
+      "raster_id": 11,
+      "raster_name": "2009_30m_cdls",
+      "res_m": 30
+    },
+    "2010": {
+      "file": "rasters/cdl_2010.tif",
+      "raster_id": 10,
+      "raster_name": "2010_30m_cdls",
+      "res_m": 30
+    },
+    "2011": {
+      "file": "rasters/cdl_2011.tif",
+      "raster_id": 9,
+      "raster_name": "2011_30m_cdls",
+      "res_m": 30
+    },
+    "2012": {
+      "file": "rasters/cdl_2012.tif",
+      "raster_id": 8,
+      "raster_name": "2012_30m_cdls",
+      "res_m": 30
+    },
+    "2013": {
+      "file": "rasters/cdl_2013.tif",
+      "raster_id": 7,
+      "raster_name": "2013_30m_cdls",
+      "res_m": 30
+    },
+    "2014": {
+      "file": "rasters/cdl_2014.tif",
+      "raster_id": 6,
+      "raster_name": "2014_30m_cdls",
+      "res_m": 30
+    },
+    "2015": {
+      "file": "rasters/cdl_2015.tif",
+      "raster_id": 5,
+      "raster_name": "2015_30m_cdls",
+      "res_m": 30
+    },
+    "2016": {
+      "file": "rasters/cdl_2016.tif",
+      "raster_id": 4,
+      "raster_name": "2016_30m_cdls",
+      "res_m": 30
+    },
+    "2017": {
+      "file": "rasters/cdl_2017.tif",
+      "raster_id": 3,
+      "raster_name": "2017_30m_cdls",
+      "res_m": 30
+    },
+    "2018": {
+      "file": "rasters/cdl_2018.tif",
+      "raster_id": 2,
+      "raster_name": "2018_30m_cdls",
+      "res_m": 30
+    },
+    "2019": {
+      "file": "rasters/cdl_2019.tif",
+      "raster_id": 1,
+      "raster_name": "2019_30m_cdls",
+      "res_m": 30
+    },
+    "2020": {
+      "file": "rasters/cdl_2020.tif",
+      "raster_id": 35,
+      "raster_name": "2020_30m_cdls",
+      "res_m": 30
+    },
+    "2021": {
+      "file": "rasters/cdl_2021.tif",
+      "raster_id": 36,
+      "raster_name": "2021_30m_cdls",
+      "res_m": 30
+    },
+    "2022": {
+      "file": "rasters/cdl_2022.tif",
+      "raster_id": 37,
+      "raster_name": "2022_30m_cdls",
+      "res_m": 30
+    },
+    "2023": {
+      "file": "rasters/cdl_2023.tif",
+      "raster_id": 38,
+      "raster_name": "2023_30m_cdls",
+      "res_m": 30
+    },
+    "2024": {
+      "file": "rasters/cdl_2024.tif",
+      "raster_id": 39,
+      "raster_name": "2024_10m_cdls",
+      "res_m": 10
+    },
+    "2025": {
+      "file": "rasters/cdl_2025.tif",
+      "raster_id": 40,
+      "raster_name": "2025_10m_cdls",
+      "res_m": 10
+    }
+  },
+  "provider": "USDA NASS Cropland Data Layer via USDA ARS SCINet CroplandCROS image service",
+  "note": "Planetary Computer usda-cdl stops at 2021, so not used."
+}

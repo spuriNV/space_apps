@@ -1,0 +1,36 @@
+{
+ "urls": [
+  "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06021&startdate=1%2F1%2F2015&enddate=12%2F31%2F2025&statisticsType=1",
+  "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06021&startdate=1%2F1%2F2015&enddate=12%2F31%2F2025&statisticsType=2"
+ ],
+ "params": {
+  "aoi": [
+   "06021"
+  ],
+  "startdate": "1/1/2015",
+  "enddate": "12/31/2025",
+  "statisticsType": {
+   "1": "cumulative (% area >= category)",
+   "2": "categorical (% area in exactly that category)"
+  }
+ },
+ "fetched_at": "2026-11-14T23:40:31Z",
+ "timestep": "weekly (map dated Tuesday, valid Tue-Mon)",
+ "units": "percent of county area",
+ "fill_value": null,
+ "native_res_m": null,
+ "native_res": "county polygon",
+ "auth": "none",
+ "counties": {
+  "06021": [
+   "Glenn County"
+  ]
+ },
+ "rows_per_county_stat": {
+  "06021": 575
+ },
+ "date_min": "2014-12-30",
+ "date_max": "2025-12-30",
+ "preset_county_note": "registry county (backend/fields/registry.json)",
+ "footprint_geojson": null
+}

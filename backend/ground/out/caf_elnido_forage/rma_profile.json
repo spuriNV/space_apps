@@ -1,0 +1,228 @@
+{
+ "preset_id": "caf_elnido_forage",
+ "years": [
+  2010,
+  2024
+ ],
+ "file_url_template": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip",
+ "page_url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss",
+ "layout_url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/COL_Summary_of_Business_with_Month_All_Years.pdf",
+ "grouping": {
+  "drought": [
+   "Drought",
+   "Failure of Irrigation Supply"
+  ],
+  "excess_moisture": [
+   "Excess Moisture/Precipitation/Rain",
+   "Flood",
+   "Cold Wet Weather"
+  ],
+  "heat": [
+   "Heat",
+   "Hot Wind"
+  ],
+  "other": "all remaining causes (incl. cold/frost/freeze, wind, hail, insects, disease, ARPI/SCO/ECO etc.)"
+ },
+ "profiles": {
+  "Merced County|alfalfa_forage": {
+   "scope": "Merced County",
+   "crop": "alfalfa_forage",
+   "commodity_names_matched": [
+    "Forage Production",
+    "PASTURE,RANGELAND,FORAGE",
+    "Pasture,Rangeland,Forage"
+   ],
+   "total_indemnity_usd": 12966295.0,
+   "years_with_indemnity": [
+    2011,
+    2012,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2011": 1937419.0,
+    "2012": 47330.0,
+    "2014": 334970.0,
+    "2015": 439646.0,
+    "2016": 70862.0,
+    "2017": 944280.0,
+    "2018": 576521.0,
+    "2019": 607342.0,
+    "2020": 1465473.0,
+    "2021": 780231.0,
+    "2022": 2182048.0,
+    "2023": 1848416.0,
+    "2024": 1731757.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.0046,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Merced County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Merced County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Merced County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.9954,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Merced County alfalfa_forage, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "ARPI/SCO/ECO/STAX/MP/HIP-WI/PACE Crops Only": 0.3108,
+    "ARPI/SCO/STAX/MP Crops Only": 0.1696,
+    "GRP/Grip Crops": 0.1531,
+    "ARPI/SCO/ECO/STAX/MP/PACE Crops Only": 0.1336,
+    "ARPI/SCO/STAX/MP/HIP WI Crops Only": 0.113,
+    "ARPI/SCO/ECO/STAX/MP/HIP WI Crops Only": 0.0602,
+    "ARPI/SCO/STAX Crops Only": 0.0294,
+    "ARPI Crops Only": 0.0258,
+    "Failure of Irrigation Supply": 0.0046
+   },
+   "share_peril_unattributed": 0.9954,
+   "caveat": "Insurance history, not a forecast. Alfalfa is insured in CA under Forage Production / Pasture,Rangeland,Forage (rainfall-index plan); matched names listed. Most forage indemnity is area-yield/index-plan (ARPI/SCO/GRP) with no peril attribution: see share_peril_unattributed; do NOT present the drought/moisture split as meaningful when that share is high."
+  },
+  "Merced County|corn": {
+   "scope": "Merced County",
+   "crop": "corn",
+   "commodity_names_matched": [
+    "Corn"
+   ],
+   "total_indemnity_usd": 4622036.0,
+   "years_with_indemnity": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2014": 1420811.0,
+    "2015": 1552305.0,
+    "2016": 315083.0,
+    "2017": 87875.0,
+    "2020": 5123.0,
+    "2021": 413165.0,
+    "2022": 651005.0,
+    "2023": 28071.0,
+    "2024": 148598.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.8604,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Merced County corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.0049,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Merced County corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.13,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Merced County corn, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.0047,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Merced County corn, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "Failure of Irrigation Supply": 0.8604,
+    "Heat": 0.13,
+    "Excess Moisture/Precipitation/Rain": 0.0049,
+    "ARPI/SCO/STAX/MP Crops Only": 0.0035,
+    "Wind/Excess Wind": 0.0012
+   },
+   "share_peril_unattributed": 0.0035,
+   "caveat": "Insurance history, not a forecast."
+  }
+ }
+}

@@ -1,0 +1,151 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "preset_id": "caf_newman_forage",
+        "name": "Alfalfa field 3 miles north of Newman",
+        "area_ha": 40.55,
+        "centroid": {
+          "lon": -121.004591,
+          "lat": 37.361966
+        },
+        "crs": "EPSG:4326 (lon, lat)",
+        "crs_working": "EPSG:32610",
+        "boundary_source": {
+          "id": "dwr_landiq_crop_mapping_2023",
+          "title": "DWR Statewide Crop Mapping 2023 (Land IQ), final",
+          "url": "https://utility.arcgis.com/usrsvcs/servers/d94e891e00364e49a2ed9e9e2e27837d/rest/services/Planning/i15_Crop_Mapping_2023/MapServer/0",
+          "verified": true,
+          "dwr_unique_id": "5007334",
+          "dwr_attributes": {
+            "UniqueID": "5007334",
+            "ACRES": 100.19666243,
+            "COUNTY": "Stanislaus",
+            "CLASS1": "**",
+            "SUBCLASS1": "**",
+            "CROPTYP1": "****",
+            "CROPTYP2": "G2",
+            "MAIN_CROP": "G2",
+            "MAIN_CROP_DATE": 70
+          }
+        },
+        "selection_rule": "registry field (backend/fields/pick_fields.py): CDL Alfalfa in >= 3 and forage (alfalfa, corn, winter grain/corn double crop, hay) in >= 7 of 2016-2025; ranked by purity",
+        "cdl_majority_by_year": {
+          "2008": "Dbl Crop Oats/Corn",
+          "2009": "Dbl Crop Oats/Corn",
+          "2010": "Tomatoes",
+          "2011": "Alfalfa",
+          "2012": "Alfalfa",
+          "2013": "Alfalfa",
+          "2014": "Alfalfa",
+          "2015": "Alfalfa",
+          "2016": "Dbl Crop WinWht/Corn",
+          "2017": "Corn",
+          "2018": "Alfalfa",
+          "2019": "Alfalfa",
+          "2020": "Alfalfa",
+          "2021": "Alfalfa",
+          "2022": "Alfalfa",
+          "2023": "Oats",
+          "2024": "Winter Wheat",
+          "2025": "Alfalfa"
+        },
+        "selected_at": "2026-11-14T23:38:57+00:00",
+        "candidates_considered": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -121.0084412927799,
+              37.36087669900518
+            ],
+            [
+              -121.01002180845376,
+              37.35939866171745
+            ],
+            [
+              -121.01005399778533,
+              37.35931097557214
+            ],
+            [
+              -121.0100605096728,
+              37.35917755114408
+            ],
+            [
+              -121.01002097391886,
+              37.3590910421663
+            ],
+            [
+              -121.00996257534054,
+              37.359039982993814
+            ],
+            [
+              -121.00719379336171,
+              37.35721686594745
+            ],
+            [
+              -121.00710970835617,
+              37.357346598700175
+            ],
+            [
+              -121.00707082657573,
+              37.35734832810693
+            ],
+            [
+              -121.00693930064172,
+              37.35723880559907
+            ],
+            [
+              -121.00680899372156,
+              37.3571960716131
+            ],
+            [
+              -121.00672139360832,
+              37.357232749096255
+            ],
+            [
+              -121.00349271732317,
+              37.360483252164975
+            ],
+            [
+              -120.99903198994771,
+              37.36478109292337
+            ],
+            [
+              -120.99904826023416,
+              37.364843366078595
+            ],
+            [
+              -120.99910602011029,
+              37.36491826500639
+            ],
+            [
+              -121.00192977808616,
+              37.3668116519383
+            ],
+            [
+              -121.0020189233017,
+              37.36682984982598
+            ],
+            [
+              -121.00209395867908,
+              37.36681681094603
+            ],
+            [
+              -121.0021330964794,
+              37.3668055498012
+            ],
+            [
+              -121.0084412927799,
+              37.36087669900518
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
