@@ -241,6 +241,8 @@ i, em { font-style: normal; }
 
 /* ---------- HUD, hint, controls ---------- */
 .hud { position: absolute; top: 16px; left: 472px; height: 40px; border-radius: 20px; display: flex; align-items: center; gap: 12px; padding: 0 14px 0 12px; z-index: 21; white-space: nowrap; }
+.drill-hint { cursor: pointer; border: 0; font: inherit; color: inherit; }
+.drill-hint:hover { filter: brightness(0.97); }
 .hud-title { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: var(--fs-small); }
 .hud-legend { display: flex; gap: 10px; align-items: center; font-size: var(--fs-fine); color: var(--text-2); }
 .hud-legend span { display: flex; align-items: center; gap: 4px; }
@@ -1044,12 +1046,18 @@ details.prov summary { cursor: pointer; font-size: var(--fs-body); color: var(--
   .yr-grid { overflow-x: auto; }
   .yr-row { grid-template-columns: 48px 90px minmax(360px, 1fr) 54px 70px; }
   .drawer { left: 0; right: 0; width: auto; top: var(--bar-h); bottom: var(--tabs-h); }
-  .hud { display: none; }
+  /* Under-the-field HUD: compact strip under the top bar (was display:none, so scroll-in felt broken) */
+  .hud {
+    display: flex; left: 8px; right: 8px; width: auto; max-width: none; height: auto; min-height: 40px;
+    top: calc(var(--bar-h) + 8px); padding: 8px 12px; flex-wrap: wrap; white-space: normal; gap: 8px 12px;
+  }
+  .hud-legend { flex-wrap: wrap; }
   .controls { right: 8px !important; }
-  .controls .ctl-group, .controls .ctl.text { display: none; }
+  /* keep tilt + zoom so phone users can open the 3D stack without a mouse wheel */
   .ctl { width: 44px; height: 44px; }
   .maplibregl-ctrl-bottom-right { display: none; }
   .stack-label { width: 200px; font-size: var(--fs-small); }
+  .drill-hint { left: 8px; right: 64px; width: auto; bottom: auto; top: calc(var(--bar-h) + 8px); }
   .briefwrap { flex-direction: column; }
   .brief-rail { width: auto; margin: 0; order: -1; padding: 10px 12px; gap: 8px; }
   .brief-stage { padding: 8px 0; overflow-x: hidden; }
@@ -1643,3 +1651,43 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 .workflow dt { font-size: var(--fs-fine); font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
 .workflow dd { margin: 0; font-size: var(--fs-small); line-height: 1.4; color: var(--text); max-width: none; }
 @media (max-width: 640px) { .mob-tabs button span { padding: 0 8px; white-space: nowrap; } .mob-tabs button { font-size: 13px; } }
+
+/* ---------- Step flow cleanup (Nov 2026, merged from sp) ---------- */
+.step-line { margin: 0 0 var(--s-3); }
+.step-of { display: flex; align-items: center; gap: var(--s-3); margin: 0; font-size: var(--fs-fine); color: var(--accent); }
+.step-of b { font-weight: 700; white-space: nowrap; }
+.step-bar { flex: 1; max-width: 160px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+.step-bar i { height: 4px; border-radius: 2px; background: var(--line); }
+.step-bar i.done { background: var(--accent-outline); }
+.step-bar i.on { background: var(--accent); }
+.step-purpose { margin: 4px 0 0; font-size: var(--fs-small); line-height: 1.4; color: var(--text-2); max-width: 46ch; }
+.pk-head + .step-line { padding: 0 var(--s-5); margin-bottom: var(--s-2); }
+.sheet-head .step-line { margin-bottom: var(--s-2); }
+.fp-head .step-line { margin-bottom: var(--s-2); }
+
+.pk-go { display: inline-flex; align-items: center; gap: 2px; margin-top: 6px; font-size: var(--fs-small); font-weight: 700; color: var(--accent); }
+.pk-row:hover .pk-go { text-decoration: underline; text-underline-offset: 3px; }
+.pk-more { margin: var(--s-4) var(--s-5) var(--s-5); padding-top: var(--s-3); border-top: 1px solid var(--line); }
+.pk-more summary { display: flex; align-items: baseline; gap: var(--s-2); cursor: pointer; list-style: none; min-height: 32px; font-size: var(--fs-small); font-weight: 600; color: var(--link); }
+.pk-more summary::-webkit-details-marker { display: none; }
+.pk-more summary::before { content: ''; align-self: center; width: 0; height: 0; border-left: 6px solid currentColor; border-top: 4.5px solid transparent; border-bottom: 4.5px solid transparent; transition: transform 0.12s; }
+.pk-more[open] summary::before { transform: rotate(90deg); }
+.pk-more summary small { font-size: var(--fs-fine); font-weight: 400; color: var(--muted); }
+.pk-more .workflow { margin: var(--s-2) 0 0; }
+.pk-more .workflow dt { text-transform: none; letter-spacing: 0; font-size: var(--fs-small); color: var(--text); }
+
+.water-answer { display: flex; flex-direction: column; gap: 4px; margin: var(--s-3) 0 var(--s-2); padding: var(--s-3) var(--s-4); background: var(--accent-container); border-radius: var(--r-md); }
+.water-answer .wa-q { margin: 0; font-size: var(--fs-fine); font-weight: 600; color: var(--on-accent-container); }
+.water-answer b { font: 600 var(--fs-answer)/1.2 var(--font-head); color: var(--text); }
+.water-answer span { font-size: var(--fs-small); line-height: 1.4; color: var(--text-2); }
+.water-answer.short { background: var(--warn-container); }
+.water-answer.short .wa-q { color: var(--on-warn-container); }
+
+.btn.next-step { justify-content: space-between; gap: var(--s-3); height: auto; min-height: 52px; padding: 8px var(--s-4) 8px var(--s-5); text-align: left; }
+.next-step > span { display: flex; flex-direction: column; gap: 1px; }
+.next-step b { font-size: var(--fs-body); font-weight: 700; }
+.next-step small { font-size: var(--fs-fine); font-weight: 400; color: var(--head-ink-2); }
+.cs-more { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3); }
+
+.sim-seg { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+.sim-seg button { white-space: normal; text-align: center; line-height: 1.2; padding: 6px 4px; }

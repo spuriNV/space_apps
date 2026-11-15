@@ -10,7 +10,7 @@ import { MoreDetail } from './Detail';
 import type { Daily } from '../../season';
 import Icon from '../Icons';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent, type KeyboardEvent as RKeyboardEvent } from 'react';
-import { AboutField, Actions, Workflow, CROP_COL, EventLog, NextSteps, PrimaryAction, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
+import { AboutField, Actions, StepLine, Workflow, CROP_COL, EventLog, NextSteps, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
 import { FirstNationsCard } from './FirstNations';
 import { CedarChat } from './Cedar';
 import { SalmonPanel } from '../salmon/SalmonPanel';
@@ -18,7 +18,7 @@ import { NationTools } from '../week/NationTools';
 import { CatalogGroup } from '../week/CatalogGroup';
 import type { Catalog, CatalogItem } from '../week/catalog';
 import { FieldNow, LastSeasons, whenT, type LoadState } from './FieldNow';
-import { MONTHS, TODAY_T } from '../../lib';
+import { MONTHS, TODAY_T, isRainFed, mmToAfac } from '../../lib';
 import { MineFacts, MineHead, MineNotices, MyFieldsGroup, type MineAction } from '../draw/MyFieldBits';
 
 export interface FieldPanelProps {
@@ -67,6 +67,7 @@ export function FieldPanel(p: FieldPanelProps) {
         <div className="panel-scroll" ref={scrollRef} onScroll={onScroll}>
           <div className="fp-content" key={loc.id}>
             <header className="fp-head" ref={headRef}>
+              <StepLine id="now" purpose="Check whether what you grow today fits the water you have. The next steps build on this." />
               {loc.mine ? <MineHead loc={loc} onAction={(a) => p.onMine?.(a)} /> : sp && <p className="spot-label" data-testid="spot-label"><i className={`live-dot ${sp.state}`} />Tapped spot · live data</p>}
               <h1>{fieldName(loc)}</h1>
               {sp?.state === 'loading' ? <><p className="fp-facts"><span className="skel skel-chip" /><span className="skel skel-chip" /></p><p className="spot-progress" role="status" data-testid="spot-progress">Reading weather, soil and crop maps…</p></> : sp?.state === 'error' ? null : (
@@ -81,6 +82,7 @@ export function FieldPanel(p: FieldPanelProps) {
             {sp?.state === 'error' && !loc.mine && <div className="notice spot-notice" role="alert" data-testid="spot-error"><span>{sp.error}</span>{p.onSpotRetry && <button className="btn btn-outline btn-sm" onClick={p.onSpotRetry}>Try again</button>}</div>}
             {sp?.state === 'ready' && sp.cropland === false && <div className="notice spot-notice" data-testid="spot-not-farm"><b>This may not be farmland.</b> The USDA crop map shows little or no cropping here, so the rotations below are a stand-in.</div>}
             <Actions onStep={p.onStep} />
+            {isToday && <WaterAnswer strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} state={p.dataState} />}
             <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}</h2>
             <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
             {!loc.mine && !loc.spot && <CedarChat ctx={{ loc, regional: p.regional, strategies: p.strategies, allocation: p.allocation }} />}
@@ -107,9 +109,28 @@ export function FieldPanel(p: FieldPanelProps) {
           </div>
         </div>
       </div>
-      <footer className={`fp-foot ${footStuck ? 'stuck' : ''}`}><PrimaryAction onStep={p.onStep} /></footer>
+      <footer className={`fp-foot ${footStuck ? 'stuck' : ''}`}>
+        <button className="btn btn-primary btn-block next-step" onClick={() => p.onStep('season')} data-testid="now-to-season">
+          <span><b>Next: coming season</b><small>Winter rain and whether next year still fits</small></span><Icon name="right" size={20} />
+        </button>
+      </footer>
       {src && <SourcesSheet bc={isBC(loc)} onClose={() => setSrc(false)} />}
     </section>
+  );
+}
+
+/** Step 2's lead: the question the step answers, and the answer in one line before the meters. */
+function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategies: RotationStrategy[] | null; allocation?: number; exampleLimit: boolean; state: LoadState }) {
+  const base = strategies?.find((s) => s.is_baseline);
+  if (!base) return state === 'timeout' ? null : <div className="water-answer"><p className="wa-q">Will today’s plan fit your water?</p><span className="skel" /></div>;
+  const need = mmToAfac(base.water.irrigation_need_mm.value);
+  const rf = isRainFed(base), short = !rf && allocation != null && need > allocation;
+  return (
+    <div className={`water-answer ${short ? 'short' : ''}`} data-testid="now-takeaway">
+      <p className="wa-q">Will today’s plan fit your water?</p>
+      <b>{rf ? 'Yes. It is rain-fed, so it needs no irrigation' : allocation == null ? `It needs about ${need.toFixed(1)} acre-ft/acre a year` : short ? `No. Short by about ${(need - allocation).toFixed(1)} acre-ft/acre` : 'Yes. It fits your water limit'}.</b>
+      {!rf && allocation != null && <span>Today’s rotation needs about {need.toFixed(1)} acre-ft/acre a year; your limit is {allocation.toFixed(1)}{exampleLimit ? ' (an example, set yours in step 4)' : ''}.</span>}
+    </div>
   );
 }
 
@@ -206,7 +227,9 @@ function useSheet(onSheet?: (visiblePx: number) => void) {
 /** "Pick your field": one paper surface, one row per field with a satellite thumbnail (outline drawn), a 2023-2026 season strip,
  *  one line of facts in grower units and one line of what is notable. A BC field the API serves sits under its own
  *  "British Columbia" heading (and chip); without one, BC is a quiet "not set up yet" row at the bottom. */
-export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void }) {
+/** Torres-Martinez Reservation farm field (check_api): opens Nation tools with tribal land status. */
+export const NATION_EXAMPLE = { lat: 33.51, lon: -116.12, label: 'Nation tools example', sub: 'Torres-Martinez Reservation farm field · tribal land · live tap' };
+export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onNationExample?: () => void }) {
   const thumbs = useThumbs();
   const [q, setQ] = useState('');
   const [fam, setFam] = useState<string | null>(null);
@@ -222,7 +245,7 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
         <h1>Pick your field</h1>
         {p.onClose && <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={20} /></button>}
       </header>
-      <Workflow />
+      <StepLine id="pick" purpose="Tap a field below, or its pin on the map. Everything after this is about that field." />
       {p.locations.length > 1 && (
         <div className="pk-filter">
           <label className="pk-search"><Icon name="search" size={16} /><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by town, county or crop" aria-label="Search fields" data-testid="pk-search" /></label>
@@ -231,7 +254,6 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
           </div>
         </div>
       )}
-      {p.onDraw && <MyFieldsGroup locs={p.mine ?? []} selectedId={p.selectedId} onSelect={p.onSelect} onDraw={p.onDraw} />}
       {p.live === false && <p className="notice offline-note" data-testid="offline-note">The CropLytics server is not answering, so every number is an example. Start the API (see the README) and reload for real data.</p>}
       {p.locations.length === 0 && <p className="loading-note">Loading the fields…</p>}
       {([['ca', shownCA], ['bc', shownBC]] as const).map(([rg, rows]) => rows.length > 0 && (
@@ -254,6 +276,7 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
                   <span className="pk-strip" title="Bare, green or flooded, 2023 to 2026, from satellites">
                     {[2023, 2024, 2025, 2026].map((y) => <span key={y}><i>{(strip?.[y] ?? 'u'.repeat(36)).split('').map((c, k) => <em key={k} className={`c-${c}`} />)}</i><small>{y}</small></span>)}
                   </span>
+                  <span className="pk-go">{p.selectedId === l.id ? 'Continue with this field' : 'Pick this field'}<Icon name="right" size={16} /></span>
                 </span>
               </button>
             </li>
@@ -265,6 +288,16 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
       {p.locations.length > 0 && !shown.length && <p className="loading-note">No field matches. <button className="btn btn-outline btn-sm" onClick={() => { setQ(''); setFam(null); }}>Show all</button></p>}
       {p.catalog && p.onCatalogPick && p.setCatGroup && <CatalogGroup catalog={p.catalog} group={p.catGroup ?? null} setGroup={p.setCatGroup} onPick={p.onCatalogPick} />}
       {p.locations.length > 0 && !nBC && <button className="pk-bc" onClick={p.onBC}>British Columbia: not set up yet. <u>See why</u></button>}
+      {p.onDraw && <MyFieldsGroup locs={p.mine ?? []} selectedId={p.selectedId} onSelect={p.onSelect} onDraw={p.onDraw} />}
+      {p.onNationExample && (
+        <button className="pk-bc" onClick={p.onNationExample} data-testid="nation-example">
+          {NATION_EXAMPLE.label}: {NATION_EXAMPLE.sub}. <u>Open</u>
+        </button>
+      )}
+      <details className="pk-more" data-testid="pk-more">
+        <summary>How CropLytics works <small>optional reading</small></summary>
+        <Workflow />
+      </details>
     </section>
   );
 }

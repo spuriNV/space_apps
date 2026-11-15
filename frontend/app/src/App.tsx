@@ -369,7 +369,7 @@ export default function App() {
       {leftPanel === 'card' && selected && <FieldPanel onSheet={setSheetPx} onSpotRetry={selected.mine ? () => mf.retry(selected.id) : selected.spot ? () => tapSpot(selected.spot!.lat, selected.spot!.lon) : undefined} onMine={(a) => draw.current?.[a === 'delete' ? 'del' : a](selected)} loc={selected} prov={prov} cal={d?.cal ?? null} regional={regional} regionalLive={regionalLive} strategies={d?.strategies ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} daily={dl?.daily ?? null}
         nasa={d?.nasa ?? null} nasaNow={d?.nasaNow ?? null} extras={d?.extras ?? { openet: null, stress: null, insurance: null, water: null }} iss={issNow} dataState={d ? 'ready' : timedOut === selected.id ? 'timeout' : 'loading'} dailyState={dl?.daily ? 'ready' : dl || timedOut === selected.id ? 'timeout' : 'loading'}
         t={t} setT={setT} events={events} onStep={onStep} onClose={() => setCardOpen(false)} />}
-      {leftPanel === 'fields' && <FieldPicker mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
+      {leftPanel === 'fields' && <FieldPicker mine={mf.locs} onDraw={() => draw.current?.start()} catalog={catalog} catGroup={catGroup} setCatGroup={setCatGroup} onCatalogPick={pickCatalog} locations={locations.filter((l) => !api.isSpot(l.id) && !l.mine)} live={live} strips={strips} selectedId={selectedId} onSelect={select} onBC={goBC} onNationExample={() => tapSpot(33.51, -116.12)} onClose={panel === 'fields' ? () => setPanel('none') : undefined} />}
       {selected && !leftPanel && !yearExpanded && !drawing && panel === 'none' && <button className="reopen btn btn-outline" onClick={() => setCardOpen(true)}><Icon name="info" size={16} />{fieldName(selected)}</button>}
 
       {panel === 'season' && selected && d && <ComingSeason nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}
@@ -384,10 +384,14 @@ export default function App() {
 
       {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} reserves={!!selected && api.isBC(selected)} onClose={() => setLayersOpen(false)} />}
 
+      {selected && !selected.spot && !drilled && panel !== 'compare' && panel !== 'season' && view.zoom > 9.5 && view.zoom <= 13.4 && (
+        <button className="hud glass drill-hint" data-testid="drill-hint" onClick={() => onStep('drill')}>
+          <span className="hud-title"><Icon name="cube" size={16} />Scroll in (or tap) to look under the field</span>
+        </button>
+      )}
       {drilled && panel !== 'compare' && panel !== 'season' && (
         <div className="hud glass" data-testid="hud">
           <span className="hud-title"><Icon name="cube" size={16} />Under the field</span>
-
           <div className="hud-legend">
             {(['b', 'p', 'c', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{({ b: 'Bare', p: 'Thin', c: 'Crop', w: 'Flooded' } as Record<string, string>)[c]}</span>)}
             <span className="hud-note">taller = greener</span>

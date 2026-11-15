@@ -9,7 +9,7 @@ import { What } from '../ui/What';
 import { MoreDetail, useDetail } from '../ui/Detail';
 import { CLASS_COLOR, RAIN_FED, isRainFed, mmToAfac, needText } from '../../lib';
 import Icon from '../Icons';
-import { openetText } from '../ui/shared';
+import { StepLine, openetText } from '../ui/shared';
 import { HOT_F, hotBareDays, type Daily } from '../../season';
 import { SimRun } from './SimRun';
 import type { SimMode } from '../ui/FieldTimeline';
@@ -141,6 +141,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
     <section className="sheet compare2" data-testid="compare">
       <header className="sheet-head">
         <div>
+          <StepLine id="compare" purpose="Pick another rotation and set your water limit to see what you would gain or give up. Then print it in step 5." />
           <h2>{alt.short_name} vs {today.short_name.split(' +')[0].replace(/\s*\(current\)$/i, '').toLowerCase()} today</h2>
         </div>
         <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button>
@@ -211,7 +212,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
             </div>
             <SimRun loc={p.loc} strategies={p.strategies} allocation={p.allocation} pickId={alt.id} weather={weather} setWeather={setWeather} onRun={p.onRunSim} running={p.simRunning} onStop={p.onStopSim} />
             <MoreDetail what="All rotations and what-ifs" />
-            <button className="btn btn-primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Print this comparison for your adviser<Icon name="right" size={16} /></button>
+            <button className="btn btn-primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Next: print this for your adviser<Icon name="right" size={16} /></button>
           </aside>
         </div>
       ) : (

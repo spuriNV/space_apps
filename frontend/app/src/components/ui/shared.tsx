@@ -97,6 +97,19 @@ export const FLOW: { n: number; id: FlowId; label: string; short: string; does: 
   { n: 4, id: 'compare', label: 'Compare rotations', short: 'Compare', does: 'What you’d gain or give up' },
   { n: 5, id: 'brief', label: 'Print for your adviser', short: 'Print', does: 'One page to take with you' },
 ];
+/** Top of each step's screen: where you are and one sentence on what the step is for. */
+export function StepLine({ id, purpose }: { id: FlowId; purpose: string }) {
+  const i = FLOW.findIndex((s) => s.id === id);
+  return (
+    <div className="step-line" data-testid={`step-line-${id}`}>
+      <p className="step-of">
+        <b>Step {i + 1} of {FLOW.length}</b>
+        <span className="step-bar" aria-hidden="true">{FLOW.map((s, k) => <i key={s.id} className={k < i ? 'done' : k === i ? 'on' : ''} />)}</span>
+      </p>
+      <p className="step-purpose">{purpose}</p>
+    </div>
+  );
+}
 /** Problem, what this tool does, goal. Shown on Pick. */
 export function Workflow() {
   const rows: [string, string][] = [
@@ -113,12 +126,14 @@ export function Workflow() {
 export const ACTIONS: { id: Step; label: string; sub: string }[] = [
   { id: 'season', label: 'What’s likely this winter', sub: 'Rain, drought, reservoirs, bare weeks' },
   { id: 'year', label: 'See this field’s year (3D)', sub: 'Bare, green or flooded, 2023–2026, on the 3D grid' },
+  { id: 'drill', label: 'Look under the field in 3D', sub: 'Crop, soil moisture, then groundwater slabs' },
   { id: 'compare', label: 'Compare rotations', sub: 'What you gain and give up' },
   { id: 'brief', label: 'Print for your adviser', sub: 'One page, Letter size' },
 ];
+const brief = () => ACTIONS.find((a) => a.id === 'brief')!;
 /** The one primary action of the field panel: a filled pill in the panel footer. */
 export function PrimaryAction({ onStep }: { onStep: (s: Step) => void }) {
-  return <button className="btn btn-primary btn-block" onClick={() => onStep('brief')} data-testid="step-brief"><Icon name="print" />{ACTIONS[3].label}</button>;
+  return <button className="btn btn-primary btn-block" onClick={() => onStep('brief')} data-testid="step-brief"><Icon name="print" />{brief().label}</button>;
 }
 /** The other next steps as tappable rows with a chevron (they open a view), after the answers. */
 export function NextSteps({ onStep }: { onStep: (s: Step) => void }) {
@@ -134,7 +149,7 @@ export function NextSteps({ onStep }: { onStep: (s: Step) => void }) {
 }
 /** Phone: every next step as one sideways pill row under the sheet header, primary first. */
 export function Actions({ onStep }: { onStep: (s: Step) => void }) {
-  const order = [ACTIONS[3], ...ACTIONS.slice(0, 3)];
+  const order = [brief(), ...ACTIONS.filter((a) => a.id !== 'brief')];
   return (
     <div className="sheet-actions" role="group" aria-label="Next steps">
       {order.map((a) => (

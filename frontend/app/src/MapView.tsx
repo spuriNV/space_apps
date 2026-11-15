@@ -138,16 +138,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       setReady(true);
     });
 
-    // Scroll-driven drill-down: wheel/pinch zoom near the selected field tilts the camera as the stack explodes.
-    map.on('zoom', (e) => {
+    // Scroll-driven drill-down: wheel/pinch near the selected field tilts as the stack explodes.
+    // Use setPitch/setBearing (MapLibre 4 ignores writing transform.pitch directly, so zoom stayed flat).
+    map.on('zoom', () => {
       const sel = live.current.selected;
-      if (!sel || !(e as { originalEvent?: Event }).originalEvent) return;
+      if (!sel || programmatic.current || sel.spot) return;
       const c = map.getCenter();
       if (Math.abs(c.lat - sel.centroid.lat) > 0.06 || Math.abs(c.lng - sel.centroid.lon) > 0.08) return;
       const f = clamp((map.getZoom() - (EXPLODE_Z0 - 0.3)) / (EXPLODE_Z1 - EXPLODE_Z0), 0, 1);
-      const tr = map.transform as unknown as { pitch: number; bearing: number };
-      const target = f * 58;
-      if (Math.abs(tr.pitch - target) > 0.2) { tr.pitch = target; tr.bearing = -22 * f; }
+      const target = f * 58, bearing = -22 * f;
+      if (Math.abs(map.getPitch() - target) > 0.4) map.setPitch(target);
+      if (Math.abs(map.getBearing() - bearing) > 0.4) map.setBearing(bearing);
     });
     const report = () => {
       const c = map.getCenter(), z = map.getZoom();
@@ -331,7 +332,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const map = mapRef.current, loc = live.current.selected;
     if (!map || !loc || !stackInfo.current.length) { setLabels((l) => (l.length ? [] : l)); return; }
     const f = clamp((map.getZoom() - EXPLODE_Z0) / (EXPLODE_Z1 - EXPLODE_Z0), 0, 1);
-    if (f < 0.55) { setLabels((l) => (l.length ? [] : l)); return; }
+    if (f < 0.35) { setLabels((l) => (l.length ? [] : l)); return; }
     const tr = map.transform as unknown as { worldSize: number; pixelMatrix: ArrayLike<number> };
     const mtx = tr.pixelMatrix;
     if (!mtx) return;
@@ -364,9 +365,33 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     },
     flyHome() { programmatic.current = true; mapRef.current!.flyTo({ ...HOME, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
     flyTo(lat, lon, zoom) { programmatic.current = true; mapRef.current!.flyTo({ center: [lon, lat], zoom, pitch: 0, bearing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
-    zoomBy(d) { mapRef.current!.easeTo({ zoom: mapRef.current!.getZoom() + d, duration: 250 }); },
+    zoomBy(d) {
+      const m = mapRef.current!, sel = live.current.selected;
+      const z = Math.min(18, Math.max(3, m.getZoom() + d));
+      // zoom controls also drive the explode pitch when centred on the picked field
+      if (sel && !sel.spot) {
+        const c = m.getCenter();
+        if (Math.abs(c.lat - sel.centroid.lat) <= 0.06 && Math.abs(c.lng - sel.centroid.lon) <= 0.08) {
+          const f = clamp((z - (EXPLODE_Z0 - 0.3)) / (EXPLODE_Z1 - EXPLODE_Z0), 0, 1);
+          m.easeTo({ zoom: z, pitch: f * 58, bearing: -22 * f, duration: 280 });
+          return;
+        }
+      }
+      m.easeTo({ zoom: z, duration: 250 });
+    },
     resetNorth() { mapRef.current!.easeTo({ bearing: 0, duration: 300 }); },
-    toggle3D() { const m = mapRef.current!; m.easeTo({ pitch: m.getPitch() > 5 ? 0 : 58, duration: 400 }); },
+    toggle3D() {
+      const m = mapRef.current!, sel = live.current.selected;
+      if (m.getPitch() > 5) { m.easeTo({ pitch: 0, bearing: 0, duration: 400 }); return; }
+      // with a field picked, tilt into the stack at drill zoom so the slabs read as 3D
+      if (sel && !sel.spot) {
+        programmatic.current = true;
+        const small = sel.area_ha.value < 45;
+        m.easeTo({ center: [sel.centroid.lon, sel.centroid.lat - (small ? 0.0006 : 0.001)], zoom: Math.max(m.getZoom(), small ? 14.8 : 14.2), pitch: 58, bearing: -22, padding: pad(), duration: 500, easing: fly.easing });
+        return;
+      }
+      m.easeTo({ pitch: 58, duration: 400 });
+    },
     fitField(loc) {
       const g = loc.mine?.geometry ?? loc.geometry, ring = (g.type === 'Polygon' ? [g.coordinates[0]] : g.coordinates.map((x) => x[0])).flat(), m = mapRef.current!, xs = ring.map((q) => q[0]), ys = ring.map((q) => q[1]);
       programmatic.current = true;

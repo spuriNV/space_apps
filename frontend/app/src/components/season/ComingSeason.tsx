@@ -8,7 +8,7 @@ import { bareWindow } from '../../season';
 import { RAIN_FED, TODAY_T, fmtDate, isRainFed, latestAt, mmToAfac, ordinal } from '../../lib';
 const band = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi : v > 33 ? mid : lo);
 import Icon from '../Icons';
-import { GapLine, Src, place, stationsName } from '../ui/shared';
+import { GapLine, Src, StepLine, place, stationsName } from '../ui/shared';
 import { What } from '../ui/What';
 import { MoreDetail } from '../ui/Detail';
 import { BARE_DEF } from '../../bare';
@@ -50,6 +50,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
     <section className="sheet season" data-testid="coming-season">
       <header className="sheet-head">
         <div>
+          <StepLine id="season" purpose="See what this winter and next year may bring, so you know whether today’s plan will still fit." />
           <h2>Coming season: what’s likely this winter and next year</h2>
           <p className="sheet-lede">{headline}.{!notReady && <> <span className="outlook-tag">{o?.prov.cpc.origin === 'estimate' ? 'Past weather, not a forecast.' : 'An outlook, not a forecast.'}</span></>}</p>
         </div>
@@ -60,7 +61,9 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
         <div><h3>Water supply</h3><p>{supply}</p></div>
         <div><h3>Next season, today’s rotation</h3><p>{nextNeed}</p></div>
       </div>
-      <div className="cs-more"><MoreDetail what="Outlooks, reservoirs, every rotation" /></div>
+      <div className="cs-more"><MoreDetail what="Outlooks, reservoirs, every rotation" />
+        <button className="btn btn-primary next-step" onClick={p.onCompare} data-testid="season-to-compare"><span><b>Next: compare rotations</b><small>What you would gain or give up by changing</small></span><Icon name="right" size={20} /></button>
+      </div>
       <div className="sheet-cols three d-only">
         <div className="sheet-col">
           <h3>Rain and temperature outlook</h3>
