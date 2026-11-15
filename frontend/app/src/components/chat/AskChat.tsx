@@ -104,13 +104,13 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
     let stream: MediaStream;
     try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
     catch (e) {
-      const m = (e as DOMException)?.name === 'NotFoundError' ? 'No microphone was found. Type your question instead.' : 'Microphone access is blocked. Allow the microphone for this site in your browser, or type your question.';
+      const m = (e as DOMException)?.name === 'NotFoundError' ? t('ui.chat.nomic') : t('ui.chat.mic_blocked');
       setErr(m); setLive(m); return;
     }
     const mime = recMime();
     let mr: MediaRecorder;
     try { mr = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 16000 } : undefined); }
-    catch { stream.getTracks().forEach((t) => t.stop()); setErr('Voice input is not available in this browser. Type your question instead.'); return; }
+    catch { stream.getTracks().forEach((t) => t.stop()); setErr(t('ui.chat.novoice')); return; }
     const chunks: Blob[] = [];
     let raf = 0, tick = 0, ctx: AudioContext | undefined;
     try {
@@ -124,26 +124,26 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
     mr.onstop = async () => {
       cancelAnimationFrame(raf); clearInterval(tick); void ctx?.close(); setLevel(0);
       stream.getTracks().forEach((t) => t.stop()); rec.current = null;
-      if (Date.now() - t0 < 400 || !chunks.length) { setRstate('idle'); const m = 'No speech heard. Tap the microphone and try again.'; setErr(m); setLive(m); return; }
-      setRstate('transcribing'); setLive('Transcribing.');
+      if (Date.now() - t0 < 400 || !chunks.length) { setRstate('idle'); const m = t('ui.chat.nospeech'); setErr(m); setLive(m); return; }
+      setRstate('transcribing'); setLive(t('merge.rec.transcribing'));
       try {
         const type = mr.mimeType || mime || 'audio/webm';
-        const fd = new FormData(); fd.append('audio', new Blob(chunks, { type }), type.includes('mp4') ? 'clip.mp4' : 'clip.webm');
+        const fd = new FormData(); fd.append('audio', new Blob(chunks, { type }), type.includes('mp4') ? 'clip.mp4' : 'clip.webm'); fd.append('language', isEs ? 'es' : 'en');
         const r = await fetch(`${API_BASE}/ask/transcribe`, { method: 'POST', body: fd });
-        if (r.status === 501) throw new Error("Voice input isn't available on this server; type your question.");
-        if (r.status === 429) throw new Error('Too many voice requests. Wait a minute or type your question.');
-        if (!r.ok) throw new Error('Could not transcribe that. Try again or type your question.');
+        if (r.status === 501) throw new Error(t('merge.rec.no501'));
+        if (r.status === 429) throw new Error(t('merge.rec.no429'));
+        if (!r.ok) throw new Error(t('merge.rec.nottr'));
         const j = await r.json() as { text?: string };
-        const t = (j.text ?? '').trim();
-        if (!t) throw new Error('No speech heard. Tap the microphone and try again.');
-        setQ(t.slice(0, 300)); setLive(`Heard: ${t}. Review it, then press send.`); input.current?.focus();
+        const tt = (j.text ?? '').trim();
+        if (!tt) throw new Error(t('ui.chat.nospeech'));
+        setQ(tt.slice(0, 300)); setLive(t('merge.rec.heard', { text: tt })); input.current?.focus();
       } catch (e) {
-        const m = e instanceof TypeError ? 'Could not reach the server. Type your question instead.' : e instanceof Error ? e.message : 'Voice input failed.';
+        const m = e instanceof TypeError ? t('merge.rec.noserver') : e instanceof Error ? e.message : t('merge.rec.fail');
         setErr(m); setLive(m);
       } finally { setRstate('idle'); }
     };
     rec.current = { stop: () => { if (mr.state !== 'inactive') mr.stop(); } };
-    mr.start(); setRstate('recording'); setSecs(0); setLive('Recording. Tap the microphone again to stop.');
+    mr.start(); setRstate('recording'); setSecs(0); setLive(t('merge.rec.recording'));
     tick = window.setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); setSecs(s); if (s >= MAX_REC_S && mr.state !== 'inactive') mr.stop(); }, 250);
   };
 

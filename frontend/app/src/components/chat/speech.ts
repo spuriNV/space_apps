@@ -20,7 +20,7 @@ export function sentences(text: string): string[] {
   return out;
 }
 
-function deviceVoice(): SpeechSynthesisVoice | undefined {
+export function deviceVoice(): SpeechSynthesisVoice | undefined {
   const vs = TTS?.getVoices() ?? [];
   if (isEs) {
     // Spanish: es-US first, then any es-*; natural/enhanced voices ahead of the rest

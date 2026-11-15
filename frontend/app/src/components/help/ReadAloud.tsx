@@ -2,6 +2,8 @@
 // Hidden where it is unsupported. One voice at a time; a second press stops it. Not used for the long Ask answers,
 // which have their own Listen control.
 import { useEffect, useRef, useState } from 'react';
+import { deviceVoice } from '../chat/speech';
+import { isEs, speechLang, t } from '../../i18n';
 
 const TTS: SpeechSynthesis | undefined = typeof window !== 'undefined' ? window.speechSynthesis : undefined;
 let stopCurrent: (() => void) | null = null;
@@ -14,7 +16,7 @@ function voiceFor(lang: string): SpeechSynthesisVoice | undefined {
 /** Plain text for speech: no markup characters, arrows or double spaces. */
 export const speakable = (t: string) => t.replace(/[*_`#→·]/g, ' ').replace(/\s+/g, ' ').trim();
 
-export function ReadAloud({ text, label = 'Read aloud' }: { text: string; label?: string }) {
+export function ReadAloud({ text, label = t('merge.readAloud') }: { text: string; label?: string }) {
   const [on, setOn] = useState(false);
   const me = useRef<() => void>(() => {});
   const stop = () => { TTS?.cancel(); setOn(false); if (stopCurrent === me.current) stopCurrent = null; };
@@ -25,16 +27,16 @@ export function ReadAloud({ text, label = 'Read aloud' }: { text: string; label?
   const toggle = () => {
     if (on) return stop();
     stopCurrent?.(); TTS.cancel();
-    const lang = navigator.language || 'en-US';
+    const lang = isEs ? speechLang : navigator.language || 'en-US';
     const u = new SpeechSynthesisUtterance(speakable(text));
     u.lang = lang; u.rate = 0.95;
-    const v = voiceFor(lang); if (v) u.voice = v;
+    const v = isEs ? deviceVoice() : voiceFor(lang); if (v && isEs) u.lang = v.lang; if (v) u.voice = v;
     u.onend = u.onerror = () => { setOn(false); if (stopCurrent === me.current) stopCurrent = null; };
     stopCurrent = me.current; setOn(true); TTS.speak(u);
   };
   return (
     <button type="button" className="ra" aria-pressed={on} onClick={toggle} data-testid="read-aloud">
-      <span aria-hidden="true">{on ? '⏹' : '🔊'}</span>{on ? 'Stop' : label}
+      <span aria-hidden="true">{on ? '⏹' : '🔊'}</span>{on ? t('merge.stop') : label}
     </button>
   );
 }

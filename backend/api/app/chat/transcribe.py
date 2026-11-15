@@ -14,14 +14,16 @@ import time
 from collections import deque
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Form, HTTPException, Request, UploadFile
 
 router = APIRouter()
 MAX_BYTES, MAX_SECONDS, PER_MIN, CONCURRENT = 2_000_000, 30.0, 6, 2
 MODEL_NAME = os.environ.get("STT_MODEL", "tiny.en")
+MODEL_NAME_ES = os.environ.get("STT_MODEL_ES", "base")  # multilingual model, used only when language=es (".en" models cannot do Spanish)
 os.environ.setdefault("HF_HOME", str(Path.home() / ".cache" / "huggingface"))
 
 _model = None
+_model_es = None
 _mlock = threading.Lock()
 _slots = threading.BoundedSemaphore(CONCURRENT)
 _hits: dict[str, deque] = {}
@@ -35,11 +37,15 @@ def available() -> bool:
         return False
 
 
-def _engine():
-    global _model
+def _engine(lang: str = "en"):
+    global _model, _model_es
     with _mlock:
+        from faster_whisper import WhisperModel  # noqa: PLC0415
+        if lang == "es":
+            if _model_es is None:
+                _model_es = WhisperModel(MODEL_NAME_ES, device="cpu", compute_type="int8", cpu_threads=4)
+            return _model_es
         if _model is None:
-            from faster_whisper import WhisperModel  # noqa: PLC0415
             _model = WhisperModel(MODEL_NAME, device="cpu", compute_type="int8", cpu_threads=4)
     return _model
 
@@ -73,7 +79,7 @@ def _decode(data: bytes):
 
 
 @router.post("/api/ask/transcribe")
-async def transcribe(request: Request, audio: UploadFile):
+async def transcribe(request: Request, audio: UploadFile, language: str = Form("en")):
     if not available():
         raise HTTPException(501, "Speech-to-text (faster-whisper) is not installed on this server")
     if _limited(_ip(request)):
@@ -86,12 +92,12 @@ async def transcribe(request: Request, audio: UploadFile):
     if not _slots.acquire(blocking=False):
         raise HTTPException(429, "Busy. Try again in a moment.")
     try:
-        return _run(data)
+        return _run(data, "es" if language.lower().startswith("es") else "en")
     finally:
         _slots.release()
 
 
-def _run(data: bytes) -> dict:
+def _run(data: bytes, lang: str = "en") -> dict:
     try:
         pcm = _decode(data)
     except Exception:
@@ -99,7 +105,7 @@ def _run(data: bytes) -> dict:
     dur = len(pcm) / 16000.0
     if dur > MAX_SECONDS + 1:
         raise HTTPException(413, "Recording too long")
-    segs, info = _engine().transcribe(pcm, language="en", beam_size=1, best_of=1, temperature=0.0, vad_filter=True,
+    segs, info = _engine(lang).transcribe(pcm, language=lang, beam_size=1, best_of=1, temperature=0.0, vad_filter=True,
                                       without_timestamps=True, condition_on_previous_text=False)
     text = " ".join(s.text.strip() for s in segs).strip()
     return {"text": text, "language": info.language, "duration_s": round(dur, 2)}
