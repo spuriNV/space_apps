@@ -19,11 +19,10 @@ import { setGlossary } from './components/ui/What';
 import { DrawLayer, type DrawHostHandle } from './components/draw/DrawLayer';
 import { DRAFT_ID, parseFieldHash, useMyFields } from './myFields';
 import { DetailCtx, useDetailState } from './components/ui/Detail';
-import { ProvList, acres, fieldName, place, type Step } from './components/ui/shared';
+import { FLOW, ProvList, acres, fieldName, place, type FlowId, type Step } from './components/ui/shared';
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
 type Panel = 'none' | 'fields' | 'season' | 'compare';
-type Tab = 'now' | 'season' | 'year' | 'compare' | 'brief';
 /** Quick dates in the grower's words for the "Viewing" control. */
 const QUICK: { label: string; sub: string; t: number }[] = [
   { label: 'Today', sub: 'mid Nov 2026', t: TODAY_T },
@@ -32,7 +31,6 @@ const QUICK: { label: string; sub: string; t: number }[] = [
   { label: '2023 floods', sub: 'Mar 2023', t: tOf(2023, 7) },
   { label: '2022 drought', sub: 'Jul 2022', t: tOf(2022, 19) },
 ];
-const MOB: Record<string, string> = { now: 'Now', season: 'Season', year: 'Year', compare: 'Compare' };
 /** Phone width: the field panel becomes a bottom sheet and the sections a bottom tab bar. */
 function usePhone() {
   const q = '(max-width: 640px)';
@@ -40,13 +38,6 @@ function usePhone() {
   useEffect(() => { const mq = window.matchMedia(q); const f = () => setM(mq.matches); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, []);
   return m;
 }
-const TABS: { id: Tab; label: string; short?: string; tiny?: string }[] = [
-  { id: 'now', label: 'Field now' },
-  { id: 'season', label: 'Coming season', tiny: 'Season' },
-  { id: 'year', label: 'This field’s year', tiny: 'Year' },
-  { id: 'compare', label: 'Compare' },
-  { id: 'brief', label: 'Print for your adviser', short: 'Print' },
-];
 
 const noop = () => {};
 
@@ -293,14 +284,15 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, locations, select]);
 
-  const tabOn = (id: Tab) => !!selected && (id === 'brief' ? briefOpen : id === 'year' ? yearExpanded : id === 'now' ? panel === 'none' && !yearExpanded && leftPanel === 'card' : panel === id);
-  const onTab = (id: Tab) => {
-    setSwitchOpen(false);
-    if (!selected) { setPanel('none'); setSwitchOpen(true); return; }
-    if (id === 'now') openPanel('none');
-    else if (id === 'year') onStep('year');
-    else if (id === 'brief') onStep('brief');
-    else openPanel(id);
+  // the numbered flow: step 1 is the picker (or nothing picked), 2 the field card (and its year view), 3 to 5 their panels
+  const step: FlowId = !selected || panel === 'fields' ? 'pick' : briefOpen ? 'brief' : panel === 'compare' ? 'compare' : panel === 'season' ? 'season' : 'now';
+  const goStep = (id: FlowId) => {
+    setSwitchOpen(false); setMenuOpen(false);
+    if (id === 'pick' || !selected) { setBriefOpen(false); setYearOpen(false); setPanel('fields'); return; }
+    setBriefOpen(id === 'brief'); setYearOpen(false);
+    if (id === 'brief') { if (panel === 'fields') setPanel('none'); return; }
+    if (id === 'now') { setPanel('none'); setCardOpen(true); return; }
+    setPanel(id);
   };
 
   return (
@@ -331,10 +323,15 @@ export default function App() {
             </div>
           )}
         </div>
-        <nav className="tb-tabs" aria-label="Sections">
-          {TABS.map((tb) => (
-            <button key={tb.id} className={tabOn(tb.id) ? 'on' : ''} onClick={() => onTab(tb.id)} data-testid={`tab-${tb.id}`} disabled={!selected && tb.id !== 'now'} title={selected ? undefined : 'Pick a field first'}><span className="tb-long">{tb.label}</span>{tb.short && <span className="tb-short">{tb.short}</span>}{tb.tiny && <span className="tb-tiny">{tb.tiny}</span>}</button>
-          ))}
+        <nav className="tb-tabs" aria-label="Steps" data-testid="steps">
+          {FLOW.map((f) => {
+            const locked = f.id !== 'pick' && !selected;
+            return (
+              <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} data-testid={`tab-${f.id}`} disabled={locked} title={locked ? 'Pick a field first' : f.does}>
+                <i>{f.n}</i><span className="tb-long">{f.label}</span><span className="tb-short">{f.short}</span>
+              </button>
+            );
+          })}
         </nav>
         <button className={`tb-menu-btn ${menuOpen ? 'on' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} data-testid="menu"><Icon name={menuOpen ? 'close' : 'menu'} size={22} /></button>
         <div className={`tb-right ${menuOpen ? 'open' : ''}`}>
@@ -364,8 +361,8 @@ export default function App() {
           <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => setLayersOpen(!layersOpen)} data-testid="layers-btn"><Icon name="layers" size={16} />Map layers</button>
         </div>
       </header>
-      <nav className="mob-tabs" aria-label="Sections">
-        {TABS.map((tb) => <button key={tb.id} className={tabOn(tb.id) ? 'on' : ''} aria-current={tabOn(tb.id) ? 'page' : undefined} onClick={() => { setMenuOpen(false); onTab(tb.id); }} disabled={!selected && tb.id !== 'now'} data-testid={`mtab-${tb.id}`}><span>{tb.short ?? MOB[tb.id] ?? tb.label}</span></button>)}
+      <nav className="mob-tabs" aria-label="Steps">
+        {FLOW.map((f) => <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} disabled={f.id !== 'pick' && !selected} data-testid={`mtab-${f.id}`}><span>{f.n} {f.short}</span></button>)}
       </nav>
       {t !== TODAY_T && panel !== 'season' && panel !== 'compare' && !briefOpen && <div className="date-banner" data-testid="date-banner" role="status" style={phone ? undefined : { left: `calc(50% + ${(leftInset - rightInset) / 2}px)` }}><span>Showing <b>{tLabel(t)}</b></span><button className="btn btn-secondary btn-sm" onClick={() => { setT(TODAY_T); setPlaying(false); }}>Back to today</button></div>}
 

@@ -88,6 +88,28 @@ export function GapLine({ gap, missing, className = '' }: { gap: DataGap | null;
 const cap1 = (x: string) => { const y = x.replace(/\s*\((?:\/[\w?=&/_-]+(?:,\s*)?)+\)/g, ''); return y.charAt(0).toUpperCase() + y.slice(1); };
 
 export type Step = 'drill' | 'year' | 'compare' | 'brief' | 'season';
+export type FlowId = 'pick' | 'now' | 'season' | 'compare' | 'brief';
+/** The numbered path (from the sp branch): one step per screen, steps 2 to 5 locked until a field is picked. */
+export const FLOW: { n: number; id: FlowId; label: string; short: string; does: string }[] = [
+  { n: 1, id: 'pick', label: 'Pick your field', short: 'Pick', does: 'Choose the field' },
+  { n: 2, id: 'now', label: 'Your field now', short: 'Now', does: 'Does today’s plan fit the water?' },
+  { n: 3, id: 'season', label: 'Coming season', short: 'Season', does: 'What winter and next year look like' },
+  { n: 4, id: 'compare', label: 'Compare rotations', short: 'Compare', does: 'What you’d gain or give up' },
+  { n: 5, id: 'brief', label: 'Print for your adviser', short: 'Print', does: 'One page to take with you' },
+];
+/** Problem, what this tool does, goal. Shown on Pick. */
+export function Workflow() {
+  const rows: [string, string][] = [
+    ['The problem', '2023 cut forage water. Will your plan still fit?'],
+    ['What this does', 'Reads NASA satellite data for your field and checks it against the water you can count on.'],
+    ['Your goal', 'A rotation you can print and take to your adviser.'],
+  ];
+  return (
+    <dl className="workflow" data-testid="workflow">
+      {rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+    </dl>
+  );
+}
 export const ACTIONS: { id: Step; label: string; sub: string }[] = [
   { id: 'season', label: 'What’s likely this winter', sub: 'Rain, drought, reservoirs, bare weeks' },
   { id: 'year', label: 'This field’s year', sub: 'Bare, green or flooded, 2023–2026' },

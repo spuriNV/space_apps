@@ -1622,3 +1622,24 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 .ftl-years button { padding: 0 var(--s-3); min-height: 32px; border-radius: var(--r-full); color: var(--text-2); }
 .ftl-years button.on { background: var(--accent-container); color: var(--on-accent-container); font-weight: 600; }
 @media (max-width: 760px) { .sim-dock { bottom: auto; top: calc(var(--bar-h) + var(--s-3)); } }
+
+/* ---- numbered step flow: pill segmented control in the top bar, same five steps in the phone tab bar ---- */
+.tb-tabs { flex: 0 1 auto; align-items: center; gap: 2px; margin: 0 auto 0 var(--s-3); padding: 3px; background: var(--panel-2); border-radius: var(--r-full); overflow: visible; }
+.tb-tabs button, .tb-tabs button:last-child { margin: 0; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 8px; border-radius: var(--r-full); color: var(--text-2); font-size: var(--fs-small); transition: background-color var(--dur-2) var(--ease-std), color var(--dur-2) var(--ease-std); }
+.tb-tabs button::after, .tb-tabs button.on::after { display: none; }
+.tb-tabs button i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-style: normal; font-size: var(--fs-fine); font-weight: 700; font-variant-numeric: tabular-nums; background: var(--tint-2); color: var(--text-2); }
+.tb-tabs button:hover:not(:disabled):not(.on) { background: var(--state-hover); }
+.tb-tabs button.on { background: var(--accent-container); color: var(--on-accent-container); font-weight: 700; box-shadow: inset 0 0 0 1px var(--accent-outline); }
+.tb-tabs button.on i { background: var(--accent); color: var(--accent-ink); }
+.tb-tabs button:disabled { color: var(--muted); opacity: 0.6; cursor: not-allowed; }
+.tb-tabs button:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.tb-tabs .tb-short { display: none; }
+.tb-tabs button:has(.tb-short) .tb-long { display: inline; }
+@media (max-width: 1760px) { .tb-tabs button:has(.tb-short) .tb-long { display: none; } .tb-tabs .tb-long + .tb-short { display: inline; } .tb-tabs button { padding: 0 12px 0 6px; gap: 6px; } }
+@media (max-width: 1180px) { .tb-tabs .tb-long + .tb-short { display: none; } .tb-tabs button { padding: 0 6px; } }
+.tb-right { flex: none; } .tb-layers { white-space: nowrap; }
+.workflow { margin: 0 0 var(--s-3); padding: var(--s-3) var(--s-4); display: grid; gap: var(--s-2); background: var(--panel-2); border-radius: var(--r-md); }
+.workflow div { display: grid; gap: 2px; }
+.workflow dt { font-size: var(--fs-fine); font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
+.workflow dd { margin: 0; font-size: var(--fs-small); line-height: 1.4; color: var(--text); max-width: none; }
+@media (max-width: 640px) { .mob-tabs button span { padding: 0 8px; white-space: nowrap; } .mob-tabs button { font-size: 13px; } }

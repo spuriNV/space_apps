@@ -10,7 +10,7 @@ import { MoreDetail } from './Detail';
 import type { Daily } from '../../season';
 import Icon from '../Icons';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent, type KeyboardEvent as RKeyboardEvent } from 'react';
-import { AboutField, Actions, CROP_COL, EventLog, NextSteps, PrimaryAction, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
+import { AboutField, Actions, Workflow, CROP_COL, EventLog, NextSteps, PrimaryAction, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
 import { FirstNationsCard } from './FirstNations';
 import { CedarChat } from './Cedar';
 import { SalmonPanel } from '../salmon/SalmonPanel';
@@ -222,6 +222,7 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
         <h1>Pick your field</h1>
         {p.onClose && <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={20} /></button>}
       </header>
+      <Workflow />
       {p.locations.length > 1 && (
         <div className="pk-filter">
           <label className="pk-search"><Icon name="search" size={16} /><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by town, county or crop" aria-label="Search fields" data-testid="pk-search" /></label>
