@@ -9,7 +9,19 @@ RANGES = {"T2M": (-30, 50), "T2M_MAX": (-30, 55), "T2M_MIN": (-40, 45), "RH2M": 
           "WS2M": (0, 40), "ALLSKY_SFC_SW_DWN": (0, 40), "PRECTOTCORR": (0, 500)}
 
 def main():
+    import shutil
+    done_cells = {}
     for pid, p in PRESETS.items():
+        cell = power_cell(p["lat"], p["lon"])
+        if cell in done_cells:   # same 0.5 x 0.625 deg cell as a field fetched in this run: reuse, don't refetch
+            src = done_cells[cell]
+            for f in ("power.parquet", "power.meta.json"):
+                shutil.copy(cache_dir(src) / f, cache_dir(pid) / f)
+            m = json.loads((cache_dir(pid) / "power.meta.json").read_text())
+            m["shared_cell_with"] = src; m["field_point"] = [p["lon"], p["lat"]]
+            write_json(cache_dir(pid) / "power.meta.json", m)
+            print(pid, "same POWER cell as", src, "- copied")
+            continue
         q = dict(parameters=PARAMS, community="AG", longitude=p["lon"], latitude=p["lat"],
                  start="19810101", end=dt.date.today().strftime("%Y%m%d"), format="JSON")
         r = get(URL, q)
@@ -37,6 +49,7 @@ def main():
                 "rows": len(df), "date_min": str(df.index.min().date()), "date_max": str(df.index.max().date()),
                 "missing_note": "ALLSKY_SFC_SW_DWN is -999 (NaN here) for 1981-01-01..1983-12-31 (1095 days); all other parameters complete.", "caveat": "PRECTOTCORR is MERRA-2 gauge-corrected reanalysis on a ~50 km grid; coarse for convective/extreme rain."}
         write_json(cache_dir(pid) / "power.meta.json", meta)
+        done_cells[cell] = pid
         print(pid, len(df), meta["date_min"], meta["date_max"], "fills", n_fill, "elev", meta["elevation_m"])
 
 if __name__ == "__main__":

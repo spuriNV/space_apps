@@ -7,7 +7,12 @@ OUT = Path(__file__).resolve().parents[1] / "out"
 fetched = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 hist = json.loads((OUT / "history.json").read_text())
 res = {"fetched_at": fetched, "label": "Outlook scenario, not a forecast", "presets": {}}
+import os
+_want = [x for x in os.environ.get("FIELDSHIFT_FIELDS", "").split(",") if x]
+old = json.loads((OUT / "irrigation.json").read_text())["presets"] if (OUT / "irrigation.json").exists() else {}
 for pid, h in hist["presets"].items():
+    if _want and pid not in _want:   # FIELDSHIFT_FIELDS run: keep the other fields' stored results
+        res["presets"][pid] = old[pid]; continue
     sc = h["scenario"]; runs = {}
     for k in ("low", "mid", "high"):
         sc_in = {"dT_c": sc["dT_c"][k], "dP_pct": sc["dP_pct"][k]}

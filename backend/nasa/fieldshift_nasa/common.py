@@ -18,7 +18,11 @@ from shapely.ops import unary_union
 REPO = Path(__file__).resolve().parents[3]
 POLYGONS = REPO / "backend" / "field" / "polygons"
 CACHE = REPO / "data" / "cache"
-PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
+sys.path.insert(0, str(REPO / "backend" / "fields"))
+import fieldreg  # noqa: E402
+
+PRESETS = fieldreg.selected()          # registry fields (FIELDSHIFT_FIELDS limits the list)
+ORIGINALS = ["car_colusa_rice", "caf_tulare_forage"]
 BLOCKED_MSG = "BLOCKED: no Earthdata credentials in .env"
 APPEEARS = "https://appeears.earthdatacloud.nasa.gov/api"
 
@@ -143,6 +147,9 @@ class AppEEARS:
         Returns ({point_id: frame with 'Date' + one column per layer (bare layer name)}, extra)."""
         raw = CACHE / "_appeears"
         raw.mkdir(parents=True, exist_ok=True)
+        if not set(points) <= set(ORIGINALS):   # registry batches get their own task/state so the originals' raw CSVs stay
+            import hashlib
+            dataset = f"{dataset}_fields_{hashlib.sha1(','.join(sorted(points)).encode()).hexdigest()[:8]}"
         state_f = raw / f"{dataset}.task.json"
         params = {"points": points, "start": start, "end": end, "layers": layers}
         tid = None
@@ -190,7 +197,8 @@ def clean_appeears_df(df: pd.DataFrame, layers: list[str], fill: dict[str, float
 def common_args(desc: str):
     import argparse
     ap = argparse.ArgumentParser(description=desc)
-    ap.add_argument("--preset", choices=PRESETS, action="append", help="default: both")
+    ap.add_argument("--preset", choices=fieldreg.ids(), action="append",
+                    help="default: every registry field (or FIELDSHIFT_FIELDS)")
     ap.add_argument("--start", help="YYYY-MM-DD override")
     ap.add_argument("--end", help="YYYY-MM-DD override")
     ap.add_argument("--limit", type=int, help="smoke test: only first N granules/scenes")

@@ -13,6 +13,7 @@ WORKDIR /app
 # Only what the API reads (committed outputs and caches; no keys needed)
 COPY backend/api/ backend/api/
 COPY backend/engine/ backend/engine/
+COPY backend/fields/ backend/fields/
 COPY backend/field/out/ backend/field/out/
 COPY backend/field/polygons/ backend/field/polygons/
 COPY backend/ai/out/ backend/ai/out/

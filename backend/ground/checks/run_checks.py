@@ -3,7 +3,10 @@ import json, sys, math
 from pathlib import Path
 G = Path(__file__).resolve().parents[1]; ROOT = G.parents[1]
 sys.path.insert(0, str(G / "src"))
+sys.path.insert(0, str(ROOT / "backend" / "fields"))
+import fieldreg  # noqa: E402
 import numpy as np, pandas as pd
+IDS = fieldreg.selected()   # every registry field
 fails = 0
 def line(ok, msg):
     global fails
@@ -12,7 +15,7 @@ def info(msg): print("INFO " + msg)
 def skip(msg): print("SKIP " + msg)
 
 # ---- RMA
-for preset in ["car_colusa_rice", "caf_tulare_forage"]:
+for preset in IDS:
     p = G / "out" / preset / "rma_profile.json"
     if not p.exists(): line(False, f"RMA profile missing for {preset}"); continue
     d = json.load(open(p))
@@ -35,9 +38,11 @@ else: line(False, "EQIP 340 file missing")
 def load(preset, name):
     f = ROOT / "data" / "cache" / preset / f"{name}.parquet"
     return pd.read_parquet(f) if f.exists() else None
-for preset in ["car_colusa_rice", "caf_tulare_forage"]:
+for preset in IDS:
     oe = load(preset, "openet"); ci = load(preset, "cimis")
-    if oe is None: skip(f"{preset} OpenET not fetched (BLOCKED: no OPENET_API_KEY)")
+    if oe is not None and not (ROOT / "backend/engine/out" / preset / "strategies.json").exists():
+        skip(f"{preset} OpenET cached; engine strategies not built yet"); oe = None
+    elif oe is None: skip(f"{preset} OpenET not fetched (BLOCKED: no OPENET_API_KEY)")
     else:
         e = oe[oe["model"] == "Ensemble"] if "model" in oe else oe
         v = e["et_mm"]; line(v.min() >= 0 and v.max() <= 400, f"{preset} OpenET monthly range {v.min():.1f}-{v.max():.1f} mm (0-400)")
@@ -45,7 +50,7 @@ for preset in ["car_colusa_rice", "caf_tulare_forage"]:
         sj = json.load(open(ROOT / "backend/engine/out" / preset / "strategies.json")); b = [x for x in sj if x["is_baseline"]][0]
         eng = np.array([m["value"] for m in b["water"]["etc_by_month_mm"]])
         # CDL-matched years only (same rule as backend/engine/checks/validate_et.py): years whose CDL majority crop is the baseline crop
-        BASE_CDL = {"car_colusa_rice": "Rice", "caf_tulare_forage": "Alfalfa"}
+        BASE_CDL = {preset: {"rice": "Rice", "forage": "Alfalfa"}[fieldreg.get(preset)["family"]]}
         hist = json.load(open(ROOT / "backend/field/out" / preset / "crop_history.json"))["by_year"]
         matched = [y for y in range(2016, 2026) if hist.get(str(y)) == BASE_CDL[preset]]
         e = e.assign(date=pd.to_datetime(e["date"])); e = e[e.date.dt.year.isin(matched)]

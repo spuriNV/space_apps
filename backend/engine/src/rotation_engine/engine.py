@@ -14,7 +14,7 @@ from .observed import observed_timeline
 from .sources import assumed, blocked, sn, src
 from .timeline import build_timeline, doy0
 from .validation import openet_matched
-from .weather import CHUNK, DEFAULT_ETO, REPO, load_station_precip, load_weather, station_year_precip, year_weather
+from .weather import CHUNK, DEFAULT_ETO, REPO, fieldreg, load_station_precip, load_weather, station_year_precip, year_weather
 
 MM_PER_AF_AC = 304.8                      # 1 acre-ft/acre = 1 ft depth (exact)
 DEFAULT_YEARS = tuple(range(2015, 2026))  # spec B2 daily master table 2015-2025
@@ -55,7 +55,27 @@ def _strategies_raw() -> tuple:
 
 
 def load_strategies(preset_id: str) -> list[dict]:
-    return [copy.deepcopy(s) for s in _strategies_raw() if s["location_id"] == preset_id]
+    """The location's strategies. Registry fields reuse their family's set (rice -> CAR0-CAR3 of car_colusa_rice,
+    forage -> CAF0-CAF3 of caf_tulare_forage) with location_id set to the field."""
+    own = [copy.deepcopy(s) for s in _strategies_raw() if s["location_id"] == preset_id]
+    if own:
+        return own
+    tpl = fieldreg.template(preset_id)
+    out = [copy.deepcopy(s) for s in _strategies_raw() if s["location_id"] == tpl]
+    for s in out:
+        s["location_id"] = preset_id
+        s["template_location_id"] = tpl
+    return out
+
+
+def slope_pct(preset_id: str) -> dict:
+    if preset_id in SLOPE_PCT:
+        return SLOPE_PCT[preset_id]
+    base = SLOPE_PCT[fieldreg.template(preset_id)]
+    v = fieldreg.get(preset_id).get("slope_pct", base["value"])
+    return assumed(v, "%", low=base.get("low"), high=base.get("high"),
+                   note=f"Family placeholder from the registry ({'laser-levelled rice' if v == 0 else 'flat SJV field'}); "
+                        "NASADEM slope not yet supplied. Cancels in E/E_baseline.")
 
 
 def load_soil(preset_id: str) -> dict | None:
@@ -373,7 +393,7 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
                                          "mm/yr", wsrc, f"Replay {y}")
             exposure["replay"][str(y)] = blk
         exposure["scenario"] = {"dT_c": dT, "dP_pct": dP}
-        slope = SLOPE_PCT[preset_id]
+        slope = slope_pct(preset_id)
         sf = 1 + slope["value"] / 5
         exposure["erosion_index_E"] = _sn_c(_rng(C, cn, lambda r: r["E"] * sf), "rain-weighted bare days/yr", wsrc,
                                             "spec B4.4 E = sum_d (1-cover) x rain_risk x (1 + slope%/5); water days "

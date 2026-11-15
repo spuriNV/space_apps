@@ -4,7 +4,7 @@ import datetime as dt, statistics as st
 import numpy as np, pandas as pd
 from common import *
 
-CURRENT_CROP = {"car_colusa_rice": "Rice", "caf_tulare_forage": "Alfalfa"}
+CURRENT_CROP = {p: {"rice": "Rice", "forage": "Alfalfa"}[fieldreg.get(p)["family"]] for p in fieldreg.ids()}   # by family
 MIN_RUN = 14
 SEAS = {"NDJ": (11, 12, 1), "DJF": (12, 1, 2), "JFM": (1, 2, 3), "FMA": (2, 3, 4)}
 NCEI_URL = "https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries (cached in data/cache/<id>/ncei.parquet)"
@@ -170,7 +170,7 @@ def main():
                          "dP_pct": {"low": 0.0, "mid": round(max(-30, min(30, dP_mid)), 1), "high": round(max(-30, min(30, dP_hi)), 1)}}
         res["presets"][pid] = r
         print(pid, len(okw), "/", len(ww), r["scenario"]["dT_c"], r["scenario"]["dP_pct"])
-    write_json(OUT / "history.json", res)
+    write_presets(OUT / "history.json", res)
 
 def season_stats_any(d, months, Y, col):
     """months in order; those >= the first month's year Y, wrapping into Y+1 when the month number is smaller than the first."""

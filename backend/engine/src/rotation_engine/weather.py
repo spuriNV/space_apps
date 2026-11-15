@@ -24,6 +24,15 @@ PRESETS = {
     "car_colusa_rice": {"lat": 39.15, "lon": -122.10, "name": "Colusa County rice check (example)"},
     "caf_tulare_forage": {"lat": 36.20, "lon": -119.60, "name": "Tulare/Kings dairy forage field (example)"},
 }
+# The other registry fields (backend/fields/registry.json; FIELDSHIFT_FIELDS limits the list)
+import sys as _sys
+_sys.path.insert(0, str(REPO / "backend" / "fields"))
+import fieldreg  # noqa: E402
+for _id in fieldreg.selected():
+    if _id not in PRESETS:
+        _lon, _lat = fieldreg.point(_id)
+        PRESETS[_id] = {"lat": _lat, "lon": _lon, "name": fieldreg.get(_id)["name"]}
+PRESETS = {k: v for k, v in PRESETS.items() if k in fieldreg.selected()}
 POWER_PARAMS = "T2M,T2M_MAX,T2M_MIN,RH2M,WS2M,ALLSKY_SFC_SW_DWN,PRECTOTCORR"
 POWER_BASE = "https://power.larc.nasa.gov/api/temporal/daily/point"
 ELEV_M = {"car_colusa_rice": 57.4, "caf_tulare_forage": 106.1}  # POWER cell elevation (regional power.meta.json)
@@ -86,7 +95,10 @@ def load_weather(preset_id: str) -> Weather:
         path, prov = own, "engine fetch backend/engine/.cache"
         meta_p = own.with_suffix(".meta.json")
     url = power_url(p["lat"], p["lon"])
-    elev = ELEV_M.get(preset_id, 0.0)
+    elev = ELEV_M.get(preset_id)
+    if elev is None:   # registry fields: POWER cell elevation from the regional cache meta
+        mp = REPO / "data" / "cache" / preset_id / "power.meta.json"
+        elev = json.loads(mp.read_text()).get("elevation_m", 0.0) if mp.exists() else 0.0
     if meta_p.exists():
         meta = json.loads(meta_p.read_text())
         url = meta.get("url", url)

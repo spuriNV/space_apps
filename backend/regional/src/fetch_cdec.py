@@ -5,7 +5,10 @@ import pandas as pd, numpy as np
 from common import *
 
 URL = "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet"
-STATIONS = ["SHA", "ORO", "PNF"]
+BASE = ["SHA", "ORO", "PNF"]   # every field's file keeps these three (state system context) plus its own reservoirs
+STATIONS = BASE + sorted({s for p in PRESETS.values() for s in p["reservoirs"]} - set(BASE))
+NAMES = {"SHA": "Shasta", "ORO": "Oroville", "PNF": "Pine Flat", "TRM": "Terminus (Lake Kaweah)", "SCC": "Success",
+         "EXC": "New Exchequer (Lake McClure)", "SNL": "San Luis", "MIL": "Millerton", "DNP": "Don Pedro", "NML": "New Melones"}
 
 def main():
     q = dict(Stations=",".join(STATIONS), SensorNums=15, dur_code="D", Start="2015-01-01", End="2025-12-31")
@@ -23,13 +26,15 @@ def main():
                  "date_max": str(out[out.station == s].date.max().date()),
                  "n_missing": int(out[out.station == s].storage_af.isna().sum())} for s in STATIONS}
     for pid, p in PRESETS.items():
-        out.to_parquet(cache_dir(pid) / "cdec.parquet", index=False)
+        keep = BASE + [s for s in p["reservoirs"] if s not in BASE]
+        o = out[out.station.isin(keep)]
+        o.to_parquet(cache_dir(pid) / "cdec.parquet", index=False)
         write_json(cache_dir(pid) / "cdec.meta.json", {
             "url": r.url, "params": q, "fetched_at": now(), "timestep": "daily", "units": {"storage_af": "acre-feet"},
             "native_res_m": None, "native_res": "point (reservoir gauge)", "fill_value": "missing values returned as non-numeric strings or <=0; set to NaN",
-            "n_missing_or_nonpositive": n_missing, "auth": "none", "stations": stats,
+            "n_missing_or_nonpositive": n_missing, "auth": "none", "stations": {k: v for k, v in stats.items() if k in keep}, "field_reservoirs": p["reservoirs"],
             "sensor": {"number": 15, "type": "STORAGE", "units": "AF", "verified_live": True, "also_seen": "sensor 6 = RES ELE (feet)"},
-            "station_names": {"SHA": "Shasta", "ORO": "Oroville", "PNF": "Pine Flat"},
+            "station_names": {k: NAMES.get(k, k) for k in keep},
             "notes": "Rows keyed on the 'date' field of the response (for some records obsDate is a day later). Reservoir capacity not fetched here; use relative comparisons only.",
             "footprint_geojson": None})
     print(stats)

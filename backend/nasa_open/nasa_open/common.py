@@ -10,7 +10,10 @@ REPO = HERE.parents[1]
 FIELD = REPO / "backend" / "field"
 CACHE = REPO / "data" / "cache"
 OUT = HERE / "out"
-PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
+import sys as _sys
+_sys.path.insert(0, str(REPO / "backend" / "fields"))
+import fieldreg  # noqa: E402
+PRESETS = fieldreg.selected()   # registry fields (FIELDSHIFT_FIELDS limits the list)
 WORK = "EPSG:32610"
 MPC = "https://planetarycomputer.microsoft.com/api/stac/v1"
 GDAL_ENV = dict(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", CPL_VSIL_CURL_ALLOWED_EXTENSIONS=".tif,.TIF,.tiff",

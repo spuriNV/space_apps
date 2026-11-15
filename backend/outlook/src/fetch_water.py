@@ -8,6 +8,8 @@ USDM = "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverity
 USDM_PAGE = "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA"
 CDEC_JSON = "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet"
 CDEC_RES = "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+BASE_ST = ["SHA", "ORO", "PNF"]
+STATIONS = BASE_ST + sorted({s for v in RESERVOIRS.values() for s in v} - set(BASE_ST))
 CATS = {"d0": "D0 abnormally dry", "d1": "D1 moderate drought", "d2": "D2 severe drought", "d3": "D3 extreme drought", "d4": "D4 exceptional drought"}
 
 def usdm(pid, fetched):
@@ -48,8 +50,11 @@ def parse_res():
     html = get(CDEC_RES).text
     m = re.search(r"Ending at midnight\s*-\s*(\d+/\d+/\d+)", html); asof = dt.datetime.strptime(m.group(1), "%m/%d/%Y").date()
     rows = {}
-    for sid in ("SHA", "ORO", "PNF"):
-        tr = re.search(r"<tr[^>]*>(?:(?!</tr>).)*station_id=%s\"(?:(?!</tr>).)*</tr>" % sid, html, re.S).group(0)
+    for sid in STATIONS:
+        m_tr = re.search(r"<tr[^>]*>(?:(?!</tr>).)*station_id=%s\"(?:(?!</tr>).)*</tr>" % sid, html, re.S)
+        if m_tr is None:
+            print(f"  {sid} not in the CDEC RES summary; summary values left null"); rows[sid] = None; continue
+        tr = m_tr.group(0)
         cells = [re.sub(r"<[^>]*>", "", c).replace(",", "").strip() for c in re.findall(r"<td[^>]*>(.*?)</td>", tr, re.S)]
         f = lambda s: None if s in ("---", "") else float(s)
         rows[sid] = dict(name=cells[0], capacity_af=f(cells[2]), elevation_ft=f(cells[3]), storage_af=f(cells[4]), change_af=f(cells[5]),
@@ -58,13 +63,13 @@ def parse_res():
 
 def cdec(fetched):
     asof, rows = parse_res()
-    r = get(CDEC_JSON, dict(Stations="SHA,ORO,PNF", SensorNums=15, dur_code="D", Start="2026-01-01", End=dt.date.today().isoformat()))
+    r = get(CDEC_JSON, dict(Stations=",".join(STATIONS), SensorNums=15, dur_code="D", Start="2026-01-01", End=dt.date.today().isoformat()))
     d = pd.DataFrame(r.json()); d["date"] = pd.to_datetime(d["date"]); d["storage_af"] = pd.to_numeric(d["value"], errors="coerce")
     d = d.rename(columns={"stationId": "station", "dataFlag": "flag"})[["station", "date", "storage_af", "flag"]]
     d.loc[d.storage_af <= 0, "storage_af"] = np.nan
     res = {}
     for pid, sts in RESERVOIRS.items():
-        d.to_parquet(CACHE / pid / "cdec_2026.parquet", index=False)
+        d[d.station.isin(BASE_ST + sts)].to_parquet(CACHE / pid / "cdec_2026.parquet", index=False)
         write_json(CACHE / pid / "cdec_2026.meta.json", {"url": r.url, "fetched_at": fetched, "units": {"storage_af": "acre-feet"}, "auth": "none", "timestep": "daily",
             "date_min": str(d.date.min().date()), "date_max": str(d.date.max().date()), "note": "extends cdec.parquet (2015-2025) with 2026; also reads the CDEC Daily Reservoir Storage Summary for historical average",
             "summary_url": CDEC_RES})
@@ -78,7 +83,9 @@ def cdec(fetched):
             h = hist.copy(); h["date"] = pd.to_datetime(h.date)
             same = h[(h.date.dt.month == last.date.month) & (h.date.dt.day == last.date.day) & h.storage_af.notna()]
             own_avg = float(same.storage_af.mean())
-            x = rows[s]; u = CDEC_RES
+            x = rows[s] or {k: None for k in ("name", "capacity_af", "storage_af", "pct_capacity", "avg_af", "pct_avg", "year_ago_af", "inflow_cfs", "outflow_cfs")}
+            if x["name"] is None: x["name"] = s
+            u = CDEC_RES
             res[pid][s] = {"name": x["name"], "cdec_report_date": str(asof), "latest_daily_date": str(last.date.date()),
                 "storage_af": sn(x["storage_af"], "acre-feet", u, f"CDEC Daily Reservoir Storage Summary, {s}", fetched, True, note=f"report 'Ending at midnight {asof}'"),
                 "capacity_af": sn(x["capacity_af"], "acre-feet", u, f"CDEC reservoir capacity, {s}", fetched, True),
@@ -101,7 +108,7 @@ def main():
     cd = cdec(fetched)
     for pid in PRESETS:
         out["presets"][pid] = {"drought_monitor": usdm(pid, fetched), "reservoirs": cd[pid]}
-    write_json(OUT / "water_now.json", out)
+    write_presets(OUT / "water_now.json", out)
     for pid, p in out["presets"].items():
         u = p["drought_monitor"]; print(pid, u["map_date"], u["worst_category"], {k: v["value"] for k, v in u["area_in_category_percent"].items()})
         for s, r in p["reservoirs"].items():

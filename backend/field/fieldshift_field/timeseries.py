@@ -65,9 +65,17 @@ SOURCES = {
 
 
 def search(source: str, geom4326, start: str, end: str):
-    cat = pystac_client.Client.open(MPC)
-    items = list(cat.search(collections=[SOURCES[source]["collection"]], intersects=mapping(geom4326),
-                            datetime=f"{start}/{end}").items())
+    for attempt in range(5):   # the STAC search occasionally drops mid-response; retry
+        try:
+            cat = pystac_client.Client.open(MPC)
+            items = list(cat.search(collections=[SOURCES[source]["collection"]], intersects=mapping(geom4326),
+                                    datetime=f"{start}/{end}").items())
+            break
+        except Exception as e:  # noqa: BLE001
+            print(f"  STAC search retry {attempt + 1}: {str(e)[:120]}", flush=True)
+            time.sleep(15 * (attempt + 1))
+    else:
+        raise RuntimeError(f"STAC search failed for {source}")
     if source == "landsat":
         items = [i for i in items if i.properties.get("landsat:collection_category") == "T1"
                  and i.properties.get("platform") in ("landsat-7", "landsat-8", "landsat-9")]

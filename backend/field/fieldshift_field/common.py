@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import sys
 from pathlib import Path
 
 from pyproj import Transformer
@@ -16,17 +17,21 @@ CACHE_DIR = REPO / "data" / "cache"
 WORK_CRS = "EPSG:32610"  # contract: working CRS UTM 10N
 CDL_CRS = "EPSG:5070"  # CDL native CONUS Albers
 
+# Field list from the registry (backend/fields/registry.json); the original two keep their spec centres.
+sys.path.insert(0, str(REPO / "backend" / "fields"))
+import fieldreg  # noqa: E402
+
 PRESETS = {
-    "car_colusa_rice": {
-        "name": "Colusa County rice check (example)",
-        "centre": (-122.10, 39.15),
-        "target_ha": 60.0,
-    },
-    "caf_tulare_forage": {
-        "name": "Tulare/Kings forage field (example)",
-        "centre": (-119.60, 36.20),
-        "target_ha": 32.0,
-    },
+    f["id"]: {
+        "name": f["name"],
+        "centre": tuple(f["search_centre"] or (f["centroid"]["lon"], f["centroid"]["lat"])),
+        "target_ha": f["target_ha"] or f["area_ha"],
+        "half_box_m": f["cdl_half_box_m"],
+        "family": f["family"],
+        "dwr_unique_id": f["dwr_unique_id"],
+        "original": f["original"],
+    }
+    for f in fieldreg.fields() if f["id"] in fieldreg.selected()
 }
 
 

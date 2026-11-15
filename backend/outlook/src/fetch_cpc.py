@@ -70,7 +70,7 @@ def main():
             if rec is None: dr[kind] = {"category": "No drought depicted at this point (outside drought-outlook polygons or no drought)", "note": "point not inside any polygon", "url": u, "fetched_at": fetched, "verified": True, "label": LABEL}
         res["drought_outlook"] = dr
         out["presets"][pid] = res
-    write_json(OUT / "cpc.json", out)
+    write_presets(OUT / "cpc.json", out)
     for pid, r in out["presets"].items():
         print(pid)
         for s in r["seasons"]:
