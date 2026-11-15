@@ -18,3 +18,7 @@ __pycache__/
 
 # personal Claude Code settings
 .claude/settings.local.json
+
+# per-field raw rasters (CDL box, S2 NDVI stack) and AppEEARS bundles are rebuilt by the chunk scripts
+data/cache/*/rasters/
+data/cache/_appeears/
