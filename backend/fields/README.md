@@ -32,7 +32,7 @@ Ids keep the original prefixes: `car_*` fields are rice and reuse the CAR0-CAR3 
 | `caf_elnido_forage` | Alfalfa field 2 miles northeast of El Nido | Merced | 67.3 | Alfalfa, wheat 2017, cotton 2018 | Highest purity of the Merced candidates |
 | `caf_newman_forage` | Alfalfa field 3 miles north of Newman | Stanislaus | 100.2 | Alfalfa with corn and oats breaks | West-side Stanislaus |
 
-How the twelve were picked (`pick_fields.py`, same method as `backend/field/select_fields.py`): DWR / Land IQ Statewide Crop Mapping 2023 field outlines within about 3.5 km of 23 seed points, 15-120 ha, single part; CDL 2008-2025 majority class and purity inside each outline. Rice rule: CDL Rice in at least 6 of 2016-2025, every other year fallow except at most one, Rice in 2025. Forage rule: Alfalfa in at least 3 and forage (alfalfa, corn, winter-grain/corn double crop, hay, small-grain forage) in at least 7 of 2016-2025, forage in 2024 or 2025. Ranked by mean purity; then one per seed was chosen by hand for variety (fallow patterns, soils, districts). The Tulare Lake bed had no field that passes the forage rule in 2023 (the flooded fields were idle), so `caf_corcoran_forage` was chosen from a relaxed list: forage before and after, CDL idle in 2023-2024, DWR left it unclassified in 2023.
+How the twelve were picked (`pick_fields.py`, same method as `backend/field/select_fields.py`): DWR / Land IQ Statewide Crop Mapping 2023 field outlines within about 3.5 km of 23 seed points, 15-120 ha, single part; CDL 2008-2025 majority class and purity inside each outline. Rice rule: CDL Rice in at least 6 of 2016-2025, every other year fallow except at most one, Rice in 2025. Forage rule: Alfalfa in at least 3 and forage (alfalfa, corn, winter-grain/corn double crop, hay, small-grain forage) in at least 7 of 2016-2025, forage in 2024 or 2025. Ranked by mean purity; then one per seed was chosen by hand for variety (fallow patterns, soils, districts). The Tulare Lake bed had no field that passes the forage rule in 2023 (the flooded fields were idle), so `caf_corcoran_forage` was chosen from a relaxed list: forage before and after, CDL idle in 2023-2024, DWR left it unclassified in 2023. OPERA DSWx confirms the flood: water on more than half the field in 31 of 32 clear scenes from 13 Mar to 30 Jun 2023.
 
 Soils differ (SSURGO dominant map unit): Willows clay (Glenn), Esquon-Neerdobe clay (Richvale, Biggs), Clear Lake clay (Robbins), Sacramento clay (Zamora), Willows silty clay (Grimes), Gepford clay, lake-bed (Corcoran), Tagus loam (Goshen), Akers saline-sodic sandy loam (Tipton), Chino loam (Riverdale), Fresno saline-sodic loam (El Nido), Vernalis clay loam (Newman).
 
@@ -52,6 +52,16 @@ POWER (0.5 x 0.625 deg): `fetch_power.py` copies the series to fields in the sam
 3. `python3 backend/fields/run_all.py --fields <id>` (needs the repo-root `.env` for the NASA and OpenET steps). It checks the OpenET quota first (one query per field). The NOAA stations it picks are written back into the registry.
 4. `python3 backend/fields/checks/run_checks.py` and `cd backend/api && uv run python checks/check_api.py`.
 5. Commit the registry, `backend/field/polygons/<id>*`, the chunk `out/<id>/` folders and `data/cache/<id>/` (not `data/cache/<id>/rasters/`, which is git-ignored).
+
+## Status (15 Nov 2026, paused)
+
+Done for all 12 new fields: registry entry, DWR polygon, CDL crop history, POWER, NOAA stations, SSURGO, USDM, CDEC, water source, OpenET (12 queries, 17 of 100 used this month), RMA, IMERG, GRACE, DSWx, outlook CPC and water-now.
+Done for 8 (`car_glenn_rice`, `car_biggs_rice`, `car_robbins_rice`, `car_zamora_rice`, `car_grimes_rice`, `caf_goshen_forage`, `caf_tipton_forage`, `caf_elnido_forage`): S2/Landsat series, calendar, grid, NASADEM terrain, strategies, API payloads (served by `/api/locations`).
+Remaining: S2/Landsat series for `caf_corcoran_forage` (none), `caf_newman_forage` (none), `caf_riverdale_forage` (Landsat), then calendar/grid/terrain/strategies/API for those three and `car_richvale_rice`; SMAP L4 (OPeNDAP + HTTPS streaming of ~1,200 recent granules) for all 12; `ai.*` with complete series; `outlook.history/irrigation/build`. SMAP L3, MODIS and ECOSTRESS: AppEEARS tasks (submitted 14 Nov) were still pending after 8 hours, as were the originals' tasks; rerunning the fetchers resumes the same tasks.
+
+Resume: `python3 backend/fields/run_all.py` (skips what is done), then `python3 backend/fields/checks/run_checks.py` and `cd backend/api && uv run python checks/check_api.py`.
+
+Data findings: one or two scenes per field give NDVI p10/p90 outside [-1, 1] at Glenn, Richvale, Robbins and El Nido (and one El Nido Landsat median of 1.81), so the backend/field check "NDVI in [-1,1]" fails there; these scenes were not filtered and should be dropped (reflectance artefacts) before the calendars are trusted for those dates.
 
 ## Limits
 
