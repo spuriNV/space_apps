@@ -135,7 +135,7 @@ function html(o) {
     case 'endmark': return '<div class="endmark">CropLytics</div>';
     case 'endline': return '<div class="endline"><div class="a">Your field. Your call.</div><div class="b">Plan next season’s rotation with NASA Earth data.</div></div>';
     case 'endsmall': return `<div class="endsmall"><div class="cov">${N_CA} real California fields and one in British Columbia. Next: co-design with First Nations farmers.</div>
-      <div class="meta">NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data<br>croplytics-app.onrender.com</div>
+      <div class="meta">NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data<br>croplytics.xyz</div>
       <div class="disc">Voice-over is synthetic (text-to-speech). Farmer footage: Mixkit stock. App: real screen recordings.</div></div>`;
     default: return `<div class="box ${o.kind}${o.left ? ' left' : ''}${o.hi ? ' hi' : ''}">${o.eyebrow ? `<span class="eyebrow">${o.eyebrow}</span>` : ''}${o.text}</div>`;
   }

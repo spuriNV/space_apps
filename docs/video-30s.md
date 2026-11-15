@@ -1,6 +1,6 @@
 # CropLytics: 30-second commercial
 
-A 30-second, 16:9 (1920×1080, 24 fps) commercial for CropLytics, our NASA Space Apps 2026 entry (challenge: **Field Shift: Adapting Farms with NASA Data**). Live app: <https://croplytics-app.onrender.com>.
+A 30-second, 16:9 (1920×1080, 24 fps) commercial for CropLytics, our NASA Space Apps 2026 entry (challenge: **Field Shift: Adapting Farms with NASA Data**). Live app: <https://croplytics.xyz>.
 
 Written 15 Nov 2026. It replaces the slide-based plan in `docs/pitch.md` §3 when there is time to shoot it; if not, that plan is the fallback. Every claim comes from `docs/pitch.md` and respects its "Words to avoid" list and `docs/critical-review.md` §5.
 
@@ -99,7 +99,7 @@ Paper background `#f7f6f0`, a 6 px spot-green band (`#2f5d34`) across the bottom
 
 - **CropLytics** wordmark: Zilla Slab 600, 140 px, spot green, centred, slightly above middle. Same as the app's top-left wordmark; no icon tile, no gradient.
 - The line, under it: **Plan next season's rotation with NASA Earth data.** Libre Franklin 400, 40 px, ink `#191c16`.
-- Bottom, small: **NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data**, then **Team &lt;team name&gt; · croplytics-app.onrender.com**, Libre Franklin 400, 26 px, muted `#5a5e54`. (The submission guide's suggested video opens with your name and team; this spot puts the team on the end card instead.)
+- Bottom, small: **NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data**, then **Team &lt;team name&gt; · croplytics.xyz**, Libre Franklin 400, 26 px, muted `#5a5e54`. (The submission guide's suggested video opens with your name and team; this spot puts the team on the end card instead.)
 - Bottom right, 20 px muted: **Farmer scenes, voice and music are AI-generated.** This is the disclosure the rules ask for, in addition to the per-shot watermark.
 - Animation: wordmark fades up 12 px over 0.5 s, the line follows 0.3 s later, small text last. Hold still for the final 2 s.
 - **No NASA "meatball" insignia or worm logo.** Text only (see section 8).

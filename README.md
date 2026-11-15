@@ -16,7 +16,9 @@ It ends with a one-page brief for the adviser.
 
 ## Live site
 
-**https://croplytics-app.onrender.com**: the full app and API, redeployed automatically on every push to `main` (Render, free plan; the first visit after it has been idle takes a moment to wake up).
+**https://croplytics.xyz**: the full app and API, self-hosted and redeployed automatically within about 2 minutes of every push to `main`.
+
+Backup: **https://croplytics-app.onrender.com** (Render, free plan; the first visit after it has been idle takes a moment to wake up).
 
 **Reach:** California planted about 524,000 acres of rice in 2025; CropLytics covers every one of those fields with the same NASA data (USDA NASS, served at `/api/reach`).
 
