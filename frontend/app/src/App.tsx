@@ -120,8 +120,8 @@ export default function App() {
     setTimedOut(null);
     const to = setTimeout(() => ok && setTimedOut(selected.id), 15000);
     const caPresets = locations.filter((l) => !api.isLite(l.id) && l.region !== 'bc');
-    // 3D stack paints at once from the nearest preset; APIs upgrade in the background (incl. while spot analysis runs)
-    if (spot) setData(api.fieldStackSeed(selected, live, caPresets));
+    // 3D stack paints at once (shifted nearest grid for pt_/my_, bundled squares for prepared fields). APIs upgrade it.
+    setData(api.fieldStackSeed(selected, live, caPresets));
     api.prefetchFieldStack(selected, caPresets);
     api.getField(selected, live, (b) => ok && setData(b), caPresets).then((b) => ok && setData(b));
     api.getDaily(selected.id).then((r) => ok && setDaily({ id: selected.id, ...r }));
@@ -283,9 +283,8 @@ export default function App() {
   const leftInset = phone ? 0 : leftPanel || stepPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
   const rightInset = layersOpen ? 396 : 0;
   const bottomInset = phone ? 64 + (leftPanel === 'card' || stepPanel ? sheetPx : leftPanel ? 160 : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
-  const stackReady = !!d?.cells && !!d.cal && !!regional && d.cal.location_id === selected!.id;
-  const stackField = !!selected && (stackReady || (!api.isLite(selected.id) && (!selected.spot || selected.spot.state === 'ready')));
-  const drilled = stackField && view.zoom > 13.4;
+  const stackField = !!selected && !!d?.cells && !!d.cal;
+  const drilled = stackField && view.zoom > 13.05;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;
 

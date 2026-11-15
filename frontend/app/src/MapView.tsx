@@ -138,18 +138,37 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       setReady(true);
     });
 
-    // Scroll-driven drill-down: wheel/pinch near the selected field tilts as the stack explodes.
-    // Use setPitch/setBearing (MapLibre 4 ignores writing transform.pitch directly, so zoom stayed flat).
-    map.on('zoom', () => {
+    // Scroll-driven drill-down. setPitch/setBearing call jumpTo → map.stop(), which resets
+    // ScrollZoomHandler / touch zoom mid-gesture, so the wheel or pinch died before the stack opened.
+    // Write the live transform instead (MapLibre 4.7 pitch setter updates matrices; it does not stop gestures).
+    const tiltForZoom = (z: number) => {
+      const f = clamp((z - (EXPLODE_Z0 - 0.3)) / (EXPLODE_Z1 - EXPLODE_Z0), 0, 1);
+      return { pitch: f * 58, bearing: -22 * f };
+    };
+    const fieldInView = (sel: Location) => {
+      const pt = map.project([sel.centroid.lon, sel.centroid.lat]);
+      const w = map.getContainer().clientWidth, h = map.getContainer().clientHeight, m = 64;
+      return pt.x >= -m && pt.y >= -m && pt.x <= w + m && pt.y <= h + m;
+    };
+    const applyExplodeTilt = () => {
       const sel = live.current.selected;
-      if (!sel || programmatic.current) return;
-      const c = map.getCenter();
-      if (Math.abs(c.lat - sel.centroid.lat) > 0.06 || Math.abs(c.lng - sel.centroid.lon) > 0.08) return;
-      const f = clamp((map.getZoom() - (EXPLODE_Z0 - 0.3)) / (EXPLODE_Z1 - EXPLODE_Z0), 0, 1);
-      const target = f * 58, bearing = -22 * f;
-      if (Math.abs(map.getPitch() - target) > 0.4) map.setPitch(target);
-      if (Math.abs(map.getBearing() - bearing) > 0.4) map.setBearing(bearing);
+      if (!sel || !fieldInView(sel)) return;
+      const target = tiltForZoom(map.getZoom());
+      const tr = map.transform;
+      if (Math.abs(tr.pitch - target.pitch) < 0.4 && Math.abs(tr.bearing - target.bearing) < 0.4) return;
+      tr.pitch = target.pitch;
+      tr.bearing = target.bearing;
+      map.triggerRepaint();
+      updateLabels();
+    };
+    map.on('zoom', () => {
+      const gesturing = map.scrollZoom.isZooming() || map.touchZoomRotate.isActive();
+      // A user pinch/wheel cancels an in-flight flyTo; don't let that flag keep the camera flat.
+      if (gesturing) programmatic.current = false;
+      if (!gesturing && (programmatic.current || map.isEasing())) return;
+      applyExplodeTilt();
     });
+    map.on('zoomend', () => { if (!map.isEasing()) applyExplodeTilt(); });
     const report = () => {
       const c = map.getCenter(), z = map.getZoom();
       live.current.onView({ zoom: z, pitch: map.getPitch(), bearing: map.getBearing(), lat: c.lat, lon: c.lng });
@@ -280,7 +299,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     if (!map || !ready) return;
     const set = (id: string, feats: unknown[]) => (map.getSource(id) as GeoJSONSource).setData(fc(feats));
     const { selected: loc, cells, cal, regional } = p;
-    if (!loc || !cells || !cal || !regional || cal.location_id !== loc.id) {
+    if (!loc || !cells || !cal) {
       for (const id of ['cells', 'slab-smap', 'slab-grace', 'posts', 'shadow']) set(id, []);
       stackInfo.current = [];
       updateLabels();
@@ -289,7 +308,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const S = (cells.cols * cells.cell_m) / 990; // keep proportions across field sizes
     const tt = dataT(cal, p.t); // past the last processed image, show the latest clear view
     const fs = fieldState(cal, tt, p.detector);
-    const smap = latestAt(regional.smap_rootzone_pct.values, p.t)?.v ?? null, grace = latestAt(regional.grace_gw_pct.values, p.t)?.v ?? null;
+    const smap = regional ? latestAt(regional.smap_rootzone_pct.values, p.t)?.v ?? null : null;
+    const grace = regional ? latestAt(regional.grace_gw_pct.values, p.t)?.v ?? null : null;
     const info: typeof stackInfo.current = [];
     const cellBase = 430 * S;
     if (p.layersOn.hls) {
@@ -368,11 +388,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     zoomBy(d) {
       const m = mapRef.current!, sel = live.current.selected;
       const z = Math.min(18, Math.max(3, m.getZoom() + d));
-      // zoom controls also drive the explode pitch when centred on the picked field
+      // zoom controls also drive the explode pitch when the picked field is on screen
       if (sel) {
-        const c = m.getCenter();
-        if (Math.abs(c.lat - sel.centroid.lat) <= 0.06 && Math.abs(c.lng - sel.centroid.lon) <= 0.08) {
+        const pt = m.project([sel.centroid.lon, sel.centroid.lat]);
+        const w = m.getContainer().clientWidth, h = m.getContainer().clientHeight;
+        if (pt.x >= -64 && pt.y >= -64 && pt.x <= w + 64 && pt.y <= h + 64) {
           const f = clamp((z - (EXPLODE_Z0 - 0.3)) / (EXPLODE_Z1 - EXPLODE_Z0), 0, 1);
+          programmatic.current = true;
           m.easeTo({ zoom: z, pitch: f * 58, bearing: -22 * f, duration: 280 });
           return;
         }

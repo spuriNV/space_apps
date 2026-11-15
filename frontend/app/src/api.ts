@@ -249,7 +249,8 @@ export function fieldStackSeed(loc: Location, live: boolean, caPresets?: Locatio
     regional: P('regional', 'Soil moisture (SMAP) and groundwater (GRACE-FO)', 'mock', lite ? `example numbers · nearest prepared field (${borrow})` : 'no real series served yet'),
     ml: P('ml', 'Machine-learning calendar', 'mock', 'not served'),
   };
-  const cells = lite ? (gridAt(loc, borrow) ?? gridAt(loc, 'car_colusa_rice')) : live ? null : (mockCells as unknown as ById<CellGrid>)[mid];
+  // Squares sit on this outline immediately (template grid shifted onto the field). /grid replaces them.
+  const cells = gridAt(loc, lite ? borrow : mid) ?? gridAt(loc, 'car_colusa_rice');
   const used: Partial<Record<string, NasaStatus>> = loc.nasadem ? { nasadem: 'live' } : {};
   const nasa = () => nasaList(loc.nasa_datasets, loc.datasets, used).list;
   return {
@@ -561,7 +562,7 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   const soilExample = () => soilShown == null; // the soil answer shows SMAP example numbers when no real soil series came back
   const borrowNote = lite ? `nearest prepared field (${borrow})` : '';
   if (!live) {
-    const cells = lite ? (gridAt(loc, borrow) ?? gridAt(loc, 'car_colusa_rice')) : (mockCells as unknown as ById<CellGrid>)[mid];
+    const cells = gridAt(loc, lite ? borrow : mid) ?? gridAt(loc, 'car_colusa_rice');
     return {
       id, regional: reg0, cells, cal: calFor(mCal, id), strategies: lite ? [] : mockStrats(mid), news: lite ? [] : (mockNews as unknown as ById<NewsItem[]>)[mid],
       ml: null, nasa: nasa().map((d) => (d.status === 'live' && d.id !== 'iss' ? { ...d, status: 'example' as const } : d)),
@@ -599,8 +600,8 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   ]) : stratP);
   let now: Awaited<ReturnType<typeof apiReal>> = null, oet = null, stressB = null, insB = null, waterB = null;
   if (presetP) [now, oet, stressB, insB, waterB] = await presetP;
-  // presets: no stand-in squares while the real grid loads; freeform shows a shifted nearest grid until the API answers
-  let c = calFor(mCal, id), cells: CellGrid | null = lite ? (gridAt(loc, borrow) ?? gridAt(loc, 'car_colusa_rice')) : null, strategies = mockStrats(mid), nws = id === mid ? (mockNews as unknown as ById<NewsItem[]>)[mid] : [];
+  // Stand-in squares on this outline until /grid returns (unshifted template grids drew the stack on the wrong field).
+  let c = calFor(mCal, id), cells: CellGrid | null = gridAt(loc, lite ? borrow : mid) ?? gridAt(loc, 'car_colusa_rice'), strategies = mockStrats(mid), nws = id === mid ? (mockNews as unknown as ById<NewsItem[]>)[mid] : [];
   // NASA first: the HLS calendar wins when the API serves it (it says so in its sources)
   const isHls = !!hls?.years && /hls/i.test(JSON.stringify(hls.source ?? hls.sources ?? hls.calendar_source ?? hls.method ?? ''));
   const calSrc = isHls ? hls : cal;
