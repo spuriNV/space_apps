@@ -14,6 +14,22 @@ function voiceFor(lang: string): SpeechSynthesisVoice | undefined {
 /** Plain text for speech: no markup characters, arrows or double spaces. */
 export const speakable = (t: string) => t.replace(/[*_`#→·]/g, ' ').replace(/\s+/g, ' ').trim();
 
+/** True when this browser can speak. */
+export const canSpeak = () => !!TTS && typeof SpeechSynthesisUtterance !== 'undefined';
+/** Speak a text now (voice commands, Describe my field), stopping any other reading first. Returns false when speech is unavailable. */
+export function speakText(text: string, onEnd?: () => void): boolean {
+  if (!TTS || !canSpeak() || !speakable(text)) return false;
+  stopCurrent?.(); TTS.cancel();
+  const lang = navigator.language || 'en-US';
+  const u = new SpeechSynthesisUtterance(speakable(text));
+  u.lang = lang; u.rate = 0.95;
+  const v = voiceFor(lang); if (v) u.voice = v;
+  u.onend = u.onerror = () => onEnd?.();
+  TTS.speak(u);
+  return true;
+}
+export const stopSpeaking = () => { stopCurrent?.(); TTS?.cancel(); };
+
 export function ReadAloud({ text, label = 'Read aloud' }: { text: string; label?: string }) {
   const [on, setOn] = useState(false);
   const me = useRef<() => void>(() => {});

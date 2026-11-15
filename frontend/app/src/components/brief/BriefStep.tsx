@@ -5,10 +5,13 @@ import { isRainFed, mmToAfac, RAIN_FED } from '../../lib';
 import Icon from '../Icons';
 import { acres, fieldName } from '../ui/shared';
 import { Answer, KeyFacts, StepShell } from '../ui/StepShell';
+import { setPref, usePrefs } from '../a11y/prefs';
+import { ax } from '../a11y/ax';
 
 export default function BriefStep(p: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; exampleLimit: boolean; onPreview: () => void; onBack: () => void; onClose: () => void; onSheet?: (px: number) => void }) {
   const base = p.strategies.find((x) => x.is_baseline) ?? p.strategies[0];
   const s = p.strategies.find((x) => x.id === p.pick) ?? p.strategies.find((x) => !x.is_baseline) ?? base;
+  const prefs = usePrefs();
   if (!s) return null;
   const need = (x: RotationStrategy) => (isRainFed(x) ? RAIN_FED : `about ${mmToAfac(x.water.irrigation_need_mm.value).toFixed(1)} acre-ft per acre`);
   return (
@@ -17,6 +20,8 @@ export default function BriefStep(p: { loc: Location; strategies: RotationStrate
       title="Take a one-page summary to your adviser"
       answer={<Answer tone="good" headline="Your page is ready to print." sub={s.is_baseline ? 'It covers what you grow today.' : `It compares ${s.short_name.toLowerCase()} with what you grow today.`} />}
       next={{ label: 'Print or save as PDF', sub: 'One page, Letter size', icon: 'print', onClick: () => window.print(), testid: 'print' }}>
+      <label className="mi-switch lp-toggle simple-keep"><input type="checkbox" checked={prefs.largePrint} onChange={(e) => setPref('largePrint', e.target.checked)} data-testid="large-print" /><span className="mi-track" aria-hidden="true" />
+        <span><b>{ax('largePrint')}</b><small>{ax('largePrintHint')}</small></span></label>
       <div className="opt-list" role="radiogroup" aria-label="Option on the page">
         {[...p.strategies].sort((a, b) => Number(b.is_baseline) - Number(a.is_baseline)).map((x) => (
           <button key={x.id} role="radio" aria-checked={x.id === s.id} className={`opt-row ${x.id === s.id ? 'on' : ''}`} onClick={() => p.setPick(x.id)} data-testid={`brief-pick-${x.id}`}>

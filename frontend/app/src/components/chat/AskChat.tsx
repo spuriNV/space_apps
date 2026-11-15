@@ -7,6 +7,7 @@ import { API_BASE, askChat, chatStatus, type ChatTurn } from '../../api';
 import { Speaker } from './speech';
 import Icon from '../Icons';
 import { announce, onOtherOpen } from '../../overlays';
+import { matchCommand } from '../a11y/ax';
 
 interface Props { fieldId: string | null; fieldName: string | null; screen: string; date: string; waterLimit?: number | null }
 
@@ -74,6 +75,9 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
   const send = async (text: string, byVoice = false) => {
     const question = text.trim().slice(0, 300);
     if (!question || busy) return;
+    // a command ("open compare", "next step", "read this week", "go to my field", "describe my field"), in English or Spanish: do it, don't ask the chat API
+    const cmd = matchCommand(question);
+    if (cmd) { setQ(''); close(); window.dispatchEvent(new CustomEvent('croplytics:cmd', { detail: cmd })); return; }
     setQ(''); setErr(null); setBusy(true);
     setLive('Thinking.');
     stopSpeech();

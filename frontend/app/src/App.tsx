@@ -30,6 +30,9 @@ import { MenuItems } from './components/a11y/MenuItems';
 import { AccessibilityPage } from './components/a11y/AccessibilityPage';
 import { MapList, type ReserveRow } from './components/a11y/MapList';
 import { usePrefs } from './components/a11y/prefs';
+import { ShortcutsDialog } from './components/a11y/ShortcutsDialog';
+import { useShortcuts } from './components/a11y/keys';
+import { ax, say, setLiveRegion, type Command } from './components/a11y/ax';
 import AskChat from './components/chat/AskChat';
 import Tour, { tourDismissed, TOUR_STOPS } from './components/ui/Tour';
 
@@ -62,6 +65,8 @@ export default function App() {
   useEffect(() => onOtherOpen('layers', () => setLayersOpen(false)), []);
   const [listOpen, setListOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [keysOpen, setKeysOpen] = useState(false);
+  const lite = usePrefs().liteNow; // Lite mode: no 3D, replay or rain, no grid download
   useEffect(() => { const f = () => setAboutOpen(true); window.addEventListener('croplytics:about', f); return () => window.removeEventListener('croplytics:about', f); }, []);
   const draw = useRef<DrawHostHandle>(null);
   const [locProv, setLocProv] = useState<Record<string, api.ProvMap>>({});
@@ -408,7 +413,7 @@ export default function App() {
   }), [reservesFc]);
   // "Pause all motion": stop the replay and any playing timeline
   const pausedMotion = usePrefs().pause;
-  useEffect(() => { if (pausedMotion) { map.current?.cancelReplay(); setPlaying(false); } }, [pausedMotion]);
+  useEffect(() => { if (pausedMotion || lite) { map.current?.cancelReplay(); setPlaying(false); } }, [pausedMotion, lite]);
 
   const yearExpanded = yearOpen && !!selected && panel !== 'compare' && panel !== 'season';
   // left column: a tool panel, else the field panel, else (nothing picked yet) the "Pick your field" list
@@ -421,14 +426,14 @@ export default function App() {
   const rightInset = layersOpen ? 396 : 0;
   const bottomInset = phone ? 64 + (leftPanel || stepPanel ? sheetPx : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
   // "Ten years from orbit": needs the real quarterly grid (preset fields); the button is hidden elsewhere
-  const canReplay = !!selected && !!d?.cells?.layers && d.cells.layers.filter((l) => l.kind === 'quarter_median').length >= 8 && layersOn.hls;
+  const canReplay = !lite && !!selected && !!d?.cells?.layers && d.cells.layers.filter((l) => l.kind === 'quarter_median').length >= 8 && layersOn.hls;
   const startReplay = () => {
     if (!selected) return;
     if (replaying) { map.current?.cancelReplay(); return; }
     setPlaying(false); setYearOpen(true);
     map.current?.replay(selected);
   };
-  const stackField = !!selected && !!d?.cells && !!d.cal;
+  const stackField = !lite && !!selected && !!d?.cells && !!d.cal;
   const drilled = stackField && view.zoom > 13.05;
   useEffect(() => { if (selected && view.zoom > 13.2) map.current?.flyToField(selected, yearExpanded ? 'year' : 'drill'); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [yearExpanded, showEarlier]);
   const nearBC = view.lat > 46.2 && view.zoom > 4.5;
@@ -461,14 +466,46 @@ export default function App() {
     setPanel(id);
   };
 
+  // ---------- keyboard shortcuts and voice commands (the same actions) ----------
+  const needField = () => say(ax('cmdNeedField'));
+  const dialogOpen = () => !!document.querySelector('.dlg-back');
+  const goNumber = (n: number) => { const f = FLOW[n - 1]; if (!f) return; if (f.id !== 'pick' && !selected) { needField(); return; } goStep(f.id); };
+  const readAnswer = () => { const b = document.querySelector<HTMLButtonElement>('.step-answer [data-testid="read-aloud"]') ?? document.querySelector<HTMLButtonElement>('[data-testid="read-aloud"]'); b?.click(); };
+  useShortcuts({
+    step: (n) => { if (!dialogOpen()) goNumber(n); },
+    search: () => { if (dialogOpen()) return; setSwitchOpen(true); setTimeout(() => searchRef.current?.focus(), 0); },
+    list: () => { if (!dialogOpen()) { announce('draw'); setListOpen(true); } },
+    read: () => { if (!dialogOpen()) readAnswer(); },
+    help: () => setKeysOpen((v) => !v),
+  });
+  const run = (c: Command) => {
+    const idx = FLOW.findIndex((f) => f.id === step);
+    if (c === 'next') { const nx = FLOW[idx + 1]; if (!nx) { say(ax('cmdLast')); return; } if (!selected) { needField(); return; } goStep(nx.id); say(ax('cmdDone', { what: ax('cmdNext') })); return; }
+    if (!selected) { needField(); return; }
+    if (c === 'compare') { goStep('compare'); say(ax('cmdDone', { what: ax('cmdCompare') })); }
+    else if (c === 'myfield') { goStep('now'); map.current?.flyToField(selected, 'card'); say(ax('cmdDone', { what: ax('cmdField') })); }
+    else if (c === 'readweek') { goStep('now'); setTimeout(() => window.dispatchEvent(new CustomEvent('croplytics:read-week')), 450); say(ax('cmdDone', { what: ax('cmdWeek') })); }
+    else if (c === 'describe') { goStep('now'); setTimeout(() => window.dispatchEvent(new CustomEvent('croplytics:describe')), 450); say(ax('cmdDone', { what: ax('cmdDescribe') })); }
+  };
+  const runRef = useRef(run); runRef.current = run;
+  useEffect(() => {
+    const cmd = (e: Event) => runRef.current((e as CustomEvent<Command>).detail);
+    const msg = (e: Event) => say(String((e as CustomEvent<string>).detail));
+    window.addEventListener('croplytics:cmd', cmd); window.addEventListener('croplytics:say', msg);
+    return () => { window.removeEventListener('croplytics:cmd', cmd); window.removeEventListener('croplytics:say', msg); };
+  }, []);
+  useEffect(() => { if (selectedId && live === false && api.hasSavedField(selectedId)) say(ax('offline')); }, [selectedId, live]);
+
   return (
     <DetailCtx.Provider value={{ on: detail, set: setDetail }}>
     <div className={`app ${detail ? 'detail-on' : 'detail-off'} ${wxOn ? 'wx-open' : ''}`}>
       <a className="skip-link" href="#field-panel" onClick={(e) => { e.preventDefault(); const el = document.getElementById('field-panel'); if (el) { el.focus(); el.scrollIntoView({ block: 'nearest' }); } else document.getElementById('main')?.focus(); }}>Skip to field panel</a>
+      <div className="sr-only-live" ref={setLiveRegion} aria-atomic="true" data-testid="ax-live" />
+      {lite && <p className="lite-badge" data-testid="lite-badge">{ax('liteBadge')}</p>}
       <div className="sr-only" role="status" aria-live="polite" data-testid="live">{selected ? (d ? `${fieldName(selected)} is ready.` : `Loading ${fieldName(selected)}.`) : ''}</div>
       <main id="main" tabIndex={-1} aria-label="Map" className="map-main">
-      <MapView ref={map} lands={lands} landsOn={!!layersOn.lands} activeLandId={land ? landId : null} onLandClick={drawing ? undefined : openLand} onToggleLands={() => setLayersOn((l) => ({ ...l, lands: !l.lands }))} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} reservesChip={reservesAvail} reservesOn={!!layersOn.reserves} onToggleReserves={() => setLayersOn((l) => ({ ...l, reserves: !l.reserves }))} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
-        t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={{ ...layersOn, rain: wxOn && wxLayer === 'past' }} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
+      <MapView ref={map} lands={lands} landsOn={!!layersOn.lands} activeLandId={land ? landId : null} onLandClick={drawing ? undefined : openLand} onToggleLands={() => setLayersOn((l) => ({ ...l, lands: !l.lands }))} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} reservesChip={reservesAvail} reservesOn={!!layersOn.reserves} onToggleReserves={() => setLayersOn((l) => ({ ...l, reserves: !l.reserves }))} datasets={datasets} selected={selected} cells={lite ? null : d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
+        t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={{ ...layersOn, rain: !lite && wxOn && wxLayer === 'past' }} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
         onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onReplayT={setT} onReplayRunning={setReplaying} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} rain={rainNow} drought={droughtNow} droughtRegion={wxOn && wxLayer === 'drought' ? dRegion : null} />
       </main>
 
@@ -534,7 +571,7 @@ export default function App() {
             )}
           </div>
           <button className={`tb-layers ${layersOpen ? 'on' : ''}`} onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} data-testid="layers-btn" aria-expanded={layersOpen}><Icon name="layers" size={16} />Map layers</button>
-          {menuOpen && <MenuItems onList={() => { announce('draw'); setListOpen(true); }} onAbout={() => setAboutOpen(true)} onDone={() => setMenuOpen(false)} />}
+          {menuOpen && <MenuItems onShortcuts={() => setKeysOpen(true)} onList={() => { announce('draw'); setListOpen(true); }} onAbout={() => setAboutOpen(true)} onDone={() => setMenuOpen(false)} />}
         </div>
       </header>
       {tour != null && selected?.id === EX_ID && <Tour idx={tour} go={tourGo} canReplay={canReplay} onReplay={startReplay} onClose={() => setTour(null)} />}
@@ -564,6 +601,7 @@ export default function App() {
       {listOpen && <MapList locations={locations} catalog={catalog?.items ?? []} reserves={reserveRows} onClose={() => setListOpen(false)}
         onField={(id) => { setListOpen(false); select(id); }} onFarm={(it) => { setListOpen(false); pickCatalog(it); }}
         onReserve={(r) => { setListOpen(false); map.current?.flyTo(r.lat, r.lon, 11); }} onFind={(lat, lon) => { setListOpen(false); tapSpot(lat, lon); }} />}
+      {keysOpen && <ShortcutsDialog onClose={() => setKeysOpen(false)} />}
       {aboutOpen && <AccessibilityPage onClose={() => setAboutOpen(false)} />}
       {layersOpen && <LayersDrawer landsCount={lands?.length ?? null} datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} reserves={!!selected && api.isBC(selected)} onClose={() => setLayersOpen(false)} />}
 
