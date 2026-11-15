@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AboutField, StepLine, Workflow, CROP_COL, rotName, waterGap, EventLog, acres, coords, county, cropKey, fieldName, latestCrop, place, stateFieldNo, type Step } from './shared';
 import { t, locale } from '../../i18n';
 import { ThisWeek } from '../week/ThisWeek';
+import { DescribeField } from '../a11y/DescribeField';
 import { Answer, KeyFacts, LimitControl, StepShell, useSheet, type Tone } from './StepShell';
 import { useDetail } from './Detail';
 import { FirstNationsCard } from './FirstNations';
@@ -71,7 +72,7 @@ export function FieldPanel(p: FieldPanelProps) {
         {sp?.state === 'error' && !loc.mine && <div className="notice spot-notice" role="alert" data-testid="spot-error"><span>{sp.error}</span>{p.onSpotRetry && <button className="btn btn-outline btn-sm" onClick={p.onSpotRetry}>{t('ui.retry')}</button>}</div>}
         {sp?.state === 'ready' && sp.cropland === false && <div className="notice spot-notice" data-testid="spot-not-farm"><b>{t('ui.fp.nofarm')}</b> {t('ui.fp.nofarm_t', { map: loc.region === 'bc' ? t('ui.fp.map_bc') : t('ui.fp.map_ca') })}</div>}
       </>}
-      answer={<>{isToday ? <WaterAnswer strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} state={p.dataState} /> : <Answer headline={facts.stage ?? t('ui.loading')} sub={t('ui.fp.pickToday')} loading={!facts.stage && p.dataState === 'loading'} />}<NationChip loc={loc} openDetail={() => detail.set(true)} /></>}
+      answer={<>{isToday ? <WaterAnswer strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} state={p.dataState} /> : <Answer headline={facts.stage ?? t('ui.loading')} sub={t('ui.fp.pickToday')} loading={!facts.stage && p.dataState === 'loading'} />}<NationChip loc={loc} openDetail={() => detail.set(true)} />{!loading && <DescribeField loc={loc} />}</>}
       detailWhat={t('ui.fp.detailWhat')}
       detail={<>
         <h2 className="fp-h">{isToday ? t('ui.fp.numbers') : t('ui.fp.title_then', { when: whenT(p.t) })}</h2>

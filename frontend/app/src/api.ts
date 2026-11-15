@@ -3,7 +3,7 @@ import { withLang, lang, t, tx } from './i18n';
 // Everything real comes from the CropLytics API at VITE_API_BASE: http://localhost:8000/api in dev, same-origin /api in a
 // production build (the backend serves the built app and the API from one origin). Anything the API does not answer falls
 // back to the bundled examples in src/mock, and the UI says so in the source line.
-import type { LandDetail, LandFeature } from './components/lands/lands';
+import { fromOverview, type LandDetail, type LandFeature } from './components/lands/lands';
 import type { BCInfo, Calendar, CalendarYear, CellGrid, CoverClass, DataGap, Dataset, FirstNations, GridLayer, Location, NewsItem, Regional, RotationStrategy, SourcedNumber, Source, ScoreKey } from './types';
 import _mockLocations from './mock/locations.json';
 import mockCells from './mock/cells.json';
@@ -17,6 +17,7 @@ import fieldExtra from './mock/field_extra.json';
 import { YEARS, dateToT } from './lib';
 import type { Daily } from './season';
 import _outlookExample from './mock/outlook.example.json';
+import { liteOn } from './components/a11y/prefs';
 import { nasaList, type NasaDataset, type NasaStatus } from './nasa';
 
 // Bundled English data text -> Spanish (i18n/parts/data.tx.json); codes, ids and enum-like fields are left alone.
@@ -121,9 +122,14 @@ export async function getReserves(id: string): Promise<GeoJSON.FeatureCollection
   return b?.features ? (b as GeoJSON.FeatureCollection) : null;
 }
 
-/** GET /api/lands: every BC reserve and California tribal land (one file, cached by the browser for a day). */
+/** GET /api/lands/overview: every land in North America as a point with its name, Nation, kind, area and bounding box (no outlines; cached a day). */
 let landsP: Promise<LandFeature[] | null> | null = null;
-export const getLands = (): Promise<LandFeature[] | null> => (landsP ??= apiReal('/api/lands', undefined, 30000).then((b) => (b?.features ? (b.features as LandFeature[]) : null)).catch(() => null)).then((r) => { if (!r) landsP = null; return r; });
+export const getLands = (): Promise<LandFeature[] | null> => (landsP ??= apiReal('/api/lands/overview', undefined, 30000).then((b) => (b?.rows ? fromOverview(b) : null)).catch(() => null)).then((r) => { if (!r) landsP = null; return r; });
+/** GET /api/lands?bbox=: outlines of the lands in view (largest first). */
+export async function getLandsIn(bbox: [number, number, number, number], limit = 2500): Promise<LandFeature[] | null> {
+  const b = await apiReal(`/api/lands?bbox=${bbox.map((x) => x.toFixed(3)).join(',')}&limit=${limit}`, undefined, 30000);
+  return b?.features ? (b.features as LandFeature[]) : null;
+}
 /** GET /api/lands/{id}: one land with its centroid, nearby fields and Nation-tool links. */
 export async function getLand(id: string): Promise<LandDetail | null> {
   const b = await apiReal(`/api/lands/${encodeURIComponent(id)}`);
@@ -252,14 +258,15 @@ function gridAt(loc: Location, presetId: string): CellGrid | null {
 }
 const calFor = (cal: Calendar, id: string) => ({ ...cal, location_id: id });
 const gridCache = new Map<string, ReturnType<typeof apiReal>>();
-const gridFetch = (id: string) => {
+const gridFetch = (id: string): ReturnType<typeof apiReal> => {
+  if (liteOn()) return Promise.resolve(null); // Lite mode: no 100 ft squares, no 3D, no big grid download
   let p = gridCache.get(id);
   if (!p) { p = apiReal(`/api/locations/${id}/grid`, undefined, 30000); gridCache.set(id, p); }
   return p;
 };
 /** Warm API caches for 3D stack (nearest preset grid + series). Safe to call while a spot is still analysing. */
 export function prefetchFieldStack(loc: Location, caPresets?: Location[]) {
-  if (!isLite(loc.id)) return;
+  if (!isLite(loc.id) || liteOn()) return;
   void apiLive().then((live) => {
     if (!live) return;
     const borrow = nearestCaPreset(loc, caPresets ?? MOCK_LOCS);
@@ -471,7 +478,7 @@ const normNews = (n: any): NewsItem => ({ ...n, verified: !!n.url && !n.url.incl
 
 /** 2023-2026 season strips for the pick list: 36 ten-day classes per year from the field calendar (HLS when served). */
 export async function getStrips(ids: string[]): Promise<Record<string, Record<number, string>>> {
-  if (!(await apiLive())) return {};
+  if (liteOn() || !(await apiLive())) return {}; // Lite mode: no season strips (one request per field)
   const out: Record<string, Record<number, string>> = {};
   await Promise.all(ids.map(async (id) => {
     const c = (await apiReal(`/api/locations/${id}/calendar?source=hls`)) ?? (await apiReal(`/api/locations/${id}/calendar`));
@@ -579,7 +586,7 @@ const nowOf = (b: any): NasaNow | null => { const r = b?.readings; if (!r) retur
 /** Which soil-moisture / groundwater readings are real. soilSource says whose soil reading it is. */
 export interface RegionalLive { smap: boolean; grace: boolean; soilSource?: 'smap' | 'grace_da' | null }
 /** Everything the field view needs. Resolves as soon as the answers' data is in; the 3D grid and the news arrive later through onLate. */
-export async function getField(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void, caPresets?: Location[]): Promise<FieldBundle> {
+async function getFieldNet(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void, caPresets?: Location[]): Promise<FieldBundle> {
   const id = loc.id, lite = isLite(id), presets = caPresets ?? MOCK_LOCS, borrow = lite ? nearestCaPreset(loc, presets) : id;
   const mid = templateId(id, loc.family); // mid: the bundled example used until the API answers
   const dataId = lite ? borrow : id;
@@ -599,6 +606,8 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   const soilExample = () => soilShown == null; // the soil answer shows SMAP example numbers when no real soil series came back
   const borrowNote = lite ? t('api.nearestPrepared', { id: borrow }) : '';
   if (!live) {
+    const saved = loadLastField(id); // offline: the last field that was opened comes back from this device
+    if (saved) return saved;
     const cells = gridAt(loc, lite ? borrow : mid) ?? gridAt(loc, 'car_colusa_rice');
     return {
       id, regional: reg0, cells, cal: calFor(mCal, id), strategies: lite ? [] : mockStrats(mid), news: lite ? [] : (mockNews as unknown as ById<NewsItem[]>)[mid],
@@ -613,17 +622,19 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     const near = await gridFetch(borrow);
     return { grid: near, shifted: !!near?.features };
   };
-  const lateP = Promise.all([fetchGrid(), lite ? Promise.resolve(null) : apiReal(`/api/locations/${id}/news`)]);
+  const lateP = Promise.all([fetchGrid(), lite || liteOn() ? Promise.resolve(null) : apiReal(`/api/locations/${id}/news`)]);
   prefetchFieldStack(loc, presets);
   const stratP = apiReal(`/api/locations/${id}/strategies`, undefined, lite ? 45000 : 12000);
+  const small = liteOn(); // Lite mode: only the calendar, the rotations and the soil and groundwater series; no ML comparison, HLS copy or extras
+  const none = Promise.resolve(null) as ReturnType<typeof apiReal>;
   const stackP = Promise.all([
     apiReal(`/api/locations/${dataId}/calendar`),
-    apiReal(`/api/locations/${dataId}/calendar?source=hls`),
-    lite ? apiReal(`/api/locations/${borrow}/calendar_ml`) : apiReal(`/api/locations/${id}/calendar_ml`),
-    lite ? apiReal(`/api/locations/${borrow}/models`) : apiReal(`/api/locations/${id}/models`),
+    small ? none : apiReal(`/api/locations/${dataId}/calendar?source=hls`),
+    small ? none : lite ? apiReal(`/api/locations/${borrow}/calendar_ml`) : apiReal(`/api/locations/${id}/calendar_ml`),
+    small ? none : lite ? apiReal(`/api/locations/${borrow}/models`) : apiReal(`/api/locations/${id}/models`),
     apiReal(`/api/locations/${dataId}/nasa_series`),
   ]);
-  const presetP = lite ? null : Promise.all([
+  const presetP = lite || small ? null : Promise.all([
     apiReal(`/api/locations/${id}/nasa_now`),
     apiReal(`/api/locations/${id}/openet`),
     apiReal(`/api/locations/${id}/stress`),
@@ -700,6 +711,23 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
 }
 
 // ---------- ISS astronaut photos (copied into public/iss/<id>/ from data/cache/<id>/iss) ----------
+// ---------- the last opened field, kept on this device so it opens with no connection ----------
+const LAST_KEY = 'croplytics.lastfield';
+function saveLastField(b: FieldBundle) {
+  try { localStorage.setItem(LAST_KEY, JSON.stringify({ ...b, cells: null })); } catch { /* full or private mode: skip */ }
+}
+function loadLastField(id: string): FieldBundle | null {
+  try { const b = JSON.parse(localStorage.getItem(LAST_KEY) ?? 'null') as FieldBundle | null; return b && b.id === id && b.cal ? b : null; } catch { return null; }
+}
+/** True when a saved copy of this field is on the device (the panel then says it is showing the last field). */
+export const hasSavedField = (id: string) => !!loadLastField(id);
+/** The field's data. In Lite mode it asks for less and skips the 3D grid; the last field opened is kept for offline use. */
+export async function getField(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void, caPresets?: Location[]): Promise<FieldBundle> {
+  const b = await getFieldNet(loc, live, onLate ? (x) => { saveLastField(x); onLate(x); } : undefined, caPresets);
+  if (live && b.prov.calendar.origin === 'api') saveLastField(b);
+  return b;
+}
+
 export interface ISSPhoto { photo_id: string; date: string; center_lat: number; center_lon: number; lens_mm: number; features: string; page_url: string; file: string; url: string; miles: number }
 export async function getISS(loc: Location): Promise<{ photo: ISSPhoto; credit: string } | null> {
   try {
@@ -870,8 +898,20 @@ const stepCache: Record<number, Promise<RainForecast | null>> = {};
 export const getRainStep = (k: number) => (stepCache[k] ??= get(`/api/rain_forecast?step=${k}`, undefined, 40000).catch(() => { delete stepCache[k]; return null; }));
 export interface DroughtNow extends GeoJSON.FeatureCollection { map_date: string; stale?: boolean }
 let droughtP: Promise<DroughtNow | null> | null = null;
-/** U.S. Drought Monitor, current weekly map, clipped to California (backend app/rain). */
-export const getDroughtNow = () => (droughtP ??= get('/api/drought_now', undefined, 60000).catch(() => { droughtP = null; return null; }));
+/** Esri's live copy of the weekly U.S. Drought Monitor (whole country, CORS open); the backend's California clip is the fallback. */
+const USDM_URL = 'https://services9.arcgis.com/RHVPKKiFTONKtxq3/arcgis/rest/services/US_Drought_Intensity_v1/FeatureServer/3/query?where=1%3D1&outFields=dm,ddate&outSR=4326&geometryPrecision=2&maxAllowableOffset=0.02&f=geojson';
+const usdmEsri = async (): Promise<DroughtNow> => {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 10000);
+  try {
+    const r = await fetch(USDM_URL, { signal: ctl.signal }); if (!r.ok) throw new Error(String(r.status));
+    const j = await r.json(); if (!j?.features?.length) throw new Error('empty');
+    const ms = Number(j.features[0]?.properties?.ddate);
+    return { ...j, map_date: Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : '' } as DroughtNow;
+  } finally { clearTimeout(t); }
+};
+/** U.S. Drought Monitor, current weekly map. Gives up after about 10 s (the card then offers a retry). */
+export const getDroughtNow = () => (droughtP ??= usdmEsri().catch(() => get('/api/drought_now', undefined, 10000) as Promise<DroughtNow>).catch(() => { droughtP = null; return null; }));
+export const retryDroughtNow = () => { droughtP = null; return getDroughtNow(); };
 /** The forecast band at one point ("1.5 to 1.75 in"), read from NOAA's full-detail shapes. */
 export const getRainAt = (lat: number, lon: number, days: RainDays = 7): Promise<RainAt | null> => get(`/api/rain_forecast/at?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&days=${days}`, undefined, 25000).catch(() => null);
 /** NOAA times are UTC ("2026-11-15 17:54:40"). */

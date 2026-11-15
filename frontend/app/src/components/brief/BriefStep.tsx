@@ -6,10 +6,13 @@ import Icon from '../Icons';
 import { acres, fieldName } from '../ui/shared';
 import { Answer, KeyFacts, StepShell } from '../ui/StepShell';
 import { t } from '../../i18n';
+import { setPref, usePrefs } from '../a11y/prefs';
+import { ax } from '../a11y/ax';
 
 export default function BriefStep(p: { loc: Location; strategies: RotationStrategy[]; pick: string | null; setPick: (id: string) => void; allocation: number; exampleLimit: boolean; onPreview: () => void; onBack: () => void; onClose: () => void; onSheet?: (px: number) => void }) {
   const base = p.strategies.find((x) => x.is_baseline) ?? p.strategies[0];
   const s = p.strategies.find((x) => x.id === p.pick) ?? p.strategies.find((x) => !x.is_baseline) ?? base;
+  const prefs = usePrefs();
   if (!s) return null;
   const need = (x: RotationStrategy) => (isRainFed(x) ? RAIN_FED : t('ui.brief.about_af', { n: mmToAfac(x.water.irrigation_need_mm.value).toFixed(1) }));
   return (
@@ -18,6 +21,8 @@ export default function BriefStep(p: { loc: Location; strategies: RotationStrate
       title={t('ui.brief.title')}
       answer={<Answer tone="good" headline={t('ui.brief.ready')} sub={s.is_baseline ? t('ui.brief.covers') : t('ui.brief.compares', { name: s.short_name.toLowerCase() })} />}
       next={{ label: t('ui.brief.print'), sub: t('ui.act.brief_s'), icon: 'print', onClick: () => window.print(), testid: 'print' }}>
+      <label className="mi-switch lp-toggle simple-keep"><input type="checkbox" checked={prefs.largePrint} onChange={(e) => setPref('largePrint', e.target.checked)} data-testid="large-print" /><span className="mi-track" aria-hidden="true" />
+        <span><b>{ax('largePrint')}</b><small>{ax('largePrintHint')}</small></span></label>
       <div className="opt-list" role="radiogroup" aria-label={t('ui.brief.option')}>
         {[...p.strategies].sort((a, b) => Number(b.is_baseline) - Number(a.is_baseline)).map((x) => (
           <button key={x.id} role="radio" aria-checked={x.id === s.id} className={`opt-row ${x.id === s.id ? 'on' : ''}`} onClick={() => p.setPick(x.id)} data-testid={`brief-pick-${x.id}`}>

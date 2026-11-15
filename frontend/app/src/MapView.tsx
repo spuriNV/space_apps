@@ -8,6 +8,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { acres, fieldName, latestCrop } from './components/ui/shared';
 import type { BCInfo, Calendar, CellGrid, Dataset, Location, Regional } from './types';
 import type { RegionalLive } from './api';
+import * as api from './api';
 import { reserveName } from './components/ui/FirstNations';
 import { getPrefs, motionOff } from './components/a11y/prefs';
 import { boundsOf, type LandFeature } from './components/lands/lands';
@@ -37,6 +38,7 @@ const STYLE: StyleSpecification = {
 const PIN_SVG = `<svg class="pin-svg" width="28" height="36" viewBox="0 0 28 36" aria-hidden="true"><path class="pin-body" d="M14 1.2C7.2 1.2 2 6.3 2 12.9c0 8.4 10.2 20 11.1 21a1.2 1.2 0 0 0 1.8 0C15.8 32.9 26 21.3 26 12.9 26 6.3 20.8 1.2 14 1.2z"/><rect class="pin-field" x="8.5" y="7.5" width="11" height="11" rx="1.5"/><path class="pin-rows" d="M11 9.5v7M14 9.5v7M17 9.5v7"/></svg>`;
 
 export const HOME = { center: [-119.9, 37.35] as [number, number], zoom: 5.75, pitch: 0, bearing: 0 };
+const LAND_POLY_ZOOM = 7; // below this the lands are dots from the overview; at and above it their outlines load for the viewport
 const LAND_COLOR = '#b4521f'; // warm terracotta: First Nations lands (fill about 20%, solid 2 px outline)
 const RES_COLOR = '#b4521f'; // warm terracotta: reserve land, distinct from the yellow selection colour
 const EXPLODE_Z0 = 12.5, EXPLODE_Z1 = 14.2;
@@ -134,13 +136,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: 'metric' }), 'bottom-right');
     map.on('load', () => {
       el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
-      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves', 'lands', 'outline-draw']) map.addSource(id, id === 'cells' || id === 'lands' ? { type: 'geojson', data: fc(), promoteId: 'id' } : { type: 'geojson', data: fc() });
+      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves', 'lands', 'lands-pts', 'outline-draw']) map.addSource(id, id === 'cells' || id === 'lands' || id === 'lands-pts' ? { type: 'geojson', data: fc(), promoteId: 'id' } : { type: 'geojson', data: fc() });
       // rain forecast bands: added first, so every field outline, pin and label draws on top
       map.addSource('rain', { type: 'geojson', data: fc() });
       map.addLayer({ id: 'rain-fill', type: 'fill', source: 'rain', layout: { visibility: 'none' }, paint: { 'fill-color': RAIN_COLOR as unknown as maplibregl.ExpressionSpecification, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 5, 0.72, 11, 0.5, 14, 0.3] } });
       map.addLayer({ id: 'rain-line', type: 'line', source: 'rain', layout: { visibility: 'none' }, paint: { 'line-color': 'rgba(255,255,255,0.45)', 'line-width': 0.6 } });
       map.addSource('drought', { type: 'geojson', data: fc() });
-      map.addLayer({ id: 'drought-fill', type: 'fill', source: 'drought', layout: { visibility: 'none' }, paint: { 'fill-color': DROUGHT_COLOR as unknown as maplibregl.ExpressionSpecification, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 5, 0.7, 11, 0.45, 14, 0.28] } });
+      map.addLayer({ id: 'drought-fill', type: 'fill', source: 'drought', layout: { visibility: 'none' }, paint: { 'fill-color': DROUGHT_COLOR as unknown as maplibregl.ExpressionSpecification, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.62, 11, 0.5, 14, 0.35] } });
       map.addLayer({ id: 'drought-line', type: 'line', source: 'drought', layout: { visibility: 'none' }, paint: { 'line-color': 'rgba(255,255,255,0.4)', 'line-width': 0.6 } });
       // hover readout (Windy's picker): the rain band or drought category under the pointer, desktop only
       const tip = new maplibregl.Popup({ closeButton: false, closeOnClick: false, className: 'wx-tip', offset: 14 });
@@ -155,11 +157,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
 
       addCatalogLayers(map, (it) => live.current.onCatalogPick?.(it));
       // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
-      map.addLayer({ id: 'lands-fill', type: 'fill', source: 'lands', paint: { 'fill-color': LAND_COLOR, 'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.42, 0.33] } });
-      map.addLayer({ id: 'lands-line', type: 'line', source: 'lands', layout: { 'line-join': 'round' }, paint: { 'line-color': LAND_COLOR, 'line-width': 2.5 } });
-      map.addLayer({ id: 'lands-active-casing', type: 'line', source: 'lands', filter: ['==', ['get', 'id'], ''], layout: { 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.85 } });
-      map.addLayer({ id: 'lands-active', type: 'line', source: 'lands', filter: ['==', ['get', 'id'], ''], layout: { 'line-join': 'round' }, paint: { 'line-color': '#8f3a0f', 'line-width': 4 } });
-      map.addLayer({ id: 'lands-pulse', type: 'line', source: 'lands', filter: ['==', ['get', 'id'], ''], paint: { 'line-color': '#b4521f', 'line-width': 4, 'line-opacity': 0 } });
+      // zoomed out: one dot per land from the light overview (size by area); zoomed in (LAND_POLY_ZOOM): outlines for the viewport only
+      map.addLayer({ id: 'lands-pts', type: 'circle', source: 'lands-pts', maxzoom: LAND_POLY_ZOOM, paint: { 'circle-color': LAND_COLOR, 'circle-opacity': 0.8, 'circle-stroke-color': '#fff4ea', 'circle-stroke-width': 0.6, 'circle-stroke-opacity': 0.8,
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 2, ['interpolate', ['linear'], ['get', 'area_ha'], 1, 1.3, 10000, 2.6, 1000000, 6], 6, ['interpolate', ['linear'], ['get', 'area_ha'], 1, 3, 10000, 5, 1000000, 12]] } });
+      map.addLayer({ id: 'lands-pts-active', type: 'circle', source: 'lands-pts', maxzoom: LAND_POLY_ZOOM, filter: ['==', ['get', 'id'], ''], paint: { 'circle-color': 'rgba(0,0,0,0)', 'circle-radius': 13, 'circle-stroke-color': '#8f3a0f', 'circle-stroke-width': 3 } });
+      map.addLayer({ id: 'lands-fill', type: 'fill', source: 'lands', minzoom: LAND_POLY_ZOOM, paint: { 'fill-color': LAND_COLOR, 'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.42, 0.33] } });
+      map.addLayer({ id: 'lands-line', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, layout: { 'line-join': 'round' }, paint: { 'line-color': LAND_COLOR, 'line-width': 2.5 } });
+      map.addLayer({ id: 'lands-active-casing', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, filter: ['==', ['get', 'id'], ''], layout: { 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 7, 'line-opacity': 0.85 } });
+      map.addLayer({ id: 'lands-active', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, filter: ['==', ['get', 'id'], ''], layout: { 'line-join': 'round' }, paint: { 'line-color': '#8f3a0f', 'line-width': 4 } });
+      map.addLayer({ id: 'lands-pulse', type: 'line', source: 'lands', minzoom: LAND_POLY_ZOOM, filter: ['==', ['get', 'id'], ''], paint: { 'line-color': '#b4521f', 'line-width': 4, 'line-opacity': 0 } });
       map.addLayer({ id: 'lands-label', type: 'symbol', source: 'lands', minzoom: 9, layout: { 'text-field': ['get', 'name'], 'text-font': ['Noto Sans Bold'], 'text-size': ['interpolate', ['linear'], ['zoom'], 9, 11, 13, 14], 'text-max-width': 8, 'text-padding': 4, 'symbol-sort-key': ['*', -1, ['get', 'area_ha']] }, paint: { 'text-color': '#fff4ea', 'text-halo-color': 'rgba(92,36,8,0.92)', 'text-halo-width': 1.6 } });
       map.addLayer({ id: 'res-fill', type: 'fill', source: 'reserves', paint: { 'fill-color': RES_COLOR, 'fill-opacity': 0.25 } });
       map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(247,246,240,0.85)', 'line-width': 4.6 } });
@@ -185,7 +191,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       const tap = (e: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
         const tgt = (e.originalEvent?.target as Element | null);
         if (tgt?.closest?.('.maplibregl-marker, .maplibregl-ctrl')) return;
-        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit', 'cat-pt', 'cat-cluster', ...(map.getLayer('lands-fill') && live.current.landsOn ? ['lands-fill'] : [])] }).length) return;
+        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit', 'cat-pt', 'cat-cluster', ...(map.getLayer('lands-fill') && live.current.landsOn ? ['lands-fill', 'lands-pts'] : [])] }).length) return;
         if (Date.now() - lastTap < 700) return;
         lastTap = Date.now();
         live.current.onTap?.(e.lngLat.lat, e.lngLat.lng);
@@ -195,7 +201,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       let press: ReturnType<typeof setTimeout> | null = null;
       map.on('touchstart', (e) => { if (press) clearTimeout(press); press = e.originalEvent.touches.length === 1 ? setTimeout(() => tap(e), 550) : null; });
       for (const ev of ['touchend', 'touchmove', 'touchcancel', 'movestart'] as const) map.on(ev, () => { if (press) { clearTimeout(press); press = null; } });
-      map.on('click', 'lands-fill', (e) => {
+      map.on('click', ['lands-fill', 'lands-pts'], (e) => {
         if (!live.current.landsOn) return;
         if (map.queryRenderedFeatures(e.point, { layers: ['field-hit', 'cat-pt', 'cat-cluster'] }).length) return; // a field or farm pin on top wins
         const id = e.features?.[0]?.properties?.id;
@@ -209,6 +215,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
         if (hoverId !== f.id && hoverId !== undefined) map.setFeatureState({ source: 'lands', id: hoverId }, { hover: false });
         hoverId = f.id; if (hoverId !== undefined) map.setFeatureState({ source: 'lands', id: hoverId }, { hover: true });
       });
+      map.on('mouseenter', 'lands-pts', () => { if (live.current.landsOn) map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', 'lands-pts', () => { map.getCanvas().style.cursor = ''; });
       map.on('mouseleave', 'lands-fill', () => { map.getCanvas().style.cursor = ''; if (hoverId !== undefined) map.setFeatureState({ source: 'lands', id: hoverId }, { hover: false }); hoverId = undefined; });
       map.on('mouseenter', 'field-hit', () => (map.getCanvas().style.cursor = 'pointer'));
       map.on('mouseleave', 'field-hit', () => (map.getCanvas().style.cursor = ''));
@@ -298,19 +306,37 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    (map.getSource('lands') as GeoJSONSource).setData(fc(p.lands ?? []));
+    (map.getSource('lands-pts') as GeoJSONSource).setData(fc(p.lands ?? []));
   }, [ready, p.lands]);
+  // outlines for the viewport: when zoomed in, ask the API for the lands that touch the view (with a margin) and only again once the view leaves that box
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !p.landsOn) return;
+    let box: [number, number, number, number] | null = null, seq = 0, timer: ReturnType<typeof setTimeout> | undefined;
+    const load = async () => {
+      if (map.getZoom() < LAND_POLY_ZOOM) return;
+      const b = map.getBounds(), v: [number, number, number, number] = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
+      if (box && v[0] >= box[0] && v[1] >= box[1] && v[2] <= box[2] && v[3] <= box[3]) return;
+      const mx = (v[2] - v[0]) * 0.25, my = (v[3] - v[1]) * 0.25, q: [number, number, number, number] = [v[0] - mx, v[1] - my, v[2] + mx, v[3] + my];
+      const mine = ++seq;
+      const fs = await api.getLandsIn(q);
+      if (fs && mine === seq) { box = q; (map.getSource('lands') as GeoJSONSource).setData(fc(fs)); }
+    };
+    const soon = () => { clearTimeout(timer); timer = setTimeout(load, 200); };
+    map.on('moveend', soon); soon();
+    return () => { map.off('moveend', soon); clearTimeout(timer); seq++; };
+  }, [ready, p.landsOn]);
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
     const vis = p.landsOn ? 'visible' : 'none';
-    for (const id of ['lands-fill', 'lands-line', 'lands-label', 'lands-active-casing', 'lands-active', 'lands-pulse']) map.setLayoutProperty(id, 'visibility', vis);
+    for (const id of ['lands-pts', 'lands-pts-active', 'lands-fill', 'lands-line', 'lands-label', 'lands-active-casing', 'lands-active', 'lands-pulse']) map.setLayoutProperty(id, 'visibility', vis);
   }, [ready, p.landsOn]);
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
     const f = ['==', ['get', 'id'], p.activeLandId ?? ''] as maplibregl.FilterSpecification;
-    for (const id of ['lands-active-casing', 'lands-active', 'lands-pulse']) map.setFilter(id, f);
+    for (const id of ['lands-pts-active', 'lands-active-casing', 'lands-active', 'lands-pulse']) map.setFilter(id, f);
     map.setPaintProperty('lands-pulse', 'line-opacity', 0);
     if (!p.activeLandId || reduceMotion.current) return;
     let raf = 0; const t0 = performance.now();
@@ -419,8 +445,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const map = mapRef.current; if (!ready || !map) return;
     const reg = p.droughtRegion ?? null;
     const show = (id: string, on: boolean) => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none'); };
-    show('drought-ca', reg === 'na'); show('drought-gl', reg === 'gl');
-    const op = ['interpolate', ['linear'], ['zoom'], 5, 0.75, 11, 0.55, 14, 0.4] as unknown as maplibregl.ExpressionSpecification;
+    show('drought-ca', reg === 'na'); show('drought-gl', reg !== null);
+    const op = ['interpolate', ['linear'], ['zoom'], 3, 0.62, 11, 0.5, 14, 0.35] as unknown as maplibregl.ExpressionSpecification;
     if (reg === 'na' && !map.getSource('drought-ca')) {
       const CDM = 'https://agriculture.canada.ca/imagery-images/rest/services/canadian_drought_monitor/ImageServer';
       const add = (time: number | null) => {
@@ -430,10 +456,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       };
       fetch(`${CDM}/query?where=1%3D1&outFields=dateEnd&orderByFields=dateEnd+desc&resultRecordCount=1&returnGeometry=false&f=json`).then((r) => r.json()).then((j) => add(j?.features?.[0]?.attributes?.dateEnd ?? null)).catch(() => add(null));
     }
-    if (reg === 'gl' && !map.getSource('drought-gl')) {
+    if (reg !== null && !map.getSource('drought-gl')) { // NASA soil moisture under everything, so no part of the world is blank; the monitors sit on top
       const d = new Date(Date.now() - 5 * 86400e3).toISOString().slice(0, 10);
       map.addSource('drought-gl', { type: 'raster', tileSize: 256, maxzoom: 6, attribution: 'Soil moisture: NASA SMAP L4 via GIBS', tiles: [`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/SMAP_L4_Analyzed_Root_Zone_Soil_Moisture/default/${d}/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png`] });
-      map.addLayer({ id: 'drought-gl', type: 'raster', source: 'drought-gl', paint: { 'raster-opacity': op } }, 'rain-fill');
+      map.addLayer({ id: 'drought-gl', type: 'raster', source: 'drought-gl', paint: { 'raster-opacity': 0.55 } }, 'rain-fill');
     }
   }, [ready, p.droughtRegion]);
 

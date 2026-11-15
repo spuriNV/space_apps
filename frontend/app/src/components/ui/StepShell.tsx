@@ -9,17 +9,23 @@ import { MoreDetail } from './Detail';
 import { ReadAloud } from '../help/ReadAloud';
 import { FLOW, StepLine, type FlowId } from './shared';
 import { t } from '../../i18n';
+import { usePrefs } from '../a11y/prefs';
+import { Gloss } from '../a11y/Gloss';
+import { ax, easy } from '../a11y/ax';
 
 export type Tone = 'good' | 'warn' | 'neutral';
 export interface Fact { label: string; value: ReactNode; tone?: Tone }
 
 /** The answer to the step's question, big and plain: "No. Short by about 0.9 acre-ft per acre." */
 export function Answer({ tone = 'neutral', headline, sub, loading, speak }: { tone?: Tone; headline: ReactNode; sub?: ReactNode; loading?: boolean; speak?: string }) {
+  const { simple } = usePrefs();
+  // Simple mode: short sentences (the first one), and farming terms can be tapped for a plain explanation
+  if (simple && typeof sub === 'string') sub = easy(sub);
   if (loading) return <div className="step-answer" aria-busy="true"><span className="skel skel-val" /><span className="skel" /></div>;
   return (
     <div className={`step-answer ${tone}`} data-testid="step-answer" role="status">
       <i className="sa-dot" aria-hidden="true">{tone === 'good' ? <Icon name="check" size={18} /> : tone === 'warn' ? '!' : null}</i>
-      <div><b>{headline}</b>{sub && <span>{sub}</span>}{speak && <ReadAloud text={speak} />}</div>
+      <div><b><Gloss>{headline}</Gloss></b>{sub && <span><Gloss>{sub}</Gloss></span>}{speak && <ReadAloud text={speak} />}</div>
     </div>
   );
 }
@@ -96,8 +102,12 @@ export function StepShell(p: StepShellProps) {
   useEffect(() => { const h = setTimeout(onScroll, 400); return () => clearTimeout(h); });
   useEffect(() => { if (sheet.snap !== 'full') scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' }); }, [sheet.snap]);
   const step = FLOW.find((f) => f.id === p.id)!;
+  // Simple mode: only the answer and the next button until "Show more"
+  const { simple } = usePrefs();
+  const [more, setMore] = useState(false);
+  useEffect(() => setMore(false), [p.id, p.resetKey]);
   return (
-    <aside ref={sheet.ref} id="field-panel" tabIndex={-1} className={`panel fpanel step-shell step-${p.id} sheet-${sheet.snap} ${p.className ?? ''}`} data-testid={p.testid} aria-label={`${t('ui.step.of', { n: step.n, total: FLOW.length })}: ${step.label}`} {...sheet.handlers}>
+    <aside ref={sheet.ref} id="field-panel" tabIndex={-1} className={`panel fpanel step-shell step-${p.id} sheet-${sheet.snap} ${simple ? 'simple' : ''} ${more ? 'more' : ''} ${p.className ?? ''}`} data-testid={p.testid} aria-label={`${t('ui.step.of', { n: step.n, total: FLOW.length })}: ${step.label}`} {...sheet.handlers}>
       <button className="fp-grab" onClick={sheet.cycle} onKeyDown={sheet.onKey} aria-label={t('ui.resize')} data-testid="grab"><i /></button>
       <div className="fp-body">
         <button className="icon-btn fp-close" onClick={p.onClose} title={t('ui.close')} aria-label={t('ui.close')}><Icon name="close" size={20} /></button>
@@ -110,6 +120,7 @@ export function StepShell(p: StepShellProps) {
             </header>
             {p.top}
             {p.answer}
+            {simple && <button type="button" className="btn btn-outline simple-more-btn" aria-expanded={more} onClick={() => setMore(!more)} data-testid="simple-more">{more ? ax('showLess') : ax('showMore')}</button>}
             {p.children}
             {p.detail && <>
               <MoreDetail what={p.detailWhat ?? t('ui.shell.detail')} />

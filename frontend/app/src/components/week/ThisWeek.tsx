@@ -2,7 +2,10 @@
 // Irrigation verdict + 7-day need strip, field access chips, 7-day forecast, alerts. Sections follow `sections.*`:
 // unavailable / not_applicable parts are hidden, fallback / partial parts carry a quiet tag. Hidden for my_ ids (404).
 import { ReadAloud } from '../help/ReadAloud';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { VisualAlert, type AlertInfo } from '../a11y/VisualAlert';
+import { ax, lang } from '../a11y/ax';
+import { speakText } from '../help/ReadAloud';
 import type { Location } from '../../types';
 import { t, tx, locale } from '../../i18n';
 import { RouteProblem, SKEL, useRoute } from './useRoute';
@@ -35,18 +38,36 @@ const NAME = { ok: t('week.nameOk'), marginal: t('week.nameMarginal'), too_wet: 
 const SRC: Record<string, string> = { power: t('week.srcPower'), grace: t('week.srcGrace'), smap_l4: t('week.srcSmap') };
 const ord = (n: number) => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] ?? 'th');
 
+/** The NWS alerts for this field and, when any day in the week is "too wet", the first such day. */
+export function alertInfo(w: Week): AlertInfo {
+  const events = SHOW(w.sections.alerts) ? w.alerts.map((a) => ({ text: `${a.event ?? a.headline ?? ax('alertTitle')}${a.area ? ` · ${a.area.split(';')[0]}` : ''}`, url: a.url?.startsWith('http') ? a.url : 'https://www.weather.gov/' })) : [];
+  const days = SHOW(w.sections.field_access) ? w.field_access.days : [];
+  const i = days.findIndex((d) => d.status === 'too_wet');
+  const es = lang() === 'es';
+  const day = i < 0 ? '' : new Date(days[i].date + 'T12:00:00Z').toLocaleDateString(es ? 'es' : 'en-US', { weekday: 'long', timeZone: 'UTC' });
+  const wet = i < 0 ? null : ax('tooWetDay', { when: i === 0 ? (es ? 'hoy' : 'today') : es ? `el ${day}` : `on ${day}` });
+  return { events, wet };
+}
+
 export function ThisWeek({ loc, compact }: { loc: Location; compact?: boolean }) {
   const sp = loc.spot;
   const st = useRoute<Week>(sp && sp.state !== 'ready' ? null : `/locations/${loc.id}/this_week`);
   const [pick, setPick] = useState<number | null>(null);
-  if (st.kind === 'missing') return null;
   const w = st.kind === 'ok' ? st.data : null;
+  useEffect(() => {
+    if (!compact || !w) return;
+    const f = () => { const t = [w.irrigation.verdict, w.field_access.line].filter(Boolean).join(' '); if (!t || !speakText(t)) window.dispatchEvent(new CustomEvent('croplytics:say', { detail: t || ax('noWeek') })); };
+    window.addEventListener('croplytics:read-week', f);
+    return () => window.removeEventListener('croplytics:read-week', f);
+  }, [w, compact]);
+  if (st.kind === 'missing') return null;
   return (
     <section className="tw" data-testid="this-week" aria-label={t('week.title')}>
       <h2 className="tw-h">{t('week.title')}</h2>
       {st.kind === 'loading' && <div className="tw-skel" aria-busy="true" role="status"><span className="sr-only">{t('week.loading')}</span><span className="skel skel-val" /><span className="skel skel-chart" /><span className="skel" /></div>}
       {st.kind === 'ok' && st.stale && <p className="tw-tag" role="status">{t('week.stale')}</p>}
       <RouteProblem st={st} what={t('week.weekAhead')} reload={st.reload} />
+      {w && compact && <VisualAlert info={alertInfo(w)} />}
       {w && (compact ? <Glance w={w} /> : <Body w={w} pick={pick} setPick={setPick} />)}
     </section>
   );

@@ -56,7 +56,7 @@ export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolea
             <span className="sw sw-reserve" />
             <span className="layer-body">
               <span className="layer-top"><b>{t('pan.fnLands')}</b></span>
-              <span className="layer-sees">{t('pan.fnSees', { n: p.landsCount ? ` (${p.landsCount.toLocaleString(locale)})` : '' })}</span>
+              <span className="layer-sees">{t('merge2.fnSees', { n: p.landsCount ? ` (${p.landsCount.toLocaleString(locale)})` : '' })}</span>
               <span className="layer-meta">{t('pan.fnMeta')}</span>
             </span>
           </label>

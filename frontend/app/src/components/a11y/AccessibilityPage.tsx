@@ -11,6 +11,14 @@ export function AccessibilityPage({ onClose }: { onClose: () => void }) {
       <ul>
         <li><b>{t('ui.a11y.s1b')}</b> {t('ui.a11y.s1')}</li>
         <li><b>{t('ui.a11y.s2b')}</b> {t('ui.a11y.s2')}</li>
+        <li><b>{t('merge2.a11y.simpleb')}</b> {t('merge2.a11y.simple')}</li>
+        <li><b>{t('merge2.a11y.textb')}</b> {t('merge2.a11y.text')} <b>{t('merge2.a11y.coloursb')}</b> {t('merge2.a11y.colours')} <b>{t('merge2.a11y.easyb')}</b> {t('merge2.a11y.easy')}</li>
+        <li><b>{t('merge2.a11y.describeb')}</b> {t('merge2.a11y.describe')} <b>{t('merge2.a11y.printb')}</b> {t('merge2.a11y.print')}</li>
+        <li><b>{t('merge2.a11y.alertsb')}</b> {t('merge2.a11y.alerts')}</li>
+        <li><b>{t('merge2.a11y.voiceb')}</b> {t('merge2.a11y.voice')}</li>
+        <li><b>{t('merge2.a11y.keysb')}</b> {t('merge2.a11y.keys')}</li>
+        <li><b>{t('merge2.a11y.timeb')}</b> {t('merge2.a11y.time')}</li>
+        <li><b>{t('merge2.a11y.liteb')}</b> {t('merge2.a11y.lite')}</li>
         <li><b>{t('ui.a11y.s3b')}</b> {t('ui.a11y.s3')}</li>
         <li><b>{t('ui.a11y.s4b')}</b> {t('ui.a11y.s4')}</li>
         <li><b>{t('ui.a11y.s5b')}</b> {t('ui.a11y.s5')}</li>

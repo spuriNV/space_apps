@@ -39,18 +39,19 @@ export const stepWords = (f: RainForecast | null) => { const a = utc(f?.valid_fr
 export function WeatherControl(p: {
   on: boolean; setOn: (v: boolean) => void; layer: WxLayer; setLayer: (l: WxLayer) => void;
   mode: RainMode; setMode: (m: RainMode) => void; days: RainDays; setDays: (d: RainDays) => void;
-  rain: RainForecast | null; drought: DroughtNow | null; region: 'na' | 'gl'; state: 'idle' | 'loading' | 'ready' | 'error'; right: number;
+  rain: RainForecast | null; drought: DroughtNow | null; region: 'na' | 'gl'; state: 'idle' | 'loading' | 'ready' | 'error'; retry: () => void;
 }) {
   const issued = utc(p.rain?.issued), to = utc(p.rain?.valid_to);
   const last = to ? new Date(to.getTime() - 1) : null; // valid_to is midnight UTC: the day before, locally
   return (
-    <div className="rain-ctl" style={{ right: p.right }} data-testid="rain-ctl">
-      <button className={`rain-btn ${p.on ? 'on' : ''}`} onClick={() => p.setOn(!p.on)} aria-pressed={p.on} aria-expanded={p.on} data-testid="rain-btn">
-        <Icon name="drop" size={18} />{t('merge.rain.btn')}
+    <div className="rain-ctl" data-testid="rain-ctl">
+      <button className={`map-tool rain-btn ${p.on ? 'on' : ''}`} onClick={() => p.setOn(!p.on)} aria-pressed={p.on} aria-expanded={p.on} aria-label={t('merge2.rainAria')} title={t('merge2.rainAria')} data-testid="rain-btn">
+        <Icon name="drop" size={18} /><span>{t('merge.rain.btn')}</span>
       </button>
       {p.on && (
-        <section className="rain-card" aria-label={t('merge.rain.cardAria')} data-testid="rain-card">
-          <Seg label={t('merge.rain.layerAria')} value={p.layer} onChange={p.setLayer} options={[{ v: 'rain', label: t('merge.rain.lRain'), testid: 'wx-rain' }, { v: 'drought', label: t('merge.rain.lDrought'), testid: 'wx-drought' }, { v: 'past', label: t('merge.rain.lPast'), testid: 'wx-past' }]} />
+        <section className="rain-card" aria-label={t('merge.rain.cardAria')} data-testid="rain-card" onKeyDown={(e) => { if (e.key === 'Escape') p.setOn(false); }}>
+          <button className="rain-x" onClick={() => p.setOn(false)} aria-label={t('merge2.rainClose')} title={t('merge2.close')} data-testid="rain-close"><Icon name="close" size={18} /></button>
+          <Seg className="rain-layers" label={t('merge.rain.layerAria')} value={p.layer} onChange={p.setLayer} options={[{ v: 'rain', label: t('merge2.lForecast'), testid: 'wx-rain' }, { v: 'drought', label: t('merge2.lDrought'), testid: 'wx-drought' }, { v: 'past', label: t('merge.rain.lPast'), testid: 'wx-past' }]} />
           {p.layer === 'rain' ? <>
             <div className="rain-row">
               <Seg className="small" label={t('merge.rain.showAria')} value={p.mode} onChange={p.setMode} options={[{ v: 'total', label: t('merge.rain.total'), testid: 'rain-total' }, { v: 'hourly', label: t('merge.rain.hourly'), testid: 'rain-hourly' }]} />
@@ -73,7 +74,7 @@ export function WeatherControl(p: {
               {DROUGHT_STEPS.map((s) => <li key={s.dm}><i style={{ background: s.color }} /><b>{s.label}</b><span>{s.name}{s.dm > 0 ? t('merge.rain.drought') : ''}</span></li>)}
             </ol>
             <p className="rain-src" role="status">
-              {p.state === 'loading' ? t('merge.rain.loadDm') : <>{t('merge.rain.dmUS')}{p.drought?.map_date ? t('merge.rain.dmMap', { d: when(new Date(p.drought.map_date + 'T12:00:00'), { month: 'short', day: 'numeric' }) }) : t('merge.rain.dmNo')}{t('merge.rain.dmRest')}</>}
+              {p.state === 'loading' ? t('merge.rain.loadDm') : p.state === 'error' ? <>{t('merge2.dmErr')} <button className="rain-retry" onClick={p.retry} data-testid="drought-retry">{t('merge2.tryAgain')}</button></> : <>{t('merge.rain.dmUS')}{p.drought?.map_date ? t('merge.rain.dmMap', { d: when(new Date(p.drought.map_date + 'T12:00:00'), { month: 'short', day: 'numeric' }) }) : t('merge.rain.dmNo')}{t('merge.rain.dmRest')}</>}
             </p></> : <>
             <p className="rain-src">{t('merge.rain.smap')}</p>
             <p className="rain-src">{t('merge.rain.smapSrc')}</p></>}

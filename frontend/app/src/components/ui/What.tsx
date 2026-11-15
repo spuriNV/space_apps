@@ -22,6 +22,12 @@ const API_KEY: Record<string, string> = { et: 'et', greenness: 'ndvi', soilAnoma
 let fromApi: Record<string, { term: string; short: string }> = {};
 export const setGlossary = (g: Record<string, { term: string; short: string }>) => { fromApi = g; };
 
+/** The plain-language entry for a term (the API's text when it serves one), or null for an unknown key. */
+export function glossEntry(k: string): { term: string; text: string } | null {
+  const a = fromApi[API_KEY[k] ?? k];
+  return a ? { term: a.term, text: a.short } : (GLOSSARY as Record<string, { term: string; text: string }>)[k] ?? EXTRA[k] ?? null;
+}
+
 /** Small "What's this?" link that opens a plain explanation underneath. */
 export function What({ k }: { k: GlossKey }) {
   const [open, setOpen] = useState(false);

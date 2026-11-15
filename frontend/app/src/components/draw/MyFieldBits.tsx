@@ -37,13 +37,13 @@ export function MineHead({ loc, onAction }: { loc: Location; onAction: (a: MineA
   const pick = (a: MineAction) => { setOpen(false); onAction(a); };
   const copy = async () => {
     setNote((await copyText(shareUrl(loc.id))) ? t('mf.copied') : t('mf.nocopy'));
-    setTimeout(() => { setOpen(false); setNote(''); }, 1100);
+    // no timer: the menu stays open until the person closes it (Esc, a click elsewhere or Options)
   };
   return (
     <div className="mine-head" data-testid="mine-head">
       <p className="spot-label" data-testid="mine-label"><i className={`live-dot ${sp.state}`} />{t('mf.your')}</p>
       <div className="mine-menu" ref={wrap}>
-        <button className="btn btn-outline btn-sm mine-opt" onClick={() => setOpen(!open)} aria-haspopup="menu" aria-expanded={open} disabled={!saved} data-testid="mine-menu-btn">{t('mf.options')}<Icon name="down" size={16} /></button>
+        <button className="btn btn-outline btn-sm mine-opt" onClick={() => { setOpen(!open); setNote(''); }} aria-haspopup="menu" aria-expanded={open} disabled={!saved} data-testid="mine-menu-btn">{t('mf.options')}<Icon name="down" size={16} /></button>
         {open && (
           <div className="mine-pop" role="menu" data-testid="mine-menu">
             <button role="menuitem" onClick={() => pick('rename')} data-testid="mine-rename"><Icon name="draw" />{t('mf.rename')}</button>

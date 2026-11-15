@@ -90,7 +90,7 @@ async def get_ctx(pid: str, req: Request, need_daily: bool = False) -> Ctx:
     c.lon, c.lat = loc["centroid"]["lon"], loc["centroid"]["lat"]
     if c.region_code not in ("ca", "bc"):
         c.region_code = "bc" if D.BC_BOX[0] <= c.lon <= D.BC_BOX[2] and D.BC_BOX[1] <= c.lat <= D.BC_BOX[3] and c.lat > 49.0 and c.lon < -114.0 else "us"
-    c.jurisdiction = "BC" if c.region_code == "bc" else ("CA" if c.region_code == "ca" or loc.get("state_fips") == "06" else "US")
+    c.jurisdiction = "BC" if c.region_code == "bc" else ("CA" if c.region_code == "ca" or loc.get("state_fips") == "06" else "CAN" if G.in_canada(c.lon, c.lat) else "US")
     c.name = loc.get("name") or pid
     a = loc.get("area_ha")
     c.area_ha = a.get("value") if isinstance(a, dict) else a
@@ -163,7 +163,7 @@ def links_for(pid: str) -> dict:
 
 
 def build_summary(c: Ctx) -> dict:
-    res = G.nearby(c.lon, c.lat, "bc" if c.region_code == "bc" else "us")
+    res = G.nearby(c.lon, c.lat, "bc" if c.region_code == "bc" else "can" if c.jurisdiction == "CAN" else "us")
     ls = G.land_status(res, c.region_code)
     seen, nearest = set(), []
     for a in res["areas"]:
@@ -462,7 +462,7 @@ def build_report(c: Ctx, program: str | None, cutoff: str) -> dict:
             raise HTTPException(422, f"unknown program '{program}'; see /nation/funding for ids")
     dr = build_drought(c, cutoff)
     gw = build_groundwater(c) if c.jurisdiction == "CA" else None
-    ls = G.land_status(G.nearby(c.lon, c.lat, "bc" if c.region_code == "bc" else "us"), c.region_code)
+    ls = G.land_status(G.nearby(c.lon, c.lat, "bc" if c.region_code == "bc" else "can" if c.jurisdiction == "CAN" else "us"), c.region_code)
     hist = (c.loc.get("crop_history") or {})
     last = max((k for k in hist if str(k).isdigit()), default=None)
     base = next((r for r in dr["rotations"] if r["is_baseline"]), dr["rotations"][0] if dr["rotations"] else None)

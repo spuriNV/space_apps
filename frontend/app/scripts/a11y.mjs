@@ -27,10 +27,12 @@ async function check(name, page) {
   for (const v of soft) console.log(`  (${v.impact}) ${v.id} (${v.nodes.length})`);
   bad += hard.length;
 }
-for (const [label, w, h, outdoor] of [['desktop', 1440, 900, false], ['phone', 390, 844, false], ['desktop outdoor', 1440, 900, true]]) {
+const RUNS = [['desktop', 1440, 900, {}], ['phone', 390, 844, {}], ['desktop outdoor', 1440, 900, { outdoor: true }], ['desktop dark', 1440, 900, { theme: 'dark' }], ['phone dark', 390, 844, { theme: 'dark' }],
+  ['desktop 200% text', 1440, 900, { textPct: 200 }], ['phone 200% text', 390, 844, { textPct: 200 }], ['phone simple + dark + 200%', 390, 844, { simple: true, theme: 'dark', textPct: 200 }], ['desktop simple', 1440, 900, { simple: true }], ['desktop dyslexia', 1440, 900, { dyslexia: true }]];
+for (const [label, w, h, prefs] of RUNS) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h } });
   const page = await ctx.newPage();
-  if (outdoor) await page.addInitScript(() => localStorage.setItem('croplytics.a11y', JSON.stringify({ outdoor: true, pause: false })));
+  await page.addInitScript((p) => { localStorage.setItem('croplytics.a11y', JSON.stringify(p)); localStorage.setItem('croplytics.tour.done', '1'); }, prefs);
   await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.waitForSelector('[data-testid=row-car_colusa_rice]', { timeout: 30000 });
   await page.waitForTimeout(1500);
@@ -39,6 +41,14 @@ for (const [label, w, h, outdoor] of [['desktop', 1440, 900, false], ['phone', 3
   await page.waitForSelector('[data-testid=step-answer]', { timeout: 30000 });
   await page.waitForTimeout(2500);
   await check(`${label} / Now (Colusa)`, page);
+  const over = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  if (over > 1) { console.log(`  horizontal scroll: ${over}px too wide`); bad++; }
+  if (label.includes('desktop') && !prefs.simple) { // the Accessibility menu and the shortcuts dialog
+    await page.click('[data-testid=menu]');
+    await check(`${label} / Menu`, page);
+    await page.click('[data-testid=shortcuts-btn]');
+    await check(`${label} / Shortcuts dialog`, page);
+  }
   await ctx.close();
 }
 await browser.close();

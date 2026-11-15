@@ -113,7 +113,6 @@ export const DrawLayer = forwardRef<DrawHostHandle, Props>(function DrawLayer(p,
 
   return (
     <>
-      {phase === 'off' && <button className="draw-btn" style={{ right: 16 + p.rightInset }} onClick={start} data-testid="draw-btn"><Icon name="draw" size={18} />{t('draw.draw')}</button>}
       {phase !== 'off' && (
         <div className="draw-bar" role="region" aria-label={t('draw.draw')} data-testid="draw-bar" style={{ '--right': `${p.rightInset}px` } as React.CSSProperties}>
           <div className="draw-top">
