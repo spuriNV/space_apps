@@ -1,20 +1,31 @@
 // Shapes follow planner-spec.md B3. Only the fields this prototype reads are typed strictly.
-export interface Source { id: string; title?: string; url: string | null; accessed?: string; verified: boolean }
+export interface Source { id: string; title?: string; url: string | null; accessed?: string; verified: boolean; /** set by the API when url has no public page: show the title, no link */ internal?: boolean }
+/** A link the API may mark internal (a repo path or id with no public page): show its title without a link. */
+export type Linkable = { url?: string | null; internal?: boolean };
+export const linkOf = (x: Linkable | null | undefined) => (x?.url && !x.internal ? x.url : null);
 export interface SourcedNumber { value: number; low: number | null; high: number | null; unit: string; method: string; source?: Source; note?: string; blocked?: boolean }
 
-export interface FieldEvent { date: string; end_date?: string; type: 'drought_fallow' | 'atmospheric_river' | 'sgma_probation'; short: string; title: string; detail?: string; url: string | null; verified: boolean }
+export interface FieldEvent { date: string; end_date?: string; type: 'drought_fallow' | 'atmospheric_river' | 'sgma_probation'; short: string; title: string; detail?: string; url: string | null; verified: boolean; internal?: boolean }
+
+/** BC: one Province order on the watershed: an order to stop irrigating, or the rescission of one. */
+export interface WaterOrder { date: string; title: string; url: string | null; internal?: boolean; verified?: boolean; kind?: 'order' | 'rescission'; licences?: number; effective?: string }
+
+/** One section of a tapped spot's analysis (`sections.<name>`): only `ready` is shown as data. */
+export interface SpotSection { status: 'ready' | 'not_computed' | 'unavailable' | 'error'; reason?: string; [k: string]: unknown }
+/** A spot tapped on the map. `loading` while GET /api/analyze runs (the panel shows skeletons), then `ready` or `error`. */
+export interface SpotInfo { state: 'loading' | 'ready' | 'error'; lat: number; lon: number; sections?: Record<string, SpotSection>; fallbackSquare?: boolean; cropland?: boolean; error?: string }
 
 export interface Location {
   id: string; name: string; short_name: string; valley: string; ground_data: string; headline: string;
   geometry: { type: 'Polygon'; coordinates: number[][][] };
   centroid: { lon: number; lat: number };
   area_ha: SourcedNumber;
-  soil: { muname: string; drainage_class: string; hydrologic_group: string; texture_class: string; awc_mm_per_m: SourcedNumber; om_pct?: SourcedNumber; ec_ds_per_m?: number; texture_detail?: { sand_pct: number; silt_pct: number; clay_pct: number } };
+  soil: { source?: { id?: string; title?: string; url?: string | null; verified?: boolean }; muname: string; drainage_class: string; hydrologic_group: string; texture_class: string; awc_mm_per_m: SourcedNumber; om_pct?: SourcedNumber; ec_ds_per_m?: number; texture_detail?: { sand_pct: number; silt_pct: number; clay_pct: number } };
   county?: string; dwr_id?: string; boundary_title?: string; cdl_source?: Source;
   terrain: { slope_mean_pct: SourcedNumber; note: string };
-  water: { source: string | null; allocation_input: { unit: string; value: number }; district: string | null; sgma_subbasin: string | null; sgma_status: { text: string | null; url: string | null; verified: boolean }; gsa?: string[] | string | null };
+  water: { source: string | null; allocation_input: { unit: string; value: number }; district: string | null; sgma_subbasin: string | null; sgma_status: { text: string | null; url: string | null; verified: boolean; internal?: boolean }; gsa?: string[] | string | null };
   /** from GET /api/locations: crop family, the grower-facing name, county */
-  family?: string; farmer_name?: string; county_name?: string;
+  family?: 'rice' | 'forage' | 'other' | string; farmer_name?: string; county_name?: string | null;
   market_preference: string;
   stations: { network: string; id: number | string; name: string; distance_km?: number }[];
   crop_history: Record<string, string>;
@@ -26,8 +37,30 @@ export interface Location {
   /** USDA RMA crop-insurance payouts for the county and crop (backend/ground rma_profile.json) */
   /** true once GET /api/locations/{id} carries a looked-up water district / GSA (not the project brief's placeholder) */
   water_real?: boolean;
-  rma?: { scope: string; crop: string; total_usd: number; from: number; to: number; top_year: number; top_usd: number; share_drought: number; share_excess_moisture: number | null; source: string; url: string };
+  /** total_usd null: an estimate with only the share of losses by cause (BC has no public loss records) */
+  rma?: { scope: string; crop: string; total_usd: number | null; from: number; to: number; top_year: number; top_usd: number; share_drought: number; share_excess_moisture: number | null; source: string; url: string; shares?: { cause: string; share: number }[] };
   nasadem?: { slope_mean_pct?: number; slope_p90_pct?: number; low_spot_fraction?: number; elev_m?: number }; datasets?: Record<string, { status?: string; reason?: string }>;
+  /** "ca" (default) or "bc", from GET /api/locations */
+  region?: 'ca' | 'bc' | 'other'; county_kind?: string; state_code?: string | null;
+  /** a spot tapped on the map (`pt_...` id): built live by GET /api/analyze; see SpotInfo */
+  spot?: SpotInfo;
+  /** BC: what California data this field lacks, why, and what fills the gap (GET /api/locations/{id}) */
+  data_gaps?: DataGap[];
+  /** BC: the watershed and the irrigation orders, in place of a California water district */
+  water_context?: { watershed: string; orders: WaterOrder[]; note?: string };
+  /** BC: the First Nations summary on the location route; the full card comes from GET .../first_nations */
+  first_nations?: { statement: string; field_on_reserve: boolean; nearest_km: number; nearest_reserve: string; nearest_nation: string; lower_river_nation: string; route?: string };
+}
+export interface DataGap { id: string; what: string; reason: string; routes: string[]; filled_with?: string }
+export interface FirstNations {
+  statement: string; field_on_reserve: boolean; nearest_km: number; nearest_reserve: string; nearest_nation: string;
+  lower_river_nation: { nation: string; band_number?: string; reserve: string; note?: string; url: string };
+  nearby: { reserve: string; nation: string; band?: string; band_number?: string; area_ha?: number; distance_to_field_km: number }[];
+  engagement_steps: string[];
+  principles: { id: string; name: string; description: string; url: string }[];
+  contacts: { nation: string; department: string; url: string }[];
+  water_timeline: { date: string; title: string; url: string | null; licences?: number; effective?: string }[];
+  reserves_geojson?: string; source?: { title: string; url: string }; notes?: string[];
 }
 
 export type CoverClass = 'b' | 'p' | 'c' | 'w' | 'u';
@@ -44,7 +77,7 @@ export interface CellGrid { cell_m: number; rows: number; cols: number; layers?:
 export type ScoreKey = 'water_use' | 'forage_value' | 'n_fixation' | 'erosion' | 'organic_matter' | 'market' | 'pest_break' | 'infiltration' | 'n_scavenging';
 export interface RotationStrategy {
   id: string; location_id: string; name: string; short_name: string; is_baseline: boolean; cycle_years: number;
-  calendar_months: string[]; month_cover: string; strip_year?: number; allocation_rule: string | null;
+  calendar?: { irrigated?: boolean }[]; calendar_months: string[]; month_cover: string; strip_year?: number; allocation_rule: string | null;
   exposure: { bare_days_per_year: SourcedNumber; exposed_rain_days: SourcedNumber; exposed_heat_days: SourcedNumber; cover_basis: string; replay: Record<string, { irrigation_need_mm: SourcedNumber; exposed_rain_days: SourcedNumber; note: string }> };
   water: { etc_mm_season: SourcedNumber; irrigation_need_mm: SourcedNumber; etc_by_month_mm: number[]; openet_et_mm_season: SourcedNumber | null; etc_vs_openet_pct: SourcedNumber | null };
   scores: Record<ScoreKey, SourcedNumber>;

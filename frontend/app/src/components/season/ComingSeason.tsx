@@ -1,13 +1,14 @@
 // "Coming season": outlooks for this winter and next season, always labelled as outlooks, not forecasts.
 import type { Calendar, Location, Regional, RotationStrategy } from '../../types';
-import type { NasaNow, Outlook, OutlookCat, ProvMap, RegionalLive } from '../../api';
+import { linkOf } from '../../types';
+import { bcGap, isBC, type NasaNow, type Outlook, type OutlookCat, type ProvMap, type RegionalLive } from '../../api';
 import { whenT } from '../ui/FieldNow';
 import type { Daily } from '../../season';
 import { bareWindow } from '../../season';
-import { TODAY_T, fmtDate, latestAt, mmToAfac, ordinal } from '../../lib';
+import { RAIN_FED, TODAY_T, fmtDate, isRainFed, latestAt, mmToAfac, ordinal } from '../../lib';
 const band = (v: number, hi: string, mid: string, lo: string) => (v >= 67 ? hi : v > 33 ? mid : lo);
 import Icon from '../Icons';
-import { Src, county } from '../ui/shared';
+import { GapLine, Src, place, stationsName } from '../ui/shared';
 import { What } from '../ui/What';
 import { MoreDetail } from '../ui/Detail';
 import { BARE_DEF } from '../../bare';
@@ -32,13 +33,17 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
   const surface = p.loc.water.source === 'surface';
   const shasta = o?.reservoirs.find((r) => /shasta/i.test(r.name)) ?? o?.reservoirs[0];
   const notReady = !!o?.notReady;
-  const supply = !o ? 'Loading…' : notReady && surface ? 'Not ready for this field yet.' : surface
+  // BC: no NOAA outlooks, CDEC reservoirs or allocations; the watershed and its irrigation orders instead
+  const bc = isBC(p.loc), gOut = bcGap(p.loc, 'outlook'), wc = p.loc.water_context;
+  const lastOrder = wc?.orders?.[wc.orders.length - 1];
+  const supply = bc ? `${wc?.watershed.split(';')[0] ?? 'Watershed not looked up'}.${lastOrder ? ` Last order to stop irrigating: ${fmtDate(lastOrder.date)}.` : ''}`
+    : !o ? 'Loading…' : notReady && surface ? 'Not ready for this field yet.' : surface
     ? `${shasta && shasta.pctAvg != null ? `${words(shasta.name)}: ${Math.round(shasta.pctAvg)}% of average.` : ''}${o.cvpNow?.settlement != null ? ` Your allocation: ${o.cvpNow.settlement}%.` : ''}`
     : gw ? `Basin groundwater: ${band(gw.v, 'above usual', 'about usual', 'below usual')}. Under state pumping rules.` : 'Groundwater reading not available right now.';
   const today = p.strategies.find((s) => s.is_baseline);
   const nxt = today ? o?.irrigation?.[today.id]?.value ?? mmToAfac(today.water.irrigation_need_mm.value) : null;
-  const nextNeed = nxt == null ? 'Loading…' : `Needs ${nxt.toFixed(1)} acre-ft/acre. Limit ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}. ${nxt > p.allocation ? `${(nxt - p.allocation).toFixed(1)} short.` : 'It fits.'}`;
-  const headline = !o ? 'Loading the outlooks…' : notReady ? 'Winter outlook not ready for this field yet' : wetLean > dryLean ? 'Wetter than normal this winter' : dryLean > wetLean ? 'Drier than normal this winter' : 'No clear lean this winter';
+  const nextNeed = nxt == null ? 'Loading…' : today && isRainFed(today) ? `${RAIN_FED}. Fits any limit.` : `Needs ${nxt.toFixed(1)} acre-ft/acre. Limit ${p.allocation.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}. ${nxt > p.allocation ? `${(nxt - p.allocation).toFixed(1)} short.` : 'It fits.'}`;
+  const headline = !o ? 'Loading the outlooks…' : notReady ? (gOut ? 'Winter outlook not available in BC' : 'Winter outlook not ready for this field yet') : wetLean > dryLean ? 'Wetter than normal this winter' : dryLean > wetLean ? 'Drier than normal this winter' : 'No clear lean this winter';
   const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const allYearsBw = bw;
   return (
@@ -46,12 +51,12 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
       <header className="sheet-head">
         <div>
           <h2>Coming season: what’s likely this winter and next year</h2>
-          <p className="sheet-lede">{headline}.{!notReady && <> <span className="outlook-tag">An outlook, not a forecast.</span></>}</p>
+          <p className="sheet-lede">{headline}.{!notReady && <> <span className="outlook-tag">{o?.prov.cpc.origin === 'estimate' ? 'Past weather, not a forecast.' : 'An outlook, not a forecast.'}</span></>}</p>
         </div>
-        <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
+        <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button>
       </header>
       <div className="cs-sum" data-testid="season-summary">
-        <div><h3>Winter rain</h3><p>{!o ? 'Loading…' : notReady ? 'Not ready for this field yet.' : wetLean > dryLean ? 'Leans wetter than normal this winter.' : dryLean > wetLean ? 'Leans drier than normal this winter.' : 'No clear lean either way this winter.'}</p></div>
+        <div><h3>Winter rain</h3><p>{!o ? 'Loading…' : notReady && gOut ? <GapLine gap={gOut} missing /> : notReady ? 'Not ready for this field yet.' : wetLean > dryLean ? 'Leans wetter than normal this winter.' : dryLean > wetLean ? 'Leans drier than normal this winter.' : 'No clear lean either way this winter.'}</p></div>
         <div><h3>Water supply</h3><p>{supply}</p></div>
         <div><h3>Next season, today’s rotation</h3><p>{nextNeed}</p></div>
       </div>
@@ -59,6 +64,8 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
       <div className="sheet-cols three d-only">
         <div className="sheet-col">
           <h3>Rain and temperature outlook</h3>
+          {gOut && <p><GapLine gap={gOut} missing={notReady} /></p>}
+          {!(bc && notReady) && <>
           <ul className="olist">
             {o?.seasons.slice(0, 4).map((s) => {
               const r = lean(s.rain, 'rain'), t = lean(s.temp, 'temp');
@@ -71,17 +78,29 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
             })}
           </ul>
           <p className="how">Each season is split into a wetter, a middle and a drier third. With no lean each has a 33% chance; 40% means the odds are tilted, not that rain is certain.</p>
-          <cite>NOAA Climate Prediction Center 3-month outlooks{o?.issued ? `, issued ${fmtDate(o.issued)}` : ''}, at this field. <Src p={o?.prov.cpc} /></cite>
+          <cite>{bc ? 'Environment Canada station climate, 1991–2020 (no seasonal outlook is built for BC)' : 'NOAA Climate Prediction Center 3-month outlooks'}{o?.issued ? `, issued ${fmtDate(o.issued)}` : ''}, at this field. <Src p={o?.prov.cpc} /></cite>
 
+          {!(bc && !o?.droughtNow && !o?.droughtOutlook) && <>
           <h3>Drought</h3>
           <dl className="facts">
-            <div><dt>Now</dt><dd>{o?.droughtNow ? <>{o.droughtNow.category.startsWith('None') ? 'No drought' : title(o.droughtNow.category.replace(/^D\d /, ''))} in {o.droughtNow.county || `${county(p.loc)} County`} <small>(map of {fmtDate(o.droughtNow.date)})</small></> : 'Not loaded'}</dd></div>
+            <div><dt>Now</dt><dd>{o?.droughtNow ? <>{o.droughtNow.category.startsWith('None') ? 'No drought' : title(o.droughtNow.category.replace(/^D\d /, ''))} in {o.droughtNow.county || place(p.loc)} <small>(map of {fmtDate(o.droughtNow.date)})</small></> : 'Not loaded'}</dd></div>
             <div><dt>Outlook</dt><dd>{o?.droughtOutlook ? <>{DROUGHT[o.droughtOutlook.category] ?? o.droughtOutlook.category.replace(/_/g, ' ')} through {o.droughtOutlook.target}</> : 'Not loaded'}</dd></div>
           </dl>
           <cite>US Drought Monitor (county) and NOAA seasonal drought outlook. <Src p={o?.prov.water} /></cite>
+          </>}
+          </>}
         </div>
 
         <div className="sheet-col">
+          {bc ? <>
+          <h3>Irrigation orders in this watershed</h3>
+          <ul className="olist">
+            {(wc?.orders ?? []).map((x) => <li key={x.date + x.title} className={x.kind === 'rescission' ? 'rescind' : ''}><b>{fmtDate(x.date)}</b><span>{x.kind === 'rescission' ? 'Rescinded. ' : ''}{x.title}.{linkOf(x) && <> <a href={linkOf(x)!} target="_blank" rel="noreferrer">Source</a></>}</span></li>)}
+            {!wc?.orders?.length && <li><span>None on record.</span></li>}
+          </ul>
+          {wc?.note && <p className="how">{wc.note}</p>}
+          <cite>BC Gov News; orders under the Water Sustainability Act. <Src p={p.prov.water} /></cite>
+          </> : <>
           <h3>Water in storage now</h3>
           <ul className="olist">
             {o?.reservoirs.map((r) => (
@@ -94,6 +113,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
           </ul>
           <cite>California Data Exchange Center (CDEC), {o?.reservoirs[0]?.date ? fmtDate(o.reservoirs[0].date) : 'latest'}; “average” is CDEC’s own for the date. <Src p={o?.prov.water} /></cite>
 
+          </>}
           <h3>Water in the ground going into winter</h3>
           <dl className="facts">
             <div><dt>Rain since 1 Oct</dt><dd>{p.nasaNow?.rainWyMm != null && p.nasaNow.rainWyNormalMm ? <>{(p.nasaNow.rainWyMm / 25.4).toFixed(1)} in, {Math.round((p.nasaNow.rainWyMm / p.nasaNow.rainWyNormalMm) * 100)}% of normal for the date</> : 'Not loaded'}</dd></div>
@@ -102,6 +122,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
           </dl>
           <cite>NASA GPM IMERG rain (normal 2001–2025); NASA GRACE-FO {p.regionalLive.soilSource === 'smap' ? 'groundwater and NASA SMAP soil moisture' : 'with a land model, for soil and groundwater'}. {p.regionalLive.grace ? '' : 'Example numbers. '}<Src p={p.prov.regional} /></cite>
 
+          {!bc && <>
           <h3>Water allocations</h3>
           {surface && o?.cvpNow && <p className="olead">This year’s federal (Central Valley Project) allocations: Sacramento River settlement contractors {o.cvpNow.settlement}%, farms north of the Delta {o.cvpNow.northAg}%, farms south of the Delta {o.cvpNow.southAg}%.{o.swpNow ? ` State Water Project: ${o.swpNow.pct}%${o.swpNow.verified ? '' : ' (from a news copy of the DWR release)'}.` : ''}</p>}
           {surface && o?.storageVsAlloc && o.storageVsAlloc.length > 0 && <>
@@ -120,6 +141,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
 
           <h3>Snowpack and spring runoff</h3>
           <p className="how">{o?.snow ? `Statewide snowpack holds ${o.snow.swe ?? '?'} in of water (${o.snow.date}); the snow season has barely started. ` : ''}DWR’s runoff forecast (Bulletin 120) is {o?.snow?.b120 || 'not out yet'}; the first one usually comes in February.</p>
+          </>}
         </div>
 
         <div className="sheet-col">
@@ -131,7 +153,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
             <p className="big">Usually bare from {allYearsBw.from} to {allYearsBw.to}</p>
             <p>About {allYearsBw.days} days. {allYearsBw.chance != null ? <>In <b>{allYearsBw.hits} of the last {allYearsBw.winters} winters</b> at least one day with 1 inch of rain or more fell in that window.</> : null}</p>
           </> : allYearsBw ? <p className="big">Usually covered or flooded all winter: no regular bare stretch</p> : <p>Loading…</p>}
-          <cite>{o?.bare ? 'Longest bare run in this field’s satellite calendar each winter, and NOAA station rain 1981–2024.' : 'Satellite calendar of this field, winters 2016–2025, and NOAA station rain.'} Past record, not a forecast. {BARE_DEF} <Src p={o?.bare ? o.prov.cpc : p.prov.calendar} /></cite>
+          <cite>{o?.bare ? `Longest bare run in this field’s satellite calendar each winter, and ${bc ? 'ECCC' : 'NOAA'} station rain 1981–2024.` : `Satellite calendar of this field, winters 2016–2025, and rain from ${stationsName(p.loc).replace(/ near the field$/, '')}.`} Past record, not a forecast. {BARE_DEF} <Src p={o?.bare ? o.prov.cpc : p.prov.calendar} /></cite>
 
           <h3>Irrigation need next season, by rotation</h3>
           <table className="otable">
@@ -143,10 +165,11 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
                 return (
                   <tr key={s.id} className={s.is_baseline ? 'base' : ''}>
                     <th>{s.short_name}{s.is_baseline && <small> today</small>}</th>
+                    {isRainFed(s) ? <td colSpan={o?.irrigation ? 4 : 3} className="strong">{RAIN_FED}</td> : <>
                     {o?.irrigation && <td className={(o.irrigation[s.id]?.value ?? 0) > p.allocation ? 'warn strong' : 'strong'}>{o.irrigation[s.id] ? `${o.irrigation[s.id].value.toFixed(1)}` : '–'}</td>}
                     <td className={over ? 'warn' : ''}>{mmToAfac(n.low ?? n.value).toFixed(1)}–{mmToAfac(n.high ?? n.value).toFixed(1)}</td>
                     <td>{dry ? mmToAfac(dry.value).toFixed(1) : '–'}</td>
-                    <td>{wet ? mmToAfac(wet.value).toFixed(1) : '–'}</td>
+                    <td>{wet ? mmToAfac(wet.value).toFixed(1) : '–'}</td></>}
                   </tr>
                 );
               })}
@@ -154,7 +177,7 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
           </table>
           <p className="how">Acre-feet per acre a year. Your limit: {p.allocation.toFixed(1)}{p.exampleLimit ? ' (example, change to yours on Compare)' : ''}; brown means over it. {o?.irrigation ? (() => { const sp = Math.max(...Object.values(o.irrigation).map((x) => x.high - x.low)); return sp < 0.15 ? `In the model, this winter’s outlook moves irrigation need by ${sp < 0.1 ? 'less than 0.1' : 'about 0.1'} acre-foot per acre: rain falls mostly before the crop needs water.` : `Outlook range: up to ${sp.toFixed(1)} acre-feet per acre between scenarios.`; })() : ''}</p>
           <cite>Rotation model driven by NASA POWER sun, wind and humidity, weather 2015–2025. Safflower and wheat are upper bounds (stored soil water not counted). <Src p={p.prov.strategies} /></cite>
-          <button className="btn primary wide" onClick={p.onCompare}>Compare rotations<Icon name="right" size={16} /></button>
+          <button className="btn btn-secondary wide" onClick={p.onCompare}>Compare rotations<Icon name="right" size={16} /></button>
         </div>
       </div>
     </section>

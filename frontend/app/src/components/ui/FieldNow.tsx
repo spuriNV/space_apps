@@ -1,13 +1,14 @@
 // "Your field now": plain answers in grower units for the timeline date (today by default).
 // Each answer: a plain sentence first, then the number with its unit, then one small source line.
 import type { Calendar, Location, Regional, RotationStrategy } from '../../types';
-import type { Extras, NasaNow, ProvMap, RegionalLive } from '../../api';
+import { bcGap, isBC, type Extras, type NasaNow, type ProvMap, type RegionalLive } from '../../api';
 import { TODAY_T } from '../../lib';
 import type { Daily } from '../../season';
 import { HOT_F, cropWaterSoFar, fmtIn, fmtShort, heatFrost, rainSoFar, type RainSoFar } from '../../season';
-import { MONTHS, atT, latestAt, dataT, dekadOf, fieldState, lastDataT, mmToAfac, ordinal, yearOf } from '../../lib';
-import { SoilBar, Src, calSource, cropName, openetText, soilFacts } from './shared';
+import { MONTHS, atT, latestAt, dataT, dekadOf, fieldState, isRainFed, lastDataT, mmToAfac, ordinal, RAIN_FED, yearOf } from '../../lib';
+import { GapLine, SoilBar, Src, calSource, cropMapName, cropName, openetText, soilFacts, stationsName } from './shared';
 import { What } from './What';
+import { CountUp } from './motion';
 
 const PART = ['early', 'mid', 'late'];
 const dk = (d: number) => `${PART[d % 3]} ${MONTHS[Math.floor(d / 3)]}`;
@@ -78,14 +79,15 @@ function latestClearT(cal: Calendar, t: number, maxBack = 4): number | null {
   for (let k = t; k >= 0 && t - k <= maxBack; k--) { const y = cal.years[Math.floor(k / 36)]; const c = y?.rule[k % 36]; if (c && c !== 'u') return k; }
   return null;
 }
-/** One small reading: label, value, a bar with a reference mark. */
-function Meter(m: { label: string; value: string | null; state: LoadState; pct: number | null; mark: number | null; markLabel: string; note: string; warn?: boolean }) {
+/** One small reading: label, value, a bar with a reference mark. A number (`num`) counts up when it first appears and the
+ *  bar grows to it; both glide when the date changes. The fill moves by transform only (styles.css, .m-fill). */
+function Meter(m: { label: string; value: string | null; num?: { n: number; dec: number; unit: string }; state: LoadState; pct: number | null; mark: number | null; markLabel: string; note: string; warn?: boolean }) {
   return (
     <div className="meter">
       <span className="m-label">{m.label}</span>
-      {m.value == null ? (m.state === 'timeout' ? <span className="m-val na">Not available</span> : <span className="skel" />) : <>
-        <span className="m-val">{m.value}</span>
-        <i className="m-track">{m.pct != null && <em className={`m-fill ${m.warn ? 'warn' : ''}`} style={{ width: `${m.pct * 100}%` }} />}{m.mark != null && <b className="m-mark" style={{ left: `${Math.min(1, m.mark) * 100}%` }} title={m.markLabel} />}</i>
+      {m.value == null ? (m.state === 'timeout' ? <span className="m-val na">Not available</span> : <><span className="skel skel-val" /><span className="skel skel-bar" /></>) : <>
+        <span className="m-val" aria-label={m.value}>{m.num ? <><CountUp value={m.num.n} dec={m.num.dec} />{m.num.unit}</> : m.value}</span>
+        <i className="m-track"><span className="m-clip">{m.pct != null && <em className={`m-fill ${m.warn ? 'warn' : ''}`} style={{ '--p': Math.max(0, Math.min(1, m.pct)) } as React.CSSProperties} />}</span>{m.mark != null && <b className="m-mark" style={{ left: `${Math.min(1, m.mark) * 100}%` }} title={m.markLabel} />}</i>
         <span className="m-note">{m.note}</span>
       </>}
     </div>
@@ -110,12 +112,20 @@ export function FieldNow(p: FieldNowProps) {
   const sm = p.regional ? latestAt(p.regional.smap_rootzone_pct.values, t) : null, smap = sm?.v ?? null;
   const gr = p.regional ? latestAt(p.regional.grace_gw_pct.values, t) : null, grace = gr?.v ?? null;
   const behindNote = dt < t ? ` Latest clear view ${whenT(dt)}${agoText}${yearOf(dt) < yr ? `; ${yr} imagery not processed yet` : ''}.` : '';
-  const limit = p.allocation ?? null, needAf = need ? mmToAfac(need.value) : null;
+  const limit = p.allocation ?? null, needAf = need ? mmToAfac(need.value) : null, rainFed = !!base && isRainFed(base);
   const y26 = cal?.years.find((y) => y.year === yr);
   const soil = soilFacts(loc.soil);
+  // BC: California datasets this field lacks (a 404 shows one quiet line; an estimate shows normally, the reason under More detail)
+  const bc = isBC(loc), gOpenet = bcGap(loc, 'openet'), gMl = bcGap(loc, 'ml_calendar');
+  const openetEst = p.prov.openet?.origin === 'estimate';
+  // a tapped spot: only its tier-1 sections are data; not_computed parts are hidden, unavailable ones get one quiet line
+  const sp = loc.spot;
+  const secOf = (k: string) => sp?.sections?.[k];
+  const spotGap = (k: string) => { const x = secOf(k); return x && x.status !== 'ready' && x.status !== 'not_computed' ? <span className="gap-line">{x.reason ? `${x.reason.charAt(0).toUpperCase()}${x.reason.slice(1)}.` : 'Not available for this spot.'}</span> : null; };
   return (
     <>
     <div className="glance" data-testid="glance">
+      {!sp && (
       <div className="gl-top">
         <span className="gl-thumb">
           <img src={`${import.meta.env.BASE_URL}thumbs/${loc.id}.jpg`} alt="" onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} />
@@ -131,30 +141,37 @@ export function FieldNow(p: FieldNowProps) {
           <b>{st ? st.text : '…'}</b>
         </span>
       </div>
-      <div className="gl-grid">
-        <Meter label="Rain since 1 Oct" value={rain ? `${fmtIn(rain.inches)} in` : null} state={p.dailyState} pct={rain && rain.normal ? Math.min(1, rain.inches / (Math.max(rain.inches, rain.normal) * 1.25)) : null} mark={rain && rain.normal ? rain.normal / (Math.max(rain.inches, rain.normal) * 1.25) : null} markLabel="normal" note={rain?.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} />
-        <Meter label="Water need, a year" value={needAf != null ? `${needAf.toFixed(1)} acre-ft/acre` : null} state={p.dataState} pct={needAf != null && limit ? Math.min(1, needAf / (Math.max(needAf, limit) * 1.2)) : null} mark={needAf != null && limit ? limit / (Math.max(needAf, limit) * 1.2) : null} markLabel="limit" warn={needAf != null && limit != null && needAf > limit} note={limit != null ? `Limit ${limit.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}` : ''} />
-        <Meter label="Greenness" value={fs && fs.cls !== 'u' ? fs.ndvi.toFixed(2) : null} state={p.dataState} pct={fs && fs.cls !== 'u' ? Math.max(0, Math.min(1, fs.ndvi)) : null} mark={0.6} markLabel="full canopy" note={fs && fs.cls !== 'u' ? cap(whenT(dt)) : ''} />
+      )}
+      <div className={`gl-grid ${sp ? 'spot' : ''}`}>
+        <Meter label="Rain since 1 Oct" value={rain ? `${fmtIn(rain.inches)} in` : null} num={rain ? { n: +fmtIn(rain.inches), dec: (fmtIn(rain.inches).split('.')[1] ?? '').length, unit: ' in' } : undefined} state={p.dailyState} pct={rain && rain.normal ? Math.min(1, rain.inches / (Math.max(rain.inches, rain.normal) * 1.25)) : null} mark={rain && rain.normal ? rain.normal / (Math.max(rain.inches, rain.normal) * 1.25) : null} markLabel="normal" note={rain?.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} />
+        <Meter label="Water need, a year" value={needAf != null ? (rainFed ? RAIN_FED : `${needAf.toFixed(1)} acre-ft/acre`) : null} num={needAf != null && !rainFed ? { n: +needAf.toFixed(1), dec: 1, unit: ' acre-ft/acre' } : undefined} state={p.dataState} pct={needAf != null && limit ? rainFed ? 0 : Math.min(1, needAf / (Math.max(needAf, limit) * 1.2)) : null} mark={needAf != null && limit ? limit / (Math.max(needAf, limit) * 1.2) : null} markLabel="limit" warn={needAf != null && limit != null && !rainFed && needAf > limit} note={limit != null ? `Limit ${limit.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}` : ''} />
+        {!sp && <Meter label="Greenness" value={fs && fs.cls !== 'u' ? fs.ndvi.toFixed(2) : null} num={fs && fs.cls !== 'u' ? { n: +fs.ndvi.toFixed(2), dec: 2, unit: '' } : undefined} state={p.dataState} pct={fs && fs.cls !== 'u' ? Math.max(0, Math.min(1, fs.ndvi)) : null} mark={0.6} markLabel="full canopy" note={fs && fs.cls !== 'u' ? cap(whenT(dt)) : ''} />}
+        {!sp && (
         <div className="meter">
           <span className="m-label">Soil and groundwater</span>
-          {!p.regional ? (p.dataState === 'timeout' ? <span className="m-val na">Not available</span> : <span className="skel" />) : <>
+          {!p.regional ? (p.dataState === 'timeout' ? <span className="m-val na">Not available</span> : <><span className="skel skel-bar" /><span className="skel" /></>) : <>
             <span className="m-dots">
-              <i className="m-track"><em className="m-mid" />{smap != null && <b className="dot soil" style={{ left: `${smap}%` }} title={`Soil moisture ${ordinal(Math.round(smap))} percentile`} />}{grace != null && <b className="dot gw" style={{ left: `${grace}%` }} title={`Groundwater ${ordinal(Math.round(grace))} percentile`} />}</i>
+              {/* each dot rides a full-width rail that slides out from the middle (normal) to its percentile, by transform */}
+              <i className="m-track"><em className="m-mid" />{smap != null && <span className="dot-rail" style={{ '--x': smap } as React.CSSProperties}><b className="dot soil" title={`Soil moisture ${ordinal(Math.round(smap))} percentile`} /></span>}{grace != null && <span className="dot-rail" style={{ '--x': grace } as React.CSSProperties}><b className="dot gw" title={`Groundwater ${ordinal(Math.round(grace))} percentile`} /></span>}</i>
             </span>
             <span className="m-note"><i className="k soil" />Soil {smap != null ? ordinal(Math.round(smap)) : '–'}, <i className="k gw" />groundwater {grace != null ? ordinal(Math.round(grace)) : '–'}</span>
           </>}
         </div>
+        )}
       </div>
     </div>
     <dl className="answers">
+      {sp ? <SpotCrop loc={loc} /> : (
       <div className="ans">
         <dt>What is growing, and how far along?</dt>
         <dd>
           {st ? <b><i className={`sw-${st.sw}`} />{st.text}</b> : pend(p.dataState)}
-          <span className="d-only">{crop ? `${cropName(crop)} on record for ${yr}.` : `${yr} crop map not published yet (USDA, early ${yr + 1}). ${lastRec}: ${cropName(loc.crop_history[lastRec]).toLowerCase()}.`} {st?.sub}</span>
-          <cite>{calSource(p.prov.calendar)}, 100 ft squares; crop from the USDA Cropland Data Layer.{behindNote} <Src p={p.prov.calendar} /></cite>
+          <span className="d-only">{crop ? `${cropName(crop)} on record for ${yr}.` : `${yr} crop map not published yet (${bc ? 'AAFC' : 'USDA'}, early ${yr + 1}). ${lastRec}: ${cropName(loc.crop_history[lastRec]).toLowerCase()}.`} {st?.sub}</span>
+          <cite>{calSource(p.prov.calendar)}, 100 ft squares; crop from the {cropMapName(loc)}.{behindNote} <Src p={p.prov.calendar} /></cite>
         </dd>
       </div>
+      )}
+      {!sp && (
       <div className="ans d-only">
         <dt>How much green cover is there? <What k="greenness" /></dt>
         <dd>
@@ -165,13 +182,14 @@ export function FieldNow(p: FieldNowProps) {
           <cite>Greenness from {calSource(p.prov.calendar).replace(' satellites', '')}, field average, {whenT(dt)}{agoText}. <Src p={p.prov.calendar} /></cite>
         </dd>
       </div>
+      )}
       <div className="ans">
         <dt>How much rain so far this season?</dt>
         <dd>
           {rain ? <>
             <b>{rain.period.current ? '' : 'No readings for this winter yet. '}{rain.pct != null ? `${rain.period.current ? 'So far' : 'Last season was'} ${vsNormal(rain.pct, 'wetter than normal', 'drier than normal')}` : ''}</b>
             <span>{fmtIn(rain.inches)} in {rain.period.current ? 'since 1 Oct' : rain.period.label}.{rain.normal != null ? ` Normal: ${fmtIn(rain.normal)} in.` : ''}</span>
-            <cite>{rain.source === 'imerg' ? 'NASA GPM IMERG satellite rain over the field (one reading for a 6-mile square)' : 'NOAA weather stations near the field, averaged'}; normal = the same dates in the {rain.nSeasons} seasons before. <Src p={p.prov.daily} /></cite>
+            <cite>{rain.source === 'imerg' ? 'NASA GPM IMERG satellite rain over the field (one reading for a 6-mile square)' : rain.source === 'power' ? 'NASA POWER daily rain for the area (one reading for a cell about 30 miles across)' : `${stationsName(loc)}, averaged`}; normal = the same dates in the {rain.nSeasons} seasons before. <Src p={p.prov.daily} /></cite>
           </> : pend(p.dailyState)}
         </dd>
       </div>
@@ -179,27 +197,32 @@ export function FieldNow(p: FieldNowProps) {
         <dt>How much water has the crop used? <What k="et" /></dt>
         <dd>
           {ms && ms.current ? <>
-            <b>Measured so far this year: {fmtIn(ms.inches)} in</b>
-            <span>{ms.label}, measured on this field. Our model for the same months: {fmtIn(ms.model)} in. That is {mmToAfac(ms.inches * 25.4).toFixed(1)} acre-feet per acre.</span>
+            <b>{openetEst ? 'Estimated' : 'Measured'} so far this year: {fmtIn(ms.inches)} in</b>
+            <span>{ms.label}, {openetEst ? 'estimated for' : 'measured on'} this field. Our model for the same months: {fmtIn(ms.model)} in. That is {mmToAfac(ms.inches * 25.4).toFixed(1)} acre-feet per acre.</span>
             <cite>OpenET satellite measurement (ensemble of 6 models built on Landsat), monthly, this field’s outline. <Src p={p.prov.openet} /></cite>
+            <GapLine gap={gOpenet} missing={false} />
           </> : cw ? <>
             <b>{cw.period.current ? 'So far this year' : 'Last year'}: {vsNormal(cw.pct, 'more than normal', 'less than normal')}</b>
-            <span>About {fmtIn(cw.inches)} in of water {cw.period.label}, estimated; normal is {fmtIn(cw.normal)} in. That is {mmToAfac(cw.inches * 25.4).toFixed(1)} acre-feet per acre.{ms ? ` Measured on this field by OpenET for ${ms.label}: ${fmtIn(ms.inches)} in (our model for those months: ${fmtIn(ms.model)} in).` : ''}</span>
-            <cite>Estimate: rotation model driven by NASA POWER sun, wind and humidity{ms ? '; measured: OpenET satellite data, which ends a few months behind' : ''}. {openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
+            <span>About {fmtIn(cw.inches)} in of water {cw.period.label}, estimated; normal is {fmtIn(cw.normal)} in. That is {mmToAfac(cw.inches * 25.4).toFixed(1)} acre-feet per acre.{ms ? ` ${openetEst ? 'Estimated for this field' : 'Measured on this field by OpenET'} for ${ms.label}: ${fmtIn(ms.inches)} in (our model for those months: ${fmtIn(ms.model)} in).` : ''}</span>
+            <cite>Estimate: rotation model driven by NASA POWER sun, wind and humidity{ms ? '; measured: OpenET satellite data, which ends a few months behind' : ''}. {gOpenet ? '' : openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
+            <GapLine gap={gOpenet} missing={!p.extras.openet} />
           </> : !p.strategies || !p.daily ? pend(p.daily ? p.dataState : p.dailyState) : <b>No rotation model for this field</b>}
+          {sp && spotGap('openet')}
         </dd>
       </div>
       {need && (
         <div className="ans">
           <dt>Will the water limit cover irrigation? <What k="waterBalance" /></dt>
           <dd>
-            <b>{p.allocation == null ? `About ${mmToAfac(need.value).toFixed(1)} acre-feet per acre a year` : mmToAfac(need.value) > p.allocation ? `Short by about ${(mmToAfac(need.value) - p.allocation).toFixed(1)} acre-feet per acre` : 'Fits your limit in a typical year'}</b>
-            <span>Needs {mmToAfac(need.value).toFixed(1)} acre-ft/acre a year.{p.allocation != null ? ` Limit: ${p.allocation.toFixed(1)}.` : ''}{p.exampleLimit && <em className="ex-limit">example, change it on Compare</em>}</span>
-            <span className="d-only">Likely {mmToAfac(need.low ?? need.value).toFixed(1)}–{mmToAfac(need.high ?? need.value).toFixed(1)} acre-ft/acre.</span>
+            <b>{rainFed ? 'Fits any limit' : p.allocation == null ? `About ${mmToAfac(need.value).toFixed(1)} acre-feet per acre a year` : mmToAfac(need.value) > p.allocation ? `Short by about ${(mmToAfac(need.value) - p.allocation).toFixed(1)} acre-feet per acre` : 'Fits your limit in a typical year'}</b>
+            <span>{rainFed ? `${RAIN_FED}.` : `Needs ${mmToAfac(need.value).toFixed(1)} acre-ft/acre a year.`}{p.allocation != null ? ` Limit: ${p.allocation.toFixed(1)}.` : ''}{p.exampleLimit && <em className="status example ex-limit">example, change it on Compare</em>}</span>
+            {!rainFed && <span className="d-only">Likely {mmToAfac(need.low ?? need.value).toFixed(1)}–{mmToAfac(need.high ?? need.value).toFixed(1)} acre-ft/acre.</span>}
             <cite>Rotation model with NASA POWER weather: crop water use minus rain, typical year 2015–2025. <Src p={p.prov.strategies} /></cite>
+            {sp && loc.region === 'other' && <span className="gap-line">Outside California: California’s {loc.family === 'rice' ? 'rice' : 'forage'} rotations, run with this spot’s NASA weather, as a stand-in.</span>}
           </dd>
         </div>
       )}
+      {!sp && (
       <div className="ans">
         <dt>Is the soil wetter or drier than usual? And the groundwater? <What k="soilAnomaly" /></dt>
         <dd>
@@ -208,6 +231,7 @@ export function FieldNow(p: FieldNowProps) {
           <cite>{p.regionalLive.soilSource === 'grace_da' ? 'NASA GRACE-FO' : 'NASA SMAP and GRACE-FO'}. <Src p={p.prov.regional} /></cite>
         </dd>
       </div>
+      )}
       {soil.mix || soil.texture || soil.holds || soil.drains || soil.salt ? (
         <div className="ans" data-testid="soil-answer">
           <dt>What is the soil like?</dt>
@@ -220,26 +244,54 @@ export function FieldNow(p: FieldNowProps) {
           </dd>
         </div>
       ) : null}
+      {!sp && (
       <div className="ans d-only">
         <dt>Has the crop been stressed, or the field under water? <What k="stress" /></dt>
         <dd>
-          {p.dataState !== 'ready' ? pend(p.dataState) : <><b>{stressLine(p.extras, t)}</b>
-          <span>{waterLine(p.extras, t)}</span></>}
-          <cite>Crop stress: two statistical methods on satellite greenness and NASA POWER heat and dryness, growing season only. Standing water: NASA OPERA, 100 ft squares, clear images only. <Src p={p.prov.stress ?? p.prov.water_seen} /></cite>
+          {p.dataState !== 'ready' ? pend(p.dataState) : gMl && !p.extras.stress ? <>
+            <GapLine gap={gMl} missing />
+            {p.extras.water && <span>{waterLine(p.extras, t)}</span>}
+          </> : <><b>{stressLine(p.extras, t)}</b>
+          {(!bc || p.extras.water) && <span>{waterLine(p.extras, t)}</span>}
+          {gMl && <GapLine gap={gMl} missing={false} />}</>}
+          {!(gMl && !p.extras.stress) && <cite>Crop stress: two statistical methods on satellite greenness and NASA POWER heat and dryness, growing season only. Standing water: NASA OPERA, 100 ft squares, clear images only. <Src p={p.prov.stress ?? p.prov.water_seen} /></cite>}
         </dd>
       </div>
+      )}
+      {!sp ? (
       <div className="ans d-only">
         <dt>How many hot days and frost nights? <What k="frost" /></dt>
         <dd>
           {hf ? <>
             <b>{hf.hot} day{hf.hot === 1 ? '' : 's'} at or above {HOT_F} °F {hf.period.current ? 'so far this year' : `in ${hf.period.label.replace('last year, ', '')}`}</b>
             <span>Normal for the same dates: {hf.hotNormal != null ? Math.round(hf.hotNormal) : '?'}. Frost nights (32 °F or lower), {hf.frostPeriod.label}: {hf.frost}; normal {hf.frostNormal != null ? Math.round(hf.frostNormal) : '?'}.</span>
-            <cite>NOAA weather stations near the field. NASA POWER is not used for heat here: it runs about 6 °F hot in summer against the stations. <Src p={p.prov.daily} /></cite>
+            <cite>{stationsName(loc)}. NASA POWER is not used for heat here: {bc ? 'its grid cell sits well above the valley and runs cold' : 'it runs about 6 °F hot in summer against the stations'}. <Src p={p.prov.daily} /></cite>
           </> : pend(p.dailyState)}
         </dd>
       </div>
+      ) : <div className="ans d-only"><dt>How many hot days and frost nights?</dt><dd><span className="gap-line">Hot days and frost nights come from weather stations; not counted for a tapped spot.</span></dd></div>}
     </dl>
     </>
+  );
+}
+
+/** A tapped spot: what the crop map says was grown here (USDA Cropland Data Layer at points inside the spot). */
+function SpotCrop({ loc }: { loc: Location }) {
+  const sp = loc.spot!, sec = sp.sections?.crop_history;
+  const ys = Object.keys(loc.crop_history).map(Number).sort((a, b) => a - b), last = ys[ys.length - 1];
+  const now = last != null ? cropName(loc.crop_history[last]) : null;
+  const ten = ys.slice(-10), same = now ? ten.filter((y) => cropName(loc.crop_history[y]) === now).length : 0;
+  return (
+    <div className="ans" data-testid="spot-crop">
+      <dt>What has been grown here?</dt>
+      <dd>
+        {sp.state === 'loading' ? <span className="skel" aria-label="Loading" /> : now ? <>
+          <b>{now} in {last}</b>
+          <span>{now === 'Left fallow' ? `Left fallow in ${last}.` : `${now} in ${same} of the last ${ten.length} years.`}</span>
+        </> : <span className="gap-line">{sec?.reason ?? 'No crop record for this spot.'}</span>}
+        <cite>USDA Cropland Data Layer, read at points inside the spot.</cite>
+      </dd>
+    </div>
   );
 }
 

@@ -5,8 +5,8 @@ from common import *
 
 URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 PARAMS = "T2M,T2M_MAX,T2M_MIN,RH2M,WS2M,ALLSKY_SFC_SW_DWN,PRECTOTCORR"
-RANGES = {"T2M": (-30, 50), "T2M_MAX": (-30, 55), "T2M_MIN": (-40, 45), "RH2M": (0, 100),
-          "WS2M": (0, 40), "ALLSKY_SFC_SW_DWN": (0, 40), "PRECTOTCORR": (0, 500)}
+RANGES = {"T2M": (-50, 50), "T2M_MAX": (-45, 55), "T2M_MIN": (-55, 45), "RH2M": (0, 100),
+          "WS2M": (0, 40), "ALLSKY_SFC_SW_DWN": (0, 40), "PRECTOTCORR": (0, 500)}   # cold limits widened for the BC field (Shuswap winters)
 
 def main():
     import shutil

@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { acres, fieldName, latestCrop } from './components/ui/shared';
 import type { BCInfo, Calendar, CellGrid, Dataset, Location, Regional } from './types';
 import type { RegionalLive } from './api';
+import { reserveName } from './components/ui/FirstNations';
 import { atT, latestAt, dataT, CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
 
 // Tile sources fixed by CONTRACT.md (no API keys).
@@ -40,13 +41,19 @@ export interface MapHandle {
   zoomBy: (d: number) => void;
   resetNorth: () => void;
   toggle3D: () => void;
+  /** a tapped spot: centre it beside the panel, zooming in only if the map is far out */
+  focusSpot: (lat: number, lon: number) => void;
 }
 interface Props {
   locations: Location[]; bc: BCInfo | null; datasets: Dataset[];
+  /** BC: reserve outlines near the selected field, drawn muted for context only (not part of the analysis) */
+  reserves?: GeoJSON.FeatureCollection | null;
   selected: Location | null; cells: CellGrid | null; cal: Calendar | null; regional: Regional | null;
   t: number; detector: 'rule' | 'ml'; metric: 'cover' | 'et'; layersOn: Record<string, boolean>; regionalLive: RegionalLive;
   leftInset: number; bottomInset: number; rightInset: number;
   onSelect: (id: string) => void; onBC: () => void;
+  /** a tap, click or long-press on open map (not on a field or a pin): analyse that spot */
+  onTap?: (lat: number, lon: number) => void;
   onView: (v: { zoom: number; pitch: number; bearing: number; lat: number; lon: number }) => void;
 }
 interface StackLabel { key: string; ax: number; ay: number; color: string; tag: string; title: string; value: string; note: string }
@@ -87,7 +94,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: 'metric' }), 'bottom-right');
     map.on('load', () => {
       el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
-      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells']) map.addSource(id, { type: 'geojson', data: fc() });
+      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves']) map.addSource(id, { type: 'geojson', data: fc() });
+      // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
+      map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(10,12,8,0.5)', 'line-width': 3.6 } });
+      map.addLayer({ id: 'res-line', type: 'line', source: 'reserves', paint: { 'line-color': '#f1ecdd', 'line-opacity': 0.95, 'line-width': 2, 'line-dasharray': [3, 2] } });
       map.addLayer({ id: 'fp-fill', type: 'fill', source: 'fp', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.1, 13, 0.03] } });
       map.addLayer({ id: 'fp-line', type: 'line', source: 'fp', paint: { 'line-color': ['get', 'color'], 'line-width': 2, 'line-dasharray': [2, 1.5] } });
       map.addLayer({ id: 'fpgrid-line', type: 'line', source: 'fpgrid', minzoom: 11.5, paint: { 'line-color': ['get', 'color'], 'line-width': 1, 'line-opacity': 0.75 } });
@@ -101,6 +111,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       ext('slab-smap', 0.84, EXPLODE_Z0 + 0.1);
       ext('cells', 0.97, 11.2);
       map.on('click', 'field-hit', (e) => { const id = e.features?.[0]?.properties?.id; if (id) live.current.onSelect(id); });
+      // tap anywhere: a click or tap on open map, a right-click, or a long-press (touch) drops a pin and analyses the spot
+      let lastTap = 0;
+      const tap = (e: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
+        const tgt = (e.originalEvent?.target as Element | null);
+        if (tgt?.closest?.('.maplibregl-marker, .maplibregl-ctrl')) return;
+        if (map.queryRenderedFeatures(e.point, { layers: ['field-hit'] }).length) return;
+        if (Date.now() - lastTap < 700) return;
+        lastTap = Date.now();
+        live.current.onTap?.(e.lngLat.lat, e.lngLat.lng);
+      };
+      map.on('click', tap);
+      map.on('contextmenu', (e) => { e.preventDefault(); tap(e); });
+      let press: ReturnType<typeof setTimeout> | null = null;
+      map.on('touchstart', (e) => { if (press) clearTimeout(press); press = e.originalEvent.touches.length === 1 ? setTimeout(() => tap(e), 550) : null; });
+      for (const ev of ['touchend', 'touchmove', 'touchcancel', 'movestart'] as const) map.on(ev, () => { if (press) { clearTimeout(press); press = null; } });
       map.on('mouseenter', 'field-hit', () => (map.getCanvas().style.cursor = 'pointer'));
       map.on('mouseleave', 'field-hit', () => (map.getCanvas().style.cursor = ''));
       setReady(true);
@@ -137,13 +162,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     const ms: maplibregl.Marker[] = [];
     for (const loc of p.locations) {
       const d = document.createElement('button');
-      d.className = 'pin site';
+      d.className = loc.spot ? 'pin site spot-pin' : 'pin site';
       d.dataset.id = loc.id;
-      d.innerHTML = `${PIN_SVG}<span class="pin-text"><b>${fieldName(loc)}</b><i>${acres(loc)} acres · ${latestCrop(loc).crop} in ${latestCrop(loc).year}</i></span>`;
+      const lc = latestCrop(loc);
+      d.innerHTML = `${PIN_SVG}<span class="pin-text"><b></b><i></i></span>`;
+      d.querySelector('b')!.textContent = loc.spot ? (loc.spot.state === 'ready' ? fieldName(loc) : 'Tapped spot') : fieldName(loc);
+      d.querySelector('i')!.textContent = loc.spot && loc.spot.state !== 'ready' ? 'Analysing this spot…' : `${acres(loc)} acres${Number.isFinite(lc.year) ? ` · ${lc.crop} in ${lc.year}` : ''}`;
       d.onclick = (ev) => { ev.stopPropagation(); live.current.onSelect(loc.id); };
       d.classList.toggle('on', live.current.selected?.id === loc.id);
       // the pin tip (14, 36 inside the 28 x 36 pin) sits on the field centroid; the label hangs to its right
-      ms.push(new maplibregl.Marker({ element: d, anchor: 'bottom-left', offset: [-14, 0] }).setLngLat([loc.centroid.lon, loc.centroid.lat]).addTo(map));
+      // a tapped spot's pin sits where the grower tapped, not on the outline's centre
+      ms.push(new maplibregl.Marker({ element: d, anchor: 'bottom-left', offset: [-14, 0] }).setLngLat(loc.spot ? [loc.spot.lon, loc.spot.lat] : [loc.centroid.lon, loc.centroid.lat]).addTo(map));
     }
     for (const pl of p.bc?.places ?? []) {
       const d = document.createElement('button');
@@ -157,13 +186,52 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
 
   useEffect(() => { document.querySelectorAll<HTMLElement>('.pin.site').forEach((el) => el.classList.toggle('on', el.dataset.id === p.selected?.id)); }, [p.selected, p.locations]);
 
+  // ---------- reserve outlines (BC, context only) with paper label boxes ----------
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const feats = p.reserves?.features ?? [];
+    (map.getSource('reserves') as GeoJSONSource).setData(fc(feats));
+    const mk = feats.map((f) => {
+      const g = f.geometry as GeoJSON.Polygon | GeoJSON.MultiPolygon;
+      const polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
+      // label just east of the largest part, at its mid latitude, so the outline itself stays visible
+      const ring = polys.map((pp) => pp[0]).sort((a, b) => b.length - a.length)[0] ?? [];
+      const ys = ring.map((c) => c[1]), midY = (Math.min(...ys) + Math.max(...ys)) / 2;
+      const at = [Math.max(...ring.map((c) => c[0])), midY];
+      const pr = (f.properties ?? {}) as { name?: string; band?: string; nation?: string; distance_to_field_km?: number };
+      const d = document.createElement('div');
+      d.className = 'res-tag';
+      d.innerHTML = `<b></b><i></i>`;
+      d.querySelector('b')!.textContent = reserveName(pr.name ?? 'Reserve');
+      d.querySelector('i')!.textContent = pr.nation ?? pr.band ?? '';
+      return { km: pr.distance_to_field_km ?? 99, m: new maplibregl.Marker({ element: d, anchor: 'left', offset: [6, 0] }).setLngLat(at as [number, number]).addTo(map) };
+    }).sort((a, b) => a.km - b.km);
+    // neighbouring reserves: keep the nearer one's label when two boxes overlap
+    const declutter = () => {
+      const kept: DOMRect[] = [];
+      for (const { m } of mk) {
+        const el = m.getElement(); el.style.visibility = 'visible';
+        const r = el.getBoundingClientRect();
+        if (kept.some((k) => r.left < k.right + 4 && r.right > k.left - 4 && r.top < k.bottom + 2 && r.bottom > k.top - 2)) el.style.visibility = 'hidden'; else kept.push(r);
+      }
+    };
+    map.on('move', declutter);
+    const h = setTimeout(declutter, 0);
+    return () => { clearTimeout(h); map.off('move', declutter); mk.forEach(({ m }) => m.remove()); };
+  }, [ready, p.reserves]);
+
   // ---------- field outlines + footprints ----------
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
     (map.getSource('field') as GeoJSONSource).setData(fc(p.locations.map((l) => ({ type: 'Feature', properties: { id: l.id, selected: l.id === p.selected?.id }, geometry: l.geometry }))));
     const fps: unknown[] = [], grids: unknown[] = [], lbls: unknown[] = [];
-    if (p.selected) {
+    if (p.selected?.spot?.fallbackSquare) {
+      const b = bbox(p.selected);
+      lbls.push({ type: 'Feature', properties: { color: '#ffd166', label: '200 m square around your tap, not a field outline' }, geometry: { type: 'Point', coordinates: [b.e, b.s] } });
+    }
+    if (p.selected && !p.selected.spot) {
       const loc = p.selected, m = mPerDeg(loc.centroid.lat), b = bbox(loc);
       for (const ds of p.datasets) {
         if (!p.layersOn[ds.id]) continue;
@@ -274,20 +342,23 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   }
 
   // ---------- camera ----------
+  // camera moves: a smooth in-out so the flight neither lurches off nor stops dead (MapLibre jumps instead under reduced motion)
+  const fly = { curve: 1.3, easing: (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2) };
   const pad = () => ({ left: live.current.leftInset, right: live.current.rightInset, top: 70, bottom: live.current.bottomInset });
   useImperativeHandle(ref, () => ({
     flyToField(loc, mode) {
       const map = mapRef.current!;
       programmatic.current = true;
       const small = loc.area_ha.value < 45;
-      if (mode === 'card') map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat], zoom: 10.6, pitch: 0, bearing: 0, padding: pad(), speed: 1.4 });
-      else map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat - (small ? 0.0006 : 0.001)], zoom: (small ? 15.15 : 14.5) - (mode === 'story' ? 0.15 : mode === 'year' ? 0.75 : 0), pitch: mode === 'year' ? 52 : 60, bearing: -24, padding: { ...pad(), right: live.current.rightInset + 330 }, speed: 1.2 });
+      if (mode === 'card') map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat], zoom: 10.6, pitch: 0, bearing: 0, padding: pad(), speed: 1.3, ...fly });
+      else map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat - (small ? 0.0006 : 0.001)], zoom: (small ? 15.15 : 14.5) - (mode === 'story' ? 0.15 : mode === 'year' ? 0.75 : 0), pitch: mode === 'year' ? 52 : 60, bearing: -24, padding: { ...pad(), right: live.current.rightInset + 330 }, speed: 1.2, ...fly });
     },
-    flyHome() { programmatic.current = true; mapRef.current!.flyTo({ ...HOME, padding: { left: 0, right: 0, top: 0, bottom: 0 } }); },
-    flyTo(lat, lon, zoom) { programmatic.current = true; mapRef.current!.flyTo({ center: [lon, lat], zoom, pitch: 0, bearing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 } }); },
+    flyHome() { programmatic.current = true; mapRef.current!.flyTo({ ...HOME, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
+    flyTo(lat, lon, zoom) { programmatic.current = true; mapRef.current!.flyTo({ center: [lon, lat], zoom, pitch: 0, bearing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
     zoomBy(d) { mapRef.current!.easeTo({ zoom: mapRef.current!.getZoom() + d, duration: 250 }); },
     resetNorth() { mapRef.current!.easeTo({ bearing: 0, duration: 300 }); },
     toggle3D() { const m = mapRef.current!; m.easeTo({ pitch: m.getPitch() > 5 ? 0 : 58, duration: 400 }); },
+    focusSpot(lat, lon) { const m = mapRef.current!; programmatic.current = true; m.easeTo({ center: [lon, lat], zoom: Math.max(m.getZoom(), 13.2), pitch: 0, bearing: 0, padding: pad(), duration: 900, easing: fly.easing }); },
   }));
 
   // de-overlap labels vertically, anchored right of the stack
@@ -299,6 +370,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   return (
     <div className={`map-wrap zoom-${zoomClass}`}>
       <div ref={el} className="map" />
+      {p.reserves && (
+        <div className="res-legend" style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 }} data-testid="reserves-legend">
+          <span><i />Reserve boundaries (context)</span>
+          <small>For context only. Not part of the analysis.</small>
+        </div>
+      )}
       {placed.length > 0 && (
         <div className="stack-labels">
           <svg>

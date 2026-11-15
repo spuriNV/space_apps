@@ -23,11 +23,11 @@ Fixture numbers are placeholders (`method: assumed`, `verified: false`, source `
 
 ## Routes
 
-Paths are relative to the repo root; first existing file wins. `{id}` is any field in `backend/fields/registry.json` (14 fields; else 404). Fixtures live in `fixtures/{id}/<name>.json` (or `fixtures/<name>.json` for global routes) and exist only for the original two; a registry field without a built output gets 404, never another field's fixture. `/news` for a registry field falls back to its family template's news (same valley).
+Paths are relative to the repo root; first existing file wins. `{id}` is any field in `backend/fields/registry.json` of any region (14 California fields plus `bc_salmon_river_forage`; else 404). The BC field's payloads are built by `backend/bc/build_api.py`. Its California-only routes (`openet`, `insurance`, `outlook`, `calendar_ml`, `stress`, `transitions`, `models`, `water_seen`, and the trends `usdm_d2_weeks` and `reservoir_storage`) return estimates in the California shape with `_source: "estimate"` / `X-Data-Source: estimate`; only when an estimate file is missing do they return 404 `"<kind> not available in BC: <registry not_available reason>"` (see `backend/bc/README.md`). Fixtures live in `fixtures/{id}/<name>.json` (or `fixtures/<name>.json` for global routes) and exist only for the original two; a registry field without a built output gets 404, never another field's fixture. `/news` for a registry field falls back to its family template's news (same valley).
 
 | Route | Fixture | Real lookup |
 |---|---|---|
-| `GET /api/locations?family=&county=` | `fixtures/locations.json` (static copy) | one location payload per registry field (originals first). `family=rice|forage`, `county=` name or FIPS (`Tulare`, `06107`, `107`). Response adds `count`, `filters` and `facets` (field counts by family and county over the whole registry) |
+| `GET /api/locations?family=&county=&region=` | `fixtures/locations.json` (static copy) | one location payload per registry field, every region (originals first). `family=rice|forage`, `county=` name or FIPS (`Tulare`, `06107`, `107`), `region=ca|bc`. Each item has `region`. Response adds `count`, `filters` and `facets` (field counts by family, county and region over the whole registry) |
 | `GET /api/locations/{id}` | `location.json` | `backend/api/out/{id}/location.json`, `data/cache/{id}/location.json`, `backend/field/out/{id}/location.json`, `backend/engine/out/{id}/location.json` |
 | `GET .../daily?from&to` | `daily.json` | `backend/api/out/{id}/daily.json`, `data/cache/{id}/daily.json`, `backend/regional/out/{id}/daily.json` |
 | `GET .../features/weekly` | `features_weekly.json` | `backend/api/out/{id}/features_weekly.json`, `data/cache/{id}/features_weekly.json`, `backend/field/out/{id}/features_weekly.json` |
@@ -51,6 +51,8 @@ Paths are relative to the repo root; first existing file wins. `{id}` is any fie
 | `GET .../stress` | none | `backend/ai/out/{id}/stress_weekly.json` + API-computed `summary.by_year`, + `stress_summary`/`stress_eval(uation)` if backend/ai writes them |
 | `GET .../grid?layer=` | none (404 if backend/field has not run) | `backend/field/out/{id}/grid.geojson` |
 | `GET .../transitions` | none (404 if not built) | `backend/ai/out/{id}/transitions.json`: green-up, harvest and alfalfa cutting dates per detector method |
+| `GET .../first_nations` | none | BC only: `backend/api/out/{id}/first_nations.json` (backend/bc/build_api.py). California fields: 404 "First Nations context is built for the BC example field only" |
+| `GET .../first_nations/reserves.geojson` | none | BC only: `data/cache/{id}/reserves_nearby.geojson` (backend/bc/fetch_reserves.py), reserve outlines as map context |
 | `GET /api/health` | | not in spec; shows root and presets |
 
 `trends` layers: `smap_anomaly|heatwave_days|grace_gw_pct|precip_anomaly|modis_ndvi_anomaly|usdm_d2_weeks|reservoir_storage`. `from`/`to` filter `rows`/`items` by their `date` string.
@@ -83,6 +85,18 @@ Paths are relative to the repo root; first existing file wins. `{id}` is any fie
 
 Known data caveats the UI should not hide: POWER overstates rain vs the NCEI stations (+54% CAR, +68% CAF in monthly totals) and runs warm in summer (JJA Tmax about +3.4 C CAR, +3.8 C CAF), so `heatwave_days`, `severe_heat_40c` and the engine's heat/dry-day counts are high-biased. See `backend/regional/README.md`.
 
+## Response clean-up (`app/sanitize.py`, applied in `send()` to real and estimate responses)
+
+- **Text:** internal markers are stripped from user-facing strings (names, notes, labels, `brief.local_review[].item`, source titles, timing notes): `(U)`, `(V)`, `U:`/`V:` inside brackets, `spec B11`, `(spec B4.4)`, `planner-spec B4`, bare section refs such as `B4.10`, plus a few repo-only phrases (table `PHRASES`). Source files keep their markers. `method`, `verified`, ids, units, dates and URLs are never rewritten, so the data status still comes from `method`/`verified`. Fixtures are served unchanged.
+- **Links:** a `url`/`source_url` that is a repo path (`backend/...`, `data/cache/...`, `planner-spec.md#...`), an internal `urn:fieldshift:*` id or a GitHub blob path becomes the dataset's public page when `PUBLIC_URLS` has one (e.g. `data/cache/<id>/cdec.parquet` -> https://cdec.water.ca.gov/, `.../ncei.parquet` -> NOAA GHCN-Daily, `power` -> NASA POWER). Otherwise the link is kept and its object gets **`internal: true`**: show the title, do not link it. A bare domain (`colusagroundwater.org`) gets `https://`.
+
+## Fields added for the apps
+
+- `location.water.example_limit_af_ac`: SourcedNumber, example seasonal water limit by family (rice 5.0, forage 3.0 acre-ft/acre, `method: assumed`, source `internal: true`). A starting value for the allocation control, not the field's allocation.
+- `strategies[].short_name` (GET `/strategies` and POST `/score`): short farmer-facing label from `backend/engine/build_data.py` (CA: "Rice + winter flood (current)", "Rice + winter cover", "Dry-year safflower", "Rice–wheat", "Alfalfa (current)", "Grain silage + corn", "Grain silage + sorghum-sudan", "Alfalfa with break year").
+- `Source.internal` (see above).
+- `/transitions` is served for every CA field with `backend/ai/out/<id>/transitions.json` (currently car_colusa_rice, caf_tulare_forage, car_glenn_rice, car_grimes_rice, car_zamora_rice, caf_tipton_forage); other CA fields get 404 until backend/ai builds theirs; BC gets the estimate.
+
 ## Schemas (`schemas/`)
 
 `sourced_number, location, crop, rotation_strategy, model_report, news_item, feature_row` (`*.schema.json`) per spec B3 / B2.14, plus `responses.schema.json` with one `$defs` envelope per route. Draft 2020-12, `$id` base `https://fieldshift.local/schemas/`.
@@ -92,13 +106,48 @@ Known data caveats the UI should not hide: POWER overstates rain vs the NCEI sta
 - `backend/regional/out/{id}/` has `eto_monthly.json`, `risk_days_by_year.json`, `daily_derived.parquet`, none a B3 payload; the builder turns them (plus POWER/NCEI/USDM/CDEC caches) into `backend/api/out/{id}/`. The API still has no parquet reader, only JSON.
 - `backend/news/out/{id}.json` matches (bare array, wrapped). BC items are in `bc_opener.json`.
 - Schema changes made for real data: `trends.layer` gained `usdm_d2_weeks`, `reservoir_storage`; `trends.grid` and `location.regional_cell.grid` are free strings (were const `EASE2_G9km`); `validation.checks[].id` gained `power_vs_ncei_{precip,tmax,tmin,heat40}` and `imerg_vs_power_precip`.
-- No chunk owns `models.json` (AI workstream) or `glossary.json`; both stay fixtures.
+- `models.json` comes from backend/ai; `glossary.json` is `backend/api/glossary.json` (committed, copied into the image by `COPY backend/api/`). The fixtures remain only as the fallback when those files are missing.
 
 ## Open questions
 
 - Default weights: spec says six brief priorities plus pest_break, infiltration, income (default 0); I took the six as water_use, forage_value, n_fixation, erosion, organic_matter, market and also defaulted n_scavenging to 0.
 - Who fills `Location.datasets` entries (shape is free: `{status, meta_path, ...}`)?
 - Fixture polygons are placeholder squares around the preset centres, not CDL-checked fields.
+
+## Analyse any location (`app/anyloc/`)
+
+Tap anywhere: `GET /api/analyze?lat=&lon=` (or `POST /api/analyze {lat, lon}`) builds a location payload for that spot live, in the same shape as `/api/locations/{id}` (schema-valid), with `_source: "live"` / `X-Data-Source: live`. The id is `pt_<n|s><lat x 1e4>_<e|w><lon x 1e4>` (4 decimals, e.g. `pt_n391894_w1220276`). Code: `app/anyloc/` (`fetch.py` upstream calls, `build.py` payload, `engine_bridge.py` engine run, `__init__.py` routes, cache, guards); `main.py` only includes the router (before the preset routes; its routes match `pt_*` ids only).
+
+Tier 1 (computed on the tap, 2-5 s cold, ~10 ms cached): NASA POWER daily (per 0.5 x 0.625 deg cell, cached 24 h), DWR/Land IQ 2023 field outline containing the point (else a 200 m square), county (FCC census API), SSURGO via SDA over the footprint, CDL 2008-2025 at up to 10 points in the field (CroplandCROS `getSamples`), family from CDL (rice: rice in >= 3 of the last 10 years; forage: alfalfa in >= 2 or forage classes in >= 5; else `other`), DWR water layers (California only: district, B118 subbasin, SGMA priority, critically overdrafted, GSA, GSP, adjudicated, State Water Board list), and the engine (`score()` with the family's rotation set: rice -> CAR0-3, forage/other -> CAF0-3; POWER only, no NOAA stations, family slope placeholder). Tier 2 (IMERG, SMAP, GRACE, S2/Landsat/HLS, NASADEM, calendar, zones, grid, insurance, outlook, news, ...) is `not_computed` for points; OpenET is never queried (`unavailable`).
+
+Extra keys on the payload: `sections.<name> = {status, reason?, ...}` with status `ready | not_computed | unavailable | error` (tier 1: `boundary, county, weather, daily, crop_history, family, soil, water, strategies`; tier 2: `imerg, smap, grace, satellite_cover, terrain, openet, calendar, zones, grid, insurance, outlook, stress, news, models, transitions, water_seen, nasa_series`), `analysis = {id, point, computed_at, expires_at, cache: miss|hit|hit_shared, timings_ms, matches_preset, section_statuses}`, `region` (`ca` or `other`), `region_adapter` (`ca` or `other`), `family` (`rice|forage|other`), `template`, `crop_history_purity`, `dwr_2023`. `matches_preset` is the registry id when the tap falls inside a preset field's outline (show the preset instead).
+
+| Route (pt_* ids) | Answer |
+|---|---|
+| `GET /api/analyze?lat&lon[&refresh=1]`, `POST /api/analyze` | payload above; 422 for lat/lon out of range; 429 + `Retry-After` when busy or rate-limited; 504 if the whole analysis exceeds 45 s |
+| `GET /api/analyze/{pid}/status` | `{id, point, in_flight, cached, computed_at?, expires_at?, sections?, timings_ms?}`; never computes |
+| `GET /api/locations/{pid}` | same as `/api/analyze` for the id's point (computes on a miss) |
+| `GET /api/locations/{pid}/daily?from&to` | `Daily` envelope from 2015: POWER tmax/tmin/precip, Hargreaves ETo, heat flags; the other preset columns are null |
+| `GET /api/locations/{pid}/strategies` | `Strategies` envelope (engine, family rotation set, default weights) |
+| `POST /api/locations/{pid}/score` | `Score` envelope, same body as the preset route |
+| `GET /api/locations/{pid}/<other>` | 404 `"<route> is not computed for tapped points ..."` |
+
+Guards (env vars, defaults sized for Render's 512 MB free instance): `ANYLOC_MAX_CONCURRENT=2` engine runs at once (cold analyses and re-scores), `ANYLOC_PER_IP_MIN=6` and `ANYLOC_PER_IP_HOUR=40` new spots per client IP, `ANYLOC_GLOBAL_HOUR=400` new spots per hour for the instance, `ANYLOC_READS_PER_MIN=120` cached reads per IP; every upstream call has its own timeout (4-5 s connect, 6-25 s read) and a size cap. Cache: `ANYLOC_CACHE_DIR` (default `data/cache/_points/`, git- and docker-ignored, gzip JSON + one parquet per POWER cell), `ANYLOC_TTL_H=168` (15 min when a tier-1 section errored), `ANYLOC_MAX_POINTS=1500` points kept. On Render the disk resets on deploy/restart; nothing depends on it. Measured: process peak RSS 137 MB idle, 191 MB after a cold analysis, 213 MB after 7.
+
+## My fields (`app/myfields/`)
+
+Users draw a rectangle or polygon, name it, and get the tap-anywhere analysis over the whole polygon. Nothing has to persist server-side (Render's disk is wiped on deploy): the id **is** the field. `my_<base64url(zlib(JSON))>` carries the name and the outline (corners in 1e-5 degree units, delta-coded; if the id would pass 1,800 characters the outline is simplified with Douglas-Peucker, 5 m doubling, and `id_note` says so). Any server decodes an id and recomputes, so share links survive deploys. Rename or redraw = a new id; "delete" is the client forgetting the id. `MYFIELDS_DIR` (default `data/user_fields/`, git- and docker-ignored) is an optional cache only; `MYFIELDS_TTL_H=168`, `MYFIELDS_MAX_CACHED=5000`.
+
+| Route | Answer |
+|---|---|
+| `POST /api/my-fields {name, geometry}` | location payload (schema-valid) + `field_id`, `_source: "user"`, `sections`, `analysis`, `user_field`; 422 for a bad outline (not a single Polygon, holes, over 200 corners, self-crossing, under 0.5 ha or over 2,000 ha, empty name); 429 + `Retry-After`; 504 past 50 s |
+| `GET /api/my-fields/{id}` | same payload, from cache or recomputed; 400 for a bad/corrupt id |
+| `GET /api/my-fields?ids=a,b,c` | `{items: [{id, name, acres, area_ha, centroid, bbox, geometry, computed, family?, county_name?, last_crop?}], invalid: [{id, reason}]}`; decoded from the ids, no upstream calls (max 100) |
+| `GET /api/locations/{my_id}`, `/strategies`, `/daily`, `POST /score` | same as the tapped-point routes; other sub-routes 404 "not computed for user-drawn fields" |
+
+Analysis: acres from the spherical (authalic radius) area of the polygon; CDL majority class per year over a grid of up to 25 sample points inside it (`crop_history`, `crop_history_purity` = share of points in that class, `user_field.crop_mix` top 3 per year); SSURGO via SDA polygon intersection, map units weighted by area inside it (`soil.map_units[].area_share`); county, SGMA subbasin, GSA, water district and POWER at the interior point nearest the centroid, with `user_field.spans = {counties, districts, gsas, subbasins}` listing everything the polygon touches (counties from the centroid plus up to 4 extreme sample points); `user_field.dwr_fields` = DWR/Land IQ 2023 fields intersecting the polygon (id, crop, class, acres; up to 100); engine strategies by family (rice -> CAR0-3, else CAF0-3). Non-California or non-US outlines get the section statuses anyloc uses (`unavailable`); there is no BC tier 1 in anyloc yet, so BC polygons get the same `unavailable` sections.
+
+Guards (env): `MYFIELDS_MAX_CONCURRENT=2`, `MYFIELDS_PER_IP_MIN=4`, `MYFIELDS_PER_IP_HOUR=30`, `MYFIELDS_GLOBAL_HOUR=300`, `MYFIELDS_READS_PER_MIN=120`. Cache hits only count against the read limit. `schemas/` accept `my_*` ids and `_source: "user"`.
 
 ## Deploy (Render)
 

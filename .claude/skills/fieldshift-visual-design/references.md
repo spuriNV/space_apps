@@ -61,3 +61,24 @@ hero metric blocks, beige "tasteful" default, em-dash-heavy copy, invented metri
 - https://www.thefountaininstitute.com/blog/signs-vibe-coded-ui
 - https://github.com/Laith0003/ux-skill/wiki/Anti-AI-slop-ban-list
 - https://noqta.tn/en/blog/ai-design-slop-overused-ui-patterns-fix-2026
+
+## Controls, selection states and motion (Nov 2026)
+
+The redesign after the user found the square buttons, the green header slab and the solid-green selected states "flat,
+boring" and asked for real motion. Spec: `docs/ui-redesign-spec.md` (section 9 has the full notes).
+- Material 3 token files (material-web `tokens/versions/v0_192`; androidx compose material3 tokens): corner scale
+  4/8/12/16/20/28/full, filter chip selected = secondary container with no outline, segmented 40px full corner, state
+  layers 0.08 hover / 0.10 pressed, standard easing (0.2,0,0,1), decelerate (0.05,0.7,0.1,1).
+- Apple HIG (buttons, sheets, segmented controls, accessibility): 44pt targets, sheet detents (medium, large, custom),
+  non-modal sheets over live content.
+- Radix Themes and shadcn/ui new-york-v4: selection as a translucent tint or a raised neutral thumb; brand colour kept
+  for the primary action.
+- Linear, "Behind the latest design refresh": fewer separators, softer contrast.
+- Google Maps place panel and Places UI Kit (250-460px panels): paper header, close in the corner, pill actions, sticky
+  compressed title.
+- Emil Kowalski, design-engineering and animation skills (emilkowalski/skills: emil-design-eng, animate,
+  animation-performance): animate only transform and opacity, strong custom ease-out to enter (0.23,1,0.32,1), iOS
+  drawer curve (0.32,0.72,0,1), press scale 0.97, never from scale(0), hover only on hover devices, fling with velocity
+  for sheets, reduced motion respected, motion only when it has a job.
+- Impeccable (pbakaus/impeccable): critique rubric (cognitive load, Nielsen heuristics) and polish checklist used to
+  audit the before state; Taste skill (Leonxlnx/taste-skill) motion and card references.

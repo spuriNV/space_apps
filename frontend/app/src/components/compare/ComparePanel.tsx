@@ -1,12 +1,13 @@
 // "Gain / give up vs today": pick one alternative and see two plain lists in acre-feet and days.
 // The full side-by-side table (ported from design/explorations Compare1) is one click away.
+import { Seg } from '../ui/Seg';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import type { Calendar, CoverClass, Location, RotationStrategy, ScoreKey, SourcedNumber } from '../../types';
 import { scoreStrategies, type Scenario } from '../../api';
 import { BARE_DEF, observedBare } from '../../bare';
 import { What } from '../ui/What';
 import { MoreDetail, useDetail } from '../ui/Detail';
-import { CLASS_COLOR, mmToAfac } from '../../lib';
+import { CLASS_COLOR, RAIN_FED, isRainFed, mmToAfac, needText } from '../../lib';
 import Icon from '../Icons';
 import { openetText } from '../ui/shared';
 import { HOT_F, hotBareDays, type Daily } from '../../season';
@@ -25,7 +26,7 @@ export const HEAT_NOTE = `Hot days = NOAA weather-station highs of ${HOT_F} °F 
 type Weather = 'typical' | '2022' | '2023';
 const WEATHER: Record<Weather, string> = { typical: 'Typical year', '2022': 'Dry, like 2022', '2023': 'Wet, like 2023' };
 type Verdict = 'better' | 'worse' | 'unclear' | 'same' | 'none';
-interface N { v: number | null; lo: number | null; hi: number | null }
+interface N { v: number | null; lo: number | null; hi: number | null; rf?: boolean }
 /** Per-field context the metrics need: hot days on bare soil per rotation, from NOAA station highs. */
 interface Ctx { heat: Record<string, N>; bare: Record<string, N>; bareYears: number[] }
 interface Metric { key: string; label: string; unit: 'af' | 'days' | 'score'; higherIsBetter: boolean; get: (s: RotationStrategy, w: Weather, c: Ctx) => N; gain: string; loss: string }
@@ -34,8 +35,11 @@ const n = (x?: SourcedNumber | null): N => (!x || x.blocked || x.value == null ?
 const af = (x: N): N => ({ v: x.v == null ? null : mmToAfac(x.v), lo: x.lo == null ? null : mmToAfac(x.lo), hi: x.hi == null ? null : mmToAfac(x.hi) });
 const rep = (s: RotationStrategy, w: Weather, k: 'irrigation_need_mm' | 'exposed_rain_days') => (w === 'typical' ? null : s.exposure.replay[w]?.[k]);
 
+/** Irrigation need in acre-ft/acre; `rf` marks a rain-fed rotation, which reads as a label, not 0.0. */
+const waterOf = (s: RotationStrategy, w: Weather): N => ({ ...af(n(rep(s, w, 'irrigation_need_mm') ?? s.water.irrigation_need_mm)), rf: isRainFed(s) });
+
 const UNIT: Metric[] = [
-  { key: 'water', label: 'Irrigation water needed', unit: 'af', higherIsBetter: false, get: (s, w) => af(n(rep(s, w, 'irrigation_need_mm') ?? s.water.irrigation_need_mm)), gain: 'Needs less irrigation water', loss: 'Needs more irrigation water' },
+  { key: 'water', label: 'Irrigation water needed', unit: 'af', higherIsBetter: false, get: (s, w) => waterOf(s, w), gain: 'Needs less irrigation water', loss: 'Needs more irrigation water' },
   { key: 'bare', label: 'Days the field sits bare', unit: 'days', higherIsBetter: false, get: (s, _w, c) => c.bare[s.id] ?? n(s.exposure.bare_days_per_year), gain: 'Field bare fewer days', loss: 'Field bare more days' },
   { key: 'rain', label: 'Heavy rain on bare soil', unit: 'days', higherIsBetter: false, get: (s, w) => n(rep(s, w, 'exposed_rain_days') ?? s.exposure.exposed_rain_days), gain: 'Less heavy rain on bare soil', loss: 'More heavy rain on bare soil' },
   { key: 'heat', label: 'Hot days on bare soil (104 °F or more)', unit: 'days', higherIsBetter: false, get: (s, _w, c) => c.heat[s.id] ?? { v: null, lo: null, hi: null }, gain: 'Fewer hot days on bare soil', loss: 'More hot days on bare soil' },
@@ -63,10 +67,11 @@ function verdict(a: N, b: N, hib: boolean): Verdict {
   return 'unclear';
 }
 const r1 = (x: number) => (Math.abs(x) < 10 ? x.toFixed(1) : Math.round(x).toLocaleString());
-const fmt = (m: Metric, x: N) => (x.v == null ? 'not scored yet' : m.unit === 'af' ? `${x.v.toFixed(1)} acre-ft/acre` : m.unit === 'days' ? `${r1(x.v)} days a year` : `${Math.round(x.v)} of 100`);
+const fmt = (m: Metric, x: N) => (x.v == null ? 'not scored yet' : m.unit === 'af' && x.rf ? RAIN_FED : m.unit === 'af' ? `${x.v.toFixed(1)} acre-ft/acre` : m.unit === 'days' ? `${r1(x.v)} days a year` : `${Math.round(x.v)} of 100`);
 const rng = (m: Metric, x: N) => (x.v == null ? '' : x.lo != null && x.hi != null && Math.abs(x.hi - x.lo) > (m.unit === 'af' ? 0.05 : 0.5) ? `likely ${m.unit === 'af' ? x.lo.toFixed(1) : Math.round(x.lo)}–${m.unit === 'af' ? x.hi.toFixed(1) : Math.round(x.hi)}` : '');
-function delta(m: Metric, a: number, b: number) {
-  const d = Math.abs(a - b);
+function delta(m: Metric, an: N, bn: N) {
+  const a = an.v!, b = bn.v!, d = Math.abs(a - b);
+  if (m.unit === 'af' && an.rf) return 'No irrigation needed (rain-fed)';
   if (m.unit === 'af') return `about ${d.toFixed(1)} acre-ft/acre ${a < b ? 'less' : 'more'} a year (${(d * 12).toFixed(0)} in)`;
   if (m.unit === 'days') return `about ${r1(d)} ${a < b ? 'fewer' : 'more'} days a year`;
   return `${Math.round(a)} vs ${Math.round(b)} on a 0–100 rule of thumb`;
@@ -125,8 +130,8 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
   const rows = useMemo(() => all.map((m) => { const a = m.get(alt, weather, ctx), b = m.get(today, weather, ctx); return { m, a, b, v: verdict(a, b, m.higherIsBetter) }; }), [alt, today, weather, ctx, flat, detail]); // eslint-disable-line react-hooks/exhaustive-deps
   const gains = rows.filter((r) => r.v === 'better'), losses = rows.filter((r) => r.v === 'worse');
   const unclear = rows.filter((r) => r.v === 'unclear' || r.v === 'same'), none = rows.filter((r) => r.v === 'none');
-  const water = (s: RotationStrategy) => af(n(rep(s, weather, 'irrigation_need_mm') ?? s.water.irrigation_need_mm));
-  const fits = (s: RotationStrategy) => { const w = water(s); return (w.hi ?? 0) <= p.allocation ? 'Fits your limit' : (w.lo ?? 0) > p.allocation ? 'Over your limit' : 'May go over your limit'; };
+  const water = (s: RotationStrategy) => waterOf(s, weather);
+  const fits = (s: RotationStrategy) => { const w = water(s); if (w.rf) return 'Fits your limit'; return (w.hi ?? 0) <= p.allocation ? 'Fits your limit' : (w.lo ?? 0) > p.allocation ? 'Over your limit' : 'May go over your limit'; };
   const ranked = [...strategies].sort((a, b) => b.composite.value - a.composite.value);
   const tie = ranked.length > 1 && (ranked[0].composite.low ?? 0) <= (ranked[1].composite.high ?? 0);
 
@@ -134,9 +139,9 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
     <section className="sheet compare2" data-testid="compare">
       <header className="sheet-head">
         <div>
-          <h2>{alt.short_name} vs {today.short_name.split(' +')[0].toLowerCase()} today</h2>
+          <h2>{alt.short_name} vs {today.short_name.split(' +')[0].replace(/\s*\(current\)$/i, '').toLowerCase()} today</h2>
         </div>
-        <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
+        <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button>
       </header>
       <div className="c2-bar">
         <div className="c2-tabs">
@@ -144,15 +149,15 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
             <button key={s.id} className={s.id === alt.id ? 'on' : ''} onClick={() => { setId(s.id); setTable(false); }} data-alt={s.id}>
               <b>{s.short_name}</b>
               <span className="month-strip">{s.month_cover.split('').map((c, m) => <i key={m} title={s.calendar_months[m]} style={{ background: CLASS_COLOR[c as CoverClass] }} />)}</span>
-              <small>{(water(s).v ?? 0).toFixed(1)} acre-ft/acre · {fits(s).toLowerCase()}</small>
+              <small>{needText(s, water(s).v ?? 0)} · {fits(s).toLowerCase()}</small>
             </button>
           ))}
           <button className={`see-all ${table ? 'on' : ''}`} onClick={() => setTable(!table)} data-testid="see-all"><b>{table ? 'Back to gain / give up' : 'See all options'}</b><small>Every rotation, every factor</small></button>
         </div>
         <div className="c2-ctl">
-          <label>Your water limit <b>{p.allocation.toFixed(1)} acre-ft/acre</b>{p.exampleLimit && <em className="ex-limit">example, change to yours</em>}
+          <label>Your water limit <b>{p.allocation.toFixed(1)} acre-ft/acre</b>{p.exampleLimit && <em className="status example ex-limit">example, change to yours</em>}
             <input type="range" min={0.5} max={6} step={0.1} value={p.allocation} onChange={(e) => p.setAllocation(+e.target.value)} data-testid="alloc" /></label>
-          <div className="seg small">{(Object.keys(WEATHER) as Weather[]).map((w) => <button key={w} className={weather === w ? 'on' : ''} onClick={() => setWeather(w)} data-testid={`replay-${w}`}>{WEATHER[w]}</button>)}</div>
+          <Seg className="small" label="Weather" value={weather} onChange={setWeather} options={(Object.keys(WEATHER) as Weather[]).map((w) => ({ v: w, label: WEATHER[w], testid: `replay-${w}` }))} />
           <button className={`link tune-btn d-only ${tune ? 'on' : ''}`} onClick={() => setTune(!tune)} data-testid="tune">{tune ? 'Hide priorities and what-ifs' : 'Your priorities, and what if it’s drier or hotter'}</button>
         </div>
       </div>
@@ -164,15 +169,15 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
               const v = weights[k] ?? (k === 'pest_break' ? 0 : 1);
               return (
                 <div key={k} className="pri-row"><span>{lab}</span>
-                  <div className="seg small">{LEVEL.map((l, i) => <button key={l} className={v === i ? 'on' : ''} onClick={() => setWeights({ ...weights, [k]: i })} disabled={!p.live}>{l}</button>)}</div>
+                  <Seg className="small" label={lab} value={v} onChange={(i) => setWeights({ ...weights, [k]: i })} options={LEVEL.map((l, i) => ({ v: i, label: l, disabled: !p.live }))} />
                 </div>
               );
             })}
           </div>
           <div className="tune-what">
             <h4>What if the year is</h4>
-            <div className="seg small">{RAIN.map(([v, l]) => <button key={v} className={scen.dP_pct === v ? 'on' : ''} onClick={() => setScen({ ...scen, dP_pct: v })} disabled={!p.live} data-testid={`rain-${v}`}>{l}</button>)}</div>
-            <div className="seg small">{HEAT.map(([v, l]) => <button key={v} className={scen.dT_c === v ? 'on' : ''} onClick={() => setScen({ ...scen, dT_c: v })} disabled={!p.live}>{l}</button>)}</div>
+            <Seg className="small" label="Rain" value={scen.dP_pct} onChange={(v) => setScen({ ...scen, dP_pct: v })} options={RAIN.map(([v, l]) => ({ v, label: l, disabled: !p.live, testid: `rain-${v}` }))} />
+            <Seg className="small" label="Heat" value={scen.dT_c} onChange={(v) => setScen({ ...scen, dT_c: v })} options={HEAT.map(([v, l]) => ({ v, label: l, disabled: !p.live }))} />
             <p className="how">{!p.live ? 'Needs the CropLytics server; showing the saved scores.' : busy ? 'Re-scoring…' : custom ? 'Water need and ranking below use your settings.' : 'Default: every priority counts the same, normal weather.'}</p>
             <h4>Best fit for what matters to you</h4>
             <ol className="rank">{ranked.map((s, i) => <li key={s.id} className={s.is_baseline ? 'base' : ''}>{s.short_name}{s.is_baseline ? ' (today)' : ''}{i === 0 && tie ? <small> too close to call with the next one</small> : null}</li>)}</ol>
@@ -184,18 +189,18 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
         <div className="c2-body">
           <div className="gl-col">
             <h3 className="gain">You gain</h3>
-            <ul>{gains.map((r) => <li key={r.m.key} className="gl-item"><div className="gl-head"><b>{r.m.gain}</b><span>{delta(r.m, r.a.v!, r.b.v!)}</span></div><Bars m={r.m} a={r.a} b={r.b} kind="gain" /></li>)}</ul>
+            <ul>{gains.map((r) => <li key={r.m.key} className="gl-item"><div className="gl-head"><b>{r.m.gain}</b><span>{delta(r.m, r.a, r.b)}</span></div><Bars m={r.m} a={r.a} b={r.b} kind="gain" /></li>)}</ul>
             {!gains.length && <p className="muted">Nothing clearly better than today.</p>}
           </div>
           <div className="gl-col">
             <h3 className="loss">You give up</h3>
-            <ul>{losses.map((r) => <li key={r.m.key} className="gl-item"><div className="gl-head"><b>{r.m.loss}</b><span>{delta(r.m, r.a.v!, r.b.v!)}</span></div><Bars m={r.m} a={r.a} b={r.b} kind="loss" /></li>)}</ul>
+            <ul>{losses.map((r) => <li key={r.m.key} className="gl-item"><div className="gl-head"><b>{r.m.loss}</b><span>{delta(r.m, r.a, r.b)}</span></div><Bars m={r.m} a={r.a} b={r.b} kind="loss" /></li>)}</ul>
             {!losses.length && <p className="muted">Nothing clearly worse than today.</p>}
           </div>
           <aside className="gl-col side">
             <h3>Water against your limit <What k="waterBalance" /></h3>
-            <p><b>{fits(alt)}.</b> Needs {water(alt).v?.toFixed(1)} acre-ft/acre. Your limit: {p.allocation.toFixed(1)}.</p>
-            <p className="how d-only">{rng(UNIT[0], water(alt)) ? `${rng(UNIT[0], water(alt)).replace(/^likely/, 'Likely')} acre-ft/acre, ` : ''}{WEATHER[weather].toLowerCase()}. Today needs {water(today).v?.toFixed(1)}.{/safflower|wheat/i.test(alt.name) ? ' An upper bound: soil water stored over winter is not counted.' : ''}</p>
+            <p><b>{fits(alt)}.</b> {isRainFed(alt) ? RAIN_FED : `Needs ${water(alt).v?.toFixed(1)} acre-ft/acre`}. Your limit: {p.allocation.toFixed(1)}.</p>
+            <p className="how d-only">{rng(UNIT[0], water(alt)) ? `${rng(UNIT[0], water(alt)).replace(/^likely/, 'Likely')} acre-ft/acre, ` : ''}{WEATHER[weather].toLowerCase()}. {isRainFed(today) ? `Today is ${RAIN_FED.toLowerCase()}.` : `Today needs ${water(today).v?.toFixed(1)}.`}{/safflower|wheat/i.test(alt.name) ? ' An upper bound: soil water stored over winter is not counted.' : ''}</p>
             <p className="how d-only">{openetText(p.strategies)} That checks crop water use for today’s crop only; irrigation need and the other rotations use the same method, unchecked.</p>
             <div className="d-only">
             <h3>Bare days <What k="bare" /></h3>
@@ -207,7 +212,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
             <p className="how">Bars: the span of likely values; the tick is the best estimate. A gain counts only when the two spans don’t overlap.</p>
             </div>
             <MoreDetail what="All rotations and what-ifs" />
-            <button className="btn primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Print this comparison for your adviser<Icon name="right" size={16} /></button>
+            <button className="btn btn-primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Print this comparison for your adviser<Icon name="right" size={16} /></button>
           </aside>
         </div>
       ) : (
@@ -233,7 +238,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
           </table>
         </div>
       )}
-      <footer className="sheet-foot">Better / worse = the whole likely range is above or below today’s. Water need: rotation model with NASA POWER weather, 2015–2025. {HEAT_NOTE} Supports, doesn’t replace, your adviser.</footer>
+      <footer className="sheet-foot">Better / worse = the whole likely range is above or below today’s. Water need: rotation model with NASA POWER weather, 2015–2025. {p.loc.region === 'bc' ? HEAT_NOTE.replace('NOAA', 'Environment Canada') : HEAT_NOTE} Supports, doesn’t replace, your adviser.</footer>
     </section>
   );
 }
@@ -242,7 +247,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
 export function tradeoffs(today: RotationStrategy, alt: RotationStrategy, ctx: Ctx, all: RotationStrategy[], heavySoil = false) {
   const flat = constantScores(all);
   const rows = [...UNIT, ...SCORE.filter((m) => !flat.has(m.key))].map((m) => { const a = m.get(alt, 'typical', ctx), b = m.get(today, 'typical', ctx); return { m, a, b, v: verdict(a, b, m.higherIsBetter) }; });
-  const line = (r: (typeof rows)[number], k: 'gain' | 'loss') => (r.m.unit === 'score' ? `${r.m[k]} (rule of thumb${r.m.key === 'infiltration' && heavySoil ? '; small effect on this heavy soil' : ''}).` : `${r.m[k]}: ${delta(r.m, r.a.v!, r.b.v!)}.`);
+  const line = (r: (typeof rows)[number], k: 'gain' | 'loss') => (r.m.unit === 'score' ? `${r.m[k]} (rule of thumb${r.m.key === 'infiltration' && heavySoil ? '; small effect on this heavy soil' : ''}).` : `${r.m[k]}: ${delta(r.m, r.a, r.b)}.`);
   return {
     gains: rows.filter((r) => r.v === 'better').map((r) => line(r, 'gain')),
     losses: rows.filter((r) => r.v === 'worse').map((r) => line(r, 'loss')),

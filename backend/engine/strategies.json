@@ -6,6 +6,7 @@
    "is_baseline": true,
    "cycle_years": 1,
    "name": "Continuous rice with winter flood (current)",
+   "short_name": "Rice + winter flood (current)",
    "calendar": [
     {
      "year": 1,
@@ -54,6 +55,7 @@
    "is_baseline": false,
    "cycle_years": 1,
    "name": "Rice + winter cover (cereal/vetch) instead of winter flood",
+   "short_name": "Rice + winter cover",
    "calendar": [
     {
      "year": 1,
@@ -102,6 +104,7 @@
    "is_baseline": false,
    "cycle_years": 1,
    "name": "Dry-year plan: safflower instead of rice (allocation < 50%)",
+   "short_name": "Dry-year safflower",
    "calendar": [
     {
      "year": 1,
@@ -161,6 +164,7 @@
    "is_baseline": false,
    "cycle_years": 2,
    "name": "Rice - winter wheat rotation (2-year)",
+   "short_name": "Rice\u2013wheat",
    "calendar": [
     {
      "year": 1,
@@ -212,6 +216,7 @@
    "is_baseline": true,
    "cycle_years": 1,
    "name": "Alfalfa hay, 7-8 cuts, 4-5 year stand (current)",
+   "short_name": "Alfalfa (current)",
    "calendar": [
     {
      "year": 1,
@@ -243,6 +248,7 @@
    "is_baseline": false,
    "cycle_years": 1,
    "name": "Winter small-grain silage + silage corn double crop",
+   "short_name": "Grain silage + corn",
    "calendar": [
     {
      "year": 1,
@@ -279,6 +285,7 @@
    "is_baseline": false,
    "cycle_years": 1,
    "name": "Winter small-grain silage + sorghum-sudan summer forage",
+   "short_name": "Grain silage + sorghum-sudan",
    "calendar": [
     {
      "year": 1,
@@ -317,6 +324,7 @@
    "is_baseline": false,
    "cycle_years": 4,
    "name": "Alfalfa 3-year stand, winter cereal break year, re-seed",
+   "short_name": "Alfalfa with break year",
    "calendar": [
     {
      "year": 4,
@@ -419,6 +427,371 @@
     }
    ],
    "calendar_note": "Cycle = 3 alfalfa production years + 1 break year (cereal to April, unirrigated summer fallow May-Aug, re-seed 20 Sept). Year numbering wraps: the stand seeded in year 4 produces in years 1-3 (labelled by the year its Dec-Nov season starts).",
+   "allocation_rule": null
+  },
+  {
+   "id": "bc0_alfalfa",
+   "location_id": "bc_salmon_river_forage",
+   "is_baseline": true,
+   "cycle_years": 1,
+   "name": "Irrigated alfalfa hay, 2 cuts, 5-year stand (current)",
+   "short_name": "Alfalfa (current)",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "10-26",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall); cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Established stand in steady state; establishment year not modelled. Late-fall aftermath grazing not modelled"
+    }
+   ],
+   "calendar_note": "Kamloops District Forage Manual system 1: continuous alfalfa, 5-year cycle, 20% reseeded each year (V). Modelled as one established stand in steady state.",
+   "allocation_rule": null
+  },
+  {
+   "id": "bc1_barley_break",
+   "location_id": "bc_salmon_river_forage",
+   "is_baseline": false,
+   "cycle_years": 5,
+   "name": "Alfalfa with a barley-silage break year (5-year cycle)",
+   "short_name": "Barley break",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "barley_silage_bc",
+     "plant": "05-01",
+     "harvest": "08-05",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      8
+     ],
+     "stage_mode": "scale",
+     "timing_source": "bc_drought_factsheet6 (V: barley silage ~100 days); FAO-56 Table 11 barley 20/25/60/30 scaled to 96 d; dates U (harvested before a mid-August order)"
+    },
+    {
+     "year": 1,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "08-15",
+     "harvest": "10-26",
+     "role": "establishing",
+     "irrigated": true,
+     "harvest_months": [],
+     "stage_mode": "truncate",
+     "timing_source": "assumed (U): late-summer reseeding after the barley; establishment stages as CAF3 (U)",
+     "stage_override": {
+      "ini": 30,
+      "dev": 42,
+      "mid": 0,
+      "late": 0
+     },
+     "cover_override": {
+      "ini": 0.1,
+      "dev": 0.5,
+      "mid": 0.5,
+      "late": 0.5
+     }
+    },
+    {
+     "year": 1,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "10-26",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall); cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Stand year 1"
+    },
+    {
+     "year": 2,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "10-26",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall); cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Stand year 2"
+    },
+    {
+     "year": 3,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "10-26",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall); cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Stand year 3"
+    },
+    {
+     "year": 4,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "10-26",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall); cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Stand year 4"
+    },
+    {
+     "year": 5,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "04-20",
+     "role": "forage",
+     "irrigated": false,
+     "harvest_months": [],
+     "stage_mode": "truncate",
+     "timing_source": "assumed (U): old stand dormant over winter, terminated in spring before the barley",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Old stand, dormant; no cut"
+    }
+   ],
+   "calendar_note": "Kamloops District Forage Manual system 2: a five-year cycle with part of the new seeding area in annual crops such as barley (V). Year 1: barley silage 1 May - 5 Aug, alfalfa reseeded 15 Aug; 4 production years; the old stand is terminated the next spring. The late-summer seeding needs August water, which an order year (16 Aug 2023) would not allow.",
+   "allocation_rule": null
+  },
+  {
+   "id": "bc2_fall_cereal_silage",
+   "location_id": "bc_salmon_river_forage",
+   "is_baseline": false,
+   "cycle_years": 5,
+   "name": "Alfalfa with a fall rye/triticale silage year (5-year cycle)",
+   "short_name": "Fall rye silage",
+   "calendar": [
+    {
+     "year": 5,
+     "crop_id": "fall_cereal_silage_bc",
+     "plant": "08-25",
+     "harvest": "06-05",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "bc_drought_factsheet6 (V: fall rye/triticale, harvest before heading); FAO-56 Table 11 winter wheat Idaho Oct 160/75/75/25 adapted to ini 205 / dev 55 / mid 24 (U); dates U",
+     "stage_override": {
+      "ini": 205,
+      "dev": 55,
+      "mid": 24,
+      "late": 0
+     },
+     "note": "Spring growth mostly on stored moisture and spring rain; establishment in late Aug needs water"
+    },
+    {
+     "year": 1,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "06-15",
+     "harvest": "10-26",
+     "role": "establishing",
+     "irrigated": true,
+     "harvest_months": [],
+     "stage_mode": "fixed",
+     "timing_source": "assumed (U): reseeded after the June silage cut; no seeding-year cut modelled",
+     "stage_override": {
+      "ini": 30,
+      "dev": 42,
+      "mid": 61,
+      "late": 0
+     },
+     "cover_override": {
+      "ini": 0.1,
+      "dev": 0.6,
+      "mid": 0.8,
+      "late": 0.8
+     }
+    },
+    {
+     "year": 1,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "10-26",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall); cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Stand year 1"
+    },
+    {
+     "year": 2,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "10-26",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall); cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Stand year 2"
+    },
+    {
+     "year": 3,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "10-26",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      8
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall); cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Stand year 3"
+    },
+    {
+     "year": 4,
+     "crop_id": "alfalfa_hay_bc",
+     "plant": "10-26",
+     "harvest": "08-20",
+     "role": "forage",
+     "irrigated": true,
+     "harvest_months": [
+      6,
+      8
+     ],
+     "stage_mode": "truncate",
+     "timing_source": "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall); cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Stand year 4: cut twice (Jun, Aug), terminated 20 Aug"
+    }
+   ],
+   "calendar_note": "One year in five in fall-seeded cereal silage, the 'one fifth of the stand' idea applied to one field over time. The last alfalfa year is cut twice and terminated 20 Aug; fall rye or triticale 25 Aug - 5 Jun; alfalfa reseeded 15 Jun. Cereals are 'the most commonly grown alternative forage crops' under limited irrigation (BC Drought Factsheet No. 6, V).",
+   "allocation_rule": null
+  },
+  {
+   "id": "bc3_sainfoin_grass",
+   "location_id": "bc_salmon_river_forage",
+   "is_baseline": false,
+   "cycle_years": 1,
+   "name": "Dryland sainfoin-meadow brome hay, 1 cut",
+   "short_name": "Sainfoin-grass",
+   "calendar": [
+    {
+     "year": 1,
+     "crop_id": "sainfoin_grass_bc",
+     "plant": "10-26",
+     "harvest": "10-26",
+     "role": "forage",
+     "irrigated": false,
+     "harvest_months": [
+      7
+     ],
+     "stage_mode": "fixed",
+     "timing_source": "bf04_nonbloat_legumes (V: 1 cut per season under dryland); July cut and stages U",
+     "season_boundary": true,
+     "stage_override": {
+      "ini": 176,
+      "dev": 30,
+      "mid": 129,
+      "late": 30
+     },
+     "note": "Not irrigated: ETc is the crop's potential use; dryland stands use what rain and soil water allow"
+    }
+   ],
+   "calendar_note": "Sainfoin with a bunchgrass (meadow brome), dryland (BF04, V). Needs lighter, well-drained soil with no wet feet: check the SoilGrids texture before relying on this option.",
    "allocation_rule": null
   }
  ]

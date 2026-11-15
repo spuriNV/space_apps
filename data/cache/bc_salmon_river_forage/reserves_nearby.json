@@ -1,0 +1,157 @@
+{
+ "source": {
+  "title": "Indian reserves with band names (CLSS boundaries), BC Data Catalogue",
+  "url": "https://catalogue.data.gov.bc.ca/dataset/8efe9193-80d2-4fdf-a18c-d531a94196ad",
+  "layer": "WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP"
+ },
+ "fetched_at": "2026-11-15T07:19:20Z",
+ "reserves": [
+  {
+   "name": "SWITSEMALPH INDIAN RESERVE NO. 3",
+   "band": "Neskonlith",
+   "band_number": "690",
+   "area_ha": 539.6,
+   "distance_to_field_km": 6.5
+  },
+  {
+   "name": "SWITSEMALPH 7",
+   "band": "Adams Lake",
+   "band_number": "684",
+   "area_ha": 147.0,
+   "distance_to_field_km": 7.0
+  },
+  {
+   "name": "SWITSEMALPH 6",
+   "band": "Adams Lake",
+   "band_number": "684",
+   "area_ha": 310.1,
+   "distance_to_field_km": 9.0
+  },
+  {
+   "name": "SALMON RIVER 1 (SPLATSIN)",
+   "band": "Splatsin",
+   "band_number": "600",
+   "area_ha": 1584.5,
+   "distance_to_field_km": 14.2
+  },
+  {
+   "name": "NORTH BAY 5",
+   "band": "Skwlax te Secwepemculecw",
+   "band_number": "689",
+   "area_ha": 310.8,
+   "distance_to_field_km": 14.3
+  },
+  {
+   "name": "OKANAGAN 1",
+   "band": "Okanagan",
+   "band_number": "616",
+   "area_ha": 10692.4,
+   "distance_to_field_km": 17.6
+  },
+  {
+   "name": "ENDERBY 2",
+   "band": "Splatsin",
+   "band_number": "600",
+   "area_ha": 2243.8,
+   "distance_to_field_km": 17.7
+  },
+  {
+   "name": "MEADOW CREEK 3",
+   "band": "Skwlax te Secwepemculecw",
+   "band_number": "689",
+   "area_ha": 24.5,
+   "distance_to_field_km": 22.0
+  },
+  {
+   "name": "NESKONLITH INDIAN RESERVE NO. 2",
+   "band": "Neskonlith",
+   "band_number": "690",
+   "area_ha": 952.9,
+   "distance_to_field_km": 26.2
+  },
+  {
+   "name": "STEQUMWHULPA 5",
+   "band": "Adams Lake",
+   "band_number": "684",
+   "area_ha": 89.4,
+   "distance_to_field_km": 27.3
+  },
+  {
+   "name": "CHUM CREEK 2",
+   "band": "Skwlax te Secwepemculecw",
+   "band_number": "689",
+   "area_ha": 233.9,
+   "distance_to_field_km": 27.4
+  },
+  {
+   "name": "OTTER LAKE 2",
+   "band": "Okanagan",
+   "band_number": "616",
+   "area_ha": 25.8,
+   "distance_to_field_km": 27.9
+  },
+  {
+   "name": "NESKONLITH 1",
+   "band": "Neskonlith",
+   "band_number": "690",
+   "area_ha": 1312.9,
+   "distance_to_field_km": 28.0
+  },
+  {
+   "name": "SAHHALTKUM 4",
+   "band": "Adams Lake",
+   "band_number": "684",
+   "area_ha": 1439.0,
+   "distance_to_field_km": 28.1
+  },
+  {
+   "name": "QUAAOUT 1",
+   "band": "Skwlax te Secwepemculecw",
+   "band_number": "689",
+   "area_ha": 1712.8,
+   "distance_to_field_km": 28.7
+  },
+  {
+   "name": "SCOTCH CREEK 4",
+   "band": "Skwlax te Secwepemculecw",
+   "band_number": "689",
+   "area_ha": 830.8,
+   "distance_to_field_km": 29.2
+  },
+  {
+   "name": "HARRIS 3",
+   "band": "Okanagan",
+   "band_number": "616",
+   "area_ha": 61.6,
+   "distance_to_field_km": 29.6
+  },
+  {
+   "name": "SICAMOUS 3",
+   "band": "Splatsin",
+   "band_number": "600",
+   "area_ha": 79.9,
+   "distance_to_field_km": 32.3
+  },
+  {
+   "name": "SWAN LAKE 4",
+   "band": "Okanagan",
+   "band_number": "616",
+   "area_ha": 32.2,
+   "distance_to_field_km": 34.3
+  },
+  {
+   "name": "HUSTALEN 1",
+   "band": "Adams Lake",
+   "band_number": "684",
+   "area_ha": 890.3,
+   "distance_to_field_km": 37.6
+  },
+  {
+   "name": "TOOPS 3",
+   "band": "Adams Lake",
+   "band_number": "684",
+   "area_ha": 9.5,
+   "distance_to_field_km": 38.3
+  }
+ ]
+}

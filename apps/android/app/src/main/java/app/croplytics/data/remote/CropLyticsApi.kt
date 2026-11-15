@@ -14,12 +14,15 @@ import app.croplytics.data.remote.dto.ScoreResponseDto
 import app.croplytics.data.remote.dto.StrategiesDto
 import app.croplytics.data.remote.dto.StressDto
 import app.croplytics.data.remote.dto.WaterSeenDto
+import kotlinx.serialization.json.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
+import retrofit2.http.Url
 
-/** The CropLytics API (backend/api). Base URL ends in `/api/`. */
+/** The CropLytics API (backend/api), the same routes the web app reads (frontend/app/src/api.ts). Base URL ends in `/api/`. */
 interface CropLyticsApi {
     @GET("locations")
     suspend fun locations(): LocationsDto
@@ -27,11 +30,27 @@ interface CropLyticsApi {
     @GET("locations/{id}")
     suspend fun location(@Path("id") id: String): LocationDto
 
+    /** source = "hls" for the NASA-native calendar; the web uses it first when served. */
     @GET("locations/{id}/calendar")
-    suspend fun calendar(@Path("id") id: String): CalendarDto
+    suspend fun calendar(@Path("id") id: String, @Query("source") source: String? = null): CalendarDto
+
+    @GET("locations/{id}/calendar_ml")
+    suspend fun calendarMl(@Path("id") id: String): CalendarDto
 
     @GET("locations/{id}/nasa_now")
     suspend fun nasaNow(@Path("id") id: String): NasaNowDto
+
+    /** One row per 10-day step from 2015: SMAP / GRACE-FO percentiles, IMERG rain, OPERA water, HLS greenness. */
+    @GET("locations/{id}/nasa_series")
+    suspend fun nasaSeries(@Path("id") id: String): JsonObject
+
+    /** The daily record (about 2 MB): parsed straight into the compact model. */
+    @GET("locations/{id}/daily")
+    suspend fun daily(@Path("id") id: String): JsonObject
+
+    /** The 30 m grid with greenness per quarter and per clear scene (about 2 MB). */
+    @GET("locations/{id}/grid")
+    suspend fun grid(@Path("id") id: String): JsonObject
 
     @GET("locations/{id}/strategies")
     suspend fun strategies(@Path("id") id: String): StrategiesDto
@@ -59,4 +78,8 @@ interface CropLyticsApi {
 
     @GET("glossary")
     suspend fun glossary(): GlossaryDto
+
+    /** Files the web app serves next to the API (ISS photo index under /iss/<id>/iss.json). */
+    @GET
+    suspend fun file(@Url url: String): JsonObject
 }

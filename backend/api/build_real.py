@@ -155,6 +155,18 @@ def fixture_id(p: str) -> str:
     return p if fieldreg.is_original(p) else fieldreg.template(p)
 
 
+EXAMPLE_LIMIT_AF_AC = {"rice": 5.0, "forage": 3.0}   # assumed (U): example water limits by family for the allocation control
+
+
+def example_limit(family: str) -> dict:
+    """Location.water.example_limit_af_ac: an example seasonal water limit for the family (SourcedNumber, assumed, U)."""
+    v = EXAMPLE_LIMIT_AF_AC.get(family)
+    return {"value": v, "unit": "acre-ft/acre", "low": None, "high": None, "method": "assumed",
+            "source": {"id": "fieldshift_example_limit", "title": "CropLytics example value (assumed)", "url": "urn:fieldshift:assumed", "verified": False},
+            "note": f"Example limit for trying the water-allocation control with a {family} field (U). Not this field's allocation, "
+                    "licence or district delivery; replace it with the real number."}
+
+
 def water_block(p: str, fix: dict) -> dict:
     """Location.water: the looked-up water source from the registry (district, SGMA subbasin, GSA, priority, State Water Board
     status, each with its source URL), keeping the old keys so existing readers work."""
@@ -172,6 +184,7 @@ def water_block(p: str, fix: dict) -> dict:
         "source": fix["water"]["source"] if fieldreg.is_original(p) else None,
         "source_note": ("spec statement (U)" if fieldreg.is_original(p) else "surface vs groundwater use not looked up for this field"),
         "allocation_input": fix["water"]["allocation_input"],
+        "example_limit_af_ac": example_limit(reg["family"]),
         "district": w.get("district"),
         "nearest_district": w.get("nearest_district"),
         "other_agencies": w.get("other_agencies", []),

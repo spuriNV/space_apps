@@ -1,7 +1,10 @@
+import { Seg } from '../ui/Seg';
 import type { CoverClass, FieldEvent, Location, Calendar, CalendarYear } from '../../types';
 import { useState } from 'react';
 import { rainOf, type Daily } from '../../season';
-import type { Extras, MLInfo } from '../../api';
+import { bcGap, type Extras, type MLInfo } from '../../api';
+import type { DataGap } from '../../types';
+import { GapLine } from '../ui/shared';
 import { DRIVER } from '../ui/FieldNow';
 import { fmtDate } from '../../lib';
 import { MoreDetail, useDetail } from '../ui/Detail';
@@ -31,9 +34,11 @@ export interface YearSheetProps { events: FieldEvent[]; playing: boolean; setPla
 
 const pct = (x: number | null) => (x == null ? '?' : `${Math.round(x * 100)}%`);
 /** What the machine-learning calendar is worth on this field, in plain words. */
-export function mlVerdict(ml: MLInfo | null) {
+export function mlVerdict(ml: MLInfo | null, gap?: DataGap | null) {
+  if (!ml && gap) return { short: 'Not available in BC', long: `Not available in BC. ${gap.reason}` };
   if (!ml) return { short: 'Not ready for this field yet', long: 'The machine-learning calendar is not ready for this field yet.' };
   const agree = ml.disagreePct != null ? ` The two disagree on ${Math.round(ml.disagreePct)}% of clear satellite days.` : '';
+  if (ml.estimate) return { short: 'An estimate, not a trained model', long: `A simpler two-class greenness rule run on this field only.${ml.agreeScl != null ? ` It matches Sentinel-2’s own scene labels on ${pct(ml.agreeScl)} of clear views.` : ''}${agree}` };
   if (!ml.meetsTarget) return { short: 'Below accuracy target', long: `Below our accuracy target on this field: in 2022, a year it never trained on, it was right ${pct(ml.acc2022)} of the time against a target of 85%, and it misses bare ground too often. The rule calendar stays the answer; this is for comparison only.${agree}` };
   if (ml.inflated) return { short: 'Second opinion only', long: `In 2022, a year it never trained on, it scored ${pct(ml.acc2022)}. That is too good to take at face value: the model partly learned how its training labels were made. Shown as a second opinion next to the rule, not as the answer.${agree}` };
   return { short: 'Meets accuracy target', long: `Meets our accuracy target on this field (right ${pct(ml.acc2022)} of the time in 2022, a year it never trained on). Shown next to the rule as a comparison.${agree}` };
@@ -43,7 +48,8 @@ export default function YearSheet(p: YearSheetProps) {
   const detail = useDetail().on;
   const [bothRaw, setBoth] = useState(false);
   const both = bothRaw && detail;
-  const verdict = mlVerdict(p.ml);
+  const gMl = bcGap(p.loc, 'ml_calendar');
+  const verdict = mlVerdict(p.ml, gMl);
   const last = yearOf(lastDataT(p.cal));
   const past = p.cal.years.filter((y) => y.year <= last && y.rule.replace(/u/g, '').length > 6);
   const typ = typical(past);
@@ -81,10 +87,8 @@ export default function YearSheet(p: YearSheetProps) {
           <h2>This field’s year</h2>
           <p>{diff}.{up != null ? ` Green from ${dk(up)}.` : ''}{last < 2026 ? ` ${last + 1} not processed yet.` : ''}</p>
         </div>
-        <div className="seg small ml-seg d-only" data-testid="ml-toggle">
-          <button className={!both ? 'on' : ''} onClick={() => setBoth(false)}>Satellite rule</button>
-          <button className={both ? 'on' : ''} onClick={() => setBoth(true)} data-testid="ml-on" disabled={!p.ml} title={p.ml ? 'Show the machine-learning calendar under the rule, season by season' : verdict.long}>Compare with machine learning</button>
-        </div>
+        <Seg className="small ml-seg d-only" testid="ml-toggle" label="Calendar" value={both} onChange={setBoth}
+          options={[{ v: false, label: 'Satellite rule' }, { v: true, label: 'Compare with machine learning', testid: 'ml-on', disabled: !p.ml, title: p.ml ? 'Show the machine-learning calendar under the rule, season by season' : verdict.long }]} />
         <div className="ys-legend">
           {(['c', 'p', 'b', 'w'] as CoverClass[]).map((c) => <span key={c}><i style={{ background: CLASS_COLOR[c] }} />{LABEL[c]}</span>)}
           <span><i className="hatch-u" />No clear view or not processed</span>
@@ -94,9 +98,10 @@ export default function YearSheet(p: YearSheetProps) {
           {detail && p.extras?.water && <span><i className="opera-key" />Standing water seen by NASA OPERA</span>}
         </div>
         <button className="ys-play" onClick={() => p.setPlaying(!p.playing)} data-testid="play" title={p.playing ? 'Pause' : 'Replay the seasons on the map'}><Icon name={p.playing ? 'pause' : 'play'} size={18} />{p.playing ? 'Pause' : 'Replay on the map'}</button>
-        <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close" data-testid="year-close"><Icon name="down" /></button>
+        <button className="icon-btn" onClick={() => p.setExpanded(false)} title="Close" aria-label="Close" data-testid="year-close"><Icon name="down" /></button>
       </div>
-      {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}
+      {gMl && <p className="ml-note d-only"><GapLine gap={gMl} missing={!p.ml} /></p>}
+      {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget && !p.ml.estimate ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}
       <div className="yr-grid">
         <div className="yr-row yr-months"><span /><span /><div className="yr-m">{MONTHS.map((m) => <span key={m}>{m}</span>)}</div><span className="yr-n">Bare days a year</span><span className="yr-n">1-inch rain days on bare ground</span></div>
         <div className="yr-row typical">

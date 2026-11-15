@@ -22,3 +22,9 @@ __pycache__/
 # per-field raw rasters (CDL box, S2 NDVI stack) and AppEEARS bundles are rebuilt by the chunk scripts
 data/cache/*/rasters/
 data/cache/_appeears/
+
+# analyse-any-location cache (backend/api/app/anyloc; rebuilt on demand)
+data/cache/_points/
+
+# user-drawn fields cache (backend/api/app/myfields; optional, rebuilt on demand)
+data/user_fields/

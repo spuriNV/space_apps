@@ -26,6 +26,11 @@ export const haToAc = (ha: number) => ha * 2.47105;
 export const mmToIn = (mm: number) => mm / 25.4;
 export const afacToMm = (af: number) => af * 304.8;
 export const mmToAfac = (mm: number) => mm / 304.8;
+/** A dryland rotation: the API marks every crop year in its calendar `irrigated: false`. Its irrigation need is 0 by design. */
+export const RAIN_FED = 'Rain-fed (no irrigation)';
+export const isRainFed = (s: { calendar?: { irrigated?: boolean }[] }) => !!s.calendar?.length && s.calendar.every((c) => c.irrigated === false);
+/** "3.1 acre-ft/acre", or the rain-fed label for a dryland rotation. */
+export const needText = (s: { calendar?: { irrigated?: boolean }[] }, af: number) => (isRainFed(s) ? RAIN_FED : `${af.toFixed(1)} acre-ft/acre`);
 
 export const CLASS_LABEL: Record<CoverClass, string> = { b: 'Bare', p: 'Partial cover', c: 'Covered', w: 'Water', u: 'Unknown (cloud)' };
 export const CLASS_COLOR: Record<CoverClass, string> = { b: '#a8703f', p: '#b7d77a', c: '#2f9e4b', w: '#3d97e8', u: '#6b7280' };

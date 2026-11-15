@@ -7,7 +7,7 @@ export function BCCard({ bc, onClose, floating }: { bc: BCInfo; onClose?: () => 
     <div className={`bc-card ${floating ? 'glass floating' : ''}`} data-testid="bc-card">
       <div className="bc-head">
         <span className="chip warn"><Icon name="info" size={13} />Out of scope for now</span>
-        {onClose && <button className="icon-btn" onClick={onClose}><Icon name="close" size={16} /></button>}
+        {onClose && <button className="icon-btn" onClick={onClose} aria-label="Close"><Icon name="close" size={16} /></button>}
       </div>
       <h3>{bc.title}</h3>
       <p>{bc.intro}</p>
@@ -21,7 +21,7 @@ export function BCCard({ bc, onClose, floating }: { bc: BCInfo; onClose?: () => 
 }
 
 // ---------- Layers drawer ----------
-export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolean>; toggle: (id: string) => void; loc: Location | null; onClose: () => void }) {
+export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolean>; toggle: (id: string) => void; loc: Location | null; reserves?: boolean; onClose: () => void }) {
   const fieldKm2 = p.loc ? p.loc.area_ha.value / 100 : 0.6;
   const group = (g: 'field' | 'regional', title: string, sub: string) => (
     <div className="lg">
@@ -46,8 +46,22 @@ export function LayersDrawer(p: { datasets: Dataset[]; on: Record<string, boolea
   );
   return (
     <aside className="drawer glass" data-testid="layers-drawer">
-      <header className="panel-head"><h2>Layers <small>NASA Earth data</small></h2><button className="icon-btn" onClick={p.onClose}><Icon name="close" size={18} /></button></header>
+      <header className="panel-head"><h2>Layers <small>NASA Earth data</small></h2><button className="icon-btn" onClick={p.onClose} aria-label="Close" title="Close"><Icon name="close" size={18} /></button></header>
       <div className="panel-scroll">
+        {p.reserves && (
+          <div className="lg" data-testid="layer-group-context">
+            <h3>Context<small>BC only, off unless you turn it on</small></h3>
+            <label className={`layer ${p.on.reserves ? 'on' : ''}`}>
+              <input type="checkbox" checked={!!p.on.reserves} onChange={() => p.toggle('reserves')} data-testid="layer-reserves" />
+              <span className="sw sw-reserve" />
+              <span className="layer-body">
+                <span className="layer-top"><b>Reserve boundaries (context)</b></span>
+                <span className="layer-sees">Indian reserve outlines near this field, with their names.</span>
+                <span className="layer-meta">For context only. Not part of the analysis.</span>
+              </span>
+            </label>
+          </div>
+        )}
         {group('field', 'Sees inside your field', 'pixel smaller than the field')}
         {group('regional', 'Sees your district or basin', 'one pixel covers many fields')}
         <div className="scale-ruler">

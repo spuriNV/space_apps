@@ -53,15 +53,13 @@ POWER (0.5 x 0.625 deg): `fetch_power.py` copies the series to fields in the sam
 4. `python3 backend/fields/checks/run_checks.py` and `cd backend/api && uv run python checks/check_api.py`.
 5. Commit the registry, `backend/field/polygons/<id>*`, the chunk `out/<id>/` folders and `data/cache/<id>/` (not `data/cache/<id>/rasters/`, which is git-ignored).
 
-## Status (15 Nov 2026, paused)
+## Status (15 Nov 2026)
 
-Done for all 12 new fields: registry entry, DWR polygon, CDL crop history, POWER, NOAA stations, SSURGO, USDM, CDEC, water source, OpenET (12 queries, 17 of 100 used this month), RMA, IMERG, GRACE, DSWx, outlook CPC and water-now.
-Done for 8 (`car_glenn_rice`, `car_biggs_rice`, `car_robbins_rice`, `car_zamora_rice`, `car_grimes_rice`, `caf_goshen_forage`, `caf_tipton_forage`, `caf_elnido_forage`): S2/Landsat series, calendar, grid, NASADEM terrain, strategies, API payloads (served by `/api/locations`).
-Remaining: S2/Landsat series for `caf_corcoran_forage` (none), `caf_newman_forage` (none), `caf_riverdale_forage` (Landsat), then calendar/grid/terrain/strategies/API for those three and `car_richvale_rice`; SMAP L4 (OPeNDAP + HTTPS streaming of ~1,200 recent granules) for all 12; `ai.*` with complete series; `outlook.history/irrigation/build`. SMAP L3, MODIS and ECOSTRESS: AppEEARS tasks (submitted 14 Nov) were still pending after 8 hours, as were the originals' tasks; rerunning the fetchers resumes the same tasks.
+All 14 California registry fields (7 rice, 7 forage) are live in `/api/locations`, alongside the BC field from `fields_other_regions`. Every field has: DWR polygon, CDL history, POWER, NOAA stations, SSURGO, USDM, CDEC, water source (with county and nearest water district on the location), OpenET, RMA, IMERG, GRACE, DSWx, S2/Landsat series, SMAP L4 (Cloud OPeNDAP), terrain, calendar (rules and ML), AI inputs and stress, strategies, outlook and API payloads. NDVI scenes outside [-1, 1] are dropped. Fields checks: 562 PASS / 0 FAIL.
 
-Resume: `python3 backend/fields/run_all.py` (skips what is done), then `python3 backend/fields/checks/run_checks.py` and `cd backend/api && uv run python checks/check_api.py`.
+Still pending: AppEEARS SMAP L3, MODIS and ECOSTRESS. The tasks (submitted 14 Nov) had not finished after 8 hours, as were the originals' tasks. Rerunning the fetchers resumes the same tasks; nothing is filled in meanwhile.
 
-Data findings: one or two scenes per field give NDVI p10/p90 outside [-1, 1] at Glenn, Richvale, Robbins and El Nido (and one El Nido Landsat median of 1.81), so the backend/field check "NDVI in [-1,1]" fails there; these scenes were not filtered and should be dropped (reflectance artefacts) before the calendars are trusted for those dates.
+Rerun: `python3 backend/fields/run_all.py` (skips what is done; `--list` shows status), then regenerate one step with `python3 backend/fields/run_all.py --force api.build --only api.build` (add `--fields id1,id2` to limit), then `python3 backend/fields/checks/run_checks.py` and `cd backend/api && uv run python checks/check_api.py`.
 
 ## Limits
 

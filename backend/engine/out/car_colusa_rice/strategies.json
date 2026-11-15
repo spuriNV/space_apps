@@ -3,6 +3,7 @@
   "id": "car0_rice_winterflood",
   "location_id": "car_colusa_rice",
   "name": "Continuous rice with winter flood (current)",
+  "short_name": "Rice + winter flood (current)",
   "is_baseline": true,
   "cycle_years": 1,
   "calendar": [
@@ -1401,6 +1402,7 @@
   "id": "car1_rice_wintercover",
   "location_id": "car_colusa_rice",
   "name": "Rice + winter cover (cereal/vetch) instead of winter flood",
+  "short_name": "Rice + winter cover",
   "is_baseline": false,
   "cycle_years": 1,
   "calendar": [
@@ -2813,6 +2815,7 @@
   "id": "car2_dryyear_safflower",
   "location_id": "car_colusa_rice",
   "name": "Dry-year plan: safflower instead of rice (allocation < 50%)",
+  "short_name": "Dry-year safflower",
   "is_baseline": false,
   "cycle_years": 1,
   "calendar": [
@@ -4164,6 +4167,7 @@
   "id": "car3_rice_wheat",
   "location_id": "car_colusa_rice",
   "name": "Rice - winter wheat rotation (2-year)",
+  "short_name": "Rice\u2013wheat",
   "is_baseline": false,
   "cycle_years": 2,
   "calendar": [

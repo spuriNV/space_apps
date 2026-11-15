@@ -34,13 +34,25 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
   ] },
 ];
 
-export function SourcesSheet({ onClose }: { onClose: () => void }) {
+/** A BC field: its own ground data, in place of the California-only sources (the NASA and model groups are the same). */
+const BC_GROUND: { title: string; items: [string, string][] } = { title: 'Ground data (British Columbia)', items: [
+  ['Environment and Climate Change Canada (ECCC) daily climate', 'Hot days, frost nights and station rain: Salmon Arm CS, and Silver Creek until 2021.'],
+  ['AAFC Annual Crop Inventory', 'The crop grown each year, 2011–2025. One class for hay and pasture; no alfalfa class.'],
+  ['ParcelMap BC and the Agricultural Land Reserve', 'The field outline: a farmland parcel clipped to forage pixels. No owner or parcel number kept.'],
+  ['AAFC Soil Landscapes of Canada v3.2', 'Soil texture, water held and drainage from a 1:1,000,000 map; not field scale.'],
+  ['BC Gov News, Water Sustainability Act orders', 'The 2023 and 2026 orders to stop irrigating in the Salmon River watershed.'],
+  ['Indian reserves (CLSS boundaries), BC Data Catalogue', 'Reserve outlines and distances, for context only; no reserve land was analysed.'],
+] };
+const CA_ONLY = /NOAA weather|Cropland Data|SSURGO|DWR \/ Land IQ|Risk Management|Climate Prediction|CDEC/;
+
+export function SourcesSheet({ onClose, bc = false }: { onClose: () => void; bc?: boolean }) {
+  const groups = bc ? [...GROUPS.filter((g) => g.title !== 'Ground data'), BC_GROUND].map((g) => ({ ...g, items: g.items.filter(([n]) => !CA_ONLY.test(n) && !/OpenET/.test(n)) })) : GROUPS;
   return (
     <div className="src-wrap" role="dialog" aria-label="Sources" onClick={onClose} data-testid="sources">
       <div className="src-sheet" onClick={(e) => e.stopPropagation()}>
-        <header><h2>Sources</h2><button className="sq-btn" onClick={onClose} title="Close"><Icon name="close" size={16} /></button></header>
+        <header><h2>Sources</h2><button className="icon-btn" onClick={onClose} title="Close" aria-label="Close"><Icon name="close" size={16} /></button></header>
         <div className="src-cols">
-          {GROUPS.map((g) => (
+          {groups.map((g) => (
             <section key={g.title}>
               <h3>{g.title}</h3>
               <ul>{g.items.map(([n, d]) => <li key={n}><b>{n}</b><span>{d}</span></li>)}</ul>

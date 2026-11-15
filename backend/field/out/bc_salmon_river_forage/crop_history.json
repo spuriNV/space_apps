@@ -1,0 +1,446 @@
+{
+ "preset_id": "bc_salmon_river_forage",
+ "source": {
+  "id": "aafc_aci",
+  "title": "AAFC Annual Crop Inventory (ACI), 30 m (56 m 2009-2010)",
+  "url": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif",
+  "spec": "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/supportdocument_documentdesupport/en/ISO%2019131_AAFC_Annual_Crop_Inventory_Data_Product_Specifications.pdf",
+  "accessed": "2026-11-15",
+  "verified": true,
+  "licence": "Open Government Licence - Canada"
+ },
+ "method": "Majority ACI class of the pixels whose centre lies inside the field outline (all touched pixels in the 56 m years); purity = share of the majority class.",
+ "by_year": {
+  "2009": "Not mapped (no data)",
+  "2010": "Not mapped (no data)",
+  "2011": "Agriculture (undifferentiated)",
+  "2012": "Agriculture (undifferentiated)",
+  "2013": "Agriculture (undifferentiated)",
+  "2014": "Pasture / Forages",
+  "2015": "Pasture / Forages",
+  "2016": "Pasture / Forages",
+  "2017": "Pasture / Forages",
+  "2018": "Pasture / Forages",
+  "2019": "Pasture / Forages",
+  "2020": "Pasture / Forages",
+  "2021": "Agriculture (undifferentiated)",
+  "2022": "Pasture / Forages",
+  "2023": "Pasture / Forages",
+  "2024": "Pasture / Forages",
+  "2025": "Pasture / Forages"
+ },
+ "years": [
+  {
+   "year": 2009,
+   "majority_code": 0,
+   "majority_name": "Not mapped (no data)",
+   "purity_pct": 100.0,
+   "n_pixels": 71,
+   "pixel_res_m": 56.0,
+   "top_classes": [
+    {
+     "code": 0,
+     "name": "Not mapped (no data)",
+     "pct": 100.0
+    }
+   ]
+  },
+  {
+   "year": 2010,
+   "majority_code": 0,
+   "majority_name": "Not mapped (no data)",
+   "purity_pct": 100.0,
+   "n_pixels": 71,
+   "pixel_res_m": 56.0,
+   "top_classes": [
+    {
+     "code": 0,
+     "name": "Not mapped (no data)",
+     "pct": 100.0
+    }
+   ]
+  },
+  {
+   "year": 2011,
+   "majority_code": 120,
+   "majority_name": "Agriculture (undifferentiated)",
+   "purity_pct": 96.2,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 120,
+     "name": "Agriculture (undifferentiated)",
+     "pct": 96.2
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 2.1
+    },
+    {
+     "code": 50,
+     "name": "Shrubland",
+     "pct": 1.7
+    }
+   ]
+  },
+  {
+   "year": 2012,
+   "majority_code": 120,
+   "majority_name": "Agriculture (undifferentiated)",
+   "purity_pct": 97.9,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 120,
+     "name": "Agriculture (undifferentiated)",
+     "pct": 97.9
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 2.1
+    }
+   ]
+  },
+  {
+   "year": 2013,
+   "majority_code": 120,
+   "majority_name": "Agriculture (undifferentiated)",
+   "purity_pct": 85.4,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 120,
+     "name": "Agriculture (undifferentiated)",
+     "pct": 85.4
+    },
+    {
+     "code": 30,
+     "name": "Exposed Land / Barren",
+     "pct": 12.5
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 1.2
+    },
+    {
+     "code": 80,
+     "name": "Wetland",
+     "pct": 0.8
+    }
+   ]
+  },
+  {
+   "year": 2014,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 77.1,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 77.1
+    },
+    {
+     "code": 147,
+     "name": "Corn",
+     "pct": 20.8
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 1.2
+    },
+    {
+     "code": 80,
+     "name": "Wetland",
+     "pct": 0.8
+    }
+   ]
+  },
+  {
+   "year": 2015,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 85.0,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 85.0
+    },
+    {
+     "code": 50,
+     "name": "Shrubland",
+     "pct": 14.2
+    },
+    {
+     "code": 80,
+     "name": "Wetland",
+     "pct": 0.8
+    }
+   ]
+  },
+  {
+   "year": 2016,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 99.2,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 99.2
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 0.8
+    }
+   ]
+  },
+  {
+   "year": 2017,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 92.1,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 92.1
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 6.7
+    },
+    {
+     "code": 80,
+     "name": "Wetland",
+     "pct": 0.4
+    },
+    {
+     "code": 210,
+     "name": "Coniferous",
+     "pct": 0.4
+    }
+   ]
+  },
+  {
+   "year": 2018,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 75.8,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 75.8
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 13.8
+    },
+    {
+     "code": 131,
+     "name": "Fallow",
+     "pct": 7.1
+    },
+    {
+     "code": 167,
+     "name": "Beans",
+     "pct": 2.1
+    }
+   ]
+  },
+  {
+   "year": 2019,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 100.0,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 100.0
+    }
+   ]
+  },
+  {
+   "year": 2020,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 79.6,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 79.6
+    },
+    {
+     "code": 131,
+     "name": "Fallow",
+     "pct": 17.1
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 2.9
+    },
+    {
+     "code": 210,
+     "name": "Coniferous",
+     "pct": 0.4
+    }
+   ]
+  },
+  {
+   "year": 2021,
+   "majority_code": 120,
+   "majority_name": "Agriculture (undifferentiated)",
+   "purity_pct": 56.2,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 120,
+     "name": "Agriculture (undifferentiated)",
+     "pct": 56.2
+    },
+    {
+     "code": 210,
+     "name": "Coniferous",
+     "pct": 32.1
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 9.6
+    },
+    {
+     "code": 80,
+     "name": "Wetland",
+     "pct": 0.8
+    }
+   ]
+  },
+  {
+   "year": 2022,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 80.4,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 80.4
+    },
+    {
+     "code": 34,
+     "name": "Urban / Developed",
+     "pct": 19.2
+    },
+    {
+     "code": 220,
+     "name": "Broadleaf",
+     "pct": 0.4
+    }
+   ]
+  },
+  {
+   "year": 2023,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 100.0,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 100.0
+    }
+   ]
+  },
+  {
+   "year": 2024,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 85.0,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 85.0
+    },
+    {
+     "code": 137,
+     "name": "Rye",
+     "pct": 12.5
+    },
+    {
+     "code": 80,
+     "name": "Wetland",
+     "pct": 1.2
+    },
+    {
+     "code": 220,
+     "name": "Broadleaf",
+     "pct": 0.8
+    }
+   ]
+  },
+  {
+   "year": 2025,
+   "majority_code": 122,
+   "majority_name": "Pasture / Forages",
+   "purity_pct": 99.6,
+   "n_pixels": 240,
+   "pixel_res_m": 30.0,
+   "top_classes": [
+    {
+     "code": 122,
+     "name": "Pasture / Forages",
+     "pct": 99.6
+    },
+    {
+     "code": 80,
+     "name": "Wetland",
+     "pct": 0.4
+    }
+   ]
+  }
+ ],
+ "caveats": [
+  "ACI class 122 'Pasture / Forages' lumps alfalfa, clover, tame grass hay and pasture: it cannot say whether the field was alfalfa or grass hay in a given year (California's CDL separates them).",
+  "[2009, 2010]: the ACI does not cover this part of BC in these years (value 0, not mapped).",
+  "[2011, 2012, 2013, 2021]: AAFC mapped this area only as 120 'Agriculture (undifferentiated)' in these years (no crop type).",
+  "ACI overall accuracy for crop classes in British Columbia, from the ACI specification: 88.34% (2024 map) and 89.02% (2025 map); 73-93% in earlier years. That is for all crop classes province-wide, not for forage at this field: treat single-year changes as possible errors.",
+  "The outline was chosen from ACI forage pixels, so forage purity here is not an independent check."
+ ]
+}
