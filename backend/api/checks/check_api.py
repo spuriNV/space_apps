@@ -797,8 +797,13 @@ _cat = _rc.json() if _rc.status_code == 200 else {"items": [], "count": 0}
 _idx = json.loads((ROOT / "backend/api/out/catalog/index.json").read_text()) if (ROOT / "backend/api/out/catalog/index.json").exists() else []
 _ca = [x for x in _cat["items"] if x["region"] == "ca"]
 _bc = [x for x in _cat["items"] if x["region"] == "bc"]
-_ok(_rc.status_code == 200 and _cat["count"] == len(_idx) >= 180 and len(_ca) >= 140 and len(_bc) >= 35,
-    f"/api/catalog lists {_cat['count']} fields (index.json {len(_idx)}): {len(_ca)} CA, {len(_bc)} BC")
+_us = [x for x in _cat["items"] if x["region"].startswith("us-")]
+_can = [x for x in _cat["items"] if x["region"].startswith("can-")]
+_ok(_rc.status_code == 200 and _cat["count"] == len(_idx) >= 430 and len(_ca) >= 140 and len(_bc) >= 35 and len(_us) >= 200 and len(_can) >= 38,
+    f"/api/catalog lists {_cat['count']} fields (index.json {len(_idx)}): {len(_ca)} CA, {len(_bc)} BC, {len(_us)} US elsewhere, {len(_can)} Canada elsewhere")
+_fs = client.get("/api/catalog?country=CA&state=AB").json()
+_ok(_fs["count"] > 0 and all(x["state"] == "AB" and x["country"] == "CA" for x in _fs["items"]) and "IA" in client.get("/api/catalog").json()["states"],
+    f"/api/catalog?country=CA&state=AB -> {_fs['count']}, states filter lists IA")
 _ok(all(set(x) >= {"id", "name", "lat", "lon", "region", "crop_group", "county", "acres", "family"} for x in _cat["items"]),
     "every catalog item has id, name, lat, lon, region, crop_group, county, acres, family")
 _rf = client.get("/api/catalog?region=bc&crop_group=forage").json()
@@ -807,19 +812,19 @@ _ok(_rf["count"] == sum(x["crop_group"] == "forage" for x in _bc) > 0 and all(x[
 _ok(len({x["id"] for x in _cat["items"]}) == _cat["count"] and all(_al.B.parse_id(x["id"]) for x in _cat["items"]), "catalog ids unique, valid pt_ ids")
 _ok(client.get("/api/locations").json()["count"] <= 20, "/api/locations unchanged (hand-built fields only, catalog not listed)")
 _rng = _rnd.Random()
-for x in _rng.sample(_ca, min(5, len(_ca))) + _rng.sample(_bc, min(3, len(_bc))):
+for x in _rng.sample(_ca, min(5, len(_ca))) + _rng.sample(_bc, min(3, len(_bc))) + _rng.sample(_us, 5) + _rng.sample(_can, 3):
     t0 = _t.time(); r = client.get(f"/api/locations/{x['id']}", headers={"X-Forwarded-For": "198.51.100.20"}); dt_ = _t.time() - t0
     if not _ok(r.status_code == 200, f"catalog {x['id']} ({x['name']}): GET /api/locations 200"):
         continue
     d = r.json(); e = _errs(_LOC_V, d)
     _ok(not e and d["_source"] == "catalog" and r.headers.get("X-Data-Source") == "catalog" and d["analysis"]["cache"] == "catalog" and dt_ < 0.5,
         f"catalog {x['id']}: schema-valid, _source catalog, {dt_ * 1000:.0f} ms {e}")
-    _ok(d["region"] == x["region"] and d["name"] == x["name"] and all(d["sections"][k]["status"] == "ready" for k in ("weather", "crop_history", "boundary", "strategies")),
+    _ok(d["region"] == (x["region"] if x["region"] in ("ca", "bc") else "other") and d["name"] == x["name"] and all(d["sections"][k]["status"] == "ready" for k in ("weather", "crop_history", "boundary", "strategies")),
         f"catalog {x['id']}: region {d['region']}, tier 1 ready {[(k, d['sections'][k]['status']) for k in ('weather', 'soil', 'crop_history', 'boundary', 'strategies')]}")
     rs = client.get(f"/api/locations/{x['id']}/strategies", headers={"X-Forwarded-For": "198.51.100.20"})
     _ok(rs.status_code == 200 and not _errs(_STR_V, rs.json()) and len(rs.json()["items"]) == 4 and rs.json()["_source"] == "catalog"
-        and all(i["id"].startswith("bc") for i in rs.json()["items"]) == (x["region"] == "bc"),
-        f"catalog {x['id']}: /strategies 200 from the catalog, schema-valid, {'BC0-3' if x['region'] == 'bc' else 'CA'} rotation set")
+        and all(i["id"].startswith("bc") for i in rs.json()["items"]) == (x["region"] == "bc" or x["region"].startswith("can-")),
+        f"catalog {x['id']}: /strategies 200 from the catalog, schema-valid, {'BC0-3' if x['region'] == 'bc' or x['region'].startswith('can-') else 'CA'} rotation set")
 
 print("\nBC tier 1 and reserve / tribal land (live):")
 _LIVE = [  # (label, lat, lon, ip, kind)

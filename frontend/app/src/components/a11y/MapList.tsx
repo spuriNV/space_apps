@@ -36,7 +36,7 @@ export function MapList(p: { locations: Location[]; catalog: CatalogItem[]; rese
   const box = useRef<HTMLElement>(null);
   const rows = useMemo<Row[]>(() => [
     ...p.locations.filter((l) => !l.id.startsWith('pt_')).map((l): Row => { const c = latestCrop(l); return { key: l.id, kind: 'Field', name: fieldName(l), crop: `${c.crop}${c.year ? ` (${c.year})` : ''}`, acres: t('ui.n_acres', { n: acres(l) }), region: place(l), go: () => p.onField(l.id) }; }),
-    ...p.catalog.map((it): Row => ({ key: it.id, kind: 'Farm', name: it.name, crop: it.crop_group_label, acres: it.acres ? t('ui.n_acres', { n: Math.round(it.acres) }) : t('ui.ml.noacres'), region: it.area, go: () => p.onFarm(it) })),
+    ...p.catalog.map((it): Row => ({ key: it.id, kind: 'Farm', name: it.name, crop: it.crop_group_label, acres: it.acres ? t('ui.n_acres', { n: Math.round(it.acres) }) : t('ui.ml.noacres'), region: it.state ? `${it.area}, ${it.state}` : it.area, go: () => p.onFarm(it) })),
     ...p.reserves.map((r): Row => ({ key: `res-${r.name}`, kind: 'Reserve', name: r.name, crop: t('ui.ml.reserve'), acres: t('ui.ml.noacres'), region: r.km != null ? t('ui.ml.kmfrom', { n: r.km.toFixed(0) }) : t('ui.place.bc'), go: () => p.onReserve(r) })),
   ], [p.locations, p.catalog, p.reserves]); // eslint-disable-line react-hooks/exhaustive-deps
   const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);

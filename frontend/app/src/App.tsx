@@ -458,6 +458,7 @@ export default function App() {
     const items = [
       ...locations.filter((l) => !api.isSpot(l.id)).map((l) => ({ key: l.id, title: fieldName(l), sub: l.dwr_id ? tr('app.subDwr', { place: place(l), a: acres(l), n: l.dwr_id }) : tr('app.sub', { place: place(l), a: acres(l) }), icon: 'fields', go: () => select(l.id) })),
       ...(hasBC ? [] : [{ key: 'bc', title: tr('app.sumas'), sub: tr('app.notSet'), icon: 'info', go: goBC }]),
+      { key: 'na', title: 'All of the US and Canada', sub: 'See every catalog farm', icon: 'home', go: () => { setPanel('none'); map.current?.flyContinent(); } },
       { key: 'ca', title: tr('app.ca'), sub: tr('app.caSub'), icon: 'home', go: goHome },
     ];
     return q ? items.filter((i) => (i.title + i.sub).toLowerCase().includes(q)) : items;
@@ -636,6 +637,7 @@ export default function App() {
 
       <div className="controls" style={{ right: 16 + rightInset, bottom: bottomInset + 14 }}>
         <button className="ctl ctl-desk glass" onClick={goHome} title={tr('app.homeT')} aria-label={tr('app.homeA')}><Icon name="home" size={18} /></button>
+        <button className="ctl ctl-desk glass" onClick={() => map.current?.flyContinent()} title="Whole US and Canada" aria-label="Show the whole US and Canada" data-testid="continent-ctl"><Icon name="fields" size={18} /></button>
         <button className="ctl ctl-desk glass" onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} title={tr('app.layers')} aria-label={tr('app.layers')} aria-expanded={layersOpen} data-testid="layers-ctl"><Icon name="layers" size={18} /></button>
         {selected && d?.cal && <button className="ctl glass" onClick={() => { if (canReplay) startReplay(); else setPlaying(!playing); }} title={playing || replaying ? tr('app.pause') : tr('app.playT')} aria-label={playing || replaying ? tr('app.pauseA') : tr('app.playA')} aria-pressed={playing || replaying} data-testid="play-ctl"><Icon name={playing || replaying ? 'pause' : 'play'} size={18} /></button>}
         <button className="ctl glass" onClick={() => map.current?.resetNorth()} title={tr('app.north')} aria-label={tr('app.northA')}><span style={{ transform: `rotate(${-view.bearing - 45}deg)`, display: 'flex' }}><Icon name="compass" size={20} /></span></button>

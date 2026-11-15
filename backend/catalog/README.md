@@ -1,6 +1,6 @@
 # Farm catalog (`backend/catalog`)
 
-About 190 real fields across California and British Columbia, pre-built with the any-location tier-1 pipeline (`backend/api/app/anyloc`) so the map can open them instantly. Served by `GET /api/catalog` and `GET /api/locations/<pt_id>` (`_source: "catalog"`); see `backend/api/README.md`.
+About 445 real fields across California, British Columbia, ten US farm regions (215 fields, USDA Crop Sequence Boundaries outlines via `select_us.py`), the Canadian Prairies and Ontario / Quebec (42 fields, AAFC ACI patches via `select_can.py`; SLC soil for AB/SK/MB/ON/QC in `slc_can.json.gz`, built by `slc_bc.py --rest`), pre-built with the any-location tier-1 pipeline (`backend/api/app/anyloc`) so the map can open them instantly. Served by `GET /api/catalog` and `GET /api/locations/<pt_id>` (`_source: "catalog"`); see `backend/api/README.md`.
 
 | Script | Writes | Notes |
 |---|---|---|

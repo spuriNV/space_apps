@@ -87,11 +87,17 @@ def engine_entry(pid: str, name: str, family: str, region: str, centroid: dict) 
 
 async def bc_stage1(c, lon, lat, today):
     """Regional district (also the 'is it BC' test), reserve, parcel, ECCC stations and the Salmon watershed test, in parallel."""
-    names = ("rd", "reserve", "parcel", "eccc", "salmon")
+    names = ("rd", "reserve", "parcel", "eccc", "salmon", "place")
     res = await asyncio.gather(BC.regional_district(c, lon, lat), BC.reserve_at(c, lon, lat), BC.parcel_at(c, lon, lat),
                                BC.eccc(c, lon, lat, dt.date.fromisoformat(today)), BC.salmon_watershed(c, lon, lat),
-                               return_exceptions=True)
+                               BC.canada_place(c, lon, lat), return_exceptions=True)
     return dict(zip(names, res))
+
+
+async def can_stage1(c, lon, lat, today):
+    """Canada outside BC: ECCC stations and the nearest named place / province (no BC WFS layers)."""
+    res = await asyncio.gather(BC.eccc(c, lon, lat, dt.date.fromisoformat(today)), BC.canada_place(c, lon, lat), return_exceptions=True)
+    return {"rd": None, "eccc": res[0], "place": res[1]}
 
 
 async def bc_boundary(c, parcel, lon, lat):
@@ -209,7 +215,7 @@ def tier2_sections():
     return s
 
 
-async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list | None, dict]:
+async def analyse(lat: float, lon: float, power_cache, outline: dict | None = None) -> tuple[dict, dict, list | None, dict]:
     """Returns (location payload, daily payload or {}, strategies items or None, timings ms)."""
     pid = point_id(lat, lon)
     lat, lon = parse_id(pid)
@@ -219,6 +225,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
     sections: dict[str, dict] = {}
     in_ca_box = CA_BOX[0] <= lon <= CA_BOX[2] and CA_BOX[1] <= lat <= CA_BOX[3]
     bc_box = BC.in_bc_box(lon, lat) and not in_ca_box
+    can_box = BC.in_canada_box(lon, lat) and not in_ca_box
     from water_sources import AG_WORDS, SWRCB, L as LAYERS  # noqa: PLC0415  (backend/fields/water_sources.py)
 
     async def timed(name, coro, deadline):
@@ -236,13 +243,15 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
             timed("power", power_cache.get(c, lon, lat), 30),
             timed("cdl_catalog", power_cache.cdl_meta(c), 10),
             timed("swrcb", power_cache.swrcb(c, SWRCB) if in_ca_box else _none(), 8),
-            timed("bc", bc_stage1(c, lon, lat, today) if bc_box else _none(), 20),
+            timed("bc", bc_stage1(c, lon, lat, today) if bc_box else can_stage1(c, lon, lat, today) if can_box else _none(), 20),
             timed("tribal", BC.tribal_at(c, lon, lat) if in_ca_box else _none(), 8),
             return_exceptions=True)
         cty, dwr, pw, cdlmeta, board, bcd, tribal = st1
         ca_now = isinstance(cty, dict) and cty["state_fips"] == "06"
         bcd = bcd if isinstance(bcd, dict) else {}
         in_bc = cty is None and isinstance(bcd.get("rd"), str)
+        in_can = cty is None and (in_bc or (can_box and isinstance(bcd.get("place"), dict)))
+        cplace = bcd.get("place") if isinstance(bcd.get("place"), dict) else {}
         bc_info = {}
         if in_bc:
             try:
@@ -259,6 +268,11 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
             ring, props = geom["coordinates"][0], {}
             sections["boundary"] = sec("error" if bc_info.get("error") else "unavailable",
                                        bc_info.get("why", "no parcel outline") + ": a 200 m square around the tap is used", fallback="square_200m")
+        elif outline is not None and not isinstance(dwr, dict):
+            geom = outline
+            ring, props = geom["coordinates"][0], {}
+            sections["boundary"] = sec("ready", source="catalog_outline", note="field polygon from the catalog selection source "
+                                       "(USDA Crop Sequence Boundaries / AAFC Annual Crop Inventory patch)")
         elif isinstance(dwr, dict):
             ring = next((r for r in F.rings_of(dwr["geometry"]) if F.in_ring(lon, lat, r)), F.rings_of(dwr["geometry"])[0])
             geom = {"type": "Polygon", "coordinates": [ring]}
@@ -281,7 +295,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
             timed("soil", F.ssurgo(c, ring) if not outside_us else _none(), 15),
             timed("cdl", _none() if no_cdl else F.cdl_history(c, F.sample_points(ring, lon, lat), cdlmeta[0]) if not isinstance(cdlmeta, Exception) else _raise(cdlmeta), 15),
             timed("water", F.water(c, lon, lat, LAYERS, AG_WORDS, today) if ca_now else _none(), 10),
-            timed("aci", BC.aci_history(c, F.sample_points(ring, lon, lat)) if in_bc else _none(), 15),
+            timed("aci", BC.aci_history(c, F.sample_points(ring, lon, lat)) if in_can else _none(), 15),
             return_exceptions=True)
         soil_raw, cdl, wat, aci = st2
 
@@ -290,6 +304,9 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         sections["county"] = sec("ready", source="fcc_census_area_2020")
     elif in_bc:
         sections["county"] = sec("ready", source="bc_regional_districts_wfs", regional_district=bcd["rd"])
+        cty = None
+    elif in_can:
+        sections["county"] = sec("ready", source="cgndb_geonames", place=cplace.get("name"), province=cplace.get("province"))
         cty = None
     else:
         sections["county"] = sec("error" if isinstance(cty, Exception) else "unavailable",
@@ -307,7 +324,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         sections["weather"] = sec("ready", source="nasa_power_daily", range=[pmeta["date_min"], pmeta["date_max"]])
     sections["daily"] = dict(sections["weather"])
     stations, eccc_clim = [], None
-    if in_bc:
+    if in_can:
         ec = bcd.get("eccc")
         if isinstance(ec, dict) and ec["stations"]:
             stations = [{"network": "ECCC", "id": s["id"], "name": s["name"].title().replace(" Cs", " CS"), "distance_km": s["distance_km"],
@@ -324,7 +341,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         sections["stations"] = sec("not_computed", "station series (NOAA, CIMIS) are built per preset field; tapped California points use NASA POWER")
 
     # crop history + family
-    if in_bc:
+    if in_can:
         if isinstance(aci, Exception) or not aci:
             sections["crop_history"] = sec("error" if isinstance(aci, Exception) else "unavailable",
                                            f"AAFC crop inventory did not answer ({type(aci).__name__})" if isinstance(aci, Exception) else
@@ -344,15 +361,15 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         hist, purity = crop_history(cdl, cdlmeta[1])
         sections["crop_history"] = (sec("ready", source="usda_nass_cdl", years=[min(cdl), max(cdl)], points_sampled=max(v["n"] for v in cdl.values()) if cdl else 0)
                                     if cdl else sec("unavailable", "no Cropland Data Layer here (it covers the lower 48 US states only)"))
-    if not in_bc:
+    if not in_can:
         family, fam_why, cropland = family_of(cdl)
-    if sections["crop_history"]["status"] == "error" and not in_bc:
+    if sections["crop_history"]["status"] == "error" and not in_can:
         fam_why = "crop history unavailable: the forage rotation set (CAF0-CAF3) is shown as a stand-in"
-    tpl = BC_TEMPLATE if in_bc else TEMPLATES[family]
+    tpl = BC_TEMPLATE if in_can else TEMPLATES[family]
     sections["family"] = sec("ready" if cdl else "unavailable", fam_why, family=family, template=tpl, cropland=cropland)
 
     # soil
-    slc = BC.slc_at(lon, lat) if in_bc else None
+    slc = BC.slc_at(lon, lat) if in_can else None
     s_src = {"id": "ssurgo_sda", "title": "USDA NRCS SSURGO via Soil Data Access", "url": "https://sdmdataaccess.sc.egov.usda.gov/", "accessed": today, "verified": True}
     if slc:
         soil, engine_soil = slc_soil(slc, today)
@@ -372,7 +389,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         engine_soil = {"drainage_class": soil["drainage_class"], "hydrologic_group": soil["hydrologic_group"], "mukey": soil["mukey"], "muname": soil["muname"]}
     else:
         why = (f"Soil Data Access did not answer ({type(soil_raw).__name__})" if isinstance(soil_raw, Exception)
-               else "no Soil Landscapes of Canada soil data for this spot (SLC v3.2 has soil tables for BC's farmed landscapes only)" if in_bc
+               else "no Soil Landscapes of Canada soil data for this spot (SLC v3.2 has soil tables for farmed landscapes only)" if in_can
                else "no SSURGO soil survey here (SSURGO covers the United States)")
         soil = {"mukey": "unavailable", "muname": why, "drainage_class": "unknown", "hydrologic_group": "unknown",
                 "awc_mm_per_m": blocked_sn("mm/m", why), "om_pct": blocked_sn("%", why), "texture_class": "unknown",
@@ -381,9 +398,9 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         engine_soil = None
 
     # water (California only)
-    if in_bc:
+    if in_can:
         w = None
-        sections["water"] = sec("unavailable", "BC water licences and groundwater aquifers are not looked up for tapped points "
+        sections["water"] = sec("unavailable", "Canadian water licences and groundwater aquifers are not looked up for tapped points "
                                                "(the California SGMA / district layers do not apply)")
     elif not in_ca:
         w = None
@@ -411,7 +428,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
     items, eng_ms = None, None
     if df is not None:
         from . import engine_bridge  # noqa: PLC0415
-        entry = engine_entry(pid, f"Point {lat:.4f}, {lon:.4f}", family, region, {"lon": cen[0], "lat": cen[1]})
+        entry = engine_entry(pid, f"Point {lat:.4f}, {lon:.4f}", family, "bc" if in_can else region, {"lon": cen[0], "lat": cen[1]})
         t = time.perf_counter()
         try:
             items = await asyncio.to_thread(engine_bridge.run, pid, entry, df, lat, pmeta.get("elevation_m"), pmeta["url"], engine_soil)
@@ -420,7 +437,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
                 gaps = (st.get("brief") or {}).get("gaps")
                 if isinstance(gaps, list):
                     st["brief"]["gaps"] = [{"text": g, "source_ids": []} if isinstance(g, str) else g for g in gaps]
-            sections["strategies"] = sec("ready", (f"BC rotation set (BC0-BC3, {BC_TEMPLATE})" if in_bc else
+            sections["strategies"] = sec("ready", (f"BC rotation set (BC0-BC3, {BC_TEMPLATE}; the only Canadian set, a stand-in outside BC)" if in_can else
                                                    f"{TEMPLATES[family][:3].upper()} rotation set ({'rice' if family == 'rice' else 'forage'} family)")
                                          + " scored with this spot's NASA POWER weather" + ("" if engine_soil else "; no soil drainage check"),
                                          template=tpl)
@@ -436,12 +453,14 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
     row, col, _, _, foot = F.power_cell(lon, lat)
     elev = (pmeta or {}).get("elevation_m")
     p_src = src("nasa_power_daily", "NASA POWER daily point", (pmeta or {}).get("url", F.POWER_URL), today)
-    has_outline = bool(props) or (in_bc and sections["boundary"]["status"] == "ready")
+    has_outline = bool(props) or sections["boundary"]["status"] == "ready"
     area_src = (src("dwr_landiq_crop_mapping_2023", "DWR Statewide Crop Mapping 2023 (Land IQ), final", F.DWR_2023, today)
                 if props else src("fieldshift_square", "200 m square around the tapped point (no field outline)", "urn:fieldshift:assumed", today, False))
     crop_now = props.get("MAIN_CROP") or props.get("CROPTYP2")
-    county_name = cty["county_name"] if cty else bcd.get("rd") if in_bc else None
-    place = (f"{county_name} County, {cty['state_code']}" if cty else f"{county_name}, BC" if in_bc else f"{lat:.3f}, {lon:.3f}")
+    county_name = cty["county_name"] if cty else bcd.get("rd") if in_bc else cplace.get("province_name") if in_can else None
+    prov_code = "BC" if in_bc else cplace.get("province") if in_can else None
+    place = (f"{county_name} County, {cty['state_code']}" if cty else f"{county_name}, BC" if in_bc else
+             f"{cplace['name']}, {prov_code}" if in_can and cplace.get("name") and prov_code else f"{lat:.3f}, {lon:.3f}")
     fam_word = {"rice": "Rice", "forage": "Forage"}.get(family, "Field")
     if in_bc:
         area_src = (src("parcelmap_bc_x_alr", "ParcelMap BC parcel (open parcel fabric) clipped to the Agricultural Land Reserve; "
@@ -464,8 +483,8 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         "geometry": geom, "centroid": {"lon": round(cen[0], 6), "lat": round(cen[1], 6)},
         "area_ha": sn(round(area_ha, 2), "ha", area_src, "polygon area (local equirectangular projection)" + ("" if has_outline else "; placeholder square, not a field"), "computed" if has_outline else "assumed"),
         "crs_working": "EPSG:32610",
-        "family": family, "farmer_name": f"{fam_word} spot in {place}" if (cty or in_bc) else f"Spot at {place}",
-        "acres": round(area_ha * 2.47105, 1), "county_name": county_name, "state_code": cty["state_code"] if cty else "BC" if in_bc else None,
+        "family": family, "farmer_name": f"{fam_word} spot in {place}" if (cty or in_can) else f"Spot at {place}",
+        "acres": round(area_ha * 2.47105, 1), "county_name": county_name, "state_code": cty["state_code"] if cty else prov_code if in_can else None,
         "regional_district": bcd.get("rd") if in_bc else None,
         "template": tpl, "why_chosen": "You tapped this spot on the map. " + fam_why[:1].upper() + fam_why[1:] + ".",
         "soil": soil,
@@ -482,7 +501,7 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
                    if in_bc and sections["boundary"]["status"] == "ready" else None),
         "regional_cell": {"grid": "POWER_MERRA2_0.5x0.625", "row": row, "col": col, "footprint": foot},
         "datasets": {"power": {**ds_stat("weather"), **({"range": [pmeta["date_min"], pmeta["date_max"]]} if pmeta else {})},
-                     "cdl": ds_stat("crop_history") if not in_bc else {"status": "unavailable", "reason": "the Cropland Data Layer is US-only; BC uses the AAFC Annual Crop Inventory (sections.crop_history)"}, "imerg": {"status": "not_computed"}, "smap_l3": {"status": "not_computed"},
+                     "cdl": ds_stat("crop_history") if not in_can else {"status": "unavailable", "reason": "the Cropland Data Layer is US-only; Canada uses the AAFC Annual Crop Inventory (sections.crop_history)"}, "imerg": {"status": "not_computed"}, "smap_l3": {"status": "not_computed"},
                      "smap_l4": {"status": "not_computed"}, "grace": {"status": "not_computed"}, "hls": {"status": "not_computed"},
                      "s2": {"status": "not_computed"}, "modis": {"status": "not_computed"}, "ecostress": {"status": "not_computed"},
                      "dem": {"status": "not_computed"}, "openet": {"status": "unavailable", "reason": "not queried for tapped points (monthly quota)"},
@@ -501,12 +520,13 @@ async def analyse(lat: float, lon: float, power_cache) -> tuple[dict, dict, list
         "observed_cover": {"typically_bare_doy_ranges": [], "bare_doy_file": None, "years_used": [],
                            "detector": "not computed for tapped points (needs the Sentinel-2/Landsat series)"},
         "events": [],
-        "_notes": {"analysis": ("Built live for a tapped BC point: NASA POWER, ECCC stations, AAFC Soil Landscapes of Canada, AAFC Annual "
-                                "Crop Inventory, ParcelMap BC parcel in the ALR, regional district. " if in_bc else
+        "_notes": {"analysis": ("Built live for a tapped Canadian point: NASA POWER, ECCC stations, AAFC Soil Landscapes of Canada, AAFC Annual "
+                                "Crop Inventory, ParcelMap BC parcel in the ALR, regional district (parcel, ALR and district for BC only). " if in_can else
                                 "Built live for a tapped point: NASA POWER, SSURGO, CDL, DWR/Land IQ outline, county and DWR water layers. ")
                                + "Satellite series, IMERG, SMAP, GRACE, NASADEM and OpenET are not computed for points (sections.*).",
                    "boundary": ("DWR Statewide Crop Mapping 2023 (Land IQ), final" if props else
-                                "ParcelMap BC parcel clipped to the Agricultural Land Reserve (follows legal lines, not the crop edge)" if has_outline
+                                "field polygon from the catalog selection source" if sections["boundary"].get("source") == "catalog_outline" else
+                                "ParcelMap BC parcel clipped to the Agricultural Land Reserve (follows legal lines, not the crop edge)" if has_outline and in_bc
                                 else "200 m square around the tap (no field outline)"),
                    "engine": f"rotation set reused from {tpl} (no new agronomy); market preference no_preference (not asked)"},
     }

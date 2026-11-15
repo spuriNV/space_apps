@@ -29,6 +29,9 @@ from fetch_slc import AWHC, DRAIN, PAGE, ROOT_DEPTH, ZIP, dbf, hsg, profile, r, 
 from fetch_soilgrids import usda_texture  # noqa: E402
 
 OUT = REPO / "backend" / "api" / "app" / "anyloc" / "slc_bc.json.gz"
+OUT_REST = REPO / "backend" / "api" / "app" / "anyloc" / "slc_can.json.gz"   # AB SK MB ON QC (read after slc_bc by bc.slc_at)
+REST_PROVINCES = {"AB", "SK", "MB", "ON", "QC"}
+REST_BOX = (-120.1, 41.6, -57.0, 62.0)
 CACHE_ZIP = REPO / "data" / "cache" / "_slc" / "ca_all_slc_v3r2.zip"
 BC_BOX = (-139.1, 48.2, -114.0, 60.1)
 SIMPLIFY_DEG = 0.001
@@ -75,10 +78,13 @@ def summarise(comps: list[dict]) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--zip", help="local copy of ca_all_slc_v3r2.zip (else data/cache/_slc/, downloaded once)")
-    z = load_zip(ap.parse_args().zip)
+    ap.add_argument("--rest", action="store_true", help="write the AB/SK/MB/ON/QC table (slc_can.json.gz, coarser outlines) instead of BC")
+    a = ap.parse_args()
+    z = load_zip(a.zip)
+    provs, box, out_path, simp = (REST_PROVINCES, REST_BOX, OUT_REST, 0.004) if a.rest else ({"BC"}, BC_BOX, OUT, SIMPLIFY_DEG)
     names = {n.lower(): n for n in z.namelist()}
     rd = lambda suffix: z.read(next(v for k, v in names.items() if k.endswith(suffix)))  # noqa: E731
-    cmp_all = [x for x in dbf(rd("ca_all_slc_v3r2_cmp.dbf")) if x["PROVINCE"] == "BC"]
+    cmp_all = [x for x in dbf(rd("ca_all_slc_v3r2_cmp.dbf")) if x["PROVINCE"] in provs]
     bc_polys = {x["POLY_ID"] for x in cmp_all}
     soil_ids = {x["SOIL_ID"] for x in cmp_all}
     snt = {x["SOIL_ID"]: x for x in dbf(rd("soil_name_canada_v2r20231107.dbf")) if x["SOIL_ID"] in soil_ids}
@@ -92,7 +98,7 @@ def main():
         by_poly.setdefault(x["POLY_ID"], []).append(x)
     attrs = list(dbf(rd("ca_all_slc_v3r2.dbf")))
     out = []
-    for i, pg in shp_polygons(rd("ca_all_slc_v3r2.shp"), rd("ca_all_slc_v3r2.shx"), BC_BOX):
+    for i, pg in shp_polygons(rd("ca_all_slc_v3r2.shp"), rd("ca_all_slc_v3r2.shx"), box):
         pid = attrs[i]["POLY_ID"]
         if pid not in bc_polys or pg is None or pg.is_empty:
             continue
@@ -109,7 +115,7 @@ def main():
                           "sand_pct": summ["sand_pct"], "silt_pct": summ["silt_pct"], "clay_pct": summ["clay_pct"],
                           "awc_mm_per_m": summ["awc_mm_per_m"], "ph_0_30cm": summ["ph_0_30cm"],
                           "om_pct": None if summ["org_carbon_pct"] is None else summ["org_carbon_pct"] * 1.724})
-        g = pg.simplify(SIMPLIFY_DEG, preserve_topology=True)
+        g = pg.simplify(simp, preserve_topology=True)
         geo = mapping(g)
         polys = [geo["coordinates"]] if geo["type"] == "Polygon" else list(geo["coordinates"]) if geo["type"] == "MultiPolygon" else []
         rings = [[[round(x, 4), round(y, 4)] for x, y in ring] for poly in polys for ring in poly]
@@ -123,12 +129,12 @@ def main():
                       "citation": "Soil Landscapes of Canada Working Group, 2011. Soil Landscapes of Canada version 3.2. Agriculture and Agri-Food Canada.",
                       "licence": "Free use with acknowledgement of Agriculture and Agri-Food Canada's authorship"},
            "method": "backend/bc/fetch_slc.py per-soil 0-100 cm profile and NEH 630 hydrologic group, proportion-weighted per polygon; "
-                     f"drainage and hydrologic group = dominant condition; outlines simplified {SIMPLIFY_DEG} deg (even-odd rings)",
+                     f"drainage and hydrologic group = dominant condition; outlines simplified {simp} deg (even-odd rings)",
            "polygons": out}
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    with gzip.open(OUT, "wt", compresslevel=9) as f:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with gzip.open(out_path, "wt", compresslevel=9) as f:
         json.dump(doc, f, separators=(",", ":"))
-    print(f"{len(out)} BC SLC polygons -> {OUT} ({OUT.stat().st_size / 1e6:.2f} MB)")
+    print(f"{len(out)} SLC polygons -> {out_path} ({out_path.stat().st_size / 1e6:.2f} MB)")
 
 
 if __name__ == "__main__":

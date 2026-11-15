@@ -52,6 +52,9 @@ ACI_SPEC = ("https://agriculture.canada.ca/atlas/data_donnees/annualCropInventor
 TIGER = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/AIANNHA/MapServer"
 TIGER_LAYERS = {2: "Federal American Indian Reservation", 3: "Off-Reservation Trust Land"}
 BC_BOX = (-139.1, 48.2, -114.0, 60.0)
+CAN_BOX = (-141.0, 41.6, -52.0, 62.0)   # all of Canada's farmland; the FCC census lookup (no US block) tells Canada from the US
+SLC_REST = Path(__file__).with_name("slc_can.json.gz")   # AB SK MB ON QC (backend/catalog/slc_bc.py --rest)
+GEONAMES = "https://geogratis.gc.ca/services/geoname/en/geonames.json"
 SLC_FILE = Path(__file__).with_name("slc_bc.json.gz")
 TO = httpx.Timeout(10.0, connect=5.0)
 # ACI class names (same table as backend/bc/aci.py, from the ACI Data Product Specification, section 4)
@@ -76,6 +79,16 @@ NOT_CROP = {"0", "10", "20", "30", "34", "50", "60", "80", "85", "110", "200", "
 
 def in_bc_box(lon, lat) -> bool:
     return BC_BOX[0] <= lon <= BC_BOX[2] and BC_BOX[1] <= lat <= BC_BOX[3]
+
+
+PROVINCES = {"10": ("NL", "Newfoundland and Labrador"), "11": ("PE", "Prince Edward Island"), "12": ("NS", "Nova Scotia"),
+             "13": ("NB", "New Brunswick"), "24": ("QC", "Quebec"), "35": ("ON", "Ontario"), "46": ("MB", "Manitoba"),
+             "47": ("SK", "Saskatchewan"), "48": ("AB", "Alberta"), "59": ("BC", "British Columbia"), "60": ("YT", "Yukon"),
+             "61": ("NT", "Northwest Territories"), "62": ("NU", "Nunavut")}
+
+
+def in_canada_box(lon, lat) -> bool:
+    return CAN_BOX[0] <= lon <= CAN_BOX[2] and CAN_BOX[1] <= lat <= CAN_BOX[3]
 
 
 def km(lat1, lon1, lat2, lon2) -> float:
@@ -291,14 +304,35 @@ def _slc() -> dict:
         return json.load(f)
 
 
+@lru_cache(maxsize=1)
+def _slc_rest() -> dict:
+    with gzip.open(SLC_REST, "rt") as f:
+        return json.load(f)
+
+
 def slc_at(lon, lat) -> dict | None:
-    doc = _slc()
-    for p in doc["polygons"]:
-        b = p["bbox"]
-        if not (b[0] <= lon <= b[2] and b[1] <= lat <= b[3]):
-            continue
-        if sum(F.in_ring(lon, lat, r) for r in p["rings"]) % 2 == 1:
-            return {**p, "source": doc["source"]}
+    for doc in (_slc(), _slc_rest()):
+        for p in doc["polygons"]:
+            b = p["bbox"]
+            if not (b[0] <= lon <= b[2] and b[1] <= lat <= b[3]):
+                continue
+            if sum(F.in_ring(lon, lat, r) for r in p["rings"]) % 2 == 1:
+                return {**p, "source": doc["source"]}
+    return None
+
+
+async def canada_place(c, lon, lat) -> dict | None:
+    """Nearest named place and province from the Canadian Geographical Names Database (any province)."""
+    for radius in (12, 25, 50):
+        d = await F._json(c, GEONAMES, {"lat": round(lat, 5), "lon": round(lon, 5), "radius": radius,
+                                        "concise": "CITY,TOWN,VILG,UNP,MUN1,MUN2"}, httpx.Timeout(12.0, connect=5.0))
+        items = d.get("items", [])
+        if items:
+            it = min(items, key=lambda i: km(lat, lon, i["latitude"], i["longitude"]))
+            code = str((it.get("province") or {}).get("code"))
+            return {"name": it["name"], "province": PROVINCES.get(code, (None, None))[0],
+                    "province_name": PROVINCES.get(code, (None, None))[1],
+                    "distance_km": round(km(lat, lon, it["latitude"], it["longitude"]), 1)}
     return None
 
 

@@ -1,15 +1,15 @@
 import { withLang, t } from '../../i18n';
-// Farm catalog: GET /api/catalog (about 190 real farms, one per place, as tappable pt_ points).
+// Farm catalog: GET /api/catalog (about 450 real farms across the US and Canada, one per place, as tappable pt_ points).
 // A light, clustered map layer (separate from the prepared fields) and the data the pick list group reads.
 import type maplibregl from 'maplibre-gl';
 import { API_BASE } from '../../api';
 
 export interface CatalogItem {
-  id: string; name: string; lat: number; lon: number; region: 'ca' | 'bc'; area: string;
+  id: string; name: string; lat: number; lon: number; region: string; area: string; country?: 'US' | 'CA' | string; state?: string;
   crop_group: string; crop_group_label: string; county: string; acres: number | null;
   land_status?: string | { kind?: string; name?: string; nation?: string } | null;
 }
-export interface Catalog { count: number; total: number; items: CatalogItem[]; crop_groups: Record<string, { label: string; count: number }> }
+export interface Catalog { count: number; total: number; items: CatalogItem[]; crop_groups: Record<string, { label: string; count: number }>; countries?: unknown[]; states?: unknown[] }
 
 let cached: Promise<Catalog | null> | null = null;
 /** One fetch per session (the API caches it for an hour). null when the API does not have it. */
@@ -22,9 +22,10 @@ export function getCatalog(): Promise<Catalog | null> {
 export const GROUP_COLOR: Record<string, string> = {
   grapes: '#CC79A7', forage: '#009E73', vegetables: '#D55E00', nuts: '#8c6d1f', grain: '#E69F00',
   rice: '#0072B2', citrus: '#F0E442', cotton: '#9a9a9a', orchard: '#56B4E9', canola: '#4d4d4d',
+  soy: '#7a9a2e', peanuts: '#a65c3a', potatoes: '#c9a46b', hops: '#2e8f5f', sorghum: '#8f3b6e', pulses: '#3b6fb0',
 }; // Okabe-Ito colour-blind-safe set; every pin and dot also carries the crop group's letter, so colour is never the only cue
 /** One letter per crop group (G grapes, F forage, V vegetables, N nuts, A grain, R rice, C citrus, T cotton, O orchard, K canola). */
-export const GROUP_LETTER: Record<string, string> = { grapes: 'G', forage: 'F', vegetables: 'V', nuts: 'N', grain: 'A', rice: 'R', citrus: 'C', cotton: 'T', orchard: 'O', canola: 'K' };
+export const GROUP_LETTER: Record<string, string> = { grapes: 'G', forage: 'F', vegetables: 'V', nuts: 'N', grain: 'A', rice: 'R', citrus: 'C', cotton: 'T', orchard: 'O', canola: 'K', soy: 'S', peanuts: 'P', potatoes: 'U', hops: 'H', sorghum: 'Y', pulses: 'L' };
 export const groupLetter = (g: string) => GROUP_LETTER[g] ?? g.charAt(0).toUpperCase();
 export const groupColor = (g: string) => GROUP_COLOR[g] ?? '#8a8a80';
 export const landNote = (l: CatalogItem['land_status']) => {
@@ -36,7 +37,7 @@ const SRC = 'catalog';
 const empty = { type: 'FeatureCollection', features: [] } as GeoJSON.FeatureCollection;
 /** Add the clustered source and its layers (call once on map load, before the field layers so it stays underneath). */
 export function addCatalogLayers(map: maplibregl.Map, onPick: (it: { id: string; lat: number; lon: number }) => void) {
-  map.addSource(SRC, { type: 'geojson', data: empty, cluster: true, clusterRadius: 40, clusterMaxZoom: 11 });
+  map.addSource(SRC, { type: 'geojson', data: empty, cluster: true, clusterRadius: 40, clusterMaxZoom: 10 });
   map.addLayer({ id: 'cat-cluster', type: 'circle', source: SRC, filter: ['has', 'point_count'], paint: {
     'circle-color': '#f7f6f0', 'circle-opacity': 0.92, 'circle-stroke-color': '#191c16', 'circle-stroke-width': 1,
     'circle-radius': ['step', ['get', 'point_count'], 13, 10, 16, 30, 20] } });
