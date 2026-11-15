@@ -16,6 +16,7 @@ import fieldExtra from './mock/field_extra.json';
 import { YEARS, dateToT } from './lib';
 import type { Daily } from './season';
 import outlookExample from './mock/outlook.example.json';
+import { liteOn } from './components/a11y/prefs';
 import { nasaList, type NasaDataset, type NasaStatus } from './nasa';
 
 export const API_BASE = ((import.meta.env.VITE_API_BASE as string | undefined) ?? (import.meta.env.DEV ? 'http://localhost:8000/api' : '/api')).replace(/\/+$/, '');
@@ -240,14 +241,15 @@ function gridAt(loc: Location, presetId: string): CellGrid | null {
 }
 const calFor = (cal: Calendar, id: string) => ({ ...cal, location_id: id });
 const gridCache = new Map<string, ReturnType<typeof apiReal>>();
-const gridFetch = (id: string) => {
+const gridFetch = (id: string): ReturnType<typeof apiReal> => {
+  if (liteOn()) return Promise.resolve(null); // Lite mode: no 100 ft squares, no 3D, no big grid download
   let p = gridCache.get(id);
   if (!p) { p = apiReal(`/api/locations/${id}/grid`, undefined, 30000); gridCache.set(id, p); }
   return p;
 };
 /** Warm API caches for 3D stack (nearest preset grid + series). Safe to call while a spot is still analysing. */
 export function prefetchFieldStack(loc: Location, caPresets?: Location[]) {
-  if (!isLite(loc.id)) return;
+  if (!isLite(loc.id) || liteOn()) return;
   void apiLive().then((live) => {
     if (!live) return;
     const borrow = nearestCaPreset(loc, caPresets ?? MOCK_LOCS);
@@ -459,7 +461,7 @@ const normNews = (n: any): NewsItem => ({ ...n, verified: !!n.url && !n.url.incl
 
 /** 2023-2026 season strips for the pick list: 36 ten-day classes per year from the field calendar (HLS when served). */
 export async function getStrips(ids: string[]): Promise<Record<string, Record<number, string>>> {
-  if (!(await apiLive())) return {};
+  if (liteOn() || !(await apiLive())) return {}; // Lite mode: no season strips (one request per field)
   const out: Record<string, Record<number, string>> = {};
   await Promise.all(ids.map(async (id) => {
     const c = (await apiReal(`/api/locations/${id}/calendar?source=hls`)) ?? (await apiReal(`/api/locations/${id}/calendar`));
@@ -567,7 +569,7 @@ const nowOf = (b: any): NasaNow | null => { const r = b?.readings; if (!r) retur
 /** Which soil-moisture / groundwater readings are real. soilSource says whose soil reading it is. */
 export interface RegionalLive { smap: boolean; grace: boolean; soilSource?: 'smap' | 'grace_da' | null }
 /** Everything the field view needs. Resolves as soon as the answers' data is in; the 3D grid and the news arrive later through onLate. */
-export async function getField(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void, caPresets?: Location[]): Promise<FieldBundle> {
+async function getFieldNet(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void, caPresets?: Location[]): Promise<FieldBundle> {
   const id = loc.id, lite = isLite(id), presets = caPresets ?? MOCK_LOCS, borrow = lite ? nearestCaPreset(loc, presets) : id;
   const mid = templateId(id, loc.family); // mid: the bundled example used until the API answers
   const dataId = lite ? borrow : id;
@@ -587,6 +589,8 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   const soilExample = () => soilShown == null; // the soil answer shows SMAP example numbers when no real soil series came back
   const borrowNote = lite ? `nearest prepared field (${borrow})` : '';
   if (!live) {
+    const saved = loadLastField(id); // offline: the last field that was opened comes back from this device
+    if (saved) return saved;
     const cells = gridAt(loc, lite ? borrow : mid) ?? gridAt(loc, 'car_colusa_rice');
     return {
       id, regional: reg0, cells, cal: calFor(mCal, id), strategies: lite ? [] : mockStrats(mid), news: lite ? [] : (mockNews as unknown as ById<NewsItem[]>)[mid],
@@ -601,17 +605,19 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
     const near = await gridFetch(borrow);
     return { grid: near, shifted: !!near?.features };
   };
-  const lateP = Promise.all([fetchGrid(), lite ? Promise.resolve(null) : apiReal(`/api/locations/${id}/news`)]);
+  const lateP = Promise.all([fetchGrid(), lite || liteOn() ? Promise.resolve(null) : apiReal(`/api/locations/${id}/news`)]);
   prefetchFieldStack(loc, presets);
   const stratP = apiReal(`/api/locations/${id}/strategies`, undefined, lite ? 45000 : 12000);
+  const small = liteOn(); // Lite mode: only the calendar, the rotations and the soil and groundwater series; no ML comparison, HLS copy or extras
+  const none = Promise.resolve(null) as ReturnType<typeof apiReal>;
   const stackP = Promise.all([
     apiReal(`/api/locations/${dataId}/calendar`),
-    apiReal(`/api/locations/${dataId}/calendar?source=hls`),
-    lite ? apiReal(`/api/locations/${borrow}/calendar_ml`) : apiReal(`/api/locations/${id}/calendar_ml`),
-    lite ? apiReal(`/api/locations/${borrow}/models`) : apiReal(`/api/locations/${id}/models`),
+    small ? none : apiReal(`/api/locations/${dataId}/calendar?source=hls`),
+    small ? none : lite ? apiReal(`/api/locations/${borrow}/calendar_ml`) : apiReal(`/api/locations/${id}/calendar_ml`),
+    small ? none : lite ? apiReal(`/api/locations/${borrow}/models`) : apiReal(`/api/locations/${id}/models`),
     apiReal(`/api/locations/${dataId}/nasa_series`),
   ]);
-  const presetP = lite ? null : Promise.all([
+  const presetP = lite || small ? null : Promise.all([
     apiReal(`/api/locations/${id}/nasa_now`),
     apiReal(`/api/locations/${id}/openet`),
     apiReal(`/api/locations/${id}/stress`),
@@ -688,6 +694,23 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
 }
 
 // ---------- ISS astronaut photos (copied into public/iss/<id>/ from data/cache/<id>/iss) ----------
+// ---------- the last opened field, kept on this device so it opens with no connection ----------
+const LAST_KEY = 'croplytics.lastfield';
+function saveLastField(b: FieldBundle) {
+  try { localStorage.setItem(LAST_KEY, JSON.stringify({ ...b, cells: null })); } catch { /* full or private mode: skip */ }
+}
+function loadLastField(id: string): FieldBundle | null {
+  try { const b = JSON.parse(localStorage.getItem(LAST_KEY) ?? 'null') as FieldBundle | null; return b && b.id === id && b.cal ? b : null; } catch { return null; }
+}
+/** True when a saved copy of this field is on the device (the panel then says it is showing the last field). */
+export const hasSavedField = (id: string) => !!loadLastField(id);
+/** The field's data. In Lite mode it asks for less and skips the 3D grid; the last field opened is kept for offline use. */
+export async function getField(loc: Location, live: boolean, onLate?: (b: FieldBundle) => void, caPresets?: Location[]): Promise<FieldBundle> {
+  const b = await getFieldNet(loc, live, onLate ? (x) => { saveLastField(x); onLate(x); } : undefined, caPresets);
+  if (live && b.prov.calendar.origin === 'api') saveLastField(b);
+  return b;
+}
+
 export interface ISSPhoto { photo_id: string; date: string; center_lat: number; center_lon: number; lens_mm: number; features: string; page_url: string; file: string; url: string; miles: number }
 export async function getISS(loc: Location): Promise<{ photo: ISSPhoto; credit: string } | null> {
   try {
