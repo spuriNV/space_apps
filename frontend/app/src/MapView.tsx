@@ -1,5 +1,6 @@
 import RainLayer from './components/RainLayer';
 import { t, isEs } from './i18n';
+import GlobalRain from './components/rain/GlobalRain';
 import { addCatalogLayers, setCatalogData, type CatalogItem } from './components/week/catalog';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { DROUGHT_COLOR, RAIN_COLOR } from './components/rain/RainControl';
@@ -88,6 +89,8 @@ interface Props {
   drought?: GeoJSON.FeatureCollection | null;
   /** which drought sources to draw: 'na' = U.S. Drought Monitor + Canadian Drought Monitor, 'gl' = NASA SMAP soil moisture, null = off */
   droughtRegion?: 'na' | 'gl' | null;
+  /** worldwide GDPS rain forecast (tiled WMS) on, and its load state */
+  worldRain?: boolean; onWorldRain?: (s: 'loading' | 'ready' | 'error') => void;
   onView: (v: { zoom: number; pitch: number; bearing: number; lat: number; lon: number }) => void;
 }
 interface StackLabel { key: string; ax: number; ay: number; color: string; tag: string; title: string; value: string; note: string }
@@ -108,6 +111,7 @@ function padded(loc: Location, padM: number, props: Record<string, unknown>) {
 }
 const FP_OFFSET: Record<string, [number, number]> = { smap: [0.37, 0.6], imerg: [0.66, 0.3], grace: [0.44, 0.55] };
 
+const noopState = () => {};
 const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   const el = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -748,6 +752,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   return (
     <div className={`map-wrap zoom-${zoomClass}`}>
       <div ref={el} className="map" />
+      <GlobalRain map={mapRef.current} ready={ready} on={!!p.worldRain} left={`calc(50% + ${(p.leftInset - p.rightInset) / 2}px)`} onState={p.onWorldRain ?? noopState} />
       <RainLayer map={mapRef.current} ready={ready} on={!!p.layersOn.rain} leftInset={p.leftInset} bottomInset={p.bottomInset} />
       <button className={`lands-legend ${p.landsOn ? 'on' : ''}`} style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 + (p.reservesChip && !p.landsOn ? 62 : 0) }} onClick={p.onToggleLands} aria-pressed={!!p.landsOn} data-testid="lands-legend" title={p.landsOn ? t('map.hideLands') : t('map.showLands')}>
         <i aria-hidden="true" /><span>{t('map.lands')}</span><small>{p.landsOn ? t('map.landsOn') : t('map.landsOff')}</small>

@@ -107,7 +107,7 @@ export default function App() {
   // rain and drought on the map (Windy-style layer card; NOAA WPC rain forecast and U.S. Drought Monitor via app/rain)
   const [wxOn, setWxOn] = useState(false);
   const [wxLayer, setWxLayer] = useState<WxLayer>('rain');
-  const [rainMode, setRainMode] = useState<RainMode>('total');
+  const [rainMode, setRainMode] = useState<RainMode>('world');
   const [rainDays, setRainDays] = useState<api.RainDays>(7);
   const [rain, setRain] = useState<{ days: api.RainDays; data: api.RainForecast | null } | null>(null);
   const [steps, setSteps] = useState<(api.RainForecast | null)[]>(() => Array(12).fill(null));
@@ -136,12 +136,15 @@ export default function App() {
   }, [rainPlaying, rainHourly]);
   useEffect(() => { if (!rainHourly) setRainPlaying(false); }, [rainHourly]);
   useEffect(() => { if (wxOn && wxLayer === 'drought' && drought === undefined) api.getDroughtNow().then(setDrought); }, [wxOn, wxLayer, drought]);
+  const [worldState, setWorldState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const rainWorld = wxOn && wxLayer === 'rain' && rainMode === 'world';
   const rainNow = rainTotal ? (rain?.days === rainDays ? rain.data : null) : rainHourly ? steps[rainStep] : null;
   const [view, setView] = useState({ zoom: 5.75, pitch: 0, bearing: 0, lat: 37.35, lon: -119.9 });
   const dRegion = droughtRegion(view.lat, view.lon);
   const droughtNow = wxOn && wxLayer === 'drought' && dRegion === 'na' ? drought ?? null : null;
   const rainState: 'idle' | 'loading' | 'ready' | 'error' = !wxOn ? 'idle'
     : wxLayer === 'drought' ? (drought === undefined ? 'loading' : drought ? 'ready' : 'error')
+    : rainWorld ? worldState
     : rainTotal ? (rain?.days !== rainDays ? 'loading' : rain.data ? 'ready' : 'error')
     : steps[rainStep] ? 'ready' : stepsDone === 12 ? 'error' : 'loading';
   const [briefPick, setBriefPick] = useState<string | null>(null);
@@ -508,7 +511,7 @@ export default function App() {
       <main id="main" tabIndex={-1} aria-label={tr('app.map')} className="map-main">
       <MapView ref={map} lands={lands} landsOn={!!layersOn.lands} activeLandId={land ? landId : null} onLandClick={drawing ? undefined : openLand} onToggleLands={() => setLayersOn((l) => ({ ...l, lands: !l.lands }))} locations={drawing?.hideId ? locations.filter((l) => l.id !== drawing.hideId) : locations} bc={hasBC ? null : bc} reserves={reservesFc} reservesChip={reservesAvail} reservesOn={!!layersOn.reserves} onToggleReserves={() => setLayersOn((l) => ({ ...l, reserves: !l.reserves }))} datasets={datasets} selected={selected} cells={lite ? null : d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={{ ...layersOn, rain: !lite && wxOn && wxLayer === 'past' }} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
-        onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onReplayT={setT} onReplayRunning={setReplaying} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} rain={rainNow} drought={droughtNow} droughtRegion={wxOn && wxLayer === 'drought' ? dRegion : null} />
+        onSelect={drawing ? noop : select} onBC={drawing ? noop : goBC} onReplayT={setT} onReplayRunning={setReplaying} onView={setView} onTap={drawing ? undefined : tapSpot} catalog={catalog?.items ?? null} catGroup={catGroup} onCatalogPick={pickCatalog} rain={rainNow} drought={droughtNow} droughtRegion={wxOn && wxLayer === 'drought' ? dRegion : null} worldRain={rainWorld && !sim} onWorldRain={setWorldState} />
       </main>
 
       <header className="topbar" data-testid="topbar">
