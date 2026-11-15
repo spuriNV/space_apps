@@ -1,0 +1,48 @@
+{
+  "preset_id": "car_robbins_rice",
+  "size_km": 10,
+  "centre": {
+    "lon": -121.695534,
+    "lat": 38.876067
+  },
+  "bbox_epsg32610": [
+    608154.9,
+    4298832.3,
+    618154.9,
+    4308832.3
+  ],
+  "bbox_epsg4326": [
+    -121.753948,
+    38.830364,
+    -121.637047,
+    38.921743
+  ],
+  "geometry_epsg4326": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -121.63876724699657,
+          38.830363819504825
+        ],
+        [
+          -121.63704731993143,
+          38.92045379439324
+        ],
+        [
+          -121.7523737386538,
+          38.92174345477965
+        ],
+        [
+          -121.75394822995858,
+          38.8316493628839
+        ],
+        [
+          -121.63876724699657,
+          38.830363819504825
+        ]
+      ]
+    ]
+  },
+  "note": "Square in EPSG:32610 centred on the field centroid. Registry fields are not used for training: their ML calendar reuses the model trained around the family's original field (backend/ai)."
+}

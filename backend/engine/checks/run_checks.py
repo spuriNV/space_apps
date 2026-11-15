@@ -18,7 +18,15 @@ from rotation_engine.engine import DEFAULT_YEARS, intervals_tie, load_crops, loa
 from rotation_engine.model import cover_metrics, erosion_relative, longest_gap_days
 from rotation_engine.timeline import doy0
 from rotation_engine.timeline import build_timeline
-from rotation_engine.weather import CHUNK, PRESETS
+from rotation_engine.weather import CHUNK, PRESETS, REPO
+
+# registry fields whose inputs exist (backend/fields/run_all.py builds them); the others are skipped, not failed
+_ready = [p for p in PRESETS if (REPO / "data" / "cache" / p / "power.parquet").exists()
+          and (REPO / "backend" / "field" / "out" / p / "calendar.json").exists()]
+for _p in PRESETS:
+    if _p not in _ready:
+        print(f"SKIP  {_p}: inputs not built yet (backend/fields/run_all.py)")
+PRESETS = _ready
 
 RESULTS = []
 

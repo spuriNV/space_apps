@@ -25,6 +25,17 @@ PROFILES = {
     ],
 }
 
+_FORAGE = lambda n: n.lower().startswith(("alfalfa", "forage production", "pasture,rangeland,forage")) and "seed" not in n.lower()
+sys.path.insert(0, str(ROOT / "backend" / "fields"))
+import fieldreg  # noqa: E402
+for _id in fieldreg.ids():   # registry fields: their own county, the family's crops
+    if _id not in PROFILES:
+        _c = fieldreg.get(_id)["county"]
+        PROFILES[_id] = ([(_c["fips"][2:], _c["name"], "rice", lambda n: n == "Rice")] if fieldreg.get(_id)["family"] == "rice" else
+                         [(_c["fips"][2:], _c["name"], "alfalfa_forage", _FORAGE), (_c["fips"][2:], _c["name"], "corn", lambda n: n == "Corn")])
+PROFILES = {k: v for k, v in PROFILES.items() if k in fieldreg.selected()}
+
+
 def group_of(cause):
     for g, lst in GROUPS.items():
         if cause in lst: return g

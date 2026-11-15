@@ -1,0 +1,658 @@
+{
+ "about": "Funding programs relevant to First Nations and tribal farms, lands and water staff. Source: docs/nation-tools-research.md PART B section 3. Statuses were read on the url_checked date and change; verify on the program page before applying. verified=false means a key fact (status, scope or amount) rests on search results or a page that did not load. Edit via build_programs.py or this file.",
+ "as_of": "2026-11-15",
+ "programs": [
+  {
+   "id": "nasa_ipi",
+   "name": "NASA Indigenous Peoples Initiative (Earth Action)",
+   "agency": "NASA",
+   "jurisdictions": [
+    "US",
+    "CA",
+    "BC",
+    "CAN"
+   ],
+   "eligible": "Federally recognized tribes and Indigenous communities (as listed partners)",
+   "funds": "Training and co-developed workshops, not grants",
+   "typical_amount": "n/a",
+   "status": "rolling",
+   "deadline": null,
+   "status_note": "ongoing per NASA page",
+   "url": "https://science.nasa.gov/earth-science/earth-action",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "A NASA-data tool that could be used in trainings; not a funding route.",
+   "report_sections": [
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "nasa_develop",
+   "name": "NASA DEVELOP",
+   "agency": "NASA",
+   "jurisdictions": [
+    "US",
+    "CA",
+    "BC",
+    "CAN"
+   ],
+   "eligible": "Partner organizations, tribes included",
+   "funds": "10-week feasibility projects at no cost to the partner",
+   "typical_amount": "n/a",
+   "status": "unknown",
+   "deadline": null,
+   "status_note": "term-based; develop.larc.nasa.gov did not load for the researcher",
+   "url": "https://develop.larc.nasa.gov/",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "A starting point for a DEVELOP project.",
+   "report_sections": [
+    "drought_history",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "nasa_arset",
+   "name": "NASA ARSET training",
+   "agency": "NASA",
+   "jurisdictions": [
+    "US",
+    "CA",
+    "BC",
+    "CAN"
+   ],
+   "eligible": "Open to anyone",
+   "funds": "Free online training",
+   "typical_amount": "free",
+   "status": "rolling",
+   "deadline": null,
+   "status_note": "catalogue live",
+   "url": "https://www.earthdata.nasa.gov/data/projects/arset",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Capacity building for staff who will read satellite data.",
+   "report_sections": [
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "nasa_wwao",
+   "name": "NASA Western Water Applications Office (WWAO)",
+   "agency": "NASA / JPL",
+   "jurisdictions": [
+    "US",
+    "CA"
+   ],
+   "eligible": "Western US water managers",
+   "funds": "Co-developed tools (for example the Navajo drought severity tool)",
+   "typical_amount": "n/a",
+   "status": "rolling",
+   "deadline": null,
+   "status_note": "ongoing",
+   "url": "https://wwao.jpl.nasa.gov/water-portfolio/water-projects/nasa-navajo-drought-severity-tool-user-guide",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "A precedent for a tribal water tool built on NASA data.",
+   "report_sections": [
+    "drought_history",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "eqip",
+   "name": "USDA NRCS EQIP",
+   "agency": "USDA NRCS",
+   "jurisdictions": [
+    "US",
+    "CA"
+   ],
+   "eligible": "Producers, including tribes (tribes may get a higher payment rate and advance payment)",
+   "funds": "Conservation practices such as irrigation water management and cover crops",
+   "typical_amount": "Per-practice payment schedules; the underserved rate is at least 25% above base",
+   "status": "rolling",
+   "deadline": "continuous sign-up; state ranking dates apply",
+   "status_note": "tribal payment-rate claim is from an NRCS Idaho page; the national page did not load for the researcher",
+   "url": "https://www.nrcs.usda.gov/programs-initiatives/eqip-environmental-quality-incentives",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "The report gives baseline crop water use, erosion and soil-cover figures per rotation; a cover-crop rotation maps to practice 340 and water-saving to 449.",
+   "report_sections": [
+    "field_outline",
+    "water_baseline",
+    "rotation_comparison",
+    "sources_caveats"
+   ],
+   "reasons": {
+    "default": "Cover-crop and water-saving rotations compared here map to EQIP practices 340 and 449."
+   }
+  },
+  {
+   "id": "usda_iag",
+   "name": "USDA Indigenous Animals Harvesting and Meat Processing Grant",
+   "agency": "USDA",
+   "jurisdictions": [
+    "US",
+    "CA"
+   ],
+   "eligible": "Tribes",
+   "funds": "Meat processing",
+   "typical_amount": "Up to $50M total (ARPA); FY23 awards about $42M",
+   "status": "unknown",
+   "deadline": "no 2026 round found",
+   "status_note": "FY23 round closed 19 Jul 2023; page returned 403",
+   "url": "https://www.usda.gov/iag",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "Weak fit: forage and range greenness for herd planning only.",
+   "report_sections": [
+    "field_outline",
+    "drought_history",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "nifa_frtep",
+   "name": "USDA NIFA Federally Recognized Tribes Extension Program (FRTEP)",
+   "agency": "USDA NIFA",
+   "jurisdictions": [
+    "US",
+    "CA"
+   ],
+   "eligible": "Land-grant universities (extension on reservations)",
+   "funds": "Farm and ranch productivity, natural resources",
+   "typical_amount": "Not listed; past funding over $3.8M",
+   "status": "unknown",
+   "deadline": "see the current NOFO",
+   "status_note": "check the NOFO",
+   "url": "https://www.nifa.usda.gov/grants/programs/federally-recognized-tribes-extension-program",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "A tool extension agents can use with tribal farms.",
+   "report_sections": [
+    "field_outline",
+    "rotation_comparison",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "usda_otr",
+   "name": "USDA Office of Tribal Relations",
+   "agency": "USDA",
+   "jurisdictions": [
+    "US",
+    "CA"
+   ],
+   "eligible": "Tribes",
+   "funds": "Coordination and referral, not grants",
+   "typical_amount": "n/a",
+   "status": "rolling",
+   "deadline": null,
+   "status_note": "page returned 403 to the researcher",
+   "url": "https://www.usda.gov/tribalrelations",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "A referral path.",
+   "report_sections": [
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "bia_tcr",
+   "name": "BIA Tribal Community Resilience Annual Awards",
+   "agency": "BIA",
+   "jurisdictions": [
+    "US",
+    "CA"
+   ],
+   "eligible": "Federally recognized tribes and tribal organizations",
+   "funds": "Competitive resilience funding",
+   "typical_amount": "Not listed",
+   "status": "unknown",
+   "deadline": null,
+   "status_note": "BIA page: updates are pending on future funding cycles",
+   "url": "https://www.bia.gov/service/tcr-annual-awards-program",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Drought and climate history plus rotation scenarios for an adaptation-planning narrative.",
+   "report_sections": [
+    "drought_history",
+    "water_baseline",
+    "rotation_comparison",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "bia_wmppd",
+   "name": "BIA Water Management, Planning and Pre-Development Program",
+   "agency": "BIA",
+   "jurisdictions": [
+    "US",
+    "CA"
+   ],
+   "eligible": "Tribes, through the BIA Regional Office",
+   "funds": "Technical assistance and water surveys including quantification studies",
+   "typical_amount": "Not listed",
+   "status": "unknown",
+   "deadline": "FY27 call reportedly March 2026",
+   "status_note": "scope and FY27 call timing are from search snippets, not the program page text",
+   "url": "https://www.bia.gov/service/water-management-planning-and-pre-development-program",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "ET-based crop water demand and GRACE-DA trends as preliminary characterization of water concerns.",
+   "report_sections": [
+    "field_outline",
+    "drought_history",
+    "water_baseline",
+    "water_context",
+    "sources_caveats"
+   ],
+   "reasons": {
+    "default": "BIA Water Management funds water surveys and quantification studies; the water baseline and drought history here are preliminary inputs.",
+    "ca": "{subbasin}: BIA Water Management funds quantification studies, which fits tribes whose reserved water rights are not yet quantified."
+   }
+  },
+  {
+   "id": "epa_gap",
+   "name": "EPA Indian Environmental General Assistance Program (GAP)",
+   "agency": "US EPA",
+   "jurisdictions": [
+    "US",
+    "CA"
+   ],
+   "eligible": "Federally recognized tribes and consortia",
+   "funds": "Environmental program capacity, including monitoring",
+   "typical_amount": "Region 10 ceiling up to $138k per year; Region 9 not listed",
+   "status": "closed",
+   "deadline": "Region 9 deadline 6 Feb 2026 (passed)",
+   "status_note": "from search results; check the next NOFA",
+   "url": "https://www.epa.gov/tribal-pacific-sw/r9-gap-funding",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "Water and land monitoring baselines for a workplan.",
+   "report_sections": [
+    "water_baseline",
+    "water_context",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "usbr_native",
+   "name": "US Bureau of Reclamation Native American Affairs",
+   "agency": "USBR",
+   "jurisdictions": [
+    "US",
+    "CA"
+   ],
+   "eligible": "Tribes",
+   "funds": "Technical assistance on water",
+   "typical_amount": "Varies",
+   "status": "rolling",
+   "deadline": null,
+   "status_note": "",
+   "url": "https://www.usbr.gov/native/",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Water-use estimates.",
+   "report_sections": [
+    "water_baseline",
+    "water_context",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "cdfa_tfs",
+   "name": "CDFA Tribal Food Sovereignty Grant Program",
+   "agency": "CDFA",
+   "jurisdictions": [
+    "CA"
+   ],
+   "eligible": "California Native American Tribes",
+   "funds": "Food systems (stewardship, cultivation, harvesting, production, distribution) and land return",
+   "typical_amount": "$15M total",
+   "status": "unknown",
+   "deadline": "Public comment Nov-Dec 2026; RFP Jan 2027; applications due Mar 2027 (tentative)",
+   "status_note": "not yet open; dates tentative per CDFA",
+   "url": "https://www.cdfa.ca.gov/tribal_food_sovereignty/",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "The field report gives drought history, water baseline and a rotation comparison for a food-production proposal.",
+   "report_sections": [
+    "field_outline",
+    "drought_history",
+    "water_baseline",
+    "rotation_comparison",
+    "sources_caveats"
+   ],
+   "reasons": {
+    "default": "Funds tribal food systems; the report gives the drought history, water baseline and rotation plan for a production proposal."
+   }
+  },
+  {
+   "id": "sgc_tcb",
+   "name": "SGC Tribal Capacity Building Program, Round 2",
+   "agency": "California Strategic Growth Council",
+   "jurisdictions": [
+    "CA"
+   ],
+   "eligible": "California tribes on the NAHC list",
+   "funds": "Staff salaries, planning and pursuing climate funding",
+   "typical_amount": "$350k to $420k over 3 years",
+   "status": "closed",
+   "deadline": "closed 11 Aug 2026",
+   "status_note": "awards were scheduled for 28 Oct 2026",
+   "url": "https://sgc.ca.gov/grant-programs/tribal",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "A no-cost tool that adds to a funded staff member's capacity.",
+   "report_sections": [
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "cnra_tnbs",
+   "name": "CNRA Tribal Nature-Based Solutions",
+   "agency": "California Natural Resources Agency",
+   "jurisdictions": [
+    "CA"
+   ],
+   "eligible": "California tribes",
+   "funds": "Land acquisition and return, and stewardship",
+   "typical_amount": "2026 round about $9.2M (unconfirmed)",
+   "status": "unknown",
+   "deadline": null,
+   "status_note": "resources.ca.gov pages returned 403 to the researcher",
+   "url": "https://resources.ca.gov/",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "A baseline land-cover, water and NDVI profile for a parcel being acquired.",
+   "report_sections": [
+    "field_outline",
+    "water_baseline",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "dwr_sgma_tribal",
+   "name": "DWR SGMA tribal engagement (guidance and Tribal Advisory Group)",
+   "agency": "California DWR",
+   "jurisdictions": [
+    "CA"
+   ],
+   "eligible": "Tribes",
+   "funds": "Guidance and consultation, not money",
+   "typical_amount": "n/a",
+   "status": "rolling",
+   "deadline": null,
+   "status_note": "page returned 403 to the researcher",
+   "url": "https://water.ca.gov/About/Tribal-Policy",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "Groundwater context for a GSA consultation.",
+   "report_sections": [
+    "water_context",
+    "sources_caveats"
+   ],
+   "reasons": {
+    "default": "Groundwater context for a groundwater sustainability agency consultation.",
+    "ca": "{subbasin}: groundwater context to bring to a groundwater sustainability agency consultation."
+   }
+  },
+  {
+   "id": "fndi_ctf",
+   "name": "First Nations Development Institute, California Tribal Fund",
+   "agency": "First Nations Development Institute (non-government)",
+   "jurisdictions": [
+    "CA"
+   ],
+   "eligible": "California Native-led nonprofits and tribal programs",
+   "funds": "Ancestral lands and waters stewardship",
+   "typical_amount": "Not listed",
+   "status": "closed",
+   "deadline": "2026 deadline 27 Apr 2026 (passed)",
+   "status_note": "",
+   "url": "https://www.firstnations.org/programs/california-tribal-fund/",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Land and water baseline for a stewardship proposal.",
+   "report_sections": [
+    "field_outline",
+    "water_baseline",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "aafc_pathfinder",
+   "name": "AAFC Indigenous Pathfinder Service",
+   "agency": "Agriculture and Agri-Food Canada",
+   "jurisdictions": [
+    "CAN",
+    "BC"
+   ],
+   "eligible": "First Nations, Metis and Inuit individuals and organizations",
+   "funds": "Advice and referral to AAFC programs",
+   "typical_amount": "n/a",
+   "status": "open",
+   "deadline": null,
+   "status_note": "",
+   "url": "https://agriculture.canada.ca/en/programs/indigenous-pathfinder-service",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "The report as a project summary for the advisor.",
+   "report_sections": [
+    "field_outline",
+    "water_baseline",
+    "rotation_comparison",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "fn_adapt",
+   "name": "CIRNAC First Nation Adapt",
+   "agency": "Crown-Indigenous Relations and Northern Affairs Canada",
+   "jurisdictions": [
+    "CAN",
+    "BC"
+   ],
+   "eligible": "First Nations south of 60 degrees",
+   "funds": "Risk assessments, hazard mapping, adaptation in land-use planning",
+   "typical_amount": "$8.42M available for FY2026-27",
+   "status": "rolling",
+   "deadline": "open year-round",
+   "status_note": "",
+   "url": "https://www.rcaanc-cirnac.gc.ca/eng/1481305681144/1594738066665",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Drought, flow-order and fire history to inform land-use and adaptation planning.",
+   "report_sections": [
+    "field_outline",
+    "drought_history",
+    "water_baseline",
+    "water_context",
+    "sources_caveats"
+   ],
+   "reasons": {
+    "default": "Funds adaptation risk assessments and land-use planning; the drought history and water context here are inputs.",
+    "bc": "{watershed}: First Nation Adapt funds drought risk assessment and adaptation planning, and is open year-round."
+   }
+  },
+  {
+   "id": "cirnac_icbcm",
+   "name": "CIRNAC Indigenous Community-Based Climate Monitoring",
+   "agency": "CIRNAC",
+   "jurisdictions": [
+    "CAN",
+    "BC"
+   ],
+   "eligible": "Indigenous communities and Nations",
+   "funds": "Monitoring plans, staff and equipment",
+   "typical_amount": "Not listed",
+   "status": "rolling",
+   "deadline": "no deadline; 2026-28 south-of-60 funding prioritizes previous recipients and referrals",
+   "status_note": "",
+   "url": "https://www.rcaanc-cirnac.gc.ca/eng/1509728370447",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Satellite baselines that sit beside community-run cameras and gauges.",
+   "report_sections": [
+    "drought_history",
+    "water_context",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "dfo_bcsrif",
+   "name": "BC Salmon Restoration and Innovation Fund",
+   "agency": "DFO / Province of BC",
+   "jurisdictions": [
+    "CAN",
+    "BC"
+   ],
+   "eligible": "Indigenous groups and others",
+   "funds": "Salmon habitat",
+   "typical_amount": "Not listed",
+   "status": "closed",
+   "deadline": "supports projects to 31 Mar 2026",
+   "status_note": "",
+   "url": "https://www.dfo-mpo.gc.ca/fisheries-peches/initiatives/fish-fund-bc-fonds-peche-cb/index-eng.html",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Not applicable now.",
+   "report_sections": [
+    "water_context",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "fcc_indigenous",
+   "name": "FCC Indigenous financing",
+   "agency": "Farm Credit Canada",
+   "jurisdictions": [
+    "CAN",
+    "BC"
+   ],
+   "eligible": "Indigenous producers",
+   "funds": "Loans",
+   "typical_amount": "Varies",
+   "status": "rolling",
+   "deadline": null,
+   "status_note": "",
+   "url": "https://www.fcc-fac.ca/en/financing/indigenous-financing",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Rotation water and cover context for a lending conversation.",
+   "report_sections": [
+    "field_outline",
+    "rotation_comparison",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "iaf_ifsap",
+   "name": "IAF / AAFC-BC Indigenous Food Systems and Agriculture Partnership Program (IFSAP)",
+   "agency": "Indigenous Agriculture and Food (IAF) BC / AAFC",
+   "jurisdictions": [
+    "BC"
+   ],
+   "eligible": "BC Indigenous Nations and organizations",
+   "funds": "Agriculture, food processing, planning",
+   "typical_amount": "Up to $80k",
+   "status": "closed",
+   "deadline": null,
+   "status_note": "appears closed; the program page returned 404",
+   "url": "https://iafbc.ca/wp-content/uploads/2022/09/IFSAP-Program-Guide_Web_Sept_FINAL.pdf",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "Not applicable now.",
+   "report_sections": [
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "bc_food_pathways",
+   "name": "BC Indigenous Food Pathways Program",
+   "agency": "Province of BC",
+   "jurisdictions": [
+    "BC"
+   ],
+   "eligible": "BC Indigenous groups",
+   "funds": "Food projects",
+   "typical_amount": "Up to 75% of costs, maximum $200k",
+   "status": "closed",
+   "deadline": "intake deadline was 10 Jan 2025",
+   "status_note": "program page returned 404; this link is the provincial agriculture landing page, not the program",
+   "url": "https://www2.gov.bc.ca/gov/content/industry/agriculture-seafood",
+   "url_checked": "2026-11-15",
+   "verified": false,
+   "how_croplytics_helps": "Not applicable now.",
+   "report_sections": [
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "nrt_ifss",
+   "name": "NRT Indigenous Food Security and Sovereignty Grant",
+   "agency": "New Relationship Trust",
+   "jurisdictions": [
+    "BC"
+   ],
+   "eligible": "BC First Nations, departments and Indigenous farms",
+   "funds": "Planning (Stream 1) and capital (Stream 2)",
+   "typical_amount": "Up to $150k (Stream 1) and $250k (Stream 2)",
+   "status": "closed",
+   "deadline": "closed; funds exhausted",
+   "status_note": "",
+   "url": "https://newrelationshiptrust.ca/indigenous-food-security-and-sovereignty/",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Baseline for a future intake.",
+   "report_sections": [
+    "field_outline",
+    "water_baseline",
+    "rotation_comparison",
+    "sources_caveats"
+   ],
+   "reasons": {}
+  },
+  {
+   "id": "iaf_isat",
+   "name": "IAF Indigenous Skills and Training (ISAT)",
+   "agency": "Indigenous Agriculture and Food (IAF) BC",
+   "jurisdictions": [
+    "BC"
+   ],
+   "eligible": "BC Indigenous groups",
+   "funds": "Skills and training",
+   "typical_amount": "Not listed",
+   "status": "closed",
+   "deadline": "not accepting applications",
+   "status_note": "",
+   "url": "https://iafbc.ca/indigenous-food-systems-and-agriculture-skills-and-training-program/",
+   "url_checked": "2026-11-15",
+   "verified": true,
+   "how_croplytics_helps": "Not applicable now.",
+   "report_sections": [
+    "sources_caveats"
+   ],
+   "reasons": {}
+  }
+ ]
+}

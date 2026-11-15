@@ -1,0 +1,93 @@
+{
+ "mukey": "459322",
+ "muname": "Clear Lake clay, 0 to 1 percent slopes, MLRA 17",
+ "drainage_class": "Poorly drained",
+ "hydrologic_group": "C/D",
+ "dominant_component": {
+  "compname": "Clear Lake",
+  "comppct_r": "90",
+  "taxorder": "Vertisols"
+ },
+ "awc_mm_per_m": {
+  "value": 142.2,
+  "unit": "mm/m",
+  "low": 138.6,
+  "high": 162.5,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted awc_r (cm/cm x 1000), comppct-weighted, area-weighted over map units; low/high = awc_l/awc_h"
+ },
+ "om_pct": {
+  "value": 2.05,
+  "unit": "%",
+  "low": 0.94,
+  "high": 2.52,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted om_r"
+ },
+ "texture_class": "clay",
+ "texture_detail": {
+  "sand_pct": 15.0,
+  "silt_pct": 27.4,
+  "clay_pct": 57.6,
+  "surface_horizon_texture_code": "C",
+  "method": "USDA triangle on 0-100 cm weighted sand/silt/clay"
+ },
+ "ec_ds_per_m": 1.17,
+ "map_units": [
+  {
+   "mukey": "459322",
+   "muname": "Clear Lake clay, 0 to 1 percent slopes, MLRA 17",
+   "area_share": 1.0,
+   "components": [
+    {
+     "compname": "Clear Lake",
+     "comppct_r": "90",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "C/D",
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Capay",
+     "comppct_r": "4",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Oswald",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Subaco",
+     "comppct_r": "3",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  }
+ ],
+ "footprint": "field polygon backend/field/polygons/car_robbins_rice.geojson",
+ "source": {
+  "id": "ssurgo_sda",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+  "verified": true
+ }
+}

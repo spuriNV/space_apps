@@ -1,0 +1,1429 @@
+{
+ "preset_id": "caf_corcoran_forage",
+ "label": "Outlook, not a forecast (CPC sections); observations elsewhere",
+ "generated_at": "2026-11-15T15:16:15Z",
+ "county": "Kings County",
+ "county_fips": "06031",
+ "today": "2026-11-14",
+ "coming_season": "winter 2026-27 and the 2027 growing season",
+ "cpc_seasonal_outlook": {
+  "point": {
+   "lon": -119.565686,
+   "lat": 36.038441
+  },
+  "machine_readable_sources": {
+   "temp": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+   "prcp": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+   "sdo": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/sdo_update_polygons_20261031.zip",
+   "mdo": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/mdo_polygons_20261031.zip"
+  },
+  "note": "CPC GIS shapefiles on ftp.cpc.ncep.noaa.gov (the machine-readable form of the 90-day outlooks and drought outlooks).",
+  "issued": "2026-10-15",
+  "next_issue": "CPC issues the next 90-day outlook on the third Thursday (19 Nov 2026); the Oct issue is the latest published today.",
+  "seasons": [
+   {
+    "lead": 1,
+    "season": "NDJ",
+    "temperature": {
+     "category": "above normal",
+     "valid_season": "NDJ 2026-2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 33.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "above normal",
+     "valid_season": "NDJ 2026-2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 40.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    }
+   },
+   {
+    "lead": 2,
+    "season": "DJF",
+    "temperature": {
+     "category": "equal chances",
+     "valid_season": "DJF 2026-2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": null,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Equal chances: CPC gives no tilt; no probability stated"
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "above normal",
+     "valid_season": "DJF 2026-2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 50.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    }
+   },
+   {
+    "lead": 3,
+    "season": "JFM",
+    "temperature": {
+     "category": "equal chances",
+     "valid_season": "JFM 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": null,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Equal chances: CPC gives no tilt; no probability stated"
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "above normal",
+     "valid_season": "JFM 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 50.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    }
+   },
+   {
+    "lead": 4,
+    "season": "FMA",
+    "temperature": {
+     "category": "equal chances",
+     "valid_season": "FMA 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": null,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Equal chances: CPC gives no tilt; no probability stated"
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "above normal",
+     "valid_season": "FMA 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 50.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    }
+   },
+   {
+    "lead": 5,
+    "season": "MAM",
+    "temperature": {
+     "category": "equal chances",
+     "valid_season": "MAM 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": null,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Equal chances: CPC gives no tilt; no probability stated"
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "above normal",
+     "valid_season": "MAM 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 40.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    }
+   },
+   {
+    "lead": 6,
+    "season": "AMJ",
+    "temperature": {
+     "category": "above normal",
+     "valid_season": "AMJ 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 33.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "equal chances",
+     "valid_season": "AMJ 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": null,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Equal chances: CPC gives no tilt; no probability stated"
+     },
+     "label": "Outlook, not a forecast"
+    }
+   },
+   {
+    "lead": 7,
+    "season": "MJJ",
+    "temperature": {
+     "category": "above normal",
+     "valid_season": "MJJ 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 33.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "equal chances",
+     "valid_season": "MJJ 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": null,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Equal chances: CPC gives no tilt; no probability stated"
+     },
+     "label": "Outlook, not a forecast"
+    }
+   },
+   {
+    "lead": 8,
+    "season": "JJA",
+    "temperature": {
+     "category": "above normal",
+     "valid_season": "JJA 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 40.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "equal chances",
+     "valid_season": "JJA 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": null,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Equal chances: CPC gives no tilt; no probability stated"
+     },
+     "label": "Outlook, not a forecast"
+    }
+   },
+   {
+    "lead": 9,
+    "season": "JAS",
+    "temperature": {
+     "category": "above normal",
+     "valid_season": "JAS 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 50.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "equal chances",
+     "valid_season": "JAS 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": null,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Equal chances: CPC gives no tilt; no probability stated"
+     },
+     "label": "Outlook, not a forecast"
+    }
+   },
+   {
+    "lead": 10,
+    "season": "ASO",
+    "temperature": {
+     "category": "above normal",
+     "valid_season": "ASO 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": 50.0,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_temperature_outlook",
+       "title": "NOAA CPC 90-day temperature outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seastemp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Probability of the favoured category (above normal); CPC publishes only the favoured category probability, as a contour band (33 means 33-40). Outlook, not a forecast."
+     },
+     "label": "Outlook, not a forecast"
+    },
+    "precipitation": {
+     "category": "equal chances",
+     "valid_season": "ASO 2027",
+     "issued": "2026-10-15",
+     "probability": {
+      "value": null,
+      "unit": "percent",
+      "method": "lookup",
+      "fetched_at": "2026-11-15T07:06:21Z",
+      "verified": true,
+      "source": {
+       "id": "noaa_cpc_90-day_precipitation_outlook",
+       "title": "NOAA CPC 90-day precipitation outlook",
+       "url": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/seasprcp_202610.zip",
+       "accessed": "2026-11-15T07:06:21Z",
+       "verified": true
+      },
+      "note": "Equal chances: CPC gives no tilt; no probability stated"
+     },
+     "label": "Outlook, not a forecast"
+    }
+   }
+  ]
+ },
+ "drought": {
+  "us_drought_monitor": {
+   "county": "Kings County",
+   "fips": "06031",
+   "map_date": "2026-11-10",
+   "valid_end": "2026-11-16",
+   "worst_category": "None (no D0-D4 area)",
+   "worst_category_code": "None",
+   "area_in_category_percent": {
+    "D0": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_kings_county,_cumula",
+      "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "D1": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_kings_county,_cumula",
+      "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "D2": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_kings_county,_cumula",
+      "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "D3": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_kings_county,_cumula",
+      "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    },
+    "D4": {
+     "value": 0.0,
+     "unit": "% of county area",
+     "method": "lookup",
+     "fetched_at": "2026-11-15T07:11:48Z",
+     "verified": true,
+     "source": {
+      "id": "us_drought_monitor,_kings_county,_cumula",
+      "title": "US Drought Monitor, Kings County, cumulative (area in category or worse)",
+      "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+      "accessed": "2026-11-15T07:11:48Z",
+      "verified": true
+     },
+     "note": "map dated 2026-11-10"
+    }
+   },
+   "area_none_percent": {
+    "value": 100.0,
+    "unit": "% of county area",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "us_drought_monitor,_kings_county,_catego",
+     "title": "US Drought Monitor, Kings County, categorical",
+     "url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=2",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    },
+    "note": "map dated 2026-11-10"
+   },
+   "map_date_sn_url": "https://droughtmonitor.unl.edu/CurrentMap/StateDroughtMonitor.aspx?CA",
+   "weeks_ago_4_cumulative_D0": 0.0,
+   "history_2026": [
+    {
+     "map_date": "2026-08-25",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-09-01",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-09-08",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-09-15",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-09-22",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-09-29",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-10-06",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-10-13",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-10-20",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-10-27",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-11-03",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    },
+    {
+     "map_date": "2026-11-10",
+     "D0": 0.0,
+     "D1": 0.0,
+     "D2": 0.0,
+     "D3": 0.0,
+     "D4": 0.0
+    }
+   ],
+   "source_url": "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=06031&startdate=1%2F1%2F2026&enddate=11%2F15%2F2026&statisticsType=1",
+   "fetched_at": "2026-11-15T07:11:48Z",
+   "verified": true
+  },
+  "cpc_drought_outlook": {
+   "seasonal": {
+    "category": "No_Drought",
+    "target": "January 31",
+    "issued": "10/31/2026",
+    "url": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/sdo_update_polygons_20261031.zip",
+    "fetched_at": "2026-11-15T07:06:21Z",
+    "verified": true,
+    "label": "Outlook, not a forecast"
+   },
+   "monthly": {
+    "category": "No_Drought",
+    "target": "Nov 2026",
+    "issued": "10/31/2026",
+    "url": "https://ftp.cpc.ncep.noaa.gov/GIS/droughtlook/mdo_polygons_20261031.zip",
+    "fetched_at": "2026-11-15T07:06:21Z",
+    "verified": true,
+    "label": "Outlook, not a forecast"
+   }
+  }
+ },
+ "reservoirs_now": {
+  "PNF": {
+   "name": "PINE FLAT",
+   "cdec_report_date": "2026-11-13",
+   "latest_daily_date": "2026-11-13",
+   "storage_af": {
+    "value": 190190.0,
+    "unit": "acre-feet",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_daily_reservoir_storage_summary,_pn",
+     "title": "CDEC Daily Reservoir Storage Summary, PNF",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    },
+    "note": "report 'Ending at midnight 2026-11-13'"
+   },
+   "capacity_af": {
+    "value": 1000000.0,
+    "unit": "acre-feet",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_reservoir_capacity,_pnf",
+     "title": "CDEC reservoir capacity, PNF",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    }
+   },
+   "pct_of_capacity": {
+    "value": 19.0,
+    "unit": "percent",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_%_of_capacity,_pnf",
+     "title": "CDEC % of capacity, PNF",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    }
+   },
+   "cdec_average_storage_af": {
+    "value": 286702.0,
+    "unit": "acre-feet",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_historical_average_storage_for_this",
+     "title": "CDEC historical average storage for this date, PNF",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    },
+    "note": "CDEC's published average for the date; CDEC does not state the averaging period on this page (its long-term record, not our 2015-2025 cache)"
+   },
+   "pct_of_cdec_average": {
+    "value": 66.0,
+    "unit": "percent",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_%_of_average_for_this_date,_pnf",
+     "title": "CDEC % of average for this date, PNF",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    }
+   },
+   "storage_year_ago_af": {
+    "value": 275601.0,
+    "unit": "acre-feet",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_storage_a_year_ago,_pnf",
+     "title": "CDEC storage a year ago, PNF",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    }
+   },
+   "inflow_cfs": {
+    "value": 575.0,
+    "unit": "cfs",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_inflow,_pnf",
+     "title": "CDEC inflow, PNF",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    }
+   },
+   "outflow_cfs": {
+    "value": 174.0,
+    "unit": "cfs",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_outflow,_pnf",
+     "title": "CDEC outflow, PNF",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    }
+   },
+   "daily_series_latest_af": {
+    "value": 190190.0,
+    "unit": "acre-feet",
+    "method": "lookup",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_daily_storage_sensor_15,_pnf",
+     "title": "CDEC daily storage sensor 15, PNF",
+     "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2026-01-01&End=2026-11-15",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    },
+    "note": "date 2026-11-13"
+   },
+   "own_average_2015_2025_af": {
+    "value": 295986.0,
+    "unit": "acre-feet",
+    "method": "computed",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "mean_of_pnf_storage_on_nov_13_over_2015-",
+     "title": "Mean of PNF storage on Nov 13 over 2015-2025 (our cache)",
+     "url": "data/cache/caf_corcoran_forage/cdec.parquet",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    },
+    "note": "11 years; short, drought-heavy window, so it reads lower than CDEC's long-term average"
+   },
+   "pct_of_own_average": {
+    "value": 64.3,
+    "unit": "percent",
+    "method": "computed",
+    "fetched_at": "2026-11-15T07:11:48Z",
+    "verified": true,
+    "source": {
+     "id": "pnf_vs_own_2015-2025_same-day_mean",
+     "title": "PNF vs own 2015-2025 same-day mean",
+     "url": "data/cache/caf_corcoran_forage/cdec.parquet",
+     "accessed": "2026-11-15T07:11:48Z",
+     "verified": true
+    }
+   },
+   "source_url": "https://cdec.water.ca.gov/reportapp/javareports?name=RES"
+  }
+ },
+ "snowpack_runoff": {
+  "snow_now_statewide": {
+   "report_date": "November 13, 2026",
+   "stations": 114,
+   "swe_inches": {
+    "value": 0.2,
+    "unit": "inches",
+    "method": "lookup",
+    "fetched_at": "2026-11-14T22:20:03Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_statewide_average_snow_water_equiva",
+     "title": "CDEC statewide average snow water equivalent",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=DLYSWEQ",
+     "accessed": "2026-11-14T22:20:03Z",
+     "verified": true
+    },
+    "note": "report dated November 13, 2026"
+   },
+   "pct_of_normal_for_date": {
+    "value": 0.0,
+    "unit": "percent",
+    "method": "lookup",
+    "fetched_at": "2026-11-14T22:20:03Z",
+    "verified": true,
+    "source": {
+     "id": "cdec_statewide_snow_water_equivalent,_pe",
+     "title": "CDEC statewide snow water equivalent, percent of normal for this date",
+     "url": "https://cdec.water.ca.gov/reportapp/javareports?name=DLYSWEQ",
+     "accessed": "2026-11-14T22:20:03Z",
+     "verified": true
+    },
+    "note": "Reported as 0% in mid-November: the normal for this date is near zero (snow season has not started); not informative until Dec-Jan."
+   },
+   "url": "https://cdec.water.ca.gov/reportapp/javareports?name=DLYSWEQ"
+  },
+  "bulletin_120": {
+   "status": "not yet published for WY2027",
+   "latest_on_cdec_page": "UNIMPAIRED FLOW FOR - May 2026; Report generated: May 28, 2026 10:48",
+   "wy2026_final_update": true,
+   "url_tried": "https://cdec.water.ca.gov/reportapp/javareports?name=B120UP",
+   "also_tried": "https://cdec.water.ca.gov/snow/bulletin120/",
+   "fetched_at": "2026-11-14T22:20:03Z",
+   "verified": true,
+   "note": "The CDEC Bulletin 120 update summary page still shows the May 2026 (WY2026) update. First WY2027 forecast expected in winter (plan: from February). Outlook, not a forecast."
+  }
+ },
+ "allocations_context": {
+  "cvp": {
+   "source_url": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+   "fetched_at": "2026-11-14T22:20:03Z",
+   "verified": true,
+   "latest_update": "2026-10-27 (Reclamation table header)",
+   "wy2026": {
+    "sacramento_river_settlement_contractors": {
+     "value": 100,
+     "unit": "percent of contract supply",
+     "method": "lookup",
+     "fetched_at": "2026-11-14T22:20:03Z",
+     "verified": true,
+     "source": {
+      "id": "cvp_2026_allocation,_settlement_contract",
+      "title": "CVP 2026 allocation, Settlement Contractors/Water Rights (Shasta non-critical)",
+      "url": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+      "accessed": "2026-11-14T22:20:03Z",
+      "verified": true
+     }
+    },
+    "north_of_delta_ag": {
+     "value": 100,
+     "unit": "percent of contract total",
+     "method": "lookup",
+     "fetched_at": "2026-11-14T22:20:03Z",
+     "verified": true,
+     "source": {
+      "id": "cvp_2026_allocation,_north-of-delta_agri",
+      "title": "CVP 2026 allocation, north-of-Delta agricultural contractors",
+      "url": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+      "accessed": "2026-11-14T22:20:03Z",
+      "verified": true
+     }
+    },
+    "south_of_delta_ag": {
+     "value": 31,
+     "unit": "percent of contract total",
+     "method": "lookup",
+     "fetched_at": "2026-11-14T22:20:03Z",
+     "verified": true,
+     "source": {
+      "id": "cvp_2026_allocation,_south-of-delta_agri",
+      "title": "CVP 2026 allocation, south-of-Delta agricultural contractors, as of 27 Oct 2026",
+      "url": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+      "accessed": "2026-11-14T22:20:03Z",
+      "verified": true
+     },
+     "note": "Steps: 15% (26 Feb), 20% (24 Mar), 25% (19 May), 28% (11 Aug), 31% (27 Oct 2026). Reclamation news releases: https://www.usbr.gov/newsroom/news-release/5289, https://www.usbr.gov/newsroom/news-release/5305, https://www.usbr.gov/newsroom/news-release/5338, https://www.usbr.gov/newsroom/news-release/5386"
+    }
+   },
+   "news_releases": {
+    "initial_2026-02-26": "https://www.usbr.gov/newsroom/news-release/5289",
+    "2026-03-24": "https://www.usbr.gov/newsroom/news-release/5305",
+    "2026-05-19": "https://www.usbr.gov/newsroom/news-release/5338",
+    "2026-08-11": "https://www.usbr.gov/newsroom/news-release/5386"
+   },
+   "wy2027_initial": {
+    "status": "not yet announced",
+    "note": "Reclamation's initial CVP allocation has come in late February in 2025 and 2026 (table header dates); none exists for 2027 yet.",
+    "url_tried": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf"
+   }
+  },
+  "swp": {
+   "verified": false,
+   "note": "DWR pages (water.ca.gov) return HTTP 403 to automated fetches, so the figures below are read from ACWA's copy of the DWR release and from search summaries; open the DWR URLs to confirm.",
+   "steps": [
+    {
+     "date": "2025-12-01",
+     "percent": 10,
+     "label": "initial",
+     "url": "https://water.ca.gov/News/News-Releases/2025/Dec-25/SWP-Allocation"
+    },
+    {
+     "date": "2026-01-29",
+     "percent": 30,
+     "url": "https://www.water.ca.gov/News/News-Releases/2026/Jan-2026/December-Storms-Improved-Flexibility-Allow-DWR-to-Increase-State-Water-Project-Allocation"
+    },
+    {
+     "date": "2026-05-15",
+     "percent": 45,
+     "url": "https://water.ca.gov/News/News-Releases/2026/May-2026/State-Water-Project-Allocation-Increases-Heading-into-Summer-Months",
+     "read_from": "https://www.acwa.com/news/dwr-boosts-swp-allocation-heading-into-summer/"
+    }
+   ],
+   "latest": {
+    "value": 45,
+    "unit": "percent of requested Table A",
+    "method": "lookup",
+    "fetched_at": "2026-11-14T22:20:03Z",
+    "verified": false,
+    "source": {
+     "id": "dwr_state_water_project_2026_allocation_",
+     "title": "DWR State Water Project 2026 allocation (15 May 2026), via ACWA",
+     "url": "https://www.acwa.com/news/dwr-boosts-swp-allocation-heading-into-summer/",
+     "accessed": "2026-11-14T22:20:03Z",
+     "verified": false
+    },
+    "note": "DWR 'final allocation typically near end of season'; no later change found. DWR release URL: https://water.ca.gov/News/News-Releases/2026/May-2026/State-Water-Project-Allocation-Increases-Heading-into-Summer-Months"
+   },
+   "wy2027_initial": {
+    "status": "not yet announced",
+    "note": "DWR must issue an initial forecast by 1 December (as in 2025); not yet out on 14 Nov 2026.",
+    "url_tried": "https://water.ca.gov/News/News-Releases/2025/Dec-25/SWP-Allocation"
+   },
+   "history_blocked": {
+    "url_tried": "https://water.ca.gov/-/media/DWR-Website/Web-Pages/Programs/State-Water-Project/Management/SWP-Water-Contractors/Files/Historical-SWP-allocations-1996-2024-112923.pdf",
+    "why": "HTTP 403 to automated fetch; past SWP final allocations not sourced, so not used in the storage relation"
+   }
+  },
+  "storage_vs_final_allocation": {
+   "method": "Shasta storage on 13 Nov before each allocation year (CDEC cache, 2015-2026) beside Reclamation's last published CVP allocation for that year. 11 years, descriptive only; the 2026 allocation may still change. SWP history not sourced (DWR 403).",
+   "rows": [
+    {
+     "allocation_year": 2016,
+     "shasta_storage_13nov_prior_af": 1370914.0,
+     "pct_of_capacity": 30.1,
+     "cvp_south_of_delta_ag_pct": 5,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2017,
+     "shasta_storage_13nov_prior_af": 2823550.0,
+     "pct_of_capacity": 62.0,
+     "cvp_south_of_delta_ag_pct": 100,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2018,
+     "shasta_storage_13nov_prior_af": 3157500.0,
+     "pct_of_capacity": 69.4,
+     "cvp_south_of_delta_ag_pct": 50,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2019,
+     "shasta_storage_13nov_prior_af": 2150251.0,
+     "pct_of_capacity": 47.2,
+     "cvp_south_of_delta_ag_pct": 75,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2020,
+     "shasta_storage_13nov_prior_af": 3223912.0,
+     "pct_of_capacity": 70.8,
+     "cvp_south_of_delta_ag_pct": 20,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2021,
+     "shasta_storage_13nov_prior_af": 2043514.0,
+     "pct_of_capacity": 44.9,
+     "cvp_south_of_delta_ag_pct": 0,
+     "cvp_settlement_contractors_pct": 75,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2022,
+     "shasta_storage_13nov_prior_af": 1083160.0,
+     "pct_of_capacity": 23.8,
+     "cvp_south_of_delta_ag_pct": 0,
+     "cvp_settlement_contractors_pct": 18,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2023,
+     "shasta_storage_13nov_prior_af": 1396515.0,
+     "pct_of_capacity": 30.7,
+     "cvp_south_of_delta_ag_pct": 100,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2024,
+     "shasta_storage_13nov_prior_af": 3111745.0,
+     "pct_of_capacity": 68.4,
+     "cvp_south_of_delta_ag_pct": 50,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2025,
+     "shasta_storage_13nov_prior_af": 2533834.0,
+     "pct_of_capacity": 55.7,
+     "cvp_south_of_delta_ag_pct": 55,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": false
+    },
+    {
+     "allocation_year": 2026,
+     "shasta_storage_13nov_prior_af": 2585097.0,
+     "pct_of_capacity": 56.8,
+     "cvp_south_of_delta_ag_pct": 31,
+     "cvp_settlement_contractors_pct": 100,
+     "partial_year": true
+    }
+   ],
+   "shasta_13nov_2026_af": 2243712.0,
+   "unit": "acre-feet",
+   "sources": [
+    "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf",
+    "data/cache/car_colusa_rice/cdec.parquet",
+    "data/cache/car_colusa_rice/cdec_2026.parquet"
+   ],
+   "fetched_at": "2026-11-14T22:20:03Z",
+   "verified": true
+  }
+ },
+ "field_expectations_from_history": {
+  "current_crop": "Alfalfa",
+  "crop_note": "2025 CDL crop assumed again in 2026 (2026 CDL not published)",
+  "winters_with_current_crop": [
+   "2016-2017",
+   "2017-2018",
+   "2018-2019",
+   "2019-2020"
+  ],
+  "winters_with_bare_window": 1,
+  "per_winter": [
+   {
+    "winter": "2016-2017",
+    "Y": 2016,
+    "start": null,
+    "end": null,
+    "days": 0
+   },
+   {
+    "winter": "2017-2018",
+    "Y": 2017,
+    "start": null,
+    "end": null,
+    "days": 0
+   },
+   {
+    "winter": "2018-2019",
+    "Y": 2018,
+    "start": null,
+    "end": null,
+    "days": 0
+   },
+   {
+    "winter": "2019-2020",
+    "Y": 2019,
+    "start": "2019-10-01",
+    "end": "2020-01-13",
+    "days": 105
+   }
+  ],
+  "bare_window": {
+   "note": "Only 1 of 4 winters with this crop had a bare run of 14+ days: no typical window can be stated"
+  },
+  "scenario_inputs": {
+   "method": "CPC-weighted conditional climatology: for each non-overlapping outlook season (temperature NDJ, FMA, MJJ, ASO; precipitation NDJ, FMA) the shift = sum of CPC probability x (tercile mean - all-year mean) at the 3 NOAA stations, averaged. Temperature shift = mean of the 4 seasons (applied all year). Precip shift = NDJ+FMA mm change / mean water-year total (other months unchanged). Range: climatology (0, 0) to the favoured category fully realised. Outlook scenario, not a forecast.",
+   "seasons_used": {
+    "temperature": [
+     {
+      "season": "NDJ",
+      "category": "above normal",
+      "prob": 33.0,
+      "shift_c": 0.17
+     },
+     {
+      "season": "FMA",
+      "category": "equal chances",
+      "prob": null,
+      "shift_c": 0.0
+     },
+     {
+      "season": "MJJ",
+      "category": "above normal",
+      "prob": 33.0,
+      "shift_c": 0.08
+     },
+     {
+      "season": "ASO",
+      "category": "above normal",
+      "prob": 50.0,
+      "shift_c": 0.41
+     }
+    ],
+    "precipitation": [
+     {
+      "season": "NDJ",
+      "category": "above normal",
+      "prob": 40.0,
+      "shift_mm": 14.6
+     },
+     {
+      "season": "FMA",
+      "category": "above normal",
+      "prob": 50.0,
+      "shift_mm": 20.0
+     }
+    ]
+   },
+   "mean_water_year_precip_mm": 222.0,
+   "dT_c": {
+    "low": 0.0,
+    "mid": 0.16,
+    "high": 0.88
+   },
+   "dP_pct": {
+    "low": 0.0,
+    "mid": 15.6,
+    "high": 30
+   }
+  }
+ },
+ "irrigation_2027": {
+  "scenarios": {
+   "low": {
+    "dT_c": 0.0,
+    "dP_pct": 0.0
+   },
+   "mid": {
+    "dT_c": 0.16,
+    "dP_pct": 15.6
+   },
+   "high": {
+    "dT_c": 0.88,
+    "dP_pct": 30
+   }
+  },
+  "default_is": "scenario 'low' = climatology (dT 0, dP 0)",
+  "allocation_note": "No default allocation exists in the repo (spec: user input, acre-ft/acre). Compared with the engine's default-weather run instead; an allocation is never assumed.",
+  "strategies": [
+   {
+    "id": "caf0_alfalfa",
+    "name": "Alfalfa hay, 7-8 cuts, 4-5 year stand (current)",
+    "is_baseline": true,
+    "irrigation_need_af_ac": {
+     "value": 3.83,
+     "low": 3.83,
+     "high": 3.9,
+     "unit": "acre-ft/acre/yr",
+     "method": "model",
+     "fetched_at": "2026-11-15T15:15:56Z",
+     "verified": false,
+     "source": {
+      "id": "field_shift_engine",
+      "title": "Field Shift rotation engine score(), scenario from CPC outlook",
+      "url": "backend/engine/README.md",
+      "accessed": "2026-11-15T15:15:56Z",
+      "verified": false
+     },
+     "note": "value = CPC-weighted scenario; low/high = lowest/highest of {climatology, CPC-weighted, favoured-category-fully-realised} runs. Engine's own parameter range (Kc, ETo +/-15%, rice F, precip source) at the CPC-weighted run is in engine_param_range."
+    },
+    "engine_param_range": {
+     "low": 3.21,
+     "high": 4.66
+    },
+    "scenario_values": {
+     "low": 3.85,
+     "mid": 3.83,
+     "high": 3.9
+    },
+    "change_vs_default_pct": -0.5,
+    "allocation_check": {
+     "status": "no_allocation_entered",
+     "allocation_mm": null
+    }
+   },
+   {
+    "id": "caf1_smallgrain_corn",
+    "name": "Winter small-grain silage + silage corn double crop",
+    "is_baseline": false,
+    "irrigation_need_af_ac": {
+     "value": 2.68,
+     "low": 2.68,
+     "high": 2.72,
+     "unit": "acre-ft/acre/yr",
+     "method": "model",
+     "fetched_at": "2026-11-15T15:15:56Z",
+     "verified": false,
+     "source": {
+      "id": "field_shift_engine",
+      "title": "Field Shift rotation engine score(), scenario from CPC outlook",
+      "url": "backend/engine/README.md",
+      "accessed": "2026-11-15T15:15:56Z",
+      "verified": false
+     },
+     "note": "value = CPC-weighted scenario; low/high = lowest/highest of {climatology, CPC-weighted, favoured-category-fully-realised} runs. Engine's own parameter range (Kc, ETo +/-15%, rice F, precip source) at the CPC-weighted run is in engine_param_range."
+    },
+    "engine_param_range": {
+     "low": 2.08,
+     "high": 3.54
+    },
+    "scenario_values": {
+     "low": 2.7,
+     "mid": 2.68,
+     "high": 2.72
+    },
+    "change_vs_default_pct": -0.7,
+    "allocation_check": {
+     "status": "no_allocation_entered",
+     "allocation_mm": null
+    }
+   },
+   {
+    "id": "caf2_smallgrain_sorghumsudan",
+    "name": "Winter small-grain silage + sorghum-sudan summer forage",
+    "is_baseline": false,
+    "irrigation_need_af_ac": {
+     "value": 2.71,
+     "low": 2.71,
+     "high": 2.75,
+     "unit": "acre-ft/acre/yr",
+     "method": "model",
+     "fetched_at": "2026-11-15T15:15:56Z",
+     "verified": false,
+     "source": {
+      "id": "field_shift_engine",
+      "title": "Field Shift rotation engine score(), scenario from CPC outlook",
+      "url": "backend/engine/README.md",
+      "accessed": "2026-11-15T15:15:56Z",
+      "verified": false
+     },
+     "note": "value = CPC-weighted scenario; low/high = lowest/highest of {climatology, CPC-weighted, favoured-category-fully-realised} runs. Engine's own parameter range (Kc, ETo +/-15%, rice F, precip source) at the CPC-weighted run is in engine_param_range."
+    },
+    "engine_param_range": {
+     "low": 2.2,
+     "high": 3.48
+    },
+    "scenario_values": {
+     "low": 2.73,
+     "mid": 2.71,
+     "high": 2.75
+    },
+    "change_vs_default_pct": -0.7,
+    "allocation_check": {
+     "status": "no_allocation_entered",
+     "allocation_mm": null
+    }
+   },
+   {
+    "id": "caf3_alfalfa_break",
+    "name": "Alfalfa 3-year stand, winter cereal break year, re-seed",
+    "is_baseline": false,
+    "irrigation_need_af_ac": {
+     "value": 3.0,
+     "low": 3.0,
+     "high": 3.06,
+     "unit": "acre-ft/acre/yr",
+     "method": "model",
+     "fetched_at": "2026-11-15T15:15:56Z",
+     "verified": false,
+     "source": {
+      "id": "field_shift_engine",
+      "title": "Field Shift rotation engine score(), scenario from CPC outlook",
+      "url": "backend/engine/README.md",
+      "accessed": "2026-11-15T15:15:56Z",
+      "verified": false
+     },
+     "note": "value = CPC-weighted scenario; low/high = lowest/highest of {climatology, CPC-weighted, favoured-category-fully-realised} runs. Engine's own parameter range (Kc, ETo +/-15%, rice F, precip source) at the CPC-weighted run is in engine_param_range."
+    },
+    "engine_param_range": {
+     "low": 2.5,
+     "high": 3.72
+    },
+    "scenario_values": {
+     "low": 3.03,
+     "mid": 3.0,
+     "high": 3.06
+    },
+    "change_vs_default_pct": -1.0,
+    "allocation_check": {
+     "status": "no_allocation_entered",
+     "allocation_mm": null
+    }
+   }
+  ]
+ },
+ "plain_language_summary": "This is an outlook, not a forecast: NOAA's Climate Prediction Center gives a 50% chance of above normal rain for Dec-Feb and a 50% chance of above normal rain for Jan-Mar, with no tilt for temperature for Dec-Feb (about 33% is what any category gets in an average year). Pine Flat holds 190,190 acre-feet, 66% of CDEC's average for 13 Nov and 19% full. The Drought Monitor week of 2026-11-10 shows no drought or dryness (0% of the county at the D0 level or worse), and NOAA's drought outlook through 31 Jan shows no drought. Alfalfa kept this field covered through most winters, so there is no typical bare window to report (only 1 of 4 winters had 14 or more bare days). Under the outlook scenario, the current rotation needs about 3.8 acre-feet per acre in 2027 (range 3.8-3.9), little changed from a normal year.",
+ "blocked_or_not_yet_published": [
+  {
+   "item": "Bulletin 120 WY2027 forecast",
+   "status": "not yet published",
+   "url_tried": "https://cdec.water.ca.gov/reportapp/javareports?name=B120UP"
+  },
+  {
+   "item": "SWP initial 2027 allocation",
+   "status": "not yet announced (due by 1 Dec)",
+   "url_tried": "https://water.ca.gov/News/News-Releases/2025/Dec-25/SWP-Allocation"
+  },
+  {
+   "item": "CVP initial 2027 allocation",
+   "status": "not yet announced",
+   "url_tried": "https://www.usbr.gov/mp/cvo/vungvari/water_allocations_historical.pdf"
+  },
+  {
+   "item": "SWP past final allocations and DWR release pages",
+   "status": "blocked: HTTP 403 to automated fetch",
+   "url_tried": "https://water.ca.gov/-/media/DWR-Website/Web-Pages/Programs/State-Water-Project/Management/SWP-Water-Contractors/Files/Historical-SWP-allocations-1996-2024-112923.pdf"
+  },
+  {
+   "item": "CPC November 2026 seasonal outlook",
+   "status": "issued 19 Nov 2026; not yet out",
+   "url_tried": "https://ftp.cpc.ncep.noaa.gov/GIS/us_tempprcpfcst/"
+  }
+ ]
+}

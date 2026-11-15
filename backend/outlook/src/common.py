@@ -8,9 +8,12 @@ HERE = Path(__file__).resolve().parents[1]
 RAW = HERE / "raw"
 OUT = HERE / "out"
 CACHE = ROOT / "data" / "cache"
-PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
-COUNTY = {"car_colusa_rice": ("06011", "Colusa"), "caf_tulare_forage": ("06031", "Kings")}
-RESERVOIRS = {"car_colusa_rice": ["SHA", "ORO"], "caf_tulare_forage": ["PNF"]}
+import sys as _sys
+_sys.path.insert(0, str(ROOT / "backend" / "fields"))
+import fieldreg  # noqa: E402
+PRESETS = fieldreg.selected()   # registry fields (FIELDSHIFT_FIELDS limits the list)
+COUNTY = {p: (fieldreg.get(p)["county"]["fips"], fieldreg.get(p)["county"]["name"]) for p in fieldreg.ids()}
+RESERVOIRS = {p: fieldreg.get(p)["reservoirs"] for p in PRESETS}
 UA = {"User-Agent": "field-shift-hackathon/0.1 (outlook fetch)"}
 LABEL = "Outlook, not a forecast"
 
@@ -27,6 +30,17 @@ def get(url, params=None, retries=3, timeout=120, headers=None, **kw):
         except Exception as e:
             last = e
     raise last
+
+def write_presets(path, out):
+    """Write a combined out/<name>.json whose "presets" holds one entry per field, keeping entries for fields that
+    were not part of this run (so FIELDSHIFT_FIELDS runs add fields instead of dropping the others)."""
+    path = Path(path)
+    if path.exists():
+        old = json.loads(path.read_text()).get("presets", {})
+        out["presets"] = {**{k: v for k, v in old.items() if k not in out["presets"] and fieldreg.has(k)}, **out["presets"]}
+        order = fieldreg.ids()
+        out["presets"] = dict(sorted(out["presets"].items(), key=lambda kv: order.index(kv[0])))
+    write_json(path, out)
 
 def write_json(path, obj):
     path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)

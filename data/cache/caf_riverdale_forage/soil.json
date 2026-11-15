@@ -1,0 +1,121 @@
+{
+ "mukey": "464245",
+ "muname": "Chino loam",
+ "drainage_class": "Somewhat poorly drained",
+ "hydrologic_group": "C",
+ "dominant_component": {
+  "compname": "Chino",
+  "comppct_r": "85",
+  "taxorder": "Mollisols"
+ },
+ "awc_mm_per_m": {
+  "value": 159.7,
+  "unit": "mm/m",
+  "low": 141.5,
+  "high": 169.7,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted awc_r (cm/cm x 1000), comppct-weighted, area-weighted over map units; low/high = awc_l/awc_h"
+ },
+ "om_pct": {
+  "value": 1.02,
+  "unit": "%",
+  "low": 0.51,
+  "high": 1.54,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted om_r"
+ },
+ "texture_class": "loam",
+ "texture_detail": {
+  "sand_pct": 40.7,
+  "silt_pct": 35.4,
+  "clay_pct": 23.9,
+  "surface_horizon_texture_code": "L",
+  "method": "USDA triangle on 0-100 cm weighted sand/silt/clay"
+ },
+ "ec_ds_per_m": 2.64,
+ "map_units": [
+  {
+   "mukey": "464245",
+   "muname": "Chino loam",
+   "area_share": 0.642,
+   "components": [
+    {
+     "compname": "Chino",
+     "comppct_r": "85",
+     "drainage_class": "Somewhat poorly drained",
+     "hydrologic_group": "C",
+     "taxorder": "Mollisols"
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "10",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  },
+  {
+   "mukey": "464465",
+   "muname": "Temple loam",
+   "area_share": 0.358,
+   "components": [
+    {
+     "compname": "Temple",
+     "comppct_r": "85",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "C",
+     "taxorder": "Inceptisols"
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Unnamed",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  }
+ ],
+ "footprint": "field polygon backend/field/polygons/caf_riverdale_forage.geojson",
+ "source": {
+  "id": "ssurgo_sda",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+  "verified": true
+ }
+}

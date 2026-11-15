@@ -1,0 +1,140 @@
+{
+  "field_id": "caf_corcoran_forage",
+  "generated_at": "2026-11-15T15:13:42+00:00",
+  "evidence": "The crop looked stressed in 11 weeks over 2015-2026 (both checks agree), mostly early July; most often crop using less water than the weather allows (OpenET) and dry soil (NASA GRACE-DA).",
+  "latest_season": {
+    "year": 2026,
+    "evidence": "Neither stress check flagged the same week over the 2026 season.",
+    "weeks_flagged_both": 0,
+    "weeks_flagged_one": 6,
+    "crop": "Alfalfa",
+    "crop_assumed": true
+  },
+  "evaluation": {
+    "weeks_scored": 260,
+    "flag_rate_zscore": 0.33076923076923076,
+    "flag_rate_iforest": 0.1,
+    "agreement": 0.6538461538461539,
+    "usdm_d3_weeks": 100,
+    "usdm_no_d3_weeks": 158,
+    "recall_usdm_d3_zscore": 0.56,
+    "flag_rate_no_drought_zscore": 0.189873417721519,
+    "lift_usdm_d3_zscore": 2.9493333333333336,
+    "recall_usdm_d3_iforest": 0.14,
+    "flag_rate_no_drought_iforest": 0.0759493670886076,
+    "lift_usdm_d3_iforest": 1.8433333333333335,
+    "recall_usdm_d3_zscore_field_only": 0.35,
+    "flag_rate_no_drought_zscore_field_only": 0.14556962025316456,
+    "recall_usdm_d3_iforest_loyo": 0.32,
+    "flag_rate_no_drought_iforest_loyo": 0.10759493670886076,
+    "events": [
+      {
+        "name": "2015 season, Drought Monitor D3+ weeks",
+        "year": 2015,
+        "start": "2015-03-30",
+        "end": "2015-09-21",
+        "weeks_in_window": 26,
+        "flagged_zscore": 17,
+        "flagged_iforest": 4,
+        "flagged_both": 3,
+        "recall_zscore": 0.6538461538461539,
+        "recall_iforest": 0.15384615384615385
+      },
+      {
+        "name": "2016 season, Drought Monitor D3+ weeks",
+        "year": 2016,
+        "start": "2016-04-04",
+        "end": "2016-09-26",
+        "weeks_in_window": 26,
+        "flagged_zscore": 4,
+        "flagged_iforest": 0,
+        "flagged_both": 0,
+        "recall_zscore": 0.15384615384615385,
+        "recall_iforest": 0.0
+      },
+      {
+        "name": "2021 season, Drought Monitor D3+ weeks",
+        "year": 2021,
+        "start": "2021-05-03",
+        "end": "2021-09-27",
+        "weeks_in_window": 22,
+        "flagged_zscore": 22,
+        "flagged_iforest": 3,
+        "flagged_both": 3,
+        "recall_zscore": 1.0,
+        "recall_iforest": 0.13636363636363635
+      },
+      {
+        "name": "2022 season, Drought Monitor D3+ weeks",
+        "year": 2022,
+        "start": "2022-04-04",
+        "end": "2022-09-26",
+        "weeks_in_window": 26,
+        "flagged_zscore": 13,
+        "flagged_iforest": 7,
+        "flagged_both": 5,
+        "recall_zscore": 0.5,
+        "recall_iforest": 0.2692307692307692
+      }
+    ],
+    "wet_cool_weeks": 49,
+    "false_positive_proxy_zscore": 0.2857142857142857,
+    "false_positive_proxy_iforest": 0.30612244897959184
+  },
+  "checks": {
+    "julaug_2021": {
+      "applicable": true,
+      "flagged_zscore": 9,
+      "flagged_iforest": 1,
+      "weeks": 9,
+      "pass": false
+    },
+    "julaug_2022": {
+      "applicable": true,
+      "flagged_zscore": 5,
+      "flagged_iforest": 3,
+      "weeks": 9,
+      "pass": true
+    },
+    "flood_2023_water_not_stress": {
+      "water_weeks": 19,
+      "flagged": 0,
+      "pass": true
+    },
+    "fallow_not_stress": {
+      "fallow_years": [
+        2023,
+        2024
+      ],
+      "weeks": 33,
+      "flag_rate_zscore": 0.5757575757575758,
+      "flag_rate_iforest": 0.3939393939393939,
+      "note": "fallow weeks are scored (they look anomalous) but are shown as fallow, never as crop stress, and are left out of the evidence sentence"
+    }
+  },
+  "no_crop_years_excluded_from_evidence": [
+    2023,
+    2024
+  ],
+  "events_source": "US Drought Monitor county statistics: weeks with >= 50% of the county in D3 (extreme) or D4 (exceptional) drought, cumulative statistic, max over the field's counties",
+  "inputs": {
+    "lst_source": {},
+    "esi_source": {
+      "openet_monthly_et_over_pm_eto": 260
+    },
+    "sm_source": {
+      "grace_da_rootzone_pctl": 186,
+      "smap_l4_rootzone_pctl": 123
+    }
+  },
+  "input_coverage_scored_weeks": {
+    "z_ndvi": 217,
+    "z_lst": 0,
+    "z_esi": 208,
+    "z_sm": 257,
+    "z_eto": 260,
+    "z_imerg30": 260
+  },
+  "how_to_read": "A week is flagged when the field looks unusual for that week of the year in a stress direction. Both checks = stronger evidence. No labelled stress events exist, so there is no accuracy; the Drought Monitor weeks show whether flags line up with known drought.",
+  "credit": "Stress method, reasons and evidence sentence: spuriNV (ds branch); real NASA inputs and Drought Monitor events: backend/ai."
+}

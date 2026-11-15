@@ -3,6 +3,7 @@
   "id": "car0_rice_winterflood",
   "location_id": "car_colusa_rice",
   "name": "Continuous rice with winter flood (current)",
+  "short_name": "Rice + winter flood (current)",
   "is_baseline": true,
   "cycle_years": 1,
   "calendar": [
@@ -86,7 +87,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -102,7 +103,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -118,7 +119,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -134,7 +135,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -182,7 +183,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -198,7 +199,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -214,7 +215,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -230,7 +231,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -246,7 +247,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -262,7 +263,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -310,7 +311,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -326,7 +327,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -342,7 +343,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -358,7 +359,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -374,7 +375,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -390,7 +391,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -412,7 +413,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -430,7 +431,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -446,7 +447,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -462,7 +463,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -493,7 +494,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -510,7 +511,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -526,7 +527,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -542,7 +543,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -558,7 +559,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -574,7 +575,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -590,7 +591,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -606,7 +607,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -622,7 +623,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -638,7 +639,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -654,7 +655,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -670,7 +671,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -686,7 +687,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -743,7 +744,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -759,7 +760,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -775,7 +776,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -798,7 +799,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -814,7 +815,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -830,7 +831,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -853,7 +854,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -869,7 +870,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -885,7 +886,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -909,7 +910,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -955,7 +956,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -970,7 +971,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1401,6 +1402,7 @@
   "id": "car1_rice_wintercover",
   "location_id": "car_colusa_rice",
   "name": "Rice + winter cover (cereal/vetch) instead of winter flood",
+  "short_name": "Rice + winter cover",
   "is_baseline": false,
   "cycle_years": 1,
   "calendar": [
@@ -1484,7 +1486,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1500,7 +1502,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1516,7 +1518,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1532,7 +1534,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1580,7 +1582,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1596,7 +1598,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1612,7 +1614,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1628,7 +1630,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1644,7 +1646,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1660,7 +1662,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1708,7 +1710,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1724,7 +1726,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1740,7 +1742,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1756,7 +1758,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1772,7 +1774,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1788,7 +1790,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1810,7 +1812,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1828,7 +1830,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1844,7 +1846,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1860,7 +1862,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1891,7 +1893,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1908,7 +1910,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1924,7 +1926,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1940,7 +1942,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1956,7 +1958,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1972,7 +1974,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -1988,7 +1990,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2004,7 +2006,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2020,7 +2022,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2036,7 +2038,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2052,7 +2054,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2068,7 +2070,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2084,7 +2086,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2141,7 +2143,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2157,7 +2159,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2173,7 +2175,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2196,7 +2198,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2212,7 +2214,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2228,7 +2230,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2251,7 +2253,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2267,7 +2269,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2283,7 +2285,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2307,7 +2309,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2353,7 +2355,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2368,7 +2370,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2813,6 +2815,7 @@
   "id": "car2_dryyear_safflower",
   "location_id": "car_colusa_rice",
   "name": "Dry-year plan: safflower instead of rice (allocation < 50%)",
+  "short_name": "Dry-year safflower",
   "is_baseline": false,
   "cycle_years": 1,
   "calendar": [
@@ -2907,7 +2910,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2923,7 +2926,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2939,7 +2942,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -2955,7 +2958,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3003,7 +3006,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3019,7 +3022,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3035,7 +3038,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3051,7 +3054,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3067,7 +3070,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3083,7 +3086,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3131,7 +3134,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3147,7 +3150,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3163,7 +3166,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3179,7 +3182,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3195,7 +3198,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3211,7 +3214,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3233,7 +3236,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3251,7 +3254,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3267,7 +3270,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3283,7 +3286,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3314,7 +3317,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3331,7 +3334,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3347,7 +3350,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3363,7 +3366,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3379,7 +3382,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3395,7 +3398,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3411,7 +3414,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3427,7 +3430,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3443,7 +3446,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3459,7 +3462,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3475,7 +3478,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3491,7 +3494,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3507,7 +3510,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3564,7 +3567,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3580,7 +3583,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3596,7 +3599,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3619,7 +3622,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3635,7 +3638,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3651,7 +3654,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3675,7 +3678,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3721,7 +3724,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -3736,7 +3739,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4164,6 +4167,7 @@
   "id": "car3_rice_wheat",
   "location_id": "car_colusa_rice",
   "name": "Rice - winter wheat rotation (2-year)",
+  "short_name": "Rice\u2013wheat",
   "is_baseline": false,
   "cycle_years": 2,
   "calendar": [
@@ -4249,7 +4253,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4265,7 +4269,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4281,7 +4285,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4297,7 +4301,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4345,7 +4349,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4361,7 +4365,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4377,7 +4381,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4393,7 +4397,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4409,7 +4413,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4425,7 +4429,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4473,7 +4477,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4489,7 +4493,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4505,7 +4509,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4521,7 +4525,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4537,7 +4541,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4553,7 +4557,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4575,7 +4579,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4593,7 +4597,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4609,7 +4613,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4625,7 +4629,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4656,7 +4660,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4673,7 +4677,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4689,7 +4693,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4705,7 +4709,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4721,7 +4725,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4737,7 +4741,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4753,7 +4757,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4769,7 +4773,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4785,7 +4789,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4801,7 +4805,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4817,7 +4821,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4833,7 +4837,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4849,7 +4853,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4906,7 +4910,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4922,7 +4926,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4938,7 +4942,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4961,7 +4965,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4977,7 +4981,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -4993,7 +4997,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -5016,7 +5020,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -5032,7 +5036,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -5048,7 +5052,7 @@
       "source": {
        "id": "nasa_power_daily",
        "title": "NASA POWER daily point (regional chunk cache data/cache)",
-       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+       "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
        "accessed": "2026-11-14",
        "verified": true,
        "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -5072,7 +5076,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -5118,7 +5122,7 @@
     "source": {
      "id": "nasa_power_daily",
      "title": "NASA POWER daily point (regional chunk cache data/cache)",
-     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+     "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
      "accessed": "2026-11-14",
      "verified": true,
      "cache_path": "data/cache/car_colusa_rice/power.parquet"
@@ -5133,7 +5137,7 @@
      "source": {
       "id": "nasa_power_daily",
       "title": "NASA POWER daily point (regional chunk cache data/cache)",
-      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20251231&format=JSON",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-122.1&latitude=39.15&start=19810101&end=20261114&format=JSON",
       "accessed": "2026-11-14",
       "verified": true,
       "cache_path": "data/cache/car_colusa_rice/power.parquet"

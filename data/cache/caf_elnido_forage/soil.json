@@ -1,0 +1,93 @@
+{
+ "mukey": "463029",
+ "muname": "Fresno loam, slightly saline-sodic, 0 to 1 percent slopes",
+ "drainage_class": "Moderately well drained",
+ "hydrologic_group": "C",
+ "dominant_component": {
+  "compname": "Fresno",
+  "comppct_r": "85",
+  "taxorder": "Alfisols"
+ },
+ "awc_mm_per_m": {
+  "value": 127.9,
+  "unit": "mm/m",
+  "low": 107.9,
+  "high": 141.0,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted awc_r (cm/cm x 1000), comppct-weighted, area-weighted over map units; low/high = awc_l/awc_h"
+ },
+ "om_pct": {
+  "value": 0.24,
+  "unit": "%",
+  "low": 0.06,
+  "high": 0.41,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted om_r"
+ },
+ "texture_class": "sandy clay loam",
+ "texture_detail": {
+  "sand_pct": 56.7,
+  "silt_pct": 20.0,
+  "clay_pct": 23.2,
+  "surface_horizon_texture_code": "L",
+  "method": "USDA triangle on 0-100 cm weighted sand/silt/clay"
+ },
+ "ec_ds_per_m": 7.25,
+ "map_units": [
+  {
+   "mukey": "463029",
+   "muname": "Fresno loam, slightly saline-sodic, 0 to 1 percent slopes",
+   "area_share": 1.0,
+   "components": [
+    {
+     "compname": "Fresno",
+     "comppct_r": "85",
+     "drainage_class": "Moderately well drained",
+     "hydrologic_group": "C",
+     "taxorder": "Alfisols"
+    },
+    {
+     "compname": "Pachappa",
+     "comppct_r": "5",
+     "drainage_class": "Well drained",
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Traver",
+     "comppct_r": "5",
+     "drainage_class": "Moderately well drained",
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Lewis",
+     "comppct_r": "5",
+     "drainage_class": "Moderately well drained",
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  }
+ ],
+ "footprint": "field polygon backend/field/polygons/caf_elnido_forage.geojson",
+ "source": {
+  "id": "ssurgo_sda",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+  "verified": true
+ }
+}

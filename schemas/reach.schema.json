@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fieldshift.local/schemas/reach.schema.json",
+  "title": "Reach",
+  "description": "GET /api/reach (backend/api/app/week/reach.py): USDA NASS acres for California rice and for Kings + Tulare County hay and silage, with the pitch line. Every number is a SourcedNumber.",
+  "type": "object",
+  "required": ["label", "generated_at", "rice", "forage", "pitch_line"],
+  "$defs": {
+    "SNs": {"allOf": [{"$ref": "sourced_number.schema.json"}], "required": ["value", "unit", "method", "source"]},
+    "series": {"type": "object", "required": ["year", "acres"], "properties": {"year": {"type": "integer"}, "acres": {"$ref": "#/$defs/SNs"}}}
+  },
+  "properties": {
+    "label": {"type": "string"}, "generated_at": {"type": "string"}, "_source": {"type": "string"},
+    "rice": {"type": "object", "required": ["year", "california_planted_acres"],
+      "properties": {"year": {"type": "integer"}, "california_planted_acres": {"$ref": "#/$defs/SNs"}, "current_year": {"type": "integer"}, "current_year_planted_acres": {"$ref": "#/$defs/SNs"}}},
+    "forage": {"type": "object", "required": ["counties", "kings_tulare_hay_acres", "kings_tulare_forage_acres"],
+      "properties": {"counties": {"type": "object", "additionalProperties": {"type": "object", "additionalProperties": {"$ref": "#/$defs/series"}}},
+                     "kings_tulare_hay_acres": {"$ref": "#/$defs/SNs"}, "kings_tulare_forage_acres": {"$ref": "#/$defs/SNs"}}},
+    "polygon_count": {"oneOf": [{"$ref": "#/$defs/SNs"}, {"type": "null"}], "description": "DWR 2023 crop-map polygons of these types; null until a cached layer makes it cheap"},
+    "pitch_line": {"type": "string", "minLength": 20},
+    "pitch_line_forage": {"type": "string"}
+  }
+}

@@ -1,0 +1,165 @@
+{
+ "location_id": "bc_salmon_river_forage",
+ "scope": "Salmon River watershed (BC FWA group SALR, 1,794 km2), not the field",
+ "product": "MODIS/Terra MOD10A2 v061 8-day maximum snow extent",
+ "product_url": "https://doi.org/10.5067/MODIS/MOD10A2.061",
+ "rule": "first 8-day composite after the spring maximum with watershed snow fraction < 0.5, interpolated; composites with >60% cloud or missing pixels dropped; the series starts mid-February, so a year whose snow is already below the threshold at its first composite has no result",
+ "years": [
+  {
+   "year": 2001,
+   "snow_off_doy": 121,
+   "composites_used": 15,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2002,
+   "snow_off_doy": 134,
+   "composites_used": 15,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2003,
+   "snow_off_doy": 118,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2004,
+   "snow_off_doy": 110,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2005,
+   "snow_off_doy": 107,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2006,
+   "snow_off_doy": 119,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2007,
+   "snow_off_doy": 131,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2008,
+   "snow_off_doy": 134,
+   "composites_used": 17,
+   "max_snow_frac": 0.99
+  },
+  {
+   "year": 2009,
+   "snow_off_doy": 126,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2010,
+   "snow_off_doy": 107,
+   "composites_used": 16,
+   "max_snow_frac": 0.98
+  },
+  {
+   "year": 2011,
+   "snow_off_doy": 128,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2012,
+   "snow_off_doy": 129,
+   "composites_used": 16,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2013,
+   "snow_off_doy": 122,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2014,
+   "snow_off_doy": 125,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2015,
+   "snow_off_doy": 110,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2016,
+   "snow_off_doy": 105,
+   "composites_used": 16,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2017,
+   "snow_off_doy": 101,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2018,
+   "snow_off_doy": 123,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2019,
+   "snow_off_doy": 115,
+   "composites_used": 16,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2020,
+   "snow_off_doy": 123,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2021,
+   "snow_off_doy": 121,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2022,
+   "snow_off_doy": 124,
+   "composites_used": 16,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2023,
+   "snow_off_doy": 121,
+   "composites_used": 17,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2024,
+   "snow_off_doy": 110,
+   "composites_used": 16,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2025,
+   "snow_off_doy": 115,
+   "composites_used": 16,
+   "max_snow_frac": 1.0
+  },
+  {
+   "year": 2026,
+   "snow_off_doy": 119,
+   "composites_used": 16,
+   "max_snow_frac": 1.0
+  }
+ ]
+}

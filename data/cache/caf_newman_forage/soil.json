@@ -1,0 +1,128 @@
+{
+ "mukey": "466912",
+ "muname": "Vernalis clay loam, 0 to 2 percent slopes",
+ "drainage_class": "Well drained",
+ "hydrologic_group": "C",
+ "dominant_component": {
+  "compname": "Vernalis",
+  "comppct_r": "85",
+  "taxorder": "Inceptisols"
+ },
+ "awc_mm_per_m": {
+  "value": 146.9,
+  "unit": "mm/m",
+  "low": 129.2,
+  "high": 160.2,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted awc_r (cm/cm x 1000), comppct-weighted, area-weighted over map units; low/high = awc_l/awc_h"
+ },
+ "om_pct": {
+  "value": 0.81,
+  "unit": "%",
+  "low": 0.48,
+  "high": 1.13,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted om_r"
+ },
+ "texture_class": "clay loam",
+ "texture_detail": {
+  "sand_pct": 33.0,
+  "silt_pct": 33.1,
+  "clay_pct": 33.9,
+  "surface_horizon_texture_code": "CL",
+  "method": "USDA triangle on 0-100 cm weighted sand/silt/clay"
+ },
+ "ec_ds_per_m": 2.82,
+ "map_units": [
+  {
+   "mukey": "466912",
+   "muname": "Vernalis clay loam, 0 to 2 percent slopes",
+   "area_share": 0.589,
+   "components": [
+    {
+     "compname": "Vernalis",
+     "comppct_r": "85",
+     "drainage_class": "Well drained",
+     "hydrologic_group": "C",
+     "taxorder": "Inceptisols"
+    },
+    {
+     "compname": "Capay",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Stomar",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": "Alfisols"
+    },
+    {
+     "compname": "Zacharias",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": "Inceptisols"
+    }
+   ]
+  },
+  {
+   "mukey": "466963",
+   "muname": "Pedcat clay loam, 0 to 2 percent slopes, rarely flooded",
+   "area_share": 0.411,
+   "components": [
+    {
+     "compname": "Pedcat",
+     "comppct_r": "90",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Alfisols"
+    },
+    {
+     "compname": "Dospalos",
+     "comppct_r": "4",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": "Mollisols"
+    },
+    {
+     "compname": "Clear Lake",
+     "comppct_r": "4",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": "Vertisols"
+    },
+    {
+     "compname": "Columbia",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": "Entisols"
+    }
+   ]
+  }
+ ],
+ "footprint": "field polygon backend/field/polygons/caf_newman_forage.geojson",
+ "source": {
+  "id": "ssurgo_sda",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+  "verified": true
+ }
+}

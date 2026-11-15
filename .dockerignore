@@ -5,3 +5,6 @@
 .git
 .env
 .env.*
+data/cache/_points
+data/user_fields
+data/cache/_slc

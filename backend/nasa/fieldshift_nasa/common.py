@@ -18,7 +18,11 @@ from shapely.ops import unary_union
 REPO = Path(__file__).resolve().parents[3]
 POLYGONS = REPO / "backend" / "field" / "polygons"
 CACHE = REPO / "data" / "cache"
-PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
+sys.path.insert(0, str(REPO / "backend" / "fields"))
+import fieldreg  # noqa: E402
+
+PRESETS = fieldreg.selected()          # registry fields (FIELDSHIFT_FIELDS limits the list)
+ORIGINALS = ["car_colusa_rice", "caf_tulare_forage"]
 BLOCKED_MSG = "BLOCKED: no Earthdata credentials in .env"
 APPEEARS = "https://appeears.earthdatacloud.nasa.gov/api"
 
@@ -135,6 +139,21 @@ class AppEEARS:
             raise RuntimeError(f"AppEEARS task submit HTTP {r.status_code}: {r.text[:400]}")
         return r.json()["task_id"]
 
+    def find_task(self, name: str) -> str | None:
+        """Newest task on the account with this task_name that is not failed/deleted; None if there is none."""
+        for attempt in range(5):   # never fall through to a duplicate submission on a transient error
+            try:
+                r = requests.get(f"{APPEEARS}/task", headers=self.h, params={"limit": 200}, timeout=60)
+                r.raise_for_status()
+                break
+            except Exception as e:  # noqa: BLE001
+                print(f"  AppEEARS task list failed ({type(e).__name__}); retry {attempt + 1}", flush=True)
+                time.sleep(20 * (attempt + 1))
+        else:
+            raise RuntimeError("AppEEARS task list unreachable; not submitting (a live task may already exist)")
+        live = [t for t in r.json() if t.get("task_name") == name and t.get("status") not in ("error", "failed", "deleted")]
+        return max(live, key=lambda t: t.get("created", ""))["task_id"] if live else None
+
     def multi_point(self, dataset: str, points: dict[str, tuple[float, float]], start: str, end: str,
                     layers: list[tuple[str, str]], resume: bool = True) -> tuple[dict[str, pd.DataFrame], dict]:
         """One AppEEARS point task for all points and the whole date range. The task id is saved in
@@ -143,6 +162,9 @@ class AppEEARS:
         Returns ({point_id: frame with 'Date' + one column per layer (bare layer name)}, extra)."""
         raw = CACHE / "_appeears"
         raw.mkdir(parents=True, exist_ok=True)
+        if not set(points) <= set(ORIGINALS):   # registry batches get their own task/state so the originals' raw CSVs stay
+            import hashlib
+            dataset = f"{dataset}_fields_{hashlib.sha1(','.join(sorted(points)).encode()).hexdigest()[:8]}"
         state_f = raw / f"{dataset}.task.json"
         params = {"points": points, "start": start, "end": end, "layers": layers}
         tid = None
@@ -151,6 +173,11 @@ class AppEEARS:
             if st.get("params") == json.loads(json.dumps(params)):
                 tid = st["task_id"]
                 print(f"  resuming AppEEARS task {tid} for {dataset}", flush=True)
+        if tid is None:   # state file lost (e.g. another checkout): reuse a live task with the same name on the account
+            tid = self.find_task(f"fs_{dataset}_{start}_{end}")
+            if tid:
+                state_f.write_text(json.dumps({"task_id": tid, "params": params, "submitted": "found on account"}, indent=1))
+                print(f"  reusing AppEEARS task {tid} for {dataset} (found by name)", flush=True)
         if tid is None:
             tid = self.submit_points(f"fs_{dataset}_{start}_{end}", points, start, end, layers)
             state_f.write_text(json.dumps({"task_id": tid, "params": params, "submitted": now_iso()}, indent=1))
@@ -190,7 +217,8 @@ def clean_appeears_df(df: pd.DataFrame, layers: list[str], fill: dict[str, float
 def common_args(desc: str):
     import argparse
     ap = argparse.ArgumentParser(description=desc)
-    ap.add_argument("--preset", choices=PRESETS, action="append", help="default: both")
+    ap.add_argument("--preset", choices=fieldreg.ids(), action="append",
+                    help="default: every registry field (or FIELDSHIFT_FIELDS)")
     ap.add_argument("--start", help="YYYY-MM-DD override")
     ap.add_argument("--end", help="YYYY-MM-DD override")
     ap.add_argument("--limit", type=int, help="smoke test: only first N granules/scenes")

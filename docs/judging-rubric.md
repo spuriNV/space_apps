@@ -24,7 +24,7 @@ The judging sheet scores five criteria, 1–5 each, 25 total. This file quotes e
 **Where we are.** Distinct ideas, each already built or half-built:
 - **Exposure:** days when the field is bare *and* bad weather hits, instead of "risk" in general.
 - **The 3D stack:** surface, then soil moisture, then groundwater under one field, with each satellite's real pixel size drawn to scale.
-- **Rule vs machine learning on the same calendar,** tested on the 2022 drought year, with where each fails.
+- **Rule vs machine learning on the same calendar,** tested on fields and years the models never saw, with where each fails. Merged with spuriNV's `ds` models (14 Nov): Sentinel-2 scene-class labels, a rule / random forest / gradient boosting vote, green-up, harvest and alfalfa-cutting dates, and a crop-stress check that explains each flagged week in words with its NASA source (MODIS, SMAP or GRACE-DA, IMERG, ECOSTRESS), scored against Drought Monitor D3+ weeks (`backend/ai/README.md`).
 - **Satellite vs news:** the satellite signal set beside dated headlines.
 - **Satellite vs ground:** NASA data checked against stations and measured field water use on the same screen.
 
@@ -37,7 +37,7 @@ The judging sheet scores five criteria, 1–5 each, 25 total. This file quotes e
 
 **Where we are**
 - Every number carries a source, and each backend chunk has a check script.
-- FAO-56 crop water method; real Cropland Data Layer labels; an honest machine-learning test with 2022 held out and fields held out.
+- FAO-56 crop water method; real Cropland Data Layer labels; an honest machine-learning test: headline = fields never seen, scored against the crop map (not the imagery the model reads); unseen years 2023-25; 2022 reported but labelled easy; agreement with Sentinel-2 classes labelled as agreement; water checked against NASA OPERA.
 - POWER compared against NOAA stations.
 - A working app that runs on real data.
 
@@ -50,7 +50,7 @@ The judging sheet scores five criteria, 1–5 each, 25 total. This file quotes e
    - The rice-then-wheat bare days were checked and are real: an 11-month fallow after the wheat harvest, not a bug.
    - Forage no longer penalises one-cut silage, and rating and yield ranges now widen the score ranges.
    - **Still open:** with FAO-56 coefficients and our calendar, sorghum-sudan uses slightly more water than silage corn (720 vs 708 mm), because it is in the field longer. We say so rather than adjust it. The spec's "lower water" claim is uncited.
-4. **Machine-learning accuracy is inflated at Colusa:** about 99%, mostly because the models learned how the labels were made. Quote the Kings result (83%, below target) and the comparison against the simple rule instead.
+4. **Machine-learning results (14 Nov, `backend/ai`):** on fields it never saw, the ML agrees with the crop map 98% of the time at Colusa (rule 80%) but only 85% at Kings, no better than the rule and **below target**. The 99% figures are agreement with Sentinel-2's own classes, not accuracy; don't quote them. Green-up/harvest dates are about 25 days off a crude reference for every method. Crop stress: the z-score check flags Drought Monitor D3+ weeks 4-5x as often as other weeks at both presets (partly through regional soil moisture, which the Drought Monitor also uses); the isolation forest does not follow drought, so spec check 9 fails at most fields.
 5. **Usability is unproven.** The farmer-first panel is new; the printable brief is still jargon. A 10-minute session with a real grower or farm adviser (UC Cooperative Extension, NRCS, an irrigation district) would be the strongest evidence here.
 
 ## 4. Relevance

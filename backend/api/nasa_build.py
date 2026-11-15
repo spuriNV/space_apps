@@ -74,7 +74,9 @@ def load(p: str) -> dict:
     d = _pq(p, "smap_l4")
     if d is not None and len(d) > 30:
         d["date"] = pd.to_datetime(d["date"]).dt.normalize()
-        n["smap_l4"] = d.groupby("date").mean(numeric_only=True).sort_index()
+        d = d.groupby("date").mean(numeric_only=True).sort_index()
+        d["sm_rootzone_pct_own"] = own_percentile(d["sm_rootzone"])
+        n["smap_l4"] = d
     d = _pq(p, "smap_l3")
     if d is not None and len(d) > 30:
         d["date"] = pd.to_datetime(d["date"]).dt.normalize()
@@ -111,6 +113,23 @@ def load(p: str) -> dict:
         d["date"] = pd.to_datetime(d["date"])
         n["power_nrt"] = d
     return n
+
+
+def own_percentile(s: pd.Series, half_window: int = 15, base_end: int = 2025) -> pd.Series:
+    """Empirical percentile (0-100) of each day's value among all baseline values (years <= base_end) whose day of year is
+    within +-half_window days (circular). Used because the SMAP L4 product percentile (sm_rootzone_pctl) is missing on
+    a third to a half of days at these cells."""
+    s = s.dropna()
+    base = s[s.index.year <= base_end]
+    bdoy = base.index.day_of_year.values
+    bval = base.values
+    out = {}
+    for t, v in s.items():
+        dd = np.abs(bdoy - t.day_of_year)
+        dd = np.minimum(dd, 366 - dd)
+        peers = bval[dd <= half_window]
+        out[t] = 100.0 * ((peers < v).sum() + 0.5 * (peers == v).sum()) / len(peers) if len(peers) >= 30 else np.nan
+    return pd.Series(out)
 
 
 # ---------------------------------------------------------------- POWER near-real-time extension of daily_derived
@@ -172,7 +191,7 @@ def hls_cover_by_date(p: str) -> dict:
 
 def daily_extra(nasa: dict, dt: pd.Timestamp) -> dict:
     """Per-day NASA columns for GET /daily."""
-    row = {"imerg_precip_mm": None, "imerg_run": None, "smap_sm_pct": None, "smap_rootzone_m3m3": None,
+    row = {"imerg_precip_mm": None, "imerg_run": None, "smap_sm_pct": None, "smap_sm_pctl_product": None, "smap_rootzone_m3m3": None,
            "smap_l3_sm_m3m3": None, "grace_gw_pct": None}
     im = nasa.get("imerg")
     if im is not None and dt in im.index:
@@ -180,7 +199,8 @@ def daily_extra(nasa: dict, dt: pd.Timestamp) -> dict:
         row["imerg_run"] = im.at[dt, "run"] if "run" in im.columns else "final"
     l4 = nasa.get("smap_l4")
     if l4 is not None and dt in l4.index:
-        row["smap_sm_pct"] = _num(l4.at[dt, "sm_rootzone_pctl"], 1) if "sm_rootzone_pctl" in l4 else None
+        row["smap_sm_pct"] = _num(l4.at[dt, "sm_rootzone_pct_own"], 1)
+        row["smap_sm_pctl_product"] = _num(l4.at[dt, "sm_rootzone_pctl"], 1) if "sm_rootzone_pctl" in l4 else None
         row["smap_rootzone_m3m3"] = _num(l4.at[dt, "sm_rootzone"], 3)
     l3 = nasa.get("smap_l3")
     if l3 is not None and dt in l3.index:
@@ -205,7 +225,7 @@ def weekly_extra(nasa: dict, w: pd.Timestamp) -> dict:
     if l4 is not None:
         s = l4.loc[w:e]
         out["smap_sm"] = _num(s["sm_rootzone"].mean(), 3) if len(s) else None
-        out["smap_sm_pct"] = _num(s["sm_rootzone_pctl"].mean(), 1) if len(s) and "sm_rootzone_pctl" in s else None
+        out["smap_sm_pct"] = _num(s["sm_rootzone_pct_own"].mean(), 1) if len(s) else None
     gr = nasa.get("grace")
     if gr is not None:
         s = gr.loc[w - pd.Timedelta(days=6):e]
@@ -234,12 +254,12 @@ def trends(nasa: dict) -> dict:
         mu, sd = full.groupby(full.index.month).mean(), full.groupby(full.index.month).std()
         z = (m - m.index.month.map(mu).values) / m.index.month.map(sd).values
         by = {str(y): _num(v, 2) for y, v in z.groupby(z.index.year).mean().items()}
-        pc = l4["sm_rootzone_pctl"].groupby(l4.index.year).mean() if "sm_rootzone_pctl" in l4 else None
+        pc = l4["sm_rootzone_pct_own"].groupby(l4.index.year).mean()
         out["smap_anomaly"] = ("sd", "SMAP_L4_EASE2_9km", src("smap_l4"), by,
                                "Calendar-year mean of the monthly standardized anomaly of SMAP L4 root-zone soil moisture "
                                f"(0-100 cm, m3/m3) at the field's 9 km cell, vs the same calendar month over {full.index.year.min()}-2025 "
                                "(0 = normal, -1 = one standard deviation drier). One cell (row 0, col 0), not an 11x11 neighbourhood. "
-                               "Product root-zone percentile per year (mean): "
+                               "Our same-season percentile per year (mean): "
                                + (", ".join(f"{y} {v:.0f}" for y, v in pc.items()) if pc is not None else "n/a")
                                + f". {m.index.max().year} is partial (through {l4.index.max().date()}).", 2025)
     gr = nasa.get("grace")
@@ -368,7 +388,8 @@ def nasa_series(p: str, nasa: dict) -> dict:
         if l4 is not None:
             w = l4.loc[s:e]
             if len(w):
-                r["smap_rootzone_pct"] = _num(w["sm_rootzone_pctl"].mean(), 1) if "sm_rootzone_pctl" in w else None
+                r["smap_rootzone_pct"] = _num(w["sm_rootzone_pct_own"].mean(), 1)
+                r["smap_rootzone_pctl_product"] = _num(w["sm_rootzone_pctl"].mean(), 1) if "sm_rootzone_pctl" in w else None
                 r["smap_rootzone_m3m3"] = _num(w["sm_rootzone"].mean(), 3)
                 r["smap_surface_m3m3"] = _num(w["sm_surface"].mean(), 3)
                 r["smap_obs_date"] = w.index.max().strftime("%Y-%m-%d")
@@ -416,7 +437,10 @@ def nasa_series(p: str, nasa: dict) -> dict:
         "imerg_rain_mm": "IMERG rain in the 10-day step (mm); null if a day is missing",
         "imerg_wy_to_date_mm": "IMERG rain since 1 Oct (water year to date, mm) at imerg_obs_date",
         "imerg_wy_to_date_normal_mm": "mean IMERG water-year-to-date for the same day, water years 2001-2025",
-        "smap_rootzone_pct": "SMAP L4 root-zone (0-100 cm) soil moisture percentile (product field sm_rootzone_pctl), step mean",
+        "smap_rootzone_pct": "SMAP L4 root-zone (0-100 cm) soil moisture percentile, ours: rank of the day's value among all SMAP days "
+                             "2015-2025 within +-15 days of the same date (0 = driest on record for the season), step mean",
+        "smap_rootzone_pctl_product": "SMAP L4 product percentile (sm_rootzone_pctl, vs the model's long climatology); missing on "
+                                      "a third to a half of days at these cells",
         "smap_rootzone_m3m3": "SMAP L4 root-zone soil moisture, m3/m3", "smap_surface_m3m3": "SMAP L4 surface (0-5 cm) soil moisture, m3/m3",
         "smap_l3_sm_m3m3": "SMAP L3 retrieved surface soil moisture, recommended-quality retrievals only (flooded rice often fails)",
         "grace_gw_pct": "GRACE-DA groundwater percentile (weekly; latest week starting within 6 days before the step end)",
@@ -518,8 +542,9 @@ def nasa_datasets(p: str, nasa: dict) -> list:
               SRC["ecostress"]["url"]),
         entry("dswx", "OPERA surface water (DSWx)", "When and how much of the field was under water (winter flooding, floods).",
               "30 m, every few days", rng("dswx"), rows("dswx"), st("dswx"), ["field now", "winter flooding check", "nasa_series"],
-              SRC["dswx"]["url"], "Scenes only where OPERA has processed HLS; none exist over the Colusa field for the 2020-21 and 2021-22 winters."
-              if p == "car_colusa_rice" else "Fetched for spring 2023 (Tulare Lake re-flooding)."),
+              SRC["dswx"]["url"], ("Scenes only where OPERA has processed HLS; none exist over the Colusa field for the 2020-21 and 2021-22 winters."
+              if p == "car_colusa_rice" else "Fetched for the winters 2022-23 to 2026-27." if p.startswith("car_")
+              else "Fetched for spring 2023 (Tulare Lake re-flooding).")),
         entry("hls", "HLS (Harmonized Landsat Sentinel-2)", "What is growing on the field and when it is bare, green or flooded, every 2-3 days.",
               "30 m, every 2-3 days", rng("hls"), rows("hls"), st("hls"), ["calendar?source=hls", "nasa_series"], SRC["hls"]["url"]),
         entry("landsat", "Landsat 8/9 (NASA/USGS)", "Field greenness record used with Sentinel-2 in the main calendar.", "30 m, 8-16 days",
@@ -568,3 +593,50 @@ def bc_signal() -> dict | None:
                     "(weekly mean), grace_gw_pct = GRACE-DA groundwater percentile, power_tmax_c = weekly max POWER Tmax. lead_days = days "
                     "between the first week either percentile fell below 20 and the marker (rule ours, U). Marker dates are as in the spec "
                     "(the mid-June request date is approximate)."}
+
+
+# ---------------------------------------------------------------- GET /water_seen (OPERA DSWx)
+def water_seen(p: str, nasa: dict) -> dict | None:
+    """Per-scene share of the field under water (OPERA DSWx-HLS, 30 m) plus a per-season summary in plain words."""
+    d = nasa.get("dswx")
+    if d is None or not len(d):
+        return None
+    m = _meta(p, "dswx")
+    scenes = [{"date": r.date.strftime("%Y-%m-%d"), "scene": r.scene, "water_frac": _num(r.frac_water, 3),
+               "open_water_frac": _num(r.frac_open_water, 3), "partial_water_frac": _num(r.frac_partial_water, 3),
+               "cloud_snow_frac": _num(r.frac_cloud_snow, 3), "clear_frac": _num(r.frac_clear, 3), "clear": bool(r.frac_clear >= 0.8)}
+              for r in d.itertuples()]
+    c = d[d.frac_clear >= 0.8].copy()
+    seasons = []
+    if p.startswith("car_"):   # rice fields: winters
+        c = c[c.date.dt.month.isin([11, 12, 1, 2, 3, 4])]
+        c["season"] = np.where(c.date.dt.month >= 11, c.date.dt.year, c.date.dt.year - 1)
+        label = lambda y: f"{y}-{(y + 1) % 100:02d} winter"  # noqa: E731
+    else:
+        c["season"] = c.date.dt.year
+        label = lambda y: f"spring {y}"  # noqa: E731
+    for y, g in c.groupby("season"):
+        wet = g[g.frac_water > 0.5]
+        seasons.append({"season": label(int(y)), "clear_scenes": int(len(g)), "max_water_frac": _num(g.frac_water.max(), 3),
+                        "scenes_over_half_water": int(len(wet)),
+                        "first_wet": wet.date.min().strftime("%Y-%m-%d") if len(wet) else None,
+                        "last_wet": wet.date.max().strftime("%Y-%m-%d") if len(wet) else None,
+                        "water_seen": bool(len(wet))})
+    full = [s for s in seasons if s["clear_scenes"] >= 5]
+    n_w = sum(s["water_seen"] for s in full)
+    if p.startswith("car_") and p != "car_colusa_rice":
+        summary = (f"NASA OPERA saw more than half of this field under water in {n_w} of {len(full)} winters with at least 5 clear "
+                   "satellite views (fetched for 2022-23 to 2026-27). Much of it is classed as partial surface water (shallow water "
+                   "mixed with stubble or soil), which greenness-based images can miss.")
+    elif p == "car_colusa_rice":
+        summary = (f"NASA OPERA saw more than half of this field under water in {n_w} of {len(full)} winters with at least 5 clear "
+                   "satellite views (2016-17 to 2025-26). Much of it is classed as partial surface water (shallow water mixed with "
+                   "stubble or soil), which greenness-based images can miss. No OPERA images exist over this field for the 2020-21 "
+                   "and 2021-22 winters.")
+    else:
+        mx = max((s["max_water_frac"] or 0) for s in seasons) if seasons else 0
+        summary = (f"In spring 2023 (Tulare Lake re-flooding) NASA OPERA saw at most {mx:.0%} of this field as water on a clear day; "
+                   "no clear view showed the field flooded.")
+    return {"location_id": p, "rule": "clear = at least 80% of the field's pixels free of cloud/snow; water = open (class 1) + partial (class 2) surface water",
+            "summary": summary, "seasons": seasons, "scenes": scenes, "source": src("dswx"),
+            "fetched_at": m.get("fetched_at"), "windows": (m.get("params") or {}).get("windows")}

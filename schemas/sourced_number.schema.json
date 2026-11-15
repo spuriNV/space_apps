@@ -25,7 +25,8 @@
         "title": {"type": "string"},
         "url": {"type": "string"},
         "accessed": {"type": "string"},
-        "verified": {"type": "boolean"}
+        "verified": {"type": "boolean"},
+        "internal": {"type": "boolean", "description": "true when url is a repo path or internal identifier with no public page (set by the API response layer); show the title, do not link"}
       },
       "if": {"properties": {"verified": {"const": true}}},
       "then": {"required": ["accessed"], "properties": {"url": {"type": "string", "minLength": 1}}}

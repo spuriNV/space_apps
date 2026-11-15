@@ -1,0 +1,260 @@
+{
+ "url": "https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USC00049699%2CUSC00041715%2CUSC00046506%2CUSC00041948%2CUSC00049677%2CUSC00048587%2CUSC00042640%2CUSC00046521%2CUSC00048580%2CUSC00046685%2CUSC00046527%2CUSC00045385&startDate=1981-01-01&endDate=2026-11-14&dataTypes=PRCP%2CTMAX%2CTMIN&units=metric&includeStationName=true&includeStationLocation=true&format=csv",
+ "search_url": "https://www.ncei.noaa.gov/access/services/search/v1/data",
+ "params": {
+  "dataset": "daily-summaries",
+  "stations": [
+   "USC00049699",
+   "USC00046506",
+   "USC00041948"
+  ],
+  "startDate": "1981-01-01",
+  "endDate": "2026-11-14",
+  "dataTypes": "PRCP,TMAX,TMIN",
+  "units": "metric"
+ },
+ "fetched_at": "2026-11-14T23:48:19Z",
+ "timestep": "daily (local station time, observation-day convention varies by station; compare monthly or +/-1 day)",
+ "units": {
+  "prcp_mm": "mm",
+  "tmax_c": "degC",
+  "tmin_c": "degC"
+ },
+ "fill_value": "blank/absent rows -> NaN",
+ "native_res": "point stations",
+ "native_res_m": null,
+ "auth": "none",
+ "selected_stations": [
+  {
+   "station": "USC00049699",
+   "name": "WILLOWS 6 W, CA US",
+   "lat": 39.5232,
+   "lon": -122.3048,
+   "dist_km": 21.3052,
+   "first_date": "1906-10-15",
+   "coverage_1981_2025": {
+    "PRCP": 0.966,
+    "TMAX": 0.954,
+    "TMIN": 0.954
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00046506",
+   "name": "ORLAND, CA US",
+   "lat": 39.7458,
+   "lon": -122.1997,
+   "dist_km": 30.2199,
+   "first_date": "1903-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.944,
+    "TMAX": 0.987,
+    "TMIN": 0.987
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00041948",
+   "name": "COLUSA 2 SSW, CA US",
+   "lat": 39.1875,
+   "lon": -122.0269,
+   "dist_km": 34.4823,
+   "first_date": "1948-10-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.883,
+    "TMAX": 0.959,
+    "TMIN": 0.932
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  }
+ ],
+ "all_candidates_checked_nearest_12": [
+  {
+   "station": "USC00049699",
+   "name": "WILLOWS 6 W, CA US",
+   "lat": 39.5232,
+   "lon": -122.3048,
+   "dist_km": 21.3052,
+   "first_date": "1906-10-15",
+   "coverage_1981_2025": {
+    "PRCP": 0.966,
+    "TMAX": 0.954,
+    "TMIN": 0.954
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00041715",
+   "name": "CHICO UNIVERSITY FARM, CA US",
+   "lat": 39.6911,
+   "lon": -121.8211,
+   "dist_km": 29.7092,
+   "first_date": "1906-01-08",
+   "coverage_1981_2025": {
+    "PRCP": 0.765,
+    "TMAX": 0.682,
+    "TMIN": 0.682
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-02"
+  },
+  {
+   "station": "USC00046506",
+   "name": "ORLAND, CA US",
+   "lat": 39.7458,
+   "lon": -122.1997,
+   "dist_km": 30.2199,
+   "first_date": "1903-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.944,
+    "TMAX": 0.987,
+    "TMIN": 0.987
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00041948",
+   "name": "COLUSA 2 SSW, CA US",
+   "lat": 39.1875,
+   "lon": -122.0269,
+   "dist_km": 34.4823,
+   "first_date": "1948-10-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.883,
+    "TMAX": 0.959,
+    "TMIN": 0.932
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00049677",
+   "name": "WILLIAMS, CA US",
+   "lat": 39.15,
+   "lon": -122.15,
+   "dist_km": 39.3319,
+   "first_date": "1906-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.14,
+    "TMAX": 0.138,
+    "TMIN": 0.139
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "1988-10-31"
+  },
+  {
+   "station": "USC00048587",
+   "name": "STONY GORGE RESERVOIR, CA US",
+   "lat": 39.5861,
+   "lon": -122.5341,
+   "dist_km": 41.9496,
+   "first_date": "1926-11-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.97,
+    "TMAX": 0.973,
+    "TMIN": 0.969
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-10-01"
+  },
+  {
+   "station": "USC00042640",
+   "name": "EAST PARK RESERVOIR, CA US",
+   "lat": 39.3592,
+   "lon": -122.5178,
+   "dist_km": 42.2768,
+   "first_date": "1910-11-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.501,
+    "TMAX": 0.501,
+    "TMIN": 0.501
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2003-08-31"
+  },
+  {
+   "station": "USC00046521",
+   "name": "OROVILLE, CA US",
+   "lat": 39.5177,
+   "lon": -121.553,
+   "dist_km": 43.4609,
+   "first_date": "1953-04-22",
+   "coverage_1981_2025": {
+    "PRCP": 0.896,
+    "TMAX": 0.864,
+    "TMIN": 0.866
+   },
+   "first_obs": "1982-11-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00048580",
+   "name": "STONYFORD, CA US",
+   "lat": 39.3752,
+   "lon": -122.5461,
+   "dist_km": 43.9692,
+   "first_date": "1915-01-08",
+   "coverage_1981_2025": {
+    "PRCP": 0.551,
+    "TMAX": 0.002,
+    "TMIN": 0.002
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2008-03-31"
+  },
+  {
+   "station": "USC00046685",
+   "name": "PARADISE, CA US",
+   "lat": 39.7538,
+   "lon": -121.6241,
+   "dist_km": 46.9487,
+   "first_date": "1957-05-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.886,
+    "TMAX": 0.856,
+    "TMIN": 0.855
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2022-08-29"
+  },
+  {
+   "station": "USC00046527",
+   "name": "OROVILLE DAM, CA US",
+   "lat": 39.5333,
+   "lon": -121.4833,
+   "dist_km": 49.5376,
+   "first_date": "1979-11-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.039,
+    "TMAX": 0.039,
+    "TMIN": 0.039
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "1982-11-30"
+  },
+  {
+   "station": "USC00045385",
+   "name": "MARYSVILLE, CA US",
+   "lat": 39.1458,
+   "lon": -121.5852,
+   "dist_km": 56.4072,
+   "first_date": "1897-02-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.566,
+    "TMAX": 0.524,
+    "TMIN": 0.523
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2007-10-31"
+  }
+ ],
+ "rows": 49202,
+ "date_max": "2026-09-30",
+ "selection_rule": "nearest 3 of the 12 nearest candidate GHCN-D stations (bbox +/-0.8 deg, record starting <=1985) with >=70% daily coverage of PRCP,TMAX,TMIN over 1981-2025",
+ "footprint_geojson": null
+}

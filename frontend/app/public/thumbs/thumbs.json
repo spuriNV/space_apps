@@ -1,17 +1,137 @@
 {
-  "_note": "Esri World Imagery export at the field bounds (imagery (c) Esri, Maxar, Earthstar Geographics); bbox in lon/lat, EPSG:4326 image.",
-  "fields": {
-    "bsr_salmon_forage": {
-      "bbox": [
-        -119.365,
-        50.535,
-        -119.335,
-        50.565
-      ],
-      "size": [
-        360,
-        240
-      ]
-    }
+ "_note": "Esri World Imagery export at the field bounds (imagery (c) Esri, Maxar, Earthstar Geographics); bbox in lon/lat, EPSG:4326 image.",
+ "fields": {
+  "car_colusa_rice": {
+   "bbox": [
+    -122.096196,
+    39.134698,
+    -122.070474,
+    39.148087
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "caf_tulare_forage": {
+   "bbox": [
+    -119.64727,
+    36.229934,
+    -119.622123,
+    36.243547
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "car_glenn_rice": {
+   "bbox": [
+    -122.071947,
+    39.489903,
+    -122.045928,
+    39.503288
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "car_biggs_rice": {
+   "bbox": [
+    -121.753288,
+    39.432459,
+    -121.726758,
+    39.446119
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "car_robbins_rice": {
+   "bbox": [
+    -121.708268,
+    38.869458,
+    -121.682802,
+    38.882675
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "car_zamora_rice": {
+   "bbox": [
+    -121.875759,
+    38.860633,
+    -121.825779,
+    38.886573
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "car_grimes_rice": {
+   "bbox": [
+    -121.977566,
+    39.053695,
+    -121.95167,
+    39.0671
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "caf_goshen_forage": {
+   "bbox": [
+    -119.46326,
+    36.316906,
+    -119.438015,
+    36.330465
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "caf_tipton_forage": {
+   "bbox": [
+    -119.30328,
+    36.03497,
+    -119.290711,
+    36.041746
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "caf_elnido_forage": {
+   "bbox": [
+    -120.4827,
+    37.154615,
+    -120.467951,
+    37.162452
+   ],
+   "size": [
+    360,
+    240
+   ]
+  },
+  "bc_salmon_river_forage": {
+   "bbox": [
+    -119.391583,
+    50.639651,
+    -119.374158,
+    50.647018
+   ],
+   "size": [
+    360,
+    240
+   ]
   }
+ }
 }

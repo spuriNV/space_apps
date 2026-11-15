@@ -24,6 +24,15 @@ PRESETS = {
     "car_colusa_rice": {"lat": 39.15, "lon": -122.10, "name": "Colusa County rice check (example)"},
     "caf_tulare_forage": {"lat": 36.20, "lon": -119.60, "name": "Tulare/Kings dairy forage field (example)"},
 }
+# The other registry fields (backend/fields/registry.json; FIELDSHIFT_FIELDS limits the list)
+import sys as _sys
+_sys.path.insert(0, str(REPO / "backend" / "fields"))
+import fieldreg  # noqa: E402
+for _id in fieldreg.selected():
+    if _id not in PRESETS:
+        _lon, _lat = fieldreg.point(_id)
+        PRESETS[_id] = {"lat": _lat, "lon": _lon, "name": fieldreg.get(_id)["name"]}
+PRESETS = {k: v for k, v in PRESETS.items() if k in fieldreg.selected()}
 POWER_PARAMS = "T2M,T2M_MAX,T2M_MIN,RH2M,WS2M,ALLSKY_SFC_SW_DWN,PRECTOTCORR"
 POWER_BASE = "https://power.larc.nasa.gov/api/temporal/daily/point"
 ELEV_M = {"car_colusa_rice": 57.4, "caf_tulare_forage": 106.1}  # POWER cell elevation (regional power.meta.json)
@@ -86,7 +95,10 @@ def load_weather(preset_id: str) -> Weather:
         path, prov = own, "engine fetch backend/engine/.cache"
         meta_p = own.with_suffix(".meta.json")
     url = power_url(p["lat"], p["lon"])
-    elev = ELEV_M.get(preset_id, 0.0)
+    elev = ELEV_M.get(preset_id)
+    if elev is None:   # registry fields: POWER cell elevation from the regional cache meta
+        mp = REPO / "data" / "cache" / preset_id / "power.meta.json"
+        elev = json.loads(mp.read_text()).get("elevation_m", 0.0) if mp.exists() else 0.0
     if meta_p.exists():
         meta = json.loads(meta_p.read_text())
         url = meta.get("url", url)
@@ -240,15 +252,32 @@ class StationPrecip:
 _ST: dict[str, StationPrecip | None] = {}
 
 
+def station_cache(preset_id: str) -> Path | None:
+    """The station cache for a field: NOAA NCEI (data/cache/<id>/ncei.parquet, CA) or, when that is absent,
+    ECCC daily climate (data/cache/<id>/eccc.parquet, BC; same columns date/station/tmax_c/tmin_c/prcp_mm)."""
+    for name in ("ncei", "eccc"):
+        p = REPO / "data" / "cache" / preset_id / f"{name}.parquet"
+        if p.exists():
+            return p
+    return None
+
+
+def station_network(preset_id: str) -> str | None:
+    """'ncei', 'eccc' or None (no station cache)."""
+    p = station_cache(preset_id)
+    return p.stem if p else None
+
+
 def load_station_precip(preset_id: str) -> StationPrecip | None:
-    """NOAA NCEI daily PRCP from the regional chunk cache, mean over its selected stations."""
+    """Station daily PRCP (NOAA NCEI, or ECCC for BC) from data/cache, mean over its selected stations."""
     if preset_id in _ST:
         return _ST[preset_id]
-    path = REPO / "data" / "cache" / preset_id / "ncei.parquet"
-    if not path.exists():
+    path = station_cache(preset_id)
+    if path is None:
         _ST[preset_id] = None
         return None
-    meta = json.loads(path.with_name("ncei.meta.json").read_text()) if path.with_name("ncei.meta.json").exists() else {}
+    meta_p = path.with_name(path.stem + ".meta.json")
+    meta = json.loads(meta_p.read_text()) if meta_p.exists() else {}
     df = pd.read_parquet(path)
     df["date"] = pd.to_datetime(df["date"])
     s = df.groupby("date")["prcp_mm"].mean()
@@ -278,11 +307,12 @@ _STT: dict[str, pd.DataFrame | None] = {}
 
 
 def station_temps(preset_id: str) -> pd.DataFrame | None:
-    """NOAA NCEI daily Tmax/Tmin (C), mean over the regional chunk's selected stations that report both that day."""
+    """Station daily Tmax/Tmin (C; NOAA NCEI, or ECCC for BC), mean over the selected stations that report both
+    that day."""
     if preset_id in _STT:
         return _STT[preset_id]
-    path = REPO / "data" / "cache" / preset_id / "ncei.parquet"
-    if not path.exists():
+    path = station_cache(preset_id)
+    if path is None:
         _STT[preset_id] = None
         return None
     df = pd.read_parquet(path)

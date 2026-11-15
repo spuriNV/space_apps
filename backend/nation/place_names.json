@@ -1,0 +1,10 @@
+{
+ "about": "Place names shown beside English names. Only names that appear on a Nation's own public page (or quoted from a Nation's staff on a partner page, as source_type says). Add names only from a Nation's own list; the app never infers or translates a name.",
+ "names": [
+  {"name": "Swawll Setatkwa", "english": "Salmon River", "nation": "Splatsin", "language": null,
+   "source_type": "quote from the Splatsin Territorial Water Manager on a Pacific Salmon Foundation page",
+   "source_url": "https://psf.ca/blog/smarter-drought-monitoring-for-salmon/",
+   "source_text": "Trail cameras on the Swawll Setatkwa (Salmon River) enabled us to watch the changing habitat conditions",
+   "approved_by_nation": false, "center": [-119.38, 50.64], "radius_km": 45}
+ ]
+}

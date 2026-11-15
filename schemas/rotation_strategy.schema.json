@@ -10,8 +10,9 @@
   },
   "properties": {
     "id": {"type": "string"},
-    "location_id": {"enum": ["car_colusa_rice", "caf_tulare_forage"]},
+    "location_id": {"type": "string", "pattern": "^((ca[rf]|bc)_[a-z0-9_]+|pt_[ns][0-9]+_[ew][0-9]+|my_[A-Za-z0-9_-]+)$"},
     "name": {"type": "string"},
+    "short_name": {"type": "string", "description": "short farmer-facing label, e.g. 'Rice + winter cover' (backend/engine build_data.py)"},
     "is_baseline": {"type": "boolean"},
     "cycle_years": {"type": "integer", "minimum": 1},
     "calendar": {
@@ -59,12 +60,12 @@
       "type": "object", "required": ["rma_share_drought", "rma_share_excess_moisture", "rma_years"],
       "properties": {"rma_share_drought": {"$ref": "#/$defs/sn"}, "rma_share_excess_moisture": {"$ref": "#/$defs/sn"},
         "rma_share_heat": {"$ref": "#/$defs/sn"}, "rma_share_other": {"$ref": "#/$defs/sn"},
-        "rma_years": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}}
+        "rma_years": {"type": "array", "items": {"type": "integer"}, "anyOf": [{"minItems": 2, "maxItems": 2}, {"maxItems": 0}], "description": "[first, last]; empty where RMA does not exist (BC)"}}
     },
     "funding": {
       "type": "array",
       "items": {"type": "object", "required": ["program", "rate_per_acre_usd", "url", "verified"],
-        "properties": {"program": {"type": "string"}, "rate_per_acre_usd": {"$ref": "#/$defs/sn"}, "url": {"type": "string"}, "verified": {"type": "boolean"}}}
+        "properties": {"program": {"type": "string"}, "rate_per_acre_usd": {"anyOf": [{"$ref": "#/$defs/sn"}, {"type": "null"}]}, "url": {"type": ["string", "null"]}, "verified": {"type": "boolean"}}}
     },
     "brief": {
       "type": "object", "required": ["why", "evidence", "benefits", "gaps", "local_review", "explainer_cards", "llm_report"],

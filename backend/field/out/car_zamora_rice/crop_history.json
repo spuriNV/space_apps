@@ -1,0 +1,365 @@
+{
+  "preset_id": "car_zamora_rice",
+  "generated_at": "2026-11-14T23:38:59+00:00",
+  "source": {
+    "id": "usda_nass_cdl",
+    "title": "USDA NASS Cropland Data Layer (via CroplandCROS image service)",
+    "url": "https://pdi.scinet.usda.gov/image/rest/services/CDL_WM/ImageServer",
+    "accessed": "2026-11-14",
+    "verified": true
+  },
+  "method": "Pixels whose centre lies inside the polygon (CDL native EPSG:5070 grid; 30 m to 2023, 10 m in 2024-2025). Majority class and its share (purity). Class names from the service raster attribute table.",
+  "first_year": 2008,
+  "last_year": 2025,
+  "by_year": {
+    "2008": "Rice",
+    "2009": "Rice",
+    "2010": "Rice",
+    "2011": "Rice",
+    "2012": "Rice",
+    "2013": "Rice",
+    "2014": "Rice",
+    "2015": "Rice",
+    "2016": "Rice",
+    "2017": "Rice",
+    "2018": "Rice",
+    "2019": "Rice",
+    "2020": "Rice",
+    "2021": "Rice",
+    "2022": "Fallow/Idle Cropland",
+    "2023": "Rice",
+    "2024": "Fallow/Idle Cropland",
+    "2025": "Rice"
+  },
+  "years": [
+    {
+      "year": 2008,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2009,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2010,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2011,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2012,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 99.1,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 99.1
+        },
+        {
+          "code": 54,
+          "name": "Tomatoes",
+          "pct": 0.9
+        }
+      ]
+    },
+    {
+      "year": 2013,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 99.8,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 99.8
+        },
+        {
+          "code": 54,
+          "name": "Tomatoes",
+          "pct": 0.2
+        }
+      ]
+    },
+    {
+      "year": 2014,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2015,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2017,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 99.5,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 99.5
+        },
+        {
+          "code": 4,
+          "name": "Sorghum",
+          "pct": 0.2
+        },
+        {
+          "code": 6,
+          "name": "Sunflower",
+          "pct": 0.2
+        }
+      ]
+    },
+    {
+      "year": 2019,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 99.8,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 99.8
+        },
+        {
+          "code": 75,
+          "name": "Almonds",
+          "pct": 0.2
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 100.0,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 100.0
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "majority_code": 61,
+      "majority_name": "Fallow/Idle Cropland",
+      "purity_pct": 99.8,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 99.8
+        },
+        {
+          "code": 6,
+          "name": "Sunflower",
+          "pct": 0.2
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 99.7,
+      "n_pixels": 657,
+      "pixel_res_m": 30.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 99.7
+        },
+        {
+          "code": 54,
+          "name": "Tomatoes",
+          "pct": 0.3
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "majority_code": 61,
+      "majority_name": "Fallow/Idle Cropland",
+      "purity_pct": 98.8,
+      "n_pixels": 5895,
+      "pixel_res_m": 10.0,
+      "top_classes": [
+        {
+          "code": 61,
+          "name": "Fallow/Idle Cropland",
+          "pct": 98.8
+        },
+        {
+          "code": 121,
+          "name": "Developed/Open Space",
+          "pct": 0.7
+        },
+        {
+          "code": 122,
+          "name": "Developed/Low Intensity",
+          "pct": 0.3
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "majority_code": 3,
+      "majority_name": "Rice",
+      "purity_pct": 98.4,
+      "n_pixels": 5895,
+      "pixel_res_m": 10.0,
+      "top_classes": [
+        {
+          "code": 3,
+          "name": "Rice",
+          "pct": 98.4
+        },
+        {
+          "code": 122,
+          "name": "Developed/Low Intensity",
+          "pct": 1.5
+        },
+        {
+          "code": 1,
+          "name": "Corn",
+          "pct": 0.0
+        }
+      ]
+    }
+  ],
+  "caveats": [
+    "CDL is a classification with per-class accuracy that varies by year and crop; purity is agreement among pixels, not accuracy.",
+    "2024-2025 CDL is 10 m, so pixel counts are ~9x those of earlier years."
+  ]
+}

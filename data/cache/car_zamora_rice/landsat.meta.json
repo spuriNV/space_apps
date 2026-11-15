@@ -1,0 +1,137 @@
+{
+  "dataset": "landsat",
+  "url": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/landsat-c2-l2",
+  "params": {
+    "collection": "landsat-c2-l2",
+    "datetime": "2016-01-01/2026-11-15",
+    "intersects": "polygons/car_zamora_rice.geojson",
+    "bands": {
+      "blue": "blue",
+      "green": "green",
+      "red": "red",
+      "nir": "nir08",
+      "swir1": "swir16"
+    },
+    "mask": "qa_pixel",
+    "clear_rule": "QA_PIXEL (bit6 clear or bit7 water) and not bits 0,1,3,4,5; Tier 1 only",
+    "dedupe": "one row per date (S2) / per date+platform (Landsat), keeping most valid pixels"
+  },
+  "fetched_at": "2026-11-15T00:10:34+00:00",
+  "footprint_geojson": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -121.84848731557084,
+          38.88042936377741
+        ],
+        [
+          -121.8530663223231,
+          38.88041584210439
+        ],
+        [
+          -121.85306967034415,
+          38.876457698083044
+        ],
+        [
+          -121.85306421667208,
+          38.87442510536275
+        ],
+        [
+          -121.85306721884174,
+          38.86807121495164
+        ],
+        [
+          -121.85306091805835,
+          38.86703998112839
+        ],
+        [
+          -121.85300271082119,
+          38.86686655532656
+        ],
+        [
+          -121.85294992491679,
+          38.86683027288758
+        ],
+        [
+          -121.84938997331103,
+          38.86679525011161
+        ],
+        [
+          -121.84869647211508,
+          38.866776493373706
+        ],
+        [
+          -121.84863491146697,
+          38.866811650450295
+        ],
+        [
+          -121.84861393850002,
+          38.86952944233162
+        ],
+        [
+          -121.84859899233034,
+          38.87140089958822
+        ],
+        [
+          -121.84857786395486,
+          38.87318288876502
+        ],
+        [
+          -121.84856678772739,
+          38.87528684245367
+        ],
+        [
+          -121.84857278308361,
+          38.87727771430615
+        ],
+        [
+          -121.84854741016841,
+          38.87743243840682
+        ],
+        [
+          -121.8485076543272,
+          38.87753337540984
+        ],
+        [
+          -121.8484678993843,
+          38.877634311570205
+        ],
+        [
+          -121.84847523862018,
+          38.87954175027511
+        ],
+        [
+          -121.84848731557084,
+          38.88042936377741
+        ]
+      ]
+    ]
+  },
+  "native_res_m": 30,
+  "timestep": "per scene (irregular)",
+  "units": {
+    "ndvi": "unitless",
+    "ndwi": "unitless",
+    "bsi": "unitless",
+    "clear_frac": "fraction of polygon pixels"
+  },
+  "fill_value": "NaN",
+  "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
+  "n_items_found": 477,
+  "n_rows_raw": 475,
+  "n_rows": 475,
+  "duplicates_dropped": 0,
+  "errors": [
+    {
+      "scene_id": "LC08_L2SP_044033_20221103_02_T1",
+      "error": "read failed https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/oli-tirs/2022/044/033/LC08_L2SP_044033_20221103_20221114_02_T1/LC08_L2SP_044033_20221103_20221114_02_T1_SR_B6.TIF: '/vsicurl/https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/oli-tirs/2022/044/0"
+    },
+    {
+      "scene_id": "LC09_L2SP_044033_20220519_02_T1",
+      "error": "read failed https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/oli-tirs/2022/044/033/LC09_L2SP_044033_20220519_20220521_02_T1/LC09_L2SP_044033_20220519_20220521_02_T1_SR_B3.TIF: '/vsicurl/https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/oli-tirs/2022/044/0"
+    }
+  ],
+  "seconds": 332,
+  "ndvi_out_of_range_dropped": []
+}

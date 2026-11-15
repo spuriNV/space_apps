@@ -6,10 +6,25 @@ import requests
 ROOT = Path(__file__).resolve().parents[3]
 CACHE = ROOT / "data" / "cache"
 OUT = Path(__file__).resolve().parents[1] / "out"
-PRESETS = {
-    "car_colusa_rice": {"lat": 39.15, "lon": -122.10, "counties": [("06011", "Colusa")]},
-    "caf_tulare_forage": {"lat": 36.20, "lon": -119.60, "counties": []},  # filled by county lookup
-}
+# Field list from backend/fields/registry.json (FIELDSHIFT_FIELDS limits it). lat/lon = point for POWER and the NOAA
+# station search: the spec centre for the original two, the polygon centroid for the others.
+import sys as _sys
+_sys.path.insert(0, str(ROOT / "backend" / "fields"))
+import fieldreg  # noqa: E402
+PRESETS = {}
+for _id in fieldreg.selected():
+    _f = fieldreg.get(_id)
+    _lon, _lat = fieldreg.point(_id)
+    PRESETS[_id] = {"lat": _lat, "lon": _lon, "counties": [(_f["county"]["fips"], _f["county"]["name"])],
+                    "usdm_counties": _f["usdm_counties"], "reservoirs": _f["reservoirs"],
+                    "ncei_stations": _f.get("ncei_stations"), "family": _f["family"]}
+
+
+def power_cell(lat, lon):
+    """POWER point requests return the containing MERRA-2 cell (0.5 deg lat x 0.625 deg lon); fields in the same
+    cell get identical series, so the series is fetched once per cell."""
+    import math
+    return (math.floor((lat + 90) / 0.5), math.floor((lon + 180) / 0.625))
 UA = {"User-Agent": "field-shift-hackathon/0.1 (regional data fetch)"}
 
 def now():

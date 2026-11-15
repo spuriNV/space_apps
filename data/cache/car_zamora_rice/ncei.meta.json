@@ -1,0 +1,260 @@
+{
+ "url": "https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USC00049781%2CUSC00041112%2CUSC00045385%2CUSC00041948%2CUSC00042294%2CUSC00049677%2CUSC00049742%2CUSC00044712%2CUSW00023208%2CUSW00093216%2CUSC00045360%2CUSW00023232&startDate=1981-01-01&endDate=2026-11-14&dataTypes=PRCP%2CTMAX%2CTMIN&units=metric&includeStationName=true&includeStationLocation=true&format=csv",
+ "search_url": "https://www.ncei.noaa.gov/access/services/search/v1/data",
+ "params": {
+  "dataset": "daily-summaries",
+  "stations": [
+   "USC00049781",
+   "USC00041948",
+   "USC00042294"
+  ],
+  "startDate": "1981-01-01",
+  "endDate": "2026-11-14",
+  "dataTypes": "PRCP,TMAX,TMIN",
+  "units": "metric"
+ },
+ "fetched_at": "2026-11-14T23:51:15Z",
+ "timestep": "daily (local station time, observation-day convention varies by station; compare monthly or +/-1 day)",
+ "units": {
+  "prcp_mm": "mm",
+  "tmax_c": "degC",
+  "tmin_c": "degC"
+ },
+ "fill_value": "blank/absent rows -> NaN",
+ "native_res": "point stations",
+ "native_res_m": null,
+ "auth": "none",
+ "selected_stations": [
+  {
+   "station": "USC00049781",
+   "name": "WOODLAND 1 WNW, CA US",
+   "lat": 38.6829,
+   "lon": -121.794,
+   "dist_km": 21.7757,
+   "first_date": "1906-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.917,
+    "TMAX": 0.939,
+    "TMIN": 0.938
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2024-10-22"
+  },
+  {
+   "station": "USC00041948",
+   "name": "COLUSA 2 SSW, CA US",
+   "lat": 39.1875,
+   "lon": -122.0269,
+   "dist_km": 38.068,
+   "first_date": "1948-10-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.883,
+    "TMAX": 0.959,
+    "TMIN": 0.932
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00042294",
+   "name": "DAVIS 2 WSW EXPERIMENTAL FARM, CA US",
+   "lat": 38.5349,
+   "lon": -121.7761,
+   "dist_km": 38.2222,
+   "first_date": "1893-01-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.993,
+    "TMAX": 0.982,
+    "TMIN": 0.978
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  }
+ ],
+ "all_candidates_checked_nearest_12": [
+  {
+   "station": "USC00049781",
+   "name": "WOODLAND 1 WNW, CA US",
+   "lat": 38.6829,
+   "lon": -121.794,
+   "dist_km": 21.7757,
+   "first_date": "1906-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.917,
+    "TMAX": 0.939,
+    "TMIN": 0.938
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2024-10-22"
+  },
+  {
+   "station": "USC00041112",
+   "name": "BROOKS FARNHAM RANCH, CA US",
+   "lat": 38.7667,
+   "lon": -122.15,
+   "dist_km": 28.5193,
+   "first_date": "1921-07-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.093,
+    "TMAX": 0.091,
+    "TMIN": 0.091
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "1985-11-30"
+  },
+  {
+   "station": "USC00045385",
+   "name": "MARYSVILLE, CA US",
+   "lat": 39.1458,
+   "lon": -121.5852,
+   "dist_km": 37.979,
+   "first_date": "1897-02-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.566,
+    "TMAX": 0.524,
+    "TMIN": 0.523
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2007-10-31"
+  },
+  {
+   "station": "USC00041948",
+   "name": "COLUSA 2 SSW, CA US",
+   "lat": 39.1875,
+   "lon": -122.0269,
+   "dist_km": 38.068,
+   "first_date": "1948-10-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.883,
+    "TMAX": 0.959,
+    "TMIN": 0.932
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00042294",
+   "name": "DAVIS 2 WSW EXPERIMENTAL FARM, CA US",
+   "lat": 38.5349,
+   "lon": -121.7761,
+   "dist_km": 38.2222,
+   "first_date": "1893-01-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.993,
+    "TMAX": 0.982,
+    "TMIN": 0.978
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  },
+  {
+   "station": "USC00049677",
+   "name": "WILLIAMS, CA US",
+   "lat": 39.15,
+   "lon": -122.15,
+   "dist_km": 40.1546,
+   "first_date": "1906-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.14,
+    "TMAX": 0.138,
+    "TMIN": 0.139
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "1988-10-31"
+  },
+  {
+   "station": "USC00049742",
+   "name": "WINTERS, CA US",
+   "lat": 38.5252,
+   "lon": -121.9777,
+   "dist_km": 40.2811,
+   "first_date": "1906-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.977,
+    "TMAX": 1.0,
+    "TMIN": 1.0
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-09"
+  },
+  {
+   "station": "USC00044712",
+   "name": "LAKE SOLANO, CA US",
+   "lat": 38.492,
+   "lon": -122.0039,
+   "dist_km": 44.4702,
+   "first_date": "1975-08-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.989,
+    "TMAX": 0.982,
+    "TMIN": 0.989
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  },
+  {
+   "station": "USW00023208",
+   "name": "SACRAMENTO MCCLELLAN AFB, CA US",
+   "lat": 38.6667,
+   "lon": -121.4,
+   "dist_km": 45.3568,
+   "first_date": "1949-01-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.0,
+    "TMAX": 0.022,
+    "TMIN": 0.022
+   },
+   "first_obs": "2025-01-01",
+   "last_obs": "2026-11-06"
+  },
+  {
+   "station": "USW00093216",
+   "name": "BEALE AFB, CA US",
+   "lat": 39.1333,
+   "lon": -121.4333,
+   "dist_km": 46.2073,
+   "first_date": "1959-07-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.0,
+    "TMAX": 0.022,
+    "TMIN": 0.022
+   },
+   "first_obs": "2025-01-01",
+   "last_obs": "2026-11-06"
+  },
+  {
+   "station": "USC00045360",
+   "name": "MARKLEY COVE, CA US",
+   "lat": 38.4916,
+   "lon": -122.1241,
+   "dist_km": 48.657,
+   "first_date": "1970-03-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.992,
+    "TMAX": 0.989,
+    "TMIN": 0.989
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  },
+  {
+   "station": "USW00023232",
+   "name": "SACRAMENTO AIRPORT ASOS, CA US",
+   "lat": 38.5066,
+   "lon": -121.496,
+   "dist_km": 51.128,
+   "first_date": "1941-11-10",
+   "coverage_1981_2025": {
+    "PRCP": 0.999,
+    "TMAX": 0.999,
+    "TMIN": 0.999
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  }
+ ],
+ "rows": 48737,
+ "date_max": "2026-11-10",
+ "selection_rule": "nearest 3 of the 12 nearest candidate GHCN-D stations (bbox +/-0.8 deg, record starting <=1985) with >=70% daily coverage of PRCP,TMAX,TMIN over 1981-2025",
+ "footprint_geojson": null
+}

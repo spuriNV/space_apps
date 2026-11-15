@@ -1,0 +1,48 @@
+{
+  "preset_id": "car_richvale_rice",
+  "size_km": 10,
+  "centre": {
+    "lon": -121.797933,
+    "lat": 39.510775
+  },
+  "bbox_epsg32610": [
+    598338.1,
+    4369150.1,
+    608338.1,
+    4379150.1
+  ],
+  "bbox_epsg4326": [
+    -121.856821,
+    39.465117,
+    -121.738969,
+    39.556406
+  ],
+  "geometry_epsg4326": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -121.74059668978633,
+          39.46511737502561
+        ],
+        [
+          -121.73896903321082,
+          39.55520118444565
+        ],
+        [
+          -121.85534390647913,
+          39.55640573972888
+        ],
+        [
+          -121.85682143780163,
+          39.46631810292084
+        ],
+        [
+          -121.74059668978633,
+          39.46511737502561
+        ]
+      ]
+    ]
+  },
+  "note": "Square in EPSG:32610 centred on the field centroid. Registry fields are not used for training: their ML calendar reuses the model trained around the family's original field (backend/ai)."
+}

@@ -1,0 +1,135 @@
+{
+ "preset_id": "car_grimes_rice",
+ "years": [
+  2010,
+  2024
+ ],
+ "file_url_template": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip",
+ "page_url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss",
+ "layout_url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/COL_Summary_of_Business_with_Month_All_Years.pdf",
+ "grouping": {
+  "drought": [
+   "Drought",
+   "Failure of Irrigation Supply"
+  ],
+  "excess_moisture": [
+   "Excess Moisture/Precipitation/Rain",
+   "Flood",
+   "Cold Wet Weather"
+  ],
+  "heat": [
+   "Heat",
+   "Hot Wind"
+  ],
+  "other": "all remaining causes (incl. cold/frost/freeze, wind, hail, insects, disease, ARPI/SCO/ECO etc.)"
+ },
+ "profiles": {
+  "Colusa County|rice": {
+   "scope": "Colusa County",
+   "crop": "rice",
+   "commodity_names_matched": [
+    "Rice"
+   ],
+   "total_indemnity_usd": 247816321.99999997,
+   "years_with_indemnity": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2014": 18066576.0,
+    "2015": 13614100.0,
+    "2016": 346917.0,
+    "2017": 7494175.0,
+    "2018": 235628.0,
+    "2019": 4039364.0,
+    "2020": 11076268.0,
+    "2021": 21760290.000000004,
+    "2022": 145565846.0,
+    "2023": 8816343.0,
+    "2024": 16800815.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.8417,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Colusa County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.1465,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Colusa County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0049,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Colusa County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.0068,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Colusa County rice, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "Failure of Irrigation Supply": 0.8417,
+    "Excess Moisture/Precipitation/Rain": 0.1457,
+    "Heat": 0.0049,
+    "Failure of Irrigation Equipment": 0.0043,
+    "Hail": 0.0015,
+    "Cold Wet Weather": 0.0008,
+    "Other (Snow, Lightning, Etc.)": 0.0003,
+    "Wind/Excess Wind": 0.0002,
+    "Decline in Price": 0.0002,
+    "Flood": 0.0001,
+    "Plant Disease": 0.0001,
+    "Fire": 0.0,
+    "ARPI/SCO/ECO/STAX/MP/HIP-WI/PACE Crops Only": 0.0,
+    "Cold Winter": 0.0,
+    "Hot Wind": 0.0
+   },
+   "share_peril_unattributed": 0.0,
+   "caveat": "Insurance history, not a forecast."
+  }
+ }
+}

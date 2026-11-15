@@ -87,6 +87,8 @@ def build(preset):
     nr, nc = grid[2], grid[3]
     per_scene = {}
     for sid in stack.files:
+        if sid not in s2.index:   # scene dropped from s2.parquet (e.g. NDVI outside [-1, 1]); keep grid and series consistent
+            continue
         r = scene_cell_means(stack[sid].astype("float32"), info[sid]["transform"], info[sid]["epsg"], grid)
         if r is not None:
             per_scene[sid] = r

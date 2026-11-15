@@ -2,7 +2,9 @@ import json, os, sys, datetime
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 GROUND = Path(__file__).resolve().parents[1]
-PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
+sys.path.insert(0, str(ROOT / "backend" / "fields"))
+import fieldreg  # noqa: E402
+PRESETS = fieldreg.selected()   # registry fields (FIELDSHIFT_FIELDS limits the list)
 
 def load_env():
     p = ROOT / ".env"

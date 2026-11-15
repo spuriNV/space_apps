@@ -23,12 +23,18 @@ Outputs
   data/cache/<preset>/s2.parquet + s2.meta.json, landsat.parquet + landsat.meta.json
   data/cache/<preset>/rasters/s2_ndvi_stack.npz  (per-scene 10 m NDVI windows, float16, for grid.py)
 
-Usage: uv run python -m fieldshift_field.timeseries [s2|landsat|all] [preset ...] [--start YYYY-MM-DD] [--end YYYY-MM-DD]
+Scenes whose field NDVI median, p10 or p90 falls outside [-1, 1] are dropped before the per-date dedupe (a valid
+NDVI cannot leave that range; these come from near-zero or negative surface reflectance, e.g. residual cloud edges or
+haze over flooded checks). Their ids are listed in the meta file under "ndvi_out_of_range_dropped".
+`clean` applies the same filter to parquets already on disk without refetching.
+
+Usage: uv run python -m fieldshift_field.timeseries [s2|landsat|all|clean] [preset ...] [--start YYYY-MM-DD] [--end YYYY-MM-DD]
 """
 from __future__ import annotations
 
 import argparse
 import concurrent.futures as cf
+import json
 import math
 import time
 import warnings
@@ -65,9 +71,17 @@ SOURCES = {
 
 
 def search(source: str, geom4326, start: str, end: str):
-    cat = pystac_client.Client.open(MPC)
-    items = list(cat.search(collections=[SOURCES[source]["collection"]], intersects=mapping(geom4326),
-                            datetime=f"{start}/{end}").items())
+    for attempt in range(5):   # the STAC search occasionally drops mid-response; retry
+        try:
+            cat = pystac_client.Client.open(MPC)
+            items = list(cat.search(collections=[SOURCES[source]["collection"]], intersects=mapping(geom4326),
+                                    datetime=f"{start}/{end}").items())
+            break
+        except Exception as e:  # noqa: BLE001
+            print(f"  STAC search retry {attempt + 1}: {str(e)[:120]}", flush=True)
+            time.sleep(15 * (attempt + 1))
+    else:
+        raise RuntimeError(f"STAC search failed for {source}")
     if source == "landsat":
         items = [i for i in items if i.properties.get("landsat:collection_category") == "T1"
                  and i.properties.get("platform") in ("landsat-7", "landsat-8", "landsat-9")]
@@ -197,6 +211,42 @@ def process_landsat(item, preset):
     return row, None
 
 
+NDVI_STAT_COLS = ("ndvi_med", "ndvi_p10", "ndvi_p90")
+
+
+def drop_bad_ndvi(df: pd.DataFrame):
+    """(kept rows, dropped rows): drop scenes with any field NDVI statistic outside [-1, 1]. NaN (no clear pixel) is kept."""
+    v = df[list(NDVI_STAT_COLS)]
+    bad = ((v < -1) | (v > 1)).any(axis=1)
+    return df[~bad].copy(), df[bad]
+
+
+def _dropped_list(d: pd.DataFrame):
+    return [{"scene_id": r.scene_id, "date": str(r.date), "ndvi_med": round(float(r.ndvi_med), 3),
+             "ndvi_p10": round(float(r.ndvi_p10), 3), "ndvi_p90": round(float(r.ndvi_p90), 3)} for r in d.itertuples()]
+
+
+def clean(preset: str):
+    """Apply drop_bad_ndvi to existing <source>.parquet files and record the dropped scenes in the meta file."""
+    c = cache(preset)
+    for source in SOURCES:
+        p, mp = c / f"{source}.parquet", c / f"{source}.meta.json"
+        if not p.exists():
+            continue
+        df, bad = drop_bad_ndvi(pd.read_parquet(p))
+        meta = json.loads(mp.read_text()) if mp.exists() else {}
+        prev = meta.get("ndvi_out_of_range_dropped", [])
+        if bad.empty and "ndvi_out_of_range_dropped" in meta:
+            print(f"{preset} {source}: clean, nothing to drop", flush=True)
+            continue
+        if not bad.empty:
+            df.reset_index(drop=True).to_parquet(p, index=False)
+        meta["ndvi_out_of_range_dropped"] = prev + _dropped_list(bad)
+        meta["n_rows"] = len(df)
+        write_json(mp, meta)
+        print(f"{preset} {source}: dropped {len(bad)} scene(s) with NDVI outside [-1, 1]; {len(df)} rows", flush=True)
+
+
 def run(source: str, preset: str, start=None, end=None):
     cfg = SOURCES[source]
     start = start or cfg["start"]
@@ -226,6 +276,7 @@ def run(source: str, preset: str, start=None, end=None):
     df["date"] = df["datetime"].dt.strftime("%Y-%m-%d")
     df["source"] = source
     n_raw = len(df)
+    df, bad_ndvi = drop_bad_ndvi(df)
     # same acquisition can appear twice (overlapping tiles / reprocessed items): keep the one with most valid pixels
     df = df.sort_values(["date", "n_valid", "n_pixels_poly"], ascending=[True, False, False])
     dupes = df[df.duplicated("date", keep="first")]["scene_id"].tolist() if source == "s2" else []
@@ -255,6 +306,7 @@ def run(source: str, preset: str, start=None, end=None):
                                                        "clear_frac": "fraction of polygon pixels"},
         "fill_value": "NaN", "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
         "n_items_found": len(items), "n_rows_raw": n_raw, "n_rows": len(df), "duplicates_dropped": len(dupes),
+        "ndvi_out_of_range_dropped": _dropped_list(bad_ndvi),
         "errors": errors, "seconds": round(time.time() - t0),
     }
     write_json(c / f"{source}.meta.json", meta)
@@ -264,11 +316,14 @@ def run(source: str, preset: str, start=None, end=None):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("source", choices=["s2", "landsat", "all"])
+    ap.add_argument("source", choices=["s2", "landsat", "all", "clean"])
     ap.add_argument("presets", nargs="*")
     ap.add_argument("--start")
     ap.add_argument("--end")
     a = ap.parse_args()
     for p in (a.presets or list(PRESETS)):
+        if a.source == "clean":
+            clean(p)
+            continue
         for s in (["s2", "landsat"] if a.source == "all" else [a.source]):
             run(s, p, a.start, a.end)

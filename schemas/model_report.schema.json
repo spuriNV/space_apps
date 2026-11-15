@@ -30,6 +30,15 @@
         "properties": {"feature": {"type": "string"}, "importance": {"type": "number"}}}
     },
     "disagreement_with": {"type": "object", "additionalProperties": {"type": "number"}},
-    "notes": {"type": "string"}
+    "notes": {"type": "string"},
+    "location_id": {"type": "string", "description": "Field id the report belongs to."},
+    "test": {"type": "string", "description": "Named test: unseen_fields (headline), unseen_years, fallow_2022."},
+    "test_title": {"type": "string"},
+    "headline": {"type": "boolean", "description": "True for the test quoted as the headline number."},
+    "ablation": {"type": "string", "description": "Feature-ablation tag (diagnostic; not used for the calendar)."},
+    "badge": {"type": ["string", "null"], "description": "Plain-words badge, e.g. 'below target' when a check-8 threshold is missed."},
+    "checks": {"type": "object", "description": "Named check results: booleans (or null when not applicable) or nested objects."},
+    "class_order": {"type": "array", "items": {"type": "string"}, "description": "Row and column order of `confusion`."},
+    "features_dropped_no_data": {"type": "array", "items": {"type": "string"}}
   }
 }

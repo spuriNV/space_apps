@@ -1,0 +1,17 @@
+[project]
+name = "fieldshift-catalog"
+version = "0.1.0"
+description = "CropLytics farm catalog: picks ~190 real fields across California (DWR/Land IQ 2023) and BC (AAFC ACI 2025, ParcelMap BC in the ALR) and pre-builds their tier-1 payloads with backend/api/app/anyloc"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "numpy>=2.0",
+    "pyproj>=3.6",
+    "rasterio>=1.4",
+    "requests>=2.31",
+    "scipy>=1.13",
+    "shapely>=2.0",
+    "httpx>=0.27",
+]
+
+[tool.uv]
+package = false

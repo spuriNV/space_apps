@@ -1,15 +1,16 @@
 // Captures the main app (frontend/app, port 5170) at 1440x900 into design/screenshots/app/.
-// Usage: node design/tools/shoot-app.mjs [name-filter...]   e.g. overview, kings, season, compare   (starts the dev server if needed; start the API on :8000 for live data)
-// APP_URL=http://localhost:5171/ to shoot a dev server that is already running elsewhere.
+// Usage: node design/tools/shoot-app.mjs [name-filter...]   e.g. overview, kings, season, compare, bc   (starts the dev server if needed; start the API on :8000 for live data)
+// APP_URL=http://localhost:5171/ to shoot a dev server that is already running elsewhere; OUT_DIR=... to write somewhere else.
+// `motion` records panel-motion.webm: the field panel opening, switching fields, the header shrinking on scroll, More detail.
 import { chromium } from 'playwright-core';
 import { spawn } from 'node:child_process';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, renameSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(here, '..', '..');
-const OUT = join(ROOT, 'design', 'screenshots', 'app');
+const OUT = process.env.OUT_DIR ?? join(ROOT, 'design', 'screenshots', 'app');
 mkdirSync(OUT, { recursive: true });
 const BASE = process.env.APP_URL ?? 'http://localhost:5170/';
 const only = process.argv.slice(2);
@@ -22,7 +23,7 @@ if (!(await up())) {
   server = spawn('npm', ['run', 'dev'], { cwd: join(ROOT, 'frontend', 'app'), stdio: 'ignore' });
   for (let i = 0; i < 40 && !(await up()); i++) await new Promise((r) => setTimeout(r, 500));
 }
-const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--window-size=1440,900'] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 page.on('pageerror', (e) => console.log('PAGE ERROR', e.message));
 page.on('console', (m) => m.type() === 'error' && console.log('console.error', m.text().slice(0, 200)));
@@ -47,6 +48,33 @@ async function pickField(id = FIELD) {
   await idle(600);
 }
 
+if (only.includes('motion')) {
+  // a short screen video: the field panel sliding in, the readings counting up, a switch to another field (cross-fade and
+  // camera flight), the title collapsing on scroll, More detail opening
+  const dir = join(OUT, '.video');
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, recordVideo: { dir, size: { width: 1440, height: 900 } } });
+  const v = await ctx.newPage();
+  await v.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await v.waitForSelector(`[data-testid="row-${FIELD}"]`, { timeout: 90000 });
+  await v.evaluate(() => document.fonts.ready);
+  await v.waitForTimeout(1500);
+  await v.click(`[data-testid="row-${FIELD}"]`);
+  await v.waitForTimeout(3500);
+  await v.click('[data-testid="field-switch"]'); await v.waitForTimeout(600);
+  await v.click('[data-testid="switch-caf_tulare_forage"]');
+  await v.waitForTimeout(3500);
+  for (let y = 0; y <= 520; y += 40) { await v.evaluate((yy) => document.querySelector('.fpanel .panel-scroll').scrollTo(0, yy), y); await v.waitForTimeout(40); }
+  await v.waitForTimeout(800);
+  await v.click('[data-testid="field-panel"] [data-testid="more-detail"]');
+  await v.waitForTimeout(1500);
+  await v.evaluate(() => document.querySelector('.fpanel .panel-scroll').scrollTo({ top: 0, behavior: 'smooth' }));
+  await v.waitForTimeout(1200);
+  const path = await v.video().path();
+  await ctx.close();
+  renameSync(path, join(OUT, 'panel-motion.webm')); rmSync(dir, { recursive: true, force: true });
+  console.log('wrote panel-motion.webm');
+  await browser.close(); if (server) server.kill(); process.exit(0);
+}
 await open();
 if (want('overview')) await shot('overview.png');
 await pickField();
@@ -57,7 +85,7 @@ if (want('compare') || want('brief')) {
   await page.click('[data-testid="tab-compare"]');
   await page.waitForSelector('[data-testid="compare"]');
   if (want('compare')) await shot('compare.png', false);
-  if (want('brief')) { await page.click('[data-testid="to-brief"]'); await page.waitForSelector('[data-testid="brief"]'); await shot('brief.png', false); await page.click('.br-head .sq-btn'); }
+  if (want('brief')) { await page.click('[data-testid="to-brief"]'); await page.waitForSelector('[data-testid="brief"]'); await shot('brief.png', false); await page.click('.br-head .icon-btn'); }
   await page.click('[data-testid="tab-now"]');
 }
 if (want('drilldown')) {
@@ -75,6 +103,55 @@ if (want('field-now-kings') || want('kings')) {
   await page.waitForFunction(() => window.__app?.ready, null, { timeout: 30000 });
   await page.waitForTimeout(1500);
   await shot('field-now-kings.png');
+  await page.evaluate(() => document.querySelector('[data-testid="soil-answer"]')?.scrollIntoView({ block: 'center' }));
+  await shot('field-now-kings-soil.png', false);
+}
+// British Columbia (needs an API that serves bc_salmon_river_forage): Field now, the First Nations card under More detail,
+// and the reserve outlines map layer (context only)
+if ((want('bc') || !only.length) && (await page.evaluate(() => window.__app && document.querySelector('[data-testid="field-switch"]')))) {
+  await page.evaluate(() => window.__app.setT((2026 - 2016) * 36 + 31));
+  await page.click('[data-testid="field-switch"]');
+  const has = await page.$('[data-testid="switch-bc_salmon_river_forage"]');
+  if (!has) { console.log('  (no BC field from this API; skipping bc shots)'); await page.keyboard.press('Escape'); }
+  else {
+    await has.click();
+    await page.waitForFunction(() => window.__app?.ready, null, { timeout: 30000 });
+    await page.waitForTimeout(2500);
+    if (want('bc-field-now') || !only.length || only.includes('bc')) await shot('bc-field-now.png');
+    if (want('bc-first-nations') || !only.length || only.includes('bc')) {
+      await page.click('[data-testid="field-panel"] [data-testid="more-detail"]');
+      await page.waitForSelector('[data-testid="first-nations-detail"] h3', { timeout: 20000 }).catch(() => console.log('  (First Nations detail did not load)'));
+      await page.evaluate(() => document.querySelector('[data-testid="first-nations"]')?.scrollIntoView({ block: 'start' }));
+      await shot('bc-first-nations.png', false);
+      await page.click('[data-testid="field-panel"] [data-testid="more-detail"]');
+    }
+    if (want('bc-map-reserves') || !only.length || only.includes('bc')) {
+      await page.click('[data-testid="layers-btn"]');
+      await page.click('[data-testid="layer-reserves"]', { force: true });
+      // the soil-moisture and groundwater squares off, so the context outlines read clearly
+      for (const id of ['smap', 'grace']) await page.click(`[data-testid="layer-${id}"]`, { force: true });
+      await page.waitForTimeout(400);
+      await page.click('[data-testid="layers-btn"]');
+      await page.waitForSelector('[data-testid="reserves-legend"]', { timeout: 20000 });
+      await page.evaluate(() => window.__map.easeTo({ zoom: 10.1, duration: 0 }));
+      await shot('bc-map-reserves.png');
+    }
+  }
+}
+// Tap anywhere (needs an API with GET /api/analyze, e.g. APP_URL pointing at a build that talks to the Render API):
+// a tap on open map near Colusa drops a pin and opens the "Tapped spot" panel with live data
+if (only.includes('spot')) {
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => window.__map && window.__map.loaded() && document.querySelector('[data-testid="fields-panel"]'), null, { timeout: 90000 });
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => window.__map.jumpTo({ center: [-122.03, 39.19], zoom: 13.2 }));
+  await idle(400);
+  const pt = await page.evaluate(() => window.__map.project([-122.0276, 39.1894]));
+  await page.mouse.click(pt.x, pt.y);
+  await page.waitForSelector('[data-testid="spot-label"]', { timeout: 10000 });
+  await page.waitForFunction(() => window.__app?.ready && document.querySelector('.fpanel .m-val'), null, { timeout: 90000 }).catch(() => console.log('  (spot data did not arrive)'));
+  await page.waitForTimeout(2500);
+  await shot('spot-tapped.png');
 }
 if (want('phone')) {
   const ph = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });

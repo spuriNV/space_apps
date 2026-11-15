@@ -1,0 +1,64 @@
+{
+ "url": "https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=SHA%2CORO%2CPNF%2CEXC%2CSCC%2CSNL%2CTRM&SensorNums=15&dur_code=D&Start=2015-01-01&End=2025-12-31",
+ "params": {
+  "Stations": "SHA,ORO,PNF,EXC,SCC,SNL,TRM",
+  "SensorNums": 15,
+  "dur_code": "D",
+  "Start": "2015-01-01",
+  "End": "2025-12-31"
+ },
+ "fetched_at": "2026-11-14T23:40:25Z",
+ "timestep": "daily",
+ "units": {
+  "storage_af": "acre-feet"
+ },
+ "native_res_m": null,
+ "native_res": "point (reservoir gauge)",
+ "fill_value": "missing values returned as non-numeric strings or <=0; set to NaN",
+ "n_missing_or_nonpositive": 32,
+ "auth": "none",
+ "stations": {
+  "SHA": {
+   "rows": 4018,
+   "date_min": "2015-01-01",
+   "date_max": "2025-12-31",
+   "n_missing": 0
+  },
+  "ORO": {
+   "rows": 4018,
+   "date_min": "2015-01-01",
+   "date_max": "2025-12-31",
+   "n_missing": 1
+  },
+  "PNF": {
+   "rows": 4018,
+   "date_min": "2015-01-01",
+   "date_max": "2025-12-31",
+   "n_missing": 7
+  },
+  "SCC": {
+   "rows": 4018,
+   "date_min": "2015-01-01",
+   "date_max": "2025-12-31",
+   "n_missing": 10
+  }
+ },
+ "field_reservoirs": [
+  "SCC"
+ ],
+ "sensor": {
+  "number": 15,
+  "type": "STORAGE",
+  "units": "AF",
+  "verified_live": true,
+  "also_seen": "sensor 6 = RES ELE (feet)"
+ },
+ "station_names": {
+  "SHA": "Shasta",
+  "ORO": "Oroville",
+  "PNF": "Pine Flat",
+  "SCC": "Success"
+ },
+ "notes": "Rows keyed on the 'date' field of the response (for some records obsDate is a day later). Reservoir capacity not fetched here; use relative comparisons only.",
+ "footprint_geojson": null
+}

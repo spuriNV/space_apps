@@ -1,0 +1,51 @@
+{
+ "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MAX%2CT2M_MIN%2CRH2M%2CWS2M%2CALLSKY_SFC_SW_DWN%2CPRECTOTCORR&community=AG&longitude=-119.296995&latitude=36.038361&start=19810101&end=20261114&format=JSON",
+ "params": {
+  "parameters": "T2M,T2M_MAX,T2M_MIN,RH2M,WS2M,ALLSKY_SFC_SW_DWN,PRECTOTCORR",
+  "community": "AG",
+  "longitude": -119.296995,
+  "latitude": 36.038361,
+  "start": "19810101",
+  "end": "20261114",
+  "format": "JSON"
+ },
+ "fetched_at": "2026-11-14T23:39:59Z",
+ "timestep": "daily",
+ "time_standard": "LST",
+ "units": {
+  "T2M": "C",
+  "T2M_MAX": "C",
+  "T2M_MIN": "C",
+  "RH2M": "%",
+  "WS2M": "m/s",
+  "ALLSKY_SFC_SW_DWN": "MJ/m^2/day",
+  "PRECTOTCORR": "mm/day"
+ },
+ "native_res": "0.5 deg lat x 0.625 deg lon (MERRA-2 / SYN1DEG); point request returns the containing grid cell",
+ "native_res_m": 50000,
+ "fill_value": -999.0,
+ "n_fill_values_found": 1118,
+ "footprint_geojson": {
+  "type": "Point",
+  "coordinates": [
+   -119.297,
+   36.038
+  ]
+ },
+ "elevation_m": 106.13,
+ "sources": [
+  "MERRA2",
+  "GEOSIT",
+  "SRB",
+  "SYN1DEG",
+  "FLASHFLUX",
+  "POWER"
+ ],
+ "api_version": "v2.10.3",
+ "auth": "none",
+ "rows": 16751,
+ "date_min": "1981-01-01",
+ "date_max": "2026-11-11",
+ "missing_note": "ALLSKY_SFC_SW_DWN is -999 (NaN here) for 1981-01-01..1983-12-31 (1095 days); all other parameters complete.",
+ "caveat": "PRECTOTCORR is MERRA-2 gauge-corrected reanalysis on a ~50 km grid; coarse for convective/extreme rain."
+}

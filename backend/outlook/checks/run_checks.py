@@ -15,16 +15,20 @@ def walk(o, path=""):
     elif isinstance(o, list):
         for i, v in enumerate(o): yield from walk(v, f"{path}[{i}]")
 age = lambda d: (TODAY - dt.date.fromisoformat(str(d)[:10])).days
-for pid in ("car_colusa_rice", "caf_tulare_forage"):
+sys.path.insert(0, str(OUT.parents[2] / "backend" / "fields"))
+import fieldreg  # noqa: E402
+for pid in fieldreg.selected():   # every registry field
     f = OUT / pid / "outlook.json"
     if not f.exists(): chk(f"{pid} outlook.json exists", False); continue
-    o = json.loads(f.read_text()); p = pid[:3]
+    o = json.loads(f.read_text()); p = pid[:3] if fieldreg.is_original(pid) else pid
     chk(f"{p} label outlook-not-forecast", "not a forecast" in o["label"].lower() and "not a forecast" in o["plain_language_summary"].lower())
     # dates
     dm = o["drought"]["us_drought_monitor"]; chk(f"{p} USDM map within 21 days", age(dm["map_date"]) <= 21, f"{dm['map_date']} ({age(dm['map_date'])} d)")
     for s, r in o["reservoirs_now"].items():
         chk(f"{p} CDEC {s} latest daily within 21 days", age(r["latest_daily_date"]) <= 21, r["latest_daily_date"])
         st, cap = r["storage_af"]["value"], r["capacity_af"]["value"]
+        if st is None or cap is None or r["cdec_average_storage_af"]["value"] is None:
+            print("INFO", f"{p} {s} not in the CDEC RES summary (no capacity / average); daily storage only"); continue
         chk(f"{p} {s} storage within 0..capacity", 0 < st <= cap, f"{st:,.0f} / {cap:,.0f}")
         chk(f"{p} {s} % of average consistent (+/-1.5)", abs(100 * st / r["cdec_average_storage_af"]["value"] - r["pct_of_cdec_average"]["value"]) <= 1.5)
     sw = o["snowpack_runoff"]["snow_now_statewide"]; chk(f"{p} snow report within 21 days", age(dt.datetime.strptime(sw["report_date"], "%B %d, %Y").date()) <= 21, sw["report_date"])

@@ -1,5 +1,6 @@
 // Compact field timeline: scrub the date, play a season, jump to events. Drives map + Field now.
-import { useEffect, useRef } from 'react';
+// The play clock lives in App (one interval); this bar only scrubs and shows the sim banner.
+import { useRef } from 'react';
 import type { Calendar, CoverClass, FieldEvent } from '../../types';
 import { CLASS_COLOR, MONTHS, T_MAX, TODAY_T, dateToT, dekadOf, lastDataT, tLabel, tOf, yearOf } from '../../lib';
 import Icon from '../Icons';
@@ -25,8 +26,6 @@ export function FieldTimeline(p: {
   sim: SimMode;
 }) {
   const track = useRef<HTMLDivElement>(null);
-  const tRef = useRef(p.t);
-  tRef.current = p.t;
   const y = yearOf(p.t), d = dekadOf(p.t);
   const last = p.cal ? yearOf(lastDataT(p.cal)) : yearOf(TODAY_T);
   const yearRow = p.cal?.years.find((x) => x.year === y);
@@ -35,16 +34,6 @@ export function FieldTimeline(p: {
   const tMax = p.sim ? tOf(p.sim.year, 35) : Math.min(T_MAX, TODAY_T);
   const span = Math.max(1, tMax - tMin);
   const pct = ((Math.min(tMax, Math.max(tMin, p.t)) - tMin) / span) * 100;
-
-  useEffect(() => {
-    if (!p.playing) return;
-    const h = setInterval(() => {
-      const next = tRef.current + 1;
-      if (next > tMax) { p.setPlaying(false); p.setT(tMax); return; }
-      p.setT(next);
-    }, p.sim ? 160 : 220);
-    return () => clearInterval(h);
-  }, [p.playing, tMax, p.sim]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const scrub = (clientX: number) => {
     const el = track.current;

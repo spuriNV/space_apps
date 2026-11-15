@@ -8,11 +8,19 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from .myfields import router as myfields_router  # user-drawn fields (app/myfields); my_* ids only
+from .nation import router as nation_router  # Nation tools (app/nation): /api/locations/{pid}/nation/*
+from .week import router as week_router  # this week + reach (app/week)
+from .anyloc import router as anyloc_router  # analyse any tapped point (app/anyloc); pt_* ids only
 
 ROOT = Path(os.environ.get("FIELDSHIFT_ROOT", Path(__file__).resolve().parents[3]))
 FIX = ROOT / "fixtures"
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # backend/api, for nasa_build
-PRESETS = ["bsr_salmon_forage"]  # BC Salmon River forage (illustrative); CA presets remain on disk
+sys.path.insert(0, str(ROOT / "backend" / "fields"))
+import fieldreg  # noqa: E402  field registry (backend/fields/registry.json)
+from .sanitize import sanitize  # noqa: E402  internal markers out of user-facing text, repo-path links -> public pages
+
+PRESETS = fieldreg.ids(region=None)   # every registry field of every region; the original two first
 LAYERS = ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly", "usdm_d2_weeks", "reservoir_storage"]
 DEFAULT_W = {"water_use": 1, "forage_value": 1, "n_fixation": 1, "erosion": 1, "organic_matter": 1, "market": 1,
              "pest_break": 0, "infiltration": 0, "n_scavenging": 0, "income": 0}
@@ -26,11 +34,14 @@ LOOKUP = {
     "models": ["data/cache/{p}/models.json", "backend/ai/out/{p}/models.json", "backend/field/out/{p}/models.json"],
     "zones": ["backend/api/out/{p}/zones.json", "data/cache/{p}/zones.json", "backend/field/out/{p}/zones.json"],
     "trends": ["backend/api/out/{p}/trends_{l}.json", "backend/regional/out/{p}/trends_{l}.json", "data/cache/{p}/trends_{l}.json"],
-    "news": ["backend/news/out/{p}.json", "data/cache/{p}/news.json"],
+    "news": ["backend/news/out/{p}.json", "data/cache/{p}/news.json", "backend/news/out/{t}.json"],  # {t}: family template
     "validation": ["backend/api/out/{p}/validation.json", "backend/regional/out/{p}/validation.json", "backend/field/out/{p}/validation.json", "data/cache/{p}/validation.json"],
     "bc_news": ["backend/news/out/bc_opener.json", "backend/news/out/bc_news.json", "data/cache/bc/news.json"],
     "bc_signal": ["backend/api/out/bc_signal.json", "backend/regional/out/bc_signal.json", "data/cache/bc/signal.json"],
-    "glossary": ["backend/engine/out/glossary.json", "data/cache/glossary.json"],
+    "glossary": ["backend/api/glossary.json", "backend/engine/out/glossary.json", "data/cache/glossary.json"],
+    "insurance": ["backend/ground/out/{p}/rma_profile.json"],
+    "stress": ["backend/ai/out/{p}/stress_weekly.json"],
+    "water_seen": ["backend/api/out/{p}/water_seen.json"],
     "crop": ["backend/engine/out/crops/{c}.json"],
     "calendar": ["backend/field/out/{p}/calendar.json"],
     "calendar_hls": ["backend/nasa/out/{p}/calendar_hls.json"],
@@ -38,8 +49,9 @@ LOOKUP = {
     "crop_history": ["backend/field/out/{p}/crop_history.json"],
     "grid": ["backend/field/out/{p}/grid.geojson"],
     "calendar_ml": ["backend/ai/out/{p}/calendar_ml.json"],
+    "transitions": ["backend/ai/out/{p}/transitions.json"],
     "outlook": ["backend/outlook/out/{p}/outlook.json"],
-    "first_nations": ["backend/api/out/{p}/first_nations.json", "data/cache/{p}/first_nations.json"],
+    "first_nations": ["backend/api/out/{p}/first_nations.json"],
 }
 FIXTURE = {
     "location": "{p}/location.json", "daily": "{p}/daily.json", "features_weekly": "{p}/features_weekly.json",
@@ -56,6 +68,13 @@ except Exception:  # noqa: BLE001
 app = FastAPI(title="Field Shift API", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
                    allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Data-Source"])
+app.include_router(nation_router)  # before anyloc: its pt_* catch-all would 404 the /nation routes
+app.include_router(week_router)  # before anyloc: its pt_* catch-all would swallow /this_week
+app.include_router(anyloc_router)  # before the preset routes: /api/analyze and /api/locations/pt_* (other ids fall through)
+app.include_router(myfields_router)  # my_* ids and /api/my-fields
+from .week import register_resolver as _week_register  # noqa: E402
+from .myfields import week_resolver as _my_week_resolver  # noqa: E402
+_week_register(_my_week_resolver)  # this_week for my_* ids
 
 
 def _read(path: Path) -> Any:
@@ -65,7 +84,7 @@ def _read(path: Path) -> Any:
 def resolve(kind: str, p: str | None = None, l: str | None = None, c: str | None = None, key: str | None = None):
     """Return (payload_dict, 'real'|'fixture'). Bare lists in real files are wrapped as {"items": [...]}.
     If a real file is a dict keyed by crop id (crops.json), `key` selects the entry."""
-    fmt = dict(p=p, l=l, c=c)
+    fmt = dict(p=p, l=l, c=c, t=fieldreg.template(p) if p and fieldreg.has(p) else p)
     for rel in LOOKUP[kind]:
         f = ROOT / rel.format(**fmt)
         if f.is_file():
@@ -84,7 +103,7 @@ def resolve(kind: str, p: str | None = None, l: str | None = None, c: str | None
                 if isinstance(it, dict) and it.get("id") == c:
                     return it, "real"
     f = FIX / FIXTURE[kind].format(**fmt)
-    if not f.is_file():
+    if not f.is_file() or (p and fieldreg.has(p) and not fieldreg.is_original(p) and "{p}" in FIXTURE[kind]):
         raise HTTPException(404, f"no data for {kind} {fmt}")
     return _read(f), "fixture"
 
@@ -104,17 +123,56 @@ def normalize_strategies(d: dict) -> dict:
 
 
 def send(resp: Response, data: dict, src: str):
+    """Every route returns through here. Real and estimate payloads are sanitized (app/sanitize.py): internal markers such as
+    "(U)", "(V)" and "spec B11" are stripped from user-facing text, and repo-path source links become the dataset's public page
+    or carry `internal: true`. `method` / `verified` are untouched, so the data status still comes from them. Fixtures are
+    served as written (dev placeholders whose "(U)" marks them as such)."""
     resp.headers["X-Data-Source"] = src
     data = dict(data)
     data["_source"] = src
     if src == "real":
         data.pop("_fixture", None)
+    if src != "fixture":
+        data = sanitize(data)
     return data
 
 
 def check_preset(pid: str):
     if pid not in PRESETS:
         raise HTTPException(404, f"unknown location {pid}; known: {PRESETS}")
+
+
+# California-only outputs -> the registry's not_available key that explains the gap for a field outside California
+REGION_GAPS = {"openet": "openet", "insurance": "insurance", "outlook": "outlook", "usdm_d2_weeks": "outlook", "reservoir_storage": "sgma",
+               "calendar_ml": "ml_calendar", "stress": "ml_calendar", "transitions": "ml_calendar", "models": "ml_calendar", "water_seen": None}
+# Outside California these outputs are estimates in the California shape (backend/bc/estimates.py, via backend/bc/build_api.py),
+# served from backend/api/out/<id>/<file> with `_source: "estimate"` and X-Data-Source: estimate.
+ESTIMATE_FILE = {"openet": "openet.json", "insurance": "insurance.json", "outlook": "outlook.json", "calendar_ml": "calendar_ml.json",
+                 "stress": "stress.json", "transitions": "transitions.json", "models": "models.json", "water_seen": "water_seen.json",
+                 "usdm_d2_weeks": "trends_usdm_d2_weeks.json", "reservoir_storage": "trends_reservoir_storage.json"}
+
+
+def is_estimate(kind: str, pid: str) -> bool:
+    """True when `kind` is a California-only output and `pid` is a field outside California (its payload is an estimate)."""
+    return kind in REGION_GAPS and fieldreg.region(pid) != "ca"
+
+
+def _estimate(kind: str, pid: str) -> dict | None:
+    f = ROOT / "backend" / "api" / "out" / pid / ESTIMATE_FILE[kind]
+    return _read(f) if is_estimate(kind, pid) and f.is_file() else None
+
+
+def region_gap(kind: str, pid: str):
+    """For a California-only output asked of a field outside California: fine when its estimate is built, else
+    404 "not available in BC: <registry reason>"."""
+    if is_estimate(kind, pid) and _estimate(kind, pid) is None:
+        reg = fieldreg.region(pid)
+        why = (fieldreg.get(pid).get("not_available") or {}).get(REGION_GAPS[kind] or "")
+        raise HTTPException(404, f"{kind} not available in {reg.upper()}" + (f": {why}" if why else ""))
+
+
+def src_of(kind: str, pid: str) -> str:
+    return "estimate" if is_estimate(kind, pid) else "real"
 
 
 def filter_dates(data: dict, key: str, frm: str | None, to: str | None, field: str = "date"):
@@ -129,19 +187,33 @@ def health():
 
 
 @app.get("/api/locations")
-def locations(resp: Response):
+def locations(resp: Response, family: str | None = Query(None, pattern="^(rice|forage)$"), county: str | None = None,
+              region: str | None = Query(None, pattern="^(ca|bc)$")):
+    """Every registry field (backend/fields/registry.json). ?family=rice|forage and ?county=<name or FIPS> filter the list;
+    `facets` counts all fields by family and county so a picker can build its filters."""
     items, srcs = [], []
-    for p in PRESETS:
-        d, s = resolve("location", p)
-        items.append({k: v for k, v in d.items() if k not in ("_fixture", "_source")}); srcs.append(s)
-    src = "real" if all(s == "real" for s in srcs) else "fixture"
-    out = {"items": items, "_fixture": True} if src == "fixture" else {"items": items}
+    for f in fieldreg.fields(family, county, region=region):
+        try:
+            d, s = resolve("location", f["id"])
+        except HTTPException:   # registry field whose payload is not built yet: skip it rather than fail the list
+            continue
+        items.append({"region": f.get("region", "ca"), **{k: v for k, v in d.items() if k not in ("_fixture", "_source")}}); srcs.append(s)
+    src = "real" if srcs and all(s == "real" for s in srcs) else "fixture"
+    fam, cty, rgn = {}, {}, {}
+    for f in fieldreg.fields(region=None):
+        rgn[f.get("region", "ca")] = rgn.get(f.get("region", "ca"), 0) + 1
+        fam[f["family"]] = fam.get(f["family"], 0) + 1
+        cty[f["county"]["name"]] = cty.get(f["county"]["name"], 0) + 1
+    out = {"items": items, "count": len(items), "filters": {"family": family, "county": county, "region": region},
+           "facets": {"family": fam, "county": dict(sorted(cty.items())), "region": rgn}}
+    if src == "fixture":
+        out["_fixture"] = True
     return send(resp, out, src)
 
 
 @app.get("/api/locations/{pid}")
 def location(pid: str, resp: Response):
-    check_preset(pid); d, s = resolve("location", pid); return send(resp, d, s)
+    check_preset(pid); d, s = resolve("location", pid); d.setdefault("region", fieldreg.region(pid)); return send(resp, d, s)
 
 
 @app.get("/api/locations/{pid}/daily")
@@ -274,7 +346,10 @@ def score(pid: str, req: ScoreRequest, resp: Response):
 
 @app.get("/api/locations/{pid}/models")
 def models(pid: str, resp: Response):
-    check_preset(pid); d, s = resolve("models", pid); return send(resp, d, s)
+    check_preset(pid); region_gap("models", pid)
+    if is_estimate("models", pid):
+        return send(resp, _estimate("models", pid), "estimate")
+    d, s = resolve("models", pid); return send(resp, d, s)
 
 
 @app.get("/api/locations/{pid}/zones")
@@ -287,7 +362,10 @@ def trends(pid: str, resp: Response, layer: str = "smap_anomaly", year: int | No
     check_preset(pid)
     if layer not in LAYERS:
         raise HTTPException(422, f"layer must be one of {LAYERS}")
+    region_gap(layer, pid)
     d, s = resolve("trends", pid, l=layer)
+    if is_estimate(layer, pid):
+        s = "estimate"
     if "by_year" in d:  # real files hold every year: pick one, default_year when `year` is omitted
         y = year if year is not None else d.get("default_year")
         if str(y) not in d["by_year"]:
@@ -342,6 +420,10 @@ def crop(cid: str, resp: Response):
 
 
 def _real_only(kind: str, pid: str) -> dict:
+    """The built output for `kind` (real only, no fixture); for a California-only kind outside California, its estimate."""
+    region_gap(kind, pid)
+    if is_estimate(kind, pid):
+        return _estimate(kind, pid)
     for rel in LOOKUP[kind]:
         f = ROOT / rel.format(p=pid)
         if f.is_file():
@@ -368,8 +450,12 @@ def calendar(pid: str, resp: Response, year: int | None = None, source: str = Qu
 
 @app.get("/api/locations/{pid}/openet")
 def openet(pid: str, resp: Response, from_: str | None = Query(None, alias="from"), to: str | None = None):
-    """Monthly measured actual ET (OpenET Ensemble, field polygon) from data/cache/<id>/openet.parquet. Real only."""
-    check_preset(pid)
+    """Monthly measured actual ET (OpenET Ensemble, field polygon) from data/cache/<id>/openet.parquet. Real only.
+    Outside California (no OpenET): the engine's modelled ETc in the same shape, `_source: "estimate"`."""
+    check_preset(pid); region_gap("openet", pid)
+    if is_estimate("openet", pid):
+        d = {**_estimate("openet", pid), "location_id": pid}
+        return send(resp, filter_dates(d, "rows", from_, to), "estimate")
     f = ROOT / "data" / "cache" / pid / "openet.parquet"
     if not f.is_file():
         raise HTTPException(404, f"no OpenET cache for {pid}")
@@ -413,13 +499,65 @@ def nasa_series(pid: str, resp: Response, from_: str | None = Query(None, alias=
     return send(resp, filter_dates(d, "rows", from_, to), "real")
 
 
+@app.get("/api/locations/{pid}/insurance")
+def insurance(pid: str, resp: Response):
+    """USDA RMA crop-insurance cause-of-loss profile for the county and crop (backend/ground). Real only.
+    Kept as published, including `share_peril_unattributed` (forage/alfalfa indemnity that RMA does not tie to a peril)."""
+    check_preset(pid)
+    d = _real_only("insurance", pid)
+    d["location_id"] = pid
+    return send(resp, d, src_of("insurance", pid))
+
+
+@app.get("/api/locations/{pid}/stress")
+def stress(pid: str, resp: Response):
+    """Weekly in-season crop-stress flags (backend/ai: z-score and isolation forest). Real only. Adds `summary` per crop year
+    (weeks evaluated / flagged) and any backend/ai stress summary or evaluation file that exists."""
+    check_preset(pid)
+    d = _real_only("stress", pid)
+    by = {}
+    for w in d.get("weeks", []):
+        y = by.setdefault(str(w.get("iso_year")), {"crop": w.get("crop"), "weeks": 0, "evaluated": 0, "flag_zscore": 0, "flag_iforest": 0, "water": 0})
+        y["weeks"] += 1
+        y["evaluated"] += bool(w.get("evaluated"))
+        y["flag_zscore"] += bool(w.get("flag_zscore"))
+        y["flag_iforest"] += bool(w.get("flag_iforest"))
+        y["water"] += bool(w.get("water"))
+    d["summary"] = {"by_year": by, "note": "counts of season weeks; computed by the API from `weeks`"}
+    for name in ("stress_summary", "stress_eval", "stress_evaluation"):
+        f = ROOT / "backend" / "ai" / "out" / pid / f"{name}.json"
+        if f.is_file():
+            d[name] = _read(f)
+    d["location_id"] = pid
+    return send(resp, d, src_of("stress", pid))
+
+
+@app.get("/api/locations/{pid}/water_seen")
+def water_seen(pid: str, resp: Response, from_: str | None = Query(None, alias="from"), to: str | None = None):
+    """NASA OPERA DSWx: share of the field under water per satellite scene, per-season summary and a plain-language line."""
+    check_preset(pid)
+    d = _real_only("water_seen", pid)
+    d["location_id"] = pid
+    return send(resp, filter_dates(d, "scenes", from_, to), src_of("water_seen", pid))
+
+
 @app.get("/api/locations/{pid}/calendar_ml")
 def calendar_ml(pid: str, resp: Response):
     """ML detector calendar (backend/ai), same shape as /calendar. Real only."""
     check_preset(pid)
     d = _real_only("calendar_ml", pid)
     d["location_id"] = pid
-    return send(resp, d, "real")
+    return send(resp, d, src_of("calendar_ml", pid))
+
+
+@app.get("/api/locations/{pid}/transitions")
+def transitions(pid: str, resp: Response):
+    """Green-up, harvest and cutting dates per detector method (backend/ai transitions.json). Real only, 404 if not built."""
+    check_preset(pid)
+    d = _real_only("transitions", pid)
+    if isinstance(d, dict):
+        d["location_id"] = pid
+    return send(resp, d, src_of("transitions", pid))
 
 
 @app.get("/api/locations/{pid}/outlook")
@@ -428,7 +566,7 @@ def outlook(pid: str, resp: Response):
     check_preset(pid)
     d = _real_only("outlook", pid)
     d["location_id"] = pid
-    return send(resp, d, "real")
+    return send(resp, d, src_of("outlook", pid))
 
 
 @app.get("/api/locations/{pid}/grid")
@@ -449,11 +587,36 @@ def grid(pid: str, resp: Response, layer: list[str] | None = Query(None)):
 
 @app.get("/api/locations/{pid}/first_nations")
 def first_nations(pid: str, resp: Response):
-    """First Nations context for the BC Salmon River example. Public facts only; nothing speaks for a Nation."""
+    """First Nations context for a BC field (backend/bc/build_api.py, facts from docs/bc-first-nations.md). 404 for California."""
     check_preset(pid)
-    if not (pid.startswith("bsr_") or pid.startswith("bc_")):
+    if fieldreg.region(pid) != "bc":
         raise HTTPException(404, "First Nations context is built for the BC example field only")
     d = _real_only("first_nations", pid)
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/salmon")
+def salmon(pid: str, resp: Response):
+    """Salmon and the field (backend/bc/salmon.py; schema schemas/salmon.schema.json): Salmon River flow and temperature,
+    run timing, a spring early-warning table and each rotation's Aug-Sep irrigation draw. BC example field only."""
+    check_preset(pid)
+    f = ROOT / "backend" / "api" / "out" / pid / "salmon.json"
+    if fieldreg.region(pid) != "bc" or not f.is_file():
+        raise HTTPException(404, "Salmon context is built for the BC example field only (bc_salmon_river_forage)")
+    return send(resp, _read(f), "real")
+
+
+@app.get("/api/locations/{pid}/first_nations/reserves.geojson")
+def first_nations_reserves(pid: str, resp: Response):
+    """Nearby reserve outlines (BC CLSS layer, ~20 km), for the map as context only. BC fields only."""
+    check_preset(pid)
+    f = ROOT / "data" / "cache" / pid / "reserves_nearby.geojson"
+    if fieldreg.region(pid) != "bc":
+        raise HTTPException(404, "First Nations context is built for the BC example field only")
+    if not f.is_file():
+        raise HTTPException(404, f"no reserves_nearby.geojson for {pid} (run backend/bc/fetch_reserves.py)")
+    d = _read(f)
+    d["location_id"] = pid
     return send(resp, d, "real")
 
 

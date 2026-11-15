@@ -1,0 +1,48 @@
+{
+  "preset_id": "caf_newman_forage",
+  "size_km": 10,
+  "centre": {
+    "lon": -121.004591,
+    "lat": 37.361966
+  },
+  "bbox_epsg32610": [
+    671708.0,
+    4131895.4,
+    681708.0,
+    4141895.4
+  ],
+  "bbox_epsg4326": [
+    -121.06218,
+    37.31596,
+    -120.946935,
+    37.407948
+  ],
+  "geometry_epsg4326": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -120.94938878832366,
+          37.31595950245554
+        ],
+        [
+          -120.9469352518279,
+          37.4060403460332
+        ],
+        [
+          -121.0598613394982,
+          37.407948076136776
+        ],
+        [
+          -121.062180134513,
+          37.31786106277074
+        ],
+        [
+          -120.94938878832366,
+          37.31595950245554
+        ]
+      ]
+    ]
+  },
+  "note": "Square in EPSG:32610 centred on the field centroid. Registry fields are not used for training: their ML calendar reuses the model trained around the family's original field (backend/ai)."
+}

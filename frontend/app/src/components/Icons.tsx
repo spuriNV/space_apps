@@ -26,11 +26,20 @@ const P: Record<string, string> = {
   right: 'm10 6-1.4 1.4 4.6 4.6-4.6 4.6L10 18l6-6-6-6z',
   news: 'M4 4h13v3h3v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4zm2 2v12h11V6H6zm2 2h7v3H8V8zm0 5h7v1.5H8V13zm0 2.5h5V17H8v-1.5z',
   sat: 'm13.5 2.5 3 3-2.2 2.2 2 2L18.5 7.5l3 3-4.7 4.7-2-2-1.6 1.6a5 5 0 0 1-7 0l-.2-.2a5 5 0 0 1 0-7l1.6-1.6-2-2 4.7-4.7 3 3 .2.2zM3 17a4 4 0 0 0 4 4v-2a2 2 0 0 1-2-2H3z',
+  chevdown: 'M7.4 8.6 12 13.2l4.6-4.6L18 10l-6 6-6-6 1.4-1.4z',
+  print: 'M19 8H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3zm-3 11H8v-5h8v5zm3-7a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM18 3H6v4h12V3z',
+  draw: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+  trash: 'M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
+  copy: 'M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z',
+  rect: 'M4 6h16v12H4V6zm2 2v8h12V8H6z',
+  shape: 'M12 3 21 9.5 17.5 20h-11L3 9.5 12 3zm0 2.5L5.6 10.2 8 18h8l2.4-7.8L12 5.5z',
+  circle: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z',
+  free: 'M3 17c3-8 5-9 7-5s3 4 5-1c1-2 3-3 6-3v2c-2 0-3 1-4 3-2 5-5 5-7 1-1-2-2-1-4 5l-3-2z',
   warn: 'M12 3 1.5 21h21L12 3zm-1 7h2v5h-2v-5zm0 7h2v2h-2v-2z',
 };
-export default function Icon({ name, size = 20 }: { name: keyof typeof P | string; size?: number }) {
+export default function Icon({ name, size = 20, className }: { name: keyof typeof P | string; size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d={P[name]} fillRule="evenodd" clipRule="evenodd" />
     </svg>
   );

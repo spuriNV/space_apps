@@ -1,0 +1,490 @@
+{
+  "field_id": "car_robbins_rice",
+  "generated_at": "2026-11-15T15:12:44+00:00",
+  "model_from": "car_colusa_rice",
+  "types": {
+    "green_up": "first of 3 covered dates after bare or water",
+    "senescence_harvest": "first of 2 non-covered dates after cover",
+    "cutting": "alfalfa/hay: cover drops and is back within 45 days (not a harvest)"
+  },
+  "methods": {
+    "rule_ndvi": [
+      {
+        "date": "2016-06-24",
+        "type": "green_up"
+      },
+      {
+        "date": "2017-06-19",
+        "type": "green_up"
+      },
+      {
+        "date": "2017-09-27",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2018-06-14",
+        "type": "green_up"
+      },
+      {
+        "date": "2018-09-27",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2019-06-14",
+        "type": "green_up"
+      },
+      {
+        "date": "2019-06-19",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2020-06-18",
+        "type": "green_up"
+      },
+      {
+        "date": "2020-09-16",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2021-06-08",
+        "type": "green_up"
+      },
+      {
+        "date": "2021-09-26",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2022-06-28",
+        "type": "green_up"
+      },
+      {
+        "date": "2022-08-22",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2023-06-23",
+        "type": "green_up"
+      },
+      {
+        "date": "2023-10-16",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2024-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2024-10-05",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2025-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2025-10-10",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2026-06-22",
+        "type": "green_up"
+      },
+      {
+        "date": "2026-09-30",
+        "type": "senescence_harvest"
+      }
+    ],
+    "random_forest": [
+      {
+        "date": "2016-06-24",
+        "type": "green_up"
+      },
+      {
+        "date": "2016-10-02",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2017-06-19",
+        "type": "green_up"
+      },
+      {
+        "date": "2017-10-12",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2018-06-24",
+        "type": "green_up"
+      },
+      {
+        "date": "2018-10-17",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2019-06-14",
+        "type": "green_up"
+      },
+      {
+        "date": "2019-10-07",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2020-06-23",
+        "type": "green_up"
+      },
+      {
+        "date": "2020-10-16",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2021-06-13",
+        "type": "green_up"
+      },
+      {
+        "date": "2021-11-20",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2022-07-08",
+        "type": "green_up"
+      },
+      {
+        "date": "2022-08-22",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2023-06-23",
+        "type": "green_up"
+      },
+      {
+        "date": "2023-10-26",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2024-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2024-10-20",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2025-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2025-10-20",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2026-06-22",
+        "type": "green_up"
+      },
+      {
+        "date": "2026-11-04",
+        "type": "senescence_harvest"
+      }
+    ],
+    "hist_gbt": [
+      {
+        "date": "2016-06-24",
+        "type": "green_up"
+      },
+      {
+        "date": "2016-10-02",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2017-06-19",
+        "type": "green_up"
+      },
+      {
+        "date": "2017-10-12",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2018-06-24",
+        "type": "green_up"
+      },
+      {
+        "date": "2018-10-17",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2019-06-14",
+        "type": "green_up"
+      },
+      {
+        "date": "2019-10-07",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2020-06-23",
+        "type": "green_up"
+      },
+      {
+        "date": "2020-10-16",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2021-06-18",
+        "type": "green_up"
+      },
+      {
+        "date": "2021-11-20",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2022-07-08",
+        "type": "green_up"
+      },
+      {
+        "date": "2022-08-22",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2023-06-23",
+        "type": "green_up"
+      },
+      {
+        "date": "2023-10-26",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2024-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2024-10-20",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2025-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2025-10-20",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2026-06-22",
+        "type": "green_up"
+      },
+      {
+        "date": "2026-11-04",
+        "type": "senescence_harvest"
+      }
+    ],
+    "consensus": [
+      {
+        "date": "2016-06-24",
+        "type": "green_up"
+      },
+      {
+        "date": "2016-10-02",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2017-06-19",
+        "type": "green_up"
+      },
+      {
+        "date": "2017-10-12",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2018-06-24",
+        "type": "green_up"
+      },
+      {
+        "date": "2018-10-17",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2019-06-14",
+        "type": "green_up"
+      },
+      {
+        "date": "2019-10-07",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2020-06-23",
+        "type": "green_up"
+      },
+      {
+        "date": "2020-10-16",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2021-06-18",
+        "type": "green_up"
+      },
+      {
+        "date": "2021-11-20",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2022-07-08",
+        "type": "green_up"
+      },
+      {
+        "date": "2022-08-22",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2023-06-23",
+        "type": "green_up"
+      },
+      {
+        "date": "2023-10-26",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2024-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2024-11-04",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2025-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2025-10-20",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2026-06-22",
+        "type": "green_up"
+      },
+      {
+        "date": "2026-11-04",
+        "type": "senescence_harvest"
+      }
+    ],
+    "s2_scl_reference": [
+      {
+        "date": "2016-06-24",
+        "type": "green_up"
+      },
+      {
+        "date": "2016-10-02",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2017-07-04",
+        "type": "green_up"
+      },
+      {
+        "date": "2017-10-12",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2018-06-29",
+        "type": "green_up"
+      },
+      {
+        "date": "2018-08-13",
+        "type": "green_up"
+      },
+      {
+        "date": "2018-10-17",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2019-06-14",
+        "type": "green_up"
+      },
+      {
+        "date": "2019-10-07",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2020-06-28",
+        "type": "green_up"
+      },
+      {
+        "date": "2020-10-16",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2021-06-18",
+        "type": "green_up"
+      },
+      {
+        "date": "2021-11-20",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2022-07-08",
+        "type": "green_up"
+      },
+      {
+        "date": "2022-08-22",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2023-06-23",
+        "type": "green_up"
+      },
+      {
+        "date": "2023-11-10",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2024-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2024-11-04",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2025-06-27",
+        "type": "green_up"
+      },
+      {
+        "date": "2025-10-30",
+        "type": "senescence_harvest"
+      },
+      {
+        "date": "2026-06-22",
+        "type": "green_up"
+      },
+      {
+        "date": "2026-09-05",
+        "type": "green_up"
+      },
+      {
+        "date": "2026-11-04",
+        "type": "senescence_harvest"
+      }
+    ]
+  },
+  "reference_note": "s2_scl_reference = the same logic on this field's Sentinel-2 SCL classes (>= 80% of clear pixels); agreement, not ground truth",
+  "evaluation": {
+    "rule_ndvi": {
+      "transition_mae_vs_scl_days": 16.666666666666668,
+      "transitions_matched": 21,
+      "transitions_reference": 24
+    },
+    "random_forest": {
+      "transition_mae_vs_scl_days": 5.217391304347826,
+      "transitions_matched": 23,
+      "transitions_reference": 24
+    },
+    "hist_gbt": {
+      "transition_mae_vs_scl_days": 5.0,
+      "transitions_matched": 23,
+      "transitions_reference": 24
+    },
+    "consensus": {
+      "transition_mae_vs_scl_days": 4.3478260869565215,
+      "transitions_matched": 23,
+      "transitions_reference": 24
+    }
+  },
+  "credit": "Labels, features, vote and transition logic: spuriNV (ds branch); multi-field sample and splits: backend/ai."
+}

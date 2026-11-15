@@ -1,66 +1,63 @@
-// Working with First Nations (BC fields). Public facts only; nothing speaks for a Nation.
-// Honest: this demo field is not on reserve; nearest reserves and Splatsin on the lower Salmon River.
+// "Working with First Nations" (BC fields only). Farmer default: the project's statement, whether the field is on reserve land,
+// and the Nation on the lower river with its own page. More detail: nearby reserves by distance, how we would approach the
+// Nations, the principles (OCAP®, CARE, TCPS 2 ch. 9), public contact pages and the water and salmon timeline.
+// Respectful and factual: public facts and links only, nothing that speaks for a Nation, no imagery of people.
 import { useEffect, useState } from 'react';
 import type { FirstNations, Location } from '../../types';
 import { linkOf } from '../../types';
 import { getFirstNations } from '../../api';
-import { isBC } from './shared';
+import { fmtDate } from '../../lib';
 
-const titleCase = (s: string) => s.toLowerCase().replace(/(^|[\s(])(\p{L})/gu, (_m, a: string, b: string) => a + b.toUpperCase());
+/** "SALMON RIVER 1 (SPLATSIN)" -> "Salmon River 1 (Splatsin)" */
+export const reserveName = (s: string) => s.toLowerCase().replace(/(^|[\s(])(\p{L})/gu, (_m, a: string, b: string) => a + b.toUpperCase());
+const when = (d: string) => (/^\d{4}-\d{2}-\d{2}$/.test(d) ? fmtDate(d) : d);
+const NEAR_KM = 20;
 
-/** Compact card for the dock. Detail stays behind "More". */
 export function FirstNationsCard({ loc }: { loc: Location }) {
   const [fn, setFn] = useState<FirstNations | null | undefined>(undefined);
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (!isBC(loc)) return;
-    let ok = true;
-    getFirstNations(loc.id).then((v) => ok && setFn(v));
-    return () => { ok = false; };
-  }, [loc.id]);
-  if (!isBC(loc)) return null;
+  useEffect(() => { let ok = true; getFirstNations(loc.id).then((v) => ok && setFn(v)); return () => { ok = false; }; }, [loc.id]);
   const s = loc.first_nations;
-  if (!s && fn === null) return null;
-  if (!s && fn === undefined) return <p className="fn-loading muted">Loading Nations context…</p>;
+  if (!s && !fn) return null;
   const statement = fn?.statement ?? s!.statement;
   const onReserve = fn?.field_on_reserve ?? s!.field_on_reserve;
-  const km = fn?.nearest_km ?? s!.nearest_km;
-  const nation = fn?.nearest_nation ?? s!.nearest_nation;
-  const reserve = fn?.nearest_reserve ?? s!.nearest_reserve;
-  const lower = fn?.lower_river_nation ?? (s ? { nation: s.lower_river_nation, url: 'https://splatsin.ca/your-government/land', reserve: 'SALMON RIVER 1 (SPLATSIN)' } : null);
-  const near = (fn?.nearby ?? []).filter((r) => r.distance_to_field_km <= 20).slice(0, 4);
+  const km = fn?.nearest_km ?? s!.nearest_km, nation = fn?.nearest_nation ?? s!.nearest_nation, reserve = fn?.nearest_reserve ?? s!.nearest_reserve;
+  const lower = fn?.lower_river_nation ?? (s ? { nation: s.lower_river_nation, url: '', reserve: '' } : null);
+  const river = loc.water_context?.watershed.split(/[(;,]/)[0].trim() || 'river';
+  const near = (fn?.nearby ?? []).filter((r) => r.distance_to_field_km <= NEAR_KM).sort((a, b) => a.distance_to_field_km - b.distance_to_field_km);
+  const rest = (fn?.nearby ?? []).filter((r) => r.distance_to_field_km > NEAR_KM);
   return (
     <section className="fn" data-testid="first-nations">
-      <h2 className="fn-h">Near First Nations lands</h2>
+      <h2 className="fp-h">Working with First Nations</h2>
       <p className="fn-statement">{statement}</p>
       <ul className="fn-lines">
-        <li>{onReserve ? 'This field is on reserve land.' : `Not on reserve. Nearest: ${titleCase(reserve)} (~${km} km, ${nation}).`}</li>
-        {lower && (
-          <li>
-            Lower Salmon River: {lower.nation}
-            {lower.reserve ? ` · ${titleCase(lower.reserve)}` : ''}
-            {linkOf(lower) && <> · <a href={linkOf(lower)!} target="_blank" rel="noreferrer">lands page</a></>}
-          </li>
-        )}
+        <li>{onReserve ? 'This field is on reserve land.' : `This field is not on reserve land. Nearest: ${reserveName(reserve)}, about ${km} km (${nation}).`}</li>
+        {lower && <li>Nation on the lower {river}: {lower.nation}{lower.reserve ? ` (${reserveName(lower.reserve)})` : ''}.{linkOf(lower) && <> <a href={linkOf(lower)!} target="_blank" rel="noreferrer">{lower.nation} lands page</a></>}</li>}
       </ul>
-      <button type="button" className="fn-more-btn" onClick={() => setOpen(!open)} data-testid="fn-toggle">
-        {open ? 'Less' : 'Nearby reserves'}
-      </button>
-      {open && (
-        <div className="fn-more" data-testid="first-nations-detail">
-          {fn === undefined ? <p className="muted">Loading…</p> : fn === null ? <p className="muted">More detail not loaded.</p> : (
-            <>
-              <ul className="fn-near">
-                {near.map((r) => (
-                  <li key={r.reserve}><b>{r.distance_to_field_km.toFixed(1)} km</b><span>{titleCase(r.reserve)}</span><small>{r.nation}</small></li>
-                ))}
-              </ul>
-              {fn.notes?.[0] && <p className="fn-note">{fn.notes[0]}</p>}
-              <cite>{fn.source?.title ?? 'BC Data Catalogue'}{linkOf(fn.source) && <> · <a href={linkOf(fn.source)!} target="_blank" rel="noreferrer">Source</a></>}</cite>
-            </>
-          )}
-        </div>
-      )}
+      <div className="d-only fn-more" data-testid="first-nations-detail">
+        {fn === undefined ? <p className="muted">Loading…</p> : fn === null ? <p className="gap-line">More on the Nations is not available right now.</p> : <>
+          <h3>Reserves near this field</h3>
+          <ul className="fn-near">
+            {near.map((r) => <li key={r.reserve}><b>{r.distance_to_field_km.toFixed(1)} km</b><span>{reserveName(r.reserve)}</span><small>{r.nation}</small></li>)}
+          </ul>
+          {rest.length > 0 && <p className="how">{rest.length} more within {Math.ceil(Math.max(...rest.map((r) => r.distance_to_field_km)))} km: {[...new Set(rest.map((r) => r.nation))].join(', ')}.</p>}
+          {fn.notes?.[0] && <p className="how">{fn.notes[0]}</p>}
+
+          <h3>How we would start</h3>
+          <ol className="fn-steps">{fn.engagement_steps.map((x) => <li key={x}>{x}</li>)}</ol>
+
+          <h3>Principles we follow</h3>
+          <ul className="fn-list">{fn.principles.map((x) => <li key={x.id}>{linkOf(x) ? <a href={linkOf(x)!} target="_blank" rel="noreferrer">{x.name}</a> : <b>{x.name}</b>}<span>{x.description}</span></li>)}</ul>
+
+          <h3>Public contact pages</h3>
+          <ul className="fn-list">{fn.contacts.map((x) => <li key={x.url + x.nation}>{linkOf(x) ? <a href={linkOf(x)!} target="_blank" rel="noreferrer">{x.nation}</a> : <b>{x.nation}</b>}<span>{x.department}</span></li>)}</ul>
+
+          <h3>Water and salmon, {fn.water_timeline[0]?.date.slice(0, 4)}–{fn.water_timeline[fn.water_timeline.length - 1]?.date.slice(0, 4)}</h3>
+          <ul className="fn-time">
+            {fn.water_timeline.map((x) => <li key={x.date + x.title}><time>{when(x.date)}</time><span>{x.title}{linkOf(x) && <> <a href={linkOf(x)!} target="_blank" rel="noreferrer">Source</a></>}</span></li>)}
+          </ul>
+          <cite>{fn.source?.title ?? 'BC Data Catalogue'}{fn.notes?.[1] ? `. ${fn.notes[1]}` : ''}</cite>
+        </>}
+      </div>
     </section>
   );
 }

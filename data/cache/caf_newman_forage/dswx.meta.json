@@ -1,0 +1,119 @@
+{
+ "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=OPERA_L3_DSWX-HLS_V1 (archive.podaac.earthdata.nasa.gov, B01_WTR.tif only)",
+ "collection": "OPERA_L3_DSWX-HLS_V1 v1.0 (C2617126679-POCLOUD); NOT available in AppEEARS",
+ "params": {
+  "windows": [
+   [
+    "2023-03-01",
+    "2023-06-30"
+   ]
+  ],
+  "bbox": [
+   -121.0100605096728,
+   37.3571960716131,
+   -120.99903198994771,
+   37.36682984982598
+  ]
+ },
+ "timestep": "per HLS scene (Landsat/Sentinel-2 overpass)",
+ "units": {
+  "frac_*": "fraction of field polygon pixels"
+ },
+ "native_res_m": 30,
+ "fill_value": 255,
+ "quality_handling": "Class 1 open water + class 2 partial surface water = frac_water; cloud/shadow and snow/ice (253/252) reported as frac_cloud_snow, not counted as water or dry; filter on frac_clear (>= 0.8 suggested). Label as WATER, never as bare.",
+ "fetched_at": "2026-11-15T06:59:47Z",
+ "n_rows": 49,
+ "footprint_geojson": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     -121.0084412927799,
+     37.36087669900518
+    ],
+    [
+     -121.01002180845376,
+     37.35939866171745
+    ],
+    [
+     -121.01005399778533,
+     37.35931097557214
+    ],
+    [
+     -121.0100605096728,
+     37.35917755114408
+    ],
+    [
+     -121.01002097391886,
+     37.3590910421663
+    ],
+    [
+     -121.00996257534054,
+     37.359039982993814
+    ],
+    [
+     -121.00719379336171,
+     37.35721686594745
+    ],
+    [
+     -121.00710970835617,
+     37.357346598700175
+    ],
+    [
+     -121.00707082657573,
+     37.35734832810693
+    ],
+    [
+     -121.00693930064172,
+     37.35723880559907
+    ],
+    [
+     -121.00680899372156,
+     37.3571960716131
+    ],
+    [
+     -121.00672139360832,
+     37.357232749096255
+    ],
+    [
+     -121.00349271732317,
+     37.360483252164975
+    ],
+    [
+     -120.99903198994771,
+     37.36478109292337
+    ],
+    [
+     -120.99904826023416,
+     37.364843366078595
+    ],
+    [
+     -120.99910602011029,
+     37.36491826500639
+    ],
+    [
+     -121.00192977808616,
+     37.3668116519383
+    ],
+    [
+     -121.0020189233017,
+     37.36682984982598
+    ],
+    [
+     -121.00209395867908,
+     37.36681681094603
+    ],
+    [
+     -121.0021330964794,
+     37.3668055498012
+    ],
+    [
+     -121.0084412927799,
+     37.36087669900518
+    ]
+   ]
+  ]
+ },
+ "auth": "NASA Earthdata Login (credentials from repo-root .env, not stored)"
+}

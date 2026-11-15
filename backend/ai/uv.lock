@@ -119,6 +119,7 @@ dependencies = [
     { name = "pystac-client" },
     { name = "rasterio" },
     { name = "scikit-learn" },
+    { name = "scipy" },
     { name = "shapely" },
 ]
 
@@ -132,7 +133,8 @@ requires-dist = [
     { name = "pyproj", specifier = ">=3.8.0" },
     { name = "pystac-client", specifier = ">=0.9.1" },
     { name = "rasterio", specifier = ">=1.5.2" },
-    { name = "scikit-learn", specifier = ">=1.9.1" },
+    { name = "scikit-learn", specifier = ">=1.4" },
+    { name = "scipy", specifier = ">=1.11" },
     { name = "shapely", specifier = ">=2.2.0" },
 ]
 

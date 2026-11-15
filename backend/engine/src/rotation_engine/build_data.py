@@ -290,15 +290,166 @@ CROPS = [
     },
 ]
 
+
+# ---------------------------------------------------------------- BC crops (bc_salmon_river_forage)
+# Designs: docs/handoff-bc.md "BC rotations to add (Appendix A, sources read)". lookup()/V only for numbers
+# quoted from a source that was read (FAO-56 Tables 11/12, Kamloops Forage Manual, BC Drought Factsheet No. 6,
+# BF04, ECCC -4 C dates); everything else is assumed()/U.
+def seed_bc(v, lo, hi):
+    return assumed(v, "USD/ha", low=lo, high=hi,
+                   note="Placeholder order of magnitude only (USD for consistency with the CA records); no cited "
+                        "source. Income is not computed for BC.",
+                   to_cite="a BC forage enterprise budget (not located)")
+
+
+ALF_BC_STAGES = {"ini": 176, "dev": 30, "mid": 129, "late": 30}   # sums to 365 (1-year steady state)
+ALF_BC_STAGE_SRC = ("FAO-56 Table 11 alfalfa total season 'last -4 C in spring until first -4 C in fall', init 10, "
+                    "dev 30 (V); -4 C dates from ECCC Silver Creek 1991-2021, last spring day 100 (10 Apr), first "
+                    "fall day 299 (26 Oct) (V, computed); ini = 166 dormant days + FAO init 10; the mid 129 / late 30 "
+                    "split is assumed (U)")
+
+CROPS_BC = [
+    {
+        "id": "alfalfa_hay_bc", "name": "Alfalfa hay, 2 cuts, irrigated (Shuswap)", "family": "Fabaceae",
+        "role": ["forage"], "legume": True, "perennial": True, "root": "deep taproot", "market_class": "either",
+        "kc": {"ini": lookup(0.40, "Kc", "fao56_table12", note="FAO-56 Table 12 alfalfa hay, averaged cutting effects "
+                             "0.40 / 0.95 / 0.90. The ini value also covers the dormant winter (U)."),
+               "mid": lookup(0.95, "Kc", "fao56_table12"),
+               "end": lookup(0.90, "Kc", "fao56_table12")},
+        "stage_lengths_days": {**ALF_BC_STAGES, "verified": False, "source": ALF_BC_STAGE_SRC,
+                               "url": src("fao56_table11")["url"]},
+        "cover_by_stage": cover_stage(0.6, 0.8, 0.85, 0.8,
+                                      note="U. Same as the CA alfalfa record: dormant crowns + stubble (often under "
+                                           "snow) assumed >= 0.5 cover; mid is a 2-cut average."),
+        "ratings_0_4": {**ratings(3, 3, 1, 4, 2, 3, 4, 2, 1, 3), "forage_harvest_value": r(4, 3, 4)},
+        "root_depth_class": root_class(2),
+        "yield_range": assumed(6900, "kg DM/ha/yr", low=5000, high=8500,
+                               note="Kamloops District Forage Manual 2-cut budget 2.0 + 1.5 = 3.5 ton/acre hay (V) "
+                                    "x 2242 kg/ha per ton/acre x 88% DM (assumed) = ~6,900 kg DM/ha; Kamloops "
+                                    "district applied to the Shuswap (assumed); range ours (U)",
+                               to_cite=src("kamloops_forage_manual")["url"]),
+        "water_use_quoted": lookup(914, "mm/season", "bc_drought_factsheet6",
+                                   note="'about 36 inches' for full-season alfalfa (36 in x 25.4); a 3-cut reference, "
+                                        "so a 2-cut stand should need less. Sanity reference only, not a model input"),
+        "drainage_classes_ok": {"value": ["well drained", "moderately well drained", "somewhat excessively drained"],
+                                "method": "assumed", "verified": False, "note": "U"},
+        "seeding_window": {"start": "05-01", "end": "08-20", "best": "spring, or mid-Aug with irrigation (U)",
+                           "verified": False, "source": "assumed", "url": src("assumed")["url"]},
+        "pest_notes": [], "cautions": [],
+        "seed_cost_per_ha": seed_bc(300, 200, 450), "needs_drill": True, "explainer_card": "nitrogen_fixing",
+        "sources": [src("fao56_table12"), src("fao56_table11"), src("kamloops_forage_manual"),
+                    src("eccc_frost_dates")],
+    },
+    {
+        "id": "barley_silage_bc", "name": "Barley silage (spring-sown, ~100 days)", "family": "Poaceae",
+        "role": ["forage"], "legume": False, "perennial": False, "root": "fibrous, medium", "market_class": "feed",
+        "kc": {"ini": lookup(0.30, "Kc", "fao56_table12", note="FAO-56 Table 12 barley 0.3 / 1.15 / 0.25"),
+               "mid": lookup(1.15, "Kc", "fao56_table12"),
+               "end": lookup(0.25, "Kc", "fao56_table12",
+                             note="Grain-barley end value. Silage is cut before full senescence, so the true Kc at "
+                                  "harvest is likely higher (doubt).")},
+        "stage_lengths_days": {"ini": 20, "dev": 25, "mid": 60, "late": 30, "verified": True,
+                               "source": "fao56_table11 Barley 35-45 deg latitude, Mar/Apr planting 20/25/60/30 (V); "
+                                         "scaled to the 96-d silage season (1 May - 5 Aug) and applied at 50.6 N (U)",
+                               "url": src("fao56_table11")["url"]},
+        "cover_by_stage": cover_stage(0.1, 0.6, 1.0, 0.9),
+        "ratings_0_4": ratings(2, 2, 1, 0, 2, 2, 3, 2, 1, 2),
+        "root_depth_class": root_class(1),
+        "yield_range": assumed(7800, "kg DM/ha", low=5500, high=9000,
+                               note="BC Drought Factsheet No. 6: '3 to 4 ton/acre' barley silage (V) = 6,700-9,000 "
+                                    "kg/ha; read as dry matter (assumed); low end widened (U)",
+                               to_cite=src("bc_drought_factsheet6")["url"]),
+        "water_use_quoted": lookup(381, "mm/season", "bc_drought_factsheet6",
+                                   note="'one crop of barley silage may only require about 15 inches of water for a 3 "
+                                        "to 4 ton/acre yield' (15 in x 25.4). Sanity reference only, not a model input"),
+        "drainage_classes_ok": {"value": ["well drained", "moderately well drained", "somewhat poorly drained"],
+                                "method": "assumed", "verified": False, "note": "U"},
+        "seeding_window": {"start": "04-15", "end": "05-31", "best": "early May (U)", "verified": False,
+                           "source": "assumed", "url": src("assumed")["url"]},
+        "pest_notes": [], "cautions": [], "seed_cost_per_ha": seed_bc(80, 50, 120), "needs_drill": True,
+        "explainer_card": None, "sources": [src("fao56_table12"), src("fao56_table11"), src("bc_drought_factsheet6")],
+    },
+    {
+        "id": "fall_cereal_silage_bc", "name": "Fall rye / triticale silage (fall-sown, cut before heading)",
+        "family": "Poaceae",
+        "role": ["forage"], "legume": False, "perennial": False, "root": "fibrous, medium", "market_class": "feed",
+        "kc": {"ini": lookup(0.40, "Kc", "fao56_table12",
+                             note="FAO-56 Table 12 winter wheat with frozen soils 0.4 / 1.15 / 0.25-0.4, used for "
+                                  "fall rye/triticale (the crop transfer is U)"),
+               "mid": lookup(1.15, "Kc", "fao56_table12"),
+               "end": lookup(0.325, "Kc", "fao56_table12", low=0.25, high=0.40,
+                             note="Range quoted; value = midpoint. Unused: the calendar cuts before heading (late 0)")},
+        "stage_lengths_days": {"ini": 160, "dev": 75, "mid": 75, "late": 25, "verified": True,
+                               "source": "fao56_table11 Winter wheat Idaho October 160/75/75/25 (V); the BC calendar "
+                                         "overrides to ini 205 / dev 55 / mid 24 / late 0 for a 25 Aug seeding cut "
+                                         "5 June before heading (U)",
+                               "url": src("fao56_table11")["url"]},
+        "cover_by_stage": cover_stage(0.5, 0.7, 0.95, 0.9,
+                                      note="U. Late-Aug seeding tillers before freeze-up; ini 0.5 sits on the exposure "
+                                           "threshold, so the winter counts as covered (at 0.4 it would count as "
+                                           "exposed)."),
+        "ratings_0_4": ratings(4, 2, 1, 0, 3, 2, 3, 3, 1, 3),
+        "root_depth_class": root_class(1),
+        "yield_range": assumed(6000, "kg DM/ha", low=4000, high=8000,
+                               note="Placeholder (U): no BC yield for a spring silage cut was read"),
+        "drainage_classes_ok": {"value": ["well drained", "moderately well drained", "somewhat poorly drained",
+                                          "poorly drained"], "method": "assumed", "verified": False, "note": "U"},
+        "seeding_window": {"start": "08-15", "end": "09-30", "best": "late Aug (U)", "verified": False,
+                           "source": "assumed", "url": src("assumed")["url"],
+                           "note": "Needs fall moisture to establish (BC Drought Factsheet No. 6, V); dates U"},
+        "pest_notes": [], "cautions": ["harvest before heading (BC Drought Factsheet No. 6)",
+                                       "needs fall moisture to establish: late-Aug water may be unavailable in an "
+                                       "order year (U)"],
+        "seed_cost_per_ha": seed_bc(80, 50, 120), "needs_drill": True, "explainer_card": "drought_tolerant",
+        "sources": [src("fao56_table12"), src("fao56_table11"), src("bc_drought_factsheet6")],
+    },
+    {
+        "id": "sainfoin_grass_bc", "name": "Sainfoin + meadow brome hay, dryland, 1 cut", "family": "Fabaceae+Poaceae",
+        "families": ["Fabaceae", "Poaceae"],
+        "role": ["forage"], "legume": True, "perennial": True, "root": "deep taproot + fibrous",
+        "market_class": "either",
+        "kc": {"ini": assumed(0.40, "Kc", low=0.30, high=0.50,
+                              note="Proxy (assumed): FAO-56 Table 12 clover hay, averaged cutting effects 0.40 / 0.90 "
+                                   "/ 0.85; FAO-56 has no sainfoin entry. Range ours (U)",
+                              to_cite=src("fao56_table12")["url"]),
+               "mid": assumed(0.90, "Kc", low=0.80, high=1.00, note="As above (proxy, assumed)"),
+               "end": assumed(0.85, "Kc", low=0.75, high=0.95, note="As above (proxy, assumed)")},
+        "stage_lengths_days": {**ALF_BC_STAGES, "verified": False,
+                               "source": "assumed (U): the alfalfa_hay_bc season (" + ALF_BC_STAGE_SRC + ")",
+                               "url": src("assumed")["url"]},
+        "cover_by_stage": cover_stage(0.6, 0.8, 0.85, 0.75,
+                                      note="U. Established perennial stand; dryland regrowth after the July cut is "
+                                           "limited."),
+        "ratings_0_4": ratings(3, 3, 2, 3, 2, 3, 3, 2, 0, 4),
+        "root_depth_class": root_class(2),
+        "yield_range": assumed(2500, "kg DM/ha/yr", low=1500, high=4000,
+                               note="Placeholder (U); BF04 gives 1 cut dryland (V) but no Shuswap yield"),
+        "drainage_classes_ok": {"value": ["well drained", "somewhat excessively drained", "excessively drained"],
+                                "method": "assumed", "verified": False,
+                                "note": "BF04: lighter, well-drained soils, no wet feet (V); class list ours (U)"},
+        "seeding_window": {"start": "05-01", "end": "06-30", "best": "spring (U)", "verified": False,
+                           "source": "assumed", "url": src("assumed")["url"]},
+        "pest_notes": [],
+        "cautions": ["needs lighter, well-drained soil with no wet feet (BF04); check the SoilGrids texture",
+                     "BF04 was written for northern BC (Bulkley-Nechako, Fraser-Fort George); its use in the "
+                     "Shuswap is assumed"],
+        "seed_cost_per_ha": seed_bc(250, 150, 400), "needs_drill": True, "explainer_card": "drought_tolerant",
+        "sources": [src("bf04_nonbloat_legumes"), src("fao56_table12")],
+    },
+]
+CROPS = CROPS + CROPS_BC
+
 # ---------------------------------------------------------------- strategies
 RICE_T = "uc_rice_blog (V avg: 50% planted by 12 May; 145-150 d); end = plant + FAO-56 Table 11 150 d"
 U_T = "assumed (U)"
 
 
 def e(year, crop_id, start, end, role, *, irrigated, timing_source, harvest_months=(), stage_mode="fixed",
-      flooded_until=None, stage_override=None, cover_override=None, note=""):
+      flooded_until=None, stage_override=None, cover_override=None, note="", season_boundary=False):
     d = {"year": year, "crop_id": crop_id, "plant": start, "harvest": end, "role": role, "irrigated": irrigated,
          "harvest_months": list(harvest_months), "stage_mode": stage_mode, "timing_source": timing_source}
+    if season_boundary:   # an established stand's season start, not a seeding (skips the seeding-window check)
+        d["season_boundary"] = True
     if flooded_until:
         d["flooded_until"] = flooded_until
     if stage_override:
@@ -321,14 +472,14 @@ SMALL_GRAIN = lambda y=1: e(y, "small_grain_silage", "10-25", "04-20", "forage",
 
 STRATEGIES = [
     {"id": "car0_rice_winterflood", "location_id": "car_colusa_rice", "is_baseline": True, "cycle_years": 1,
-     "name": "Continuous rice with winter flood (current)",
+     "name": "Continuous rice with winter flood (current)", "short_name": "Rice + winter flood (current)",
      "calendar": [
          e(1, "open_water_flood", "11-01", "02-01", "water", irrigated=True, timing_source=U_T,
            note="Winter flood for straw decomposition / waterfowl; flood dates U. Only ET is counted as need."),
          SPRING_FLOOD(), RICE()],
      "allocation_rule": None},
     {"id": "car1_rice_wintercover", "location_id": "car_colusa_rice", "is_baseline": False, "cycle_years": 1,
-     "name": "Rice + winter cover (cereal/vetch) instead of winter flood",
+     "name": "Rice + winter cover (cereal/vetch) instead of winter flood", "short_name": "Rice + winter cover",
      "calendar": [
          SPRING_FLOOD(), RICE(),
          e(1, "cereal_vetch_cover", "10-25", "03-20", "cover", irrigated=False, stage_mode="stretch_mid",
@@ -336,7 +487,7 @@ STRATEGIES = [
            note="Rainfed cover; ETc counted but not irrigation need")],
      "allocation_rule": None},
     {"id": "car2_dryyear_safflower", "location_id": "car_colusa_rice", "is_baseline": False, "cycle_years": 1,
-     "name": "Dry-year plan: safflower instead of rice (allocation < 50%)",
+     "name": "Dry-year plan: safflower instead of rice (allocation < 50%)", "short_name": "Dry-year safflower",
      "calendar": [
          e(1, "cereal_vetch_cover", "01-01", "03-01", "cover", irrigated=False, stage_mode="truncate",
            timing_source=U_T + ": cover sown the previous fall (spec 'cover/bare' Jan-Feb)",
@@ -351,7 +502,7 @@ STRATEGIES = [
                                                        "method": "assumed", "source": src("assumed"),
                                                        "note": "Spec B1 CAR2 trigger (U)"}}},
     {"id": "car3_rice_wheat", "location_id": "car_colusa_rice", "is_baseline": False, "cycle_years": 2,
-     "name": "Rice - winter wheat rotation (2-year)",
+     "name": "Rice - winter wheat rotation (2-year)", "short_name": "Rice–wheat",
      "calendar": [
          SPRING_FLOOD(1), RICE(1),
          e(1, "winter_wheat", "12-01", "05-30", "cash", irrigated=True, harvest_months=[6],
@@ -362,14 +513,14 @@ STRATEGIES = [
                       "the next rice flood. Confirm with the team.",
      "allocation_rule": None},
     {"id": "caf0_alfalfa", "location_id": "caf_tulare_forage", "is_baseline": True, "cycle_years": 1,
-     "name": "Alfalfa hay, 7-8 cuts, 4-5 year stand (current)",
+     "name": "Alfalfa hay, 7-8 cuts, 4-5 year stand (current)", "short_name": "Alfalfa (current)",
      "calendar": [
          e(1, "alfalfa_hay", "12-01", "12-01", "forage", irrigated=True, harvest_months=[3, 4, 5, 6, 7, 8, 9, 10],
            timing_source="uc_alfalfa (V: 28-day cutting schedule); stage dates read off spec B1 calendar (U)",
            note="Established stand in steady state; establishment year not modelled")],
      "allocation_rule": None},
     {"id": "caf1_smallgrain_corn", "location_id": "caf_tulare_forage", "is_baseline": False, "cycle_years": 1,
-     "name": "Winter small-grain silage + silage corn double crop",
+     "name": "Winter small-grain silage + silage corn double crop", "short_name": "Grain silage + corn",
      "calendar": [
          SMALL_GRAIN(),
          e(1, "silage_corn", "05-05", "08-23", "forage", irrigated=True, harvest_months=[8], stage_mode="scale",
@@ -377,14 +528,14 @@ STRATEGIES = [
                                "to the 110-d season (FAO-56 advises scaling stage lengths to the local season)")],
      "allocation_rule": None},
     {"id": "caf2_smallgrain_sorghumsudan", "location_id": "caf_tulare_forage", "is_baseline": False,
-     "cycle_years": 1, "name": "Winter small-grain silage + sorghum-sudan summer forage",
+     "cycle_years": 1, "name": "Winter small-grain silage + sorghum-sudan summer forage", "short_name": "Grain silage + sorghum-sudan",
      "calendar": [
          SMALL_GRAIN(),
          e(1, "sorghum_sudan", "05-05", "09-15", "forage", irrigated=True, harvest_months=[6, 7, 8],
            stage_mode="stretch_mid", timing_source=U_T + ": spec B1 'plant May, cuts Jun-Aug, terminate Sept'")],
      "allocation_rule": None},
     {"id": "caf3_alfalfa_break", "location_id": "caf_tulare_forage", "is_baseline": False, "cycle_years": 4,
-     "name": "Alfalfa 3-year stand, winter cereal break year, re-seed",
+     "name": "Alfalfa 3-year stand, winter cereal break year, re-seed", "short_name": "Alfalfa with break year",
      "calendar": [
          e(4, "alfalfa_hay", "09-20", "12-01", "establishing", irrigated=True, stage_mode="truncate",
            stage_override={"ini": 30, "dev": 42, "mid": 0, "late": 0},
@@ -404,6 +555,79 @@ STRATEGIES = [
                       "years 1-3 (labelled by the year its Dec-Nov season starts).",
      "allocation_rule": None},
 ]
+
+# ---------------------------------------------------------------- BC strategies (bc_salmon_river_forage)
+BC = "bc_salmon_river_forage"
+KAM = "kamloops_forage_manual (V: 2 cuts typical in Zone 2, aftermath grazed late fall)"
+ALF_BC = lambda y, start="10-26", end="10-26", note="", stage_mode="fixed": e(
+    y, "alfalfa_hay_bc", start, end, "forage", irrigated=True, harvest_months=[6, 8], stage_mode=stage_mode,
+    stage_override=dict(ALF_BC_STAGES), season_boundary=True,
+    timing_source=KAM + "; cut months Jun/Aug and the stage split U; season = -4 C to -4 C (FAO-56 Table 11, ECCC)",
+    note=note)
+
+STRATEGIES_BC = [
+    {"id": "bc0_alfalfa", "location_id": BC, "is_baseline": True, "cycle_years": 1,
+     "name": "Irrigated alfalfa hay, 2 cuts, 5-year stand (current)", "short_name": "Alfalfa (current)",
+     "calendar": [ALF_BC(1, note="Established stand in steady state; establishment year not modelled. Late-fall "
+                                 "aftermath grazing not modelled")],
+     "calendar_note": "Kamloops District Forage Manual system 1: continuous alfalfa, 5-year cycle, 20% reseeded each "
+                      "year (V). Modelled as one established stand in steady state.",
+     "allocation_rule": None},
+    {"id": "bc1_barley_break", "location_id": BC, "is_baseline": False, "cycle_years": 5,
+     "name": "Alfalfa with a barley-silage break year (5-year cycle)", "short_name": "Barley break",
+     "calendar": [
+         e(1, "barley_silage_bc", "05-01", "08-05", "forage", irrigated=True, harvest_months=[8], stage_mode="scale",
+           timing_source="bc_drought_factsheet6 (V: barley silage ~100 days); FAO-56 Table 11 barley 20/25/60/30 "
+                         "scaled to 96 d; dates U (harvested before a mid-August order)"),
+         e(1, "alfalfa_hay_bc", "08-15", "10-26", "establishing", irrigated=True, stage_mode="truncate",
+           stage_override={"ini": 30, "dev": 42, "mid": 0, "late": 0},
+           cover_override={"ini": 0.1, "dev": 0.5, "mid": 0.5, "late": 0.5},
+           timing_source="assumed (U): late-summer reseeding after the barley; establishment stages as CAF3 (U)"),
+         ALF_BC(1, note="Stand year 1"), ALF_BC(2, note="Stand year 2"), ALF_BC(3, note="Stand year 3"),
+         ALF_BC(4, note="Stand year 4"),
+         e(5, "alfalfa_hay_bc", "10-26", "04-20", "forage", irrigated=False, stage_mode="truncate",
+           stage_override=dict(ALF_BC_STAGES), season_boundary=True,
+           timing_source="assumed (U): old stand dormant over winter, terminated in spring before the barley",
+           note="Old stand, dormant; no cut"),
+     ],
+     "calendar_note": "Kamloops District Forage Manual system 2: a five-year cycle with part of the new seeding area "
+                      "in annual crops such as barley (V). Year 1: barley silage 1 May - 5 Aug, alfalfa reseeded 15 Aug; "
+                      "4 production years; the old stand is terminated the next spring. The late-summer seeding "
+                      "needs August water, which an order year (16 Aug 2023) would not allow.",
+     "allocation_rule": None},
+    {"id": "bc2_fall_cereal_silage", "location_id": BC, "is_baseline": False, "cycle_years": 5,
+     "name": "Alfalfa with a fall rye/triticale silage year (5-year cycle)", "short_name": "Fall rye silage",
+     "calendar": [
+         e(5, "fall_cereal_silage_bc", "08-25", "06-05", "forage", irrigated=True, harvest_months=[6],
+           stage_override={"ini": 205, "dev": 55, "mid": 24, "late": 0},
+           timing_source="bc_drought_factsheet6 (V: fall rye/triticale, harvest before heading); FAO-56 Table 11 "
+                         "winter wheat Idaho Oct 160/75/75/25 adapted to ini 205 / dev 55 / mid 24 (U); dates U",
+           note="Spring growth mostly on stored moisture and spring rain; establishment in late Aug needs water"),
+         e(1, "alfalfa_hay_bc", "06-15", "10-26", "establishing", irrigated=True,
+           stage_override={"ini": 30, "dev": 42, "mid": 61, "late": 0},
+           cover_override={"ini": 0.1, "dev": 0.6, "mid": 0.8, "late": 0.8},
+           timing_source="assumed (U): reseeded after the June silage cut; no seeding-year cut modelled"),
+         ALF_BC(1, note="Stand year 1"), ALF_BC(2, note="Stand year 2"), ALF_BC(3, note="Stand year 3"),
+         ALF_BC(4, "10-26", "08-20", note="Stand year 4: cut twice (Jun, Aug), terminated 20 Aug",
+                stage_mode="truncate"),
+     ],
+     "calendar_note": "One year in five in fall-seeded cereal silage, the 'one fifth of the stand' idea applied to "
+                      "one field over time. The last alfalfa year is cut twice and terminated 20 Aug; fall rye or "
+                      "triticale 25 Aug - 5 Jun; alfalfa reseeded 15 Jun. Cereals are 'the most commonly grown "
+                      "alternative forage crops' under limited irrigation (BC Drought Factsheet No. 6, V).",
+     "allocation_rule": None},
+    {"id": "bc3_sainfoin_grass", "location_id": BC, "is_baseline": False, "cycle_years": 1,
+     "name": "Dryland sainfoin-meadow brome hay, 1 cut", "short_name": "Sainfoin-grass",
+     "calendar": [
+         e(1, "sainfoin_grass_bc", "10-26", "10-26", "forage", irrigated=False, harvest_months=[7],
+           stage_override=dict(ALF_BC_STAGES), season_boundary=True,
+           timing_source="bf04_nonbloat_legumes (V: 1 cut per season under dryland); July cut and stages U",
+           note="Not irrigated: ETc is the crop's potential use; dryland stands use what rain and soil water allow")],
+     "calendar_note": "Sainfoin with a bunchgrass (meadow brome), dryland (BF04, V). Needs lighter, well-drained soil "
+                      "with no wet feet: check the SoilGrids texture before relying on this option.",
+     "allocation_rule": None},
+]
+STRATEGIES = STRATEGIES + STRATEGIES_BC
 
 
 def main():

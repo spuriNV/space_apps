@@ -1,0 +1,260 @@
+{
+ "url": "https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&stations=USW00023110%2CUSC00043083%2CUSC00049560%2CUSC00043747%2CUSW00093193%2CUSC00044536%2CUSC00042012%2CUSC00044534%2CUSC00049367%2CUSC00041864%2CUSC00046476%2CUSC00045233&startDate=1981-01-01&endDate=2026-11-14&dataTypes=PRCP%2CTMAX%2CTMIN&units=metric&includeStationName=true&includeStationLocation=true&format=csv",
+ "search_url": "https://www.ncei.noaa.gov/access/services/search/v1/data",
+ "params": {
+  "dataset": "daily-summaries",
+  "stations": [
+   "USW00023110",
+   "USC00043083",
+   "USC00043747"
+  ],
+  "startDate": "1981-01-01",
+  "endDate": "2026-11-14",
+  "dataTypes": "PRCP,TMAX,TMIN",
+  "units": "metric"
+ },
+ "fetched_at": "2026-11-14T23:55:10Z",
+ "timestep": "daily (local station time, observation-day convention varies by station; compare monthly or +/-1 day)",
+ "units": {
+  "prcp_mm": "mm",
+  "tmax_c": "degC",
+  "tmin_c": "degC"
+ },
+ "fill_value": "blank/absent rows -> NaN",
+ "native_res": "point stations",
+ "native_res_m": null,
+ "auth": "none",
+ "selected_stations": [
+  {
+   "station": "USW00023110",
+   "name": "LEMOORE REEVES NAS, CA US",
+   "lat": 36.3333,
+   "lon": -119.95,
+   "dist_km": 14.4808,
+   "first_date": "1961-07-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.878,
+    "TMAX": 0.871,
+    "TMIN": 0.871
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  },
+  {
+   "station": "USC00043083",
+   "name": "FIVE POINTS 5 SSW, CA US",
+   "lat": 36.3642,
+   "lon": -120.1561,
+   "dist_km": 25.7275,
+   "first_date": "1942-12-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.901,
+    "TMAX": 0.86,
+    "TMIN": 0.854
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00043747",
+   "name": "HANFORD 1 S, CA US",
+   "lat": 36.3158,
+   "lon": -119.637,
+   "dist_km": 27.5311,
+   "first_date": "1899-07-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.985,
+    "TMAX": 0.989,
+    "TMIN": 0.986
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-09"
+  }
+ ],
+ "all_candidates_checked_nearest_12": [
+  {
+   "station": "USW00023110",
+   "name": "LEMOORE REEVES NAS, CA US",
+   "lat": 36.3333,
+   "lon": -119.95,
+   "dist_km": 14.4808,
+   "first_date": "1961-07-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.878,
+    "TMAX": 0.871,
+    "TMIN": 0.871
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  },
+  {
+   "station": "USC00043083",
+   "name": "FIVE POINTS 5 SSW, CA US",
+   "lat": 36.3642,
+   "lon": -120.1561,
+   "dist_km": 25.7275,
+   "first_date": "1942-12-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.901,
+    "TMAX": 0.86,
+    "TMIN": 0.854
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00049560",
+   "name": "WESTHAVEN, CA US",
+   "lat": 36.2272,
+   "lon": -119.9967,
+   "dist_km": 26.9967,
+   "first_date": "1925-12-23",
+   "coverage_1981_2025": {
+    "PRCP": 0.413,
+    "TMAX": 0.0,
+    "TMIN": 0.0
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "1999-09-30"
+  },
+  {
+   "station": "USC00043747",
+   "name": "HANFORD 1 S, CA US",
+   "lat": 36.3158,
+   "lon": -119.637,
+   "dist_km": 27.5311,
+   "first_date": "1899-07-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.985,
+    "TMAX": 0.989,
+    "TMIN": 0.986
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-09"
+  },
+  {
+   "station": "USW00093193",
+   "name": "FRESNO YOSEMITE INTERNATIONAL, CA US",
+   "lat": 36.78,
+   "lon": -119.7202,
+   "dist_km": 39.2656,
+   "first_date": "1941-12-04",
+   "coverage_1981_2025": {
+    "PRCP": 1.0,
+    "TMAX": 1.0,
+    "TMIN": 1.0
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-10"
+  },
+  {
+   "station": "USC00044536",
+   "name": "KETTLEMAN STATION, CA US",
+   "lat": 36.0725,
+   "lon": -120.0878,
+   "dist_km": 46.0028,
+   "first_date": "1941-01-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.44,
+    "TMAX": 0.0,
+    "TMIN": 0.0
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2001-09-30"
+  },
+  {
+   "station": "USC00042012",
+   "name": "CORCORAN IRRIGATION DIST., CA US",
+   "lat": 36.0975,
+   "lon": -119.5817,
+   "dist_km": 48.4725,
+   "first_date": "1948-07-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.978,
+    "TMAX": 0.981,
+    "TMIN": 0.978
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-10-28"
+  },
+  {
+   "station": "USC00044534",
+   "name": "KETTLEMAN CITY, CA US",
+   "lat": 36.0067,
+   "lon": -119.96,
+   "dist_km": 50.199,
+   "first_date": "1955-02-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.464,
+    "TMAX": 0.45,
+    "TMIN": 0.448
+   },
+   "first_obs": "2001-11-01",
+   "last_obs": "2026-11-10"
+  },
+  {
+   "station": "USC00049367",
+   "name": "VISALIA, CA US",
+   "lat": 36.3283,
+   "lon": -119.2997,
+   "dist_km": 54.8094,
+   "first_date": "1895-02-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.962,
+    "TMAX": 0.943,
+    "TMIN": 0.943
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-11-11"
+  },
+  {
+   "station": "USC00041864",
+   "name": "COALINGA, CA US",
+   "lat": 36.1356,
+   "lon": -120.3606,
+   "dist_km": 55.0143,
+   "first_date": "1942-01-02",
+   "coverage_1981_2025": {
+    "PRCP": 0.845,
+    "TMAX": 0.828,
+    "TMIN": 0.819
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2026-09-30"
+  },
+  {
+   "station": "USC00046476",
+   "name": "ORANGE COVE, CA US",
+   "lat": 36.6167,
+   "lon": -119.3,
+   "dist_km": 55.8328,
+   "first_date": "1931-06-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.172,
+    "TMAX": 0.149,
+    "TMIN": 0.149
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "1990-11-30"
+  },
+  {
+   "station": "USC00045233",
+   "name": "MADERA, CA US",
+   "lat": 36.9539,
+   "lon": -120.0378,
+   "dist_km": 57.0126,
+   "first_date": "1928-01-01",
+   "coverage_1981_2025": {
+    "PRCP": 0.836,
+    "TMAX": 0.819,
+    "TMIN": 0.81
+   },
+   "first_obs": "1981-01-01",
+   "last_obs": "2023-08-31"
+  }
+ ],
+ "rows": 47092,
+ "date_max": "2026-11-10",
+ "selection_rule": "nearest 3 of the 12 nearest candidate GHCN-D stations (bbox +/-0.8 deg, record starting <=1985) with >=70% daily coverage of PRCP,TMAX,TMIN over 1981-2025",
+ "footprint_geojson": null
+}

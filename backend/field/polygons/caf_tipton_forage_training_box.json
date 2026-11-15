@@ -1,0 +1,48 @@
+{
+  "preset_id": "caf_tipton_forage",
+  "size_km": 10,
+  "centre": {
+    "lon": -119.296995,
+    "lat": 36.038361
+  },
+  "bbox_epsg32610": [
+    828653.4,
+    3989551.7,
+    838653.4,
+    3999551.7
+  ],
+  "bbox_epsg4326": [
+    -119.35446,
+    35.991652,
+    -119.239467,
+    36.085048
+  ],
+  "geometry_epsg4326": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -119.24374767645354,
+          35.991652453901544
+        ],
+        [
+          -119.23946697891736,
+          36.08161688384583
+        ],
+        [
+          -119.3503048991788,
+          36.08504828018119
+        ],
+        [
+          -119.35446012006531,
+          35.99507261135101
+        ],
+        [
+          -119.24374767645354,
+          35.991652453901544
+        ]
+      ]
+    ]
+  },
+  "note": "Square in EPSG:32610 centred on the field centroid. Registry fields are not used for training: their ML calendar reuses the model trained around the family's original field (backend/ai)."
+}

@@ -1,0 +1,100 @@
+/* "Salmon and the field" panel (BC). Reads the app tokens only; data colours are set in SalmonPanel.tsx. */
+.sp { margin-top: var(--s-6); }
+.sp .fp-h { margin-top: 0; }
+.sp-summary p { margin: 0 0 var(--s-2); font-size: var(--fs-body); line-height: 1.45; color: var(--text); }
+.sp-summary p:first-child { font-weight: 600; }
+
+/* local More detail (the global one is the field panel's own) */
+.sp-more { display: grid; grid-template-rows: 0fr; margin: 0 -12px; transition: grid-template-rows var(--dur-4) var(--ease-enter); }
+.sp-more.on { grid-template-rows: 1fr; }
+.sp-more-in { min-height: 0; overflow: clip; padding: 0 12px; opacity: 0; transform: translateY(-6px); visibility: hidden;
+  transition: opacity var(--dur-3) var(--ease-std), transform var(--dur-3) var(--ease-enter), visibility 0s linear var(--dur-4); }
+.sp-more.on .sp-more-in { opacity: 1; transform: none; visibility: visible; transition-delay: 60ms, 60ms, 0s; }
+
+.sp-block { margin-top: var(--s-6); }
+.sp-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); flex-wrap: wrap; margin-bottom: var(--s-2); }
+.sp-head h3 { margin: 0; font-family: var(--font-head); font-size: var(--fs-answer); font-weight: var(--head-weight); color: var(--text); }
+.sp-seg2 { margin-bottom: var(--s-2); }
+.sp-lede { margin: 0 0 var(--s-2); font-size: var(--fs-body); color: var(--text-2); }
+.sp-lede b { color: var(--text); font-variant-numeric: tabular-nums lining-nums; }
+.sp-read { min-height: 44px; margin-bottom: var(--s-1); font-size: var(--fs-small); color: var(--text); font-variant-numeric: tabular-nums lining-nums; }
+.sp-read .muted { color: var(--muted); }
+.sp-chart { width: 100%; min-height: 8px; }
+.sp-chart svg { display: block; overflow: visible; user-select: none; -webkit-user-select: none; }
+.sp-chart text { font-family: var(--font-ui); font-size: var(--fs-fine); fill: var(--muted); font-variant-numeric: tabular-nums lining-nums; }
+
+/* keys and legends */
+.sp-key { list-style: none; margin: var(--s-2) 0 var(--s-1); padding: 0; display: flex; flex-wrap: wrap; gap: 4px var(--s-4); font-size: var(--fs-fine); color: var(--text-2); }
+.sp-key li { display: inline-flex; align-items: center; gap: 6px; min-height: 20px; }
+.sp-sw { display: inline-block; width: 22px; height: 12px; border-radius: 2px; flex: none; }
+.sp-sw.band { background: rgba(61, 151, 232, 0.2); box-shadow: inset 0 0 0 1px rgba(61, 151, 232, 0.5); }
+.sp-sw.crit { background: rgba(138, 90, 0, 0.12); box-shadow: inset 0 0 0 1px rgba(138, 90, 0, 0.4); }
+.sp-sw.irr { background: var(--accent-container); box-shadow: inset 0 0 0 1px var(--accent-outline); }
+.sp-sw.hatch { background: repeating-linear-gradient(-45deg, var(--muted) 0 2px, transparent 2px 5px); }
+.sp-sp { width: 8px; }
+.sp-tgroup { margin-top: var(--s-2); }
+.sp-tgroup h4 { margin: 0 0 2px; font-size: var(--fs-fine); font-weight: 700; color: var(--muted); }
+.sp-trow { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: var(--s-2); padding: 4px 0; border-top: 1px solid var(--line-soft); font-size: var(--fs-small); color: var(--text-2); }
+.sp-trow b { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums lining-nums; }
+.sp-trow small { font-size: inherit; color: var(--muted); }
+.sp-orders { list-style: none; margin: var(--s-3) 0 0; padding: 0; }
+.sp-orders li { display: grid; grid-template-columns: 56px 1fr; gap: var(--s-2); padding: 6px 0; border-top: 1px solid var(--line-soft); font-size: var(--fs-small); color: var(--text-2); }
+.sp-orders b { color: var(--text); font-variant-numeric: tabular-nums; }
+.sp a { color: var(--link); text-underline-offset: 2px; }
+.sp-note { margin: var(--s-2) 0 0; font-size: var(--fs-small); color: var(--muted); line-height: 1.4; }
+.sp-cite { display: block; margin-top: var(--s-2); font-style: normal; font-size: var(--fs-fine); color: var(--muted); line-height: 1.4; }
+.sp-why { margin-top: var(--s-2); font-size: var(--fs-small); color: var(--text-2); }
+.sp-why summary { cursor: pointer; color: var(--link); min-height: 36px; display: flex; align-items: center; }
+.sp-why p { margin: 4px 0 0; }
+
+/* run timing strip */
+.sp-strip { display: flex; flex-direction: column; gap: 3px; }
+.sp-srow { display: grid; grid-template-columns: 112px repeat(12, 1fr); gap: 2px; align-items: stretch; min-height: 28px; font-size: var(--fs-small); }
+.sp-slab { align-self: center; font-size: var(--fs-fine); color: var(--text); line-height: 1.15; padding-right: 4px; }
+.sp-cell { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; border-radius: 3px; background: var(--panel-2); }
+.sp-shead .sp-cell { background: none; font-size: var(--fs-fine); color: var(--muted); min-height: 20px; }
+.sp-cell.irr { background: var(--accent-container); }
+.sp-cell.irr.on { box-shadow: inset 0 0 0 1px var(--accent-outline); }
+.sp-cell.crit { box-shadow: inset 0 0 0 1.5px rgba(138, 90, 0, 0.55); }
+.sp-shead .sp-cell.crit { box-shadow: none; font-weight: 700; color: var(--warn); }
+.sp-fish { display: block; width: 100%; height: 14px; border-radius: 3px; margin: 0; }
+.sp-nopub { grid-column: 2 / -1; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--outline); border-radius: var(--r-full); font-size: var(--fs-fine); font-style: italic; color: var(--muted); }
+
+/* water left */
+.sp-bars { list-style: none; margin: 0; padding: 0; }
+.sp-bars li { padding: 8px 0; border-top: 1px solid var(--line-soft); }
+.sp-bar-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); font-size: var(--fs-body); color: var(--text); }
+.sp-bar-top b { font-variant-numeric: tabular-nums lining-nums; }
+.sp-track { height: 10px; margin: 4px 0; border-radius: var(--r-full); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--line-soft); overflow: hidden; }
+.sp-track i { display: block; height: 100%; min-width: 2px; border-radius: var(--r-full); background: #3d97e8; filter: brightness(0.78); transform-origin: left; }
+.sp-bars small { font-size: var(--fs-fine); color: var(--muted); }
+.sp-scale { display: flex; justify-content: space-between; margin: 0; font-size: var(--fs-fine); color: var(--muted); }
+.sp-illus { margin-top: var(--s-4); padding: var(--s-3); border-radius: var(--r-md); background: var(--panel-2); }
+.sp-illus h4 { margin: 0 0 var(--s-2); font-size: var(--fs-small); font-weight: 600; color: var(--text); line-height: 1.35; }
+.sp-illus h4 .status { display: inline-block; margin-right: 6px; font-weight: 700; }
+
+/* tables */
+.sp-table-wrap { overflow-x: auto; }
+.sp-scroll { max-height: 260px; overflow-y: auto; margin-top: var(--s-2); }
+.sp-table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); font-variant-numeric: tabular-nums lining-nums; }
+.sp-table th { text-align: left; font-weight: 600; font-size: var(--fs-fine); color: var(--muted); padding: 4px 8px 6px 0; border-bottom: 1px solid var(--line); vertical-align: bottom; }
+.sp-table td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; color: var(--text-2); }
+.sp-table td b { color: var(--text); font-weight: 600; }
+.sp-table small { display: block; font-size: var(--fs-fine); color: var(--muted); }
+.sp-table tr.over td b { color: var(--bad); }
+.sp-table tr.now td { background: var(--accent-container); color: var(--on-accent-container); font-weight: 600; }
+.sp-scroll th { position: sticky; top: 0; background: var(--panel); }
+.sp-tag { display: inline-block; margin: 0 0 var(--s-2); padding: 4px 12px; border-radius: var(--r-full); background: var(--warn-container); color: var(--on-warn-container); font-size: var(--fs-small); font-weight: 600; }
+.sp-yby { margin-top: var(--s-2); }
+
+/* respect text: quiet, always visible */
+.sp-respect { margin-top: var(--s-4); padding-top: var(--s-3); border-top: 1px solid var(--line); font-size: var(--fs-small); color: var(--text-2); }
+.sp-respect p { margin: 0 0 var(--s-2); line-height: 1.4; }
+.sp-respect ul { margin: 0; padding-left: 18px; }
+.sp-respect li { padding: 2px 0; }
+
+@media (max-width: 640px) {
+  .sp-srow { grid-template-columns: 84px repeat(12, 1fr); }
+  .sp-trow { grid-template-columns: 30px 1fr; }
+  .sp-trow b { grid-column: 2; }
+}

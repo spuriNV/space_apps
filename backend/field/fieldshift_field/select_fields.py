@@ -145,6 +145,57 @@ def select(preset: str):
     return props
 
 
+def from_dwr(preset: str):
+    """Registry fields: the DWR outline is already chosen (backend/fields/registry.json, picked with
+    backend/fields/pick_fields.py by the same CDL rule). Fetch it by UniqueID and write the same files as select()."""
+    _check_legend(preset)
+    cfg = PRESETS[preset]
+    uid = cfg["dwr_unique_id"]
+    d = json.loads(_get(DWR_2023 + "/query", {
+        "where": f"UniqueID='{uid}'", "outSR": 4326, "returnGeometry": "true", "f": "geojson",
+        "outFields": "UniqueID,ACRES,COUNTY,CLASS1,SUBCLASS1,CROPTYP1,CROPTYP2,MAIN_CROP,MAIN_CROP_DATE"}))
+    feats = d.get("features", [])
+    if len(feats) != 1:
+        raise SystemExit(f"{preset}: DWR UniqueID {uid} returned {len(feats)} features")
+    f = feats[0]
+    g = shape(f["geometry"])
+    if g.geom_type == "MultiPolygon":
+        g = max(g.geoms, key=lambda p: p.area)
+    gu = transform(to_crs("EPSG:4326", WORK_CRS).transform, g)
+    ga = transform(to_crs("EPSG:4326", CDL_CRS).transform, g)
+    leg = read_json(cache(preset) / "cdl_legend.json")["classes"]
+    st = {y: cdl_year_stats(preset, ga, y) for y in range(2008, 2026)}
+    hist = {str(y): (leg.get(str(s["majority"]), {}).get("name", str(s["majority"])) if s else None) for y, s in st.items()}
+    cen = g.centroid
+    props = {
+        "preset_id": preset, "name": cfg["name"], "area_ha": round(gu.area / 1e4, 2),
+        "centroid": {"lon": round(cen.x, 6), "lat": round(cen.y, 6)},
+        "crs": "EPSG:4326 (lon, lat)", "crs_working": WORK_CRS,
+        "boundary_source": {"id": "dwr_landiq_crop_mapping_2023", "title": "DWR Statewide Crop Mapping 2023 (Land IQ), final",
+                            "url": DWR_2023, "verified": True, "dwr_unique_id": uid, "dwr_attributes": f["properties"]},
+        "selection_rule": ("registry field (backend/fields/pick_fields.py): " +
+                           ("CDL Rice in >= 6 of 2016-2025, every other year fallow except at most one, Rice in 2025; ranked by purity"
+                            if cfg["family"] == "rice" else
+                            "CDL Alfalfa in >= 3 and forage (alfalfa, corn, winter grain/corn double crop, hay) in >= 7 of 2016-2025; ranked by purity")),
+        "cdl_majority_by_year": hist, "selected_at": now(), "candidates_considered": None,
+    }
+    POLY_DIR.mkdir(exist_ok=True)
+    write_json(POLY_DIR / f"{preset}.geojson", {"type": "FeatureCollection", "features": [
+        {"type": "Feature", "properties": props, "geometry": mapping(g)}]})
+    cu = gu.centroid
+    bx = box(cu.x - 5000, cu.y - 5000, cu.x + 5000, cu.y + 5000)
+    b4326 = transform(to_crs(WORK_CRS, "EPSG:4326").transform, bx)
+    write_json(POLY_DIR / f"{preset}_training_box.json", {
+        "preset_id": preset, "size_km": 10, "centre": props["centroid"],
+        "bbox_epsg32610": [round(v, 1) for v in bx.bounds],
+        "bbox_epsg4326": [round(v, 6) for v in b4326.bounds],
+        "geometry_epsg4326": mapping(b4326),
+        "note": "Square in EPSG:32610 centred on the field centroid. Registry fields are not used for training: their ML "
+                "calendar reuses the model trained around the family's original field (backend/ai)."})
+    print(f"{preset}: DWR {uid} {props['area_ha']} ha at {props['centroid']}")
+    return props
+
+
 if __name__ == "__main__":
     for p in (sys.argv[1:] or list(PRESETS)):
-        select(p)
+        select(p) if PRESETS[p]["original"] else from_dwr(p)

@@ -8,13 +8,14 @@ from functools import lru_cache
 
 import numpy as np
 
-from . import model
+from . import bc, model
 from .model import WYear, cover_metrics, water_metrics
 from .observed import observed_timeline
 from .sources import assumed, blocked, sn, src
 from .timeline import build_timeline, doy0
 from .validation import openet_matched
-from .weather import CHUNK, DEFAULT_ETO, REPO, load_station_precip, load_weather, station_year_precip, year_weather
+from .weather import (CHUNK, DEFAULT_ETO, REPO, fieldreg, load_station_precip, load_weather, station_network,
+                      station_year_precip, year_weather)
 
 MM_PER_AF_AC = 304.8                      # 1 acre-ft/acre = 1 ft depth (exact)
 DEFAULT_YEARS = tuple(range(2015, 2026))  # spec B2 daily master table 2015-2025
@@ -39,6 +40,10 @@ SLOPE_PCT = {
     "caf_tulare_forage": assumed(0.5, "%", low=0.0, high=1.0,
                                  note="Flat SJV field placeholder; NASADEM slope not yet supplied by backend/field. "
                                       "Cancels in E/E_baseline."),
+    "bc_salmon_river_forage": assumed(1.0, "%", low=0.0, high=3.0,
+                                      note="Salmon River valley-floor hay field placeholder (assumed); the NASADEM "
+                                           "slope is pending (backend/nasa_open terrain not run for BC). Cancels in "
+                                           "E/E_baseline."),
 }
 RULE = "rule of thumb, not a model"
 
@@ -55,7 +60,34 @@ def _strategies_raw() -> tuple:
 
 
 def load_strategies(preset_id: str) -> list[dict]:
-    return [copy.deepcopy(s) for s in _strategies_raw() if s["location_id"] == preset_id]
+    """The location's strategies. Registry fields reuse their family's set (rice -> CAR0-CAR3 of car_colusa_rice,
+    forage -> CAF0-CAF3 of caf_tulare_forage) with location_id set to the field."""
+    own = [copy.deepcopy(s) for s in _strategies_raw() if s["location_id"] == preset_id]
+    if own:
+        return own
+    tpl = fieldreg.template(preset_id)
+    out = [copy.deepcopy(s) for s in _strategies_raw() if s["location_id"] == tpl]
+    for s in out:
+        s["location_id"] = preset_id
+        s["template_location_id"] = tpl
+    return out
+
+
+def _region(preset_id: str) -> str:
+    try:
+        return fieldreg.region(preset_id)
+    except KeyError:
+        return "ca"
+
+
+def slope_pct(preset_id: str) -> dict:
+    if preset_id in SLOPE_PCT:
+        return SLOPE_PCT[preset_id]
+    base = SLOPE_PCT[fieldreg.template(preset_id)]
+    v = fieldreg.get(preset_id).get("slope_pct", base["value"])
+    return assumed(v, "%", low=base.get("low"), high=base.get("high"),
+                   note=f"Family placeholder from the registry ({'laser-levelled rice' if v == 0 else 'flat SJV field'}); "
+                        "NASADEM slope not yet supplied. Cancels in E/E_baseline.")
 
 
 def load_soil(preset_id: str) -> dict | None:
@@ -92,16 +124,18 @@ def _water_combos(rice_F: dict):
     return nominal, [nominal] + corners
 
 
-def _cover_combos():
-    nominal = (BARE_THR[0], RAIN_THR[0], "power")
-    corners = list(itertools.product(BARE_THR[1:], sorted(set(RAIN_THR[1:])), ("power", "noaa")))
+def _cover_combos(rain_thr=RAIN_THR):
+    nominal = (BARE_THR[0], rain_thr[0], "power")
+    corners = list(itertools.product(BARE_THR[1:], sorted(set(rain_thr[1:])), ("power", "noaa")))
     return nominal, [nominal] + corners
 
 
-def _evaluate(tl, wys, crops, cov_tl=None):
+def _evaluate(tl, wys, crops, cov_tl=None, rain_thr=RAIN_THR):
+    """rain_thr: (nominal, low, high) extreme-rain threshold, mm/day. California uses RAIN_THR; a BC field passes
+    bc.rain_thr() (station 99th percentile), because 25 mm almost never falls in a day at Salmon Arm."""
     rice_F = crops["rice_medium_grain"]["flood_percolation_mm"]
     wn, wcs = _water_combos(rice_F)
-    cn, ccs = _cover_combos()
+    cn, ccs = _cover_combos(rain_thr)
     water = {}
     for c in wcs:
         r = water_metrics(tl, list(wys), kc_var=c[0], eto_f=c[1], F=c[2], psrc=c[3])
@@ -140,6 +174,8 @@ def _clamp(x, lo=0.0, hi=100.0):
 
 
 def _psources(preset_id, wys):
+    if station_network(preset_id) == "eccc":
+        return bc.psources(preset_id, wys)
     used = ["NASA POWER PRECTOTCORR"]
     if any(w.p.get("noaa") is not None for w in wys):
         used.append("NOAA NCEI GHCN-Daily station mean (regional cache)")
@@ -252,8 +288,9 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
             ctl, info = observed_timeline(tls[s["id"]], preset_id, s)
             if ctl is not None:
                 ctls[s["id"]], obs_info[s["id"]] = ctl, info
-    evs = {sid: _evaluate(tl, wys, crops, ctls.get(sid)) for sid, tl in tls.items()}
-    revs = {y: {sid: _evaluate(tl, rw, crops, ctls.get(sid)) for sid, tl in tls.items()} for y, rw in replay_wys.items()}
+    rthr = bc.rain_thr(preset_id) if _region(preset_id) == "bc" else RAIN_THR
+    evs = {sid: _evaluate(tl, wys, crops, ctls.get(sid), rthr) for sid, tl in tls.items()}
+    revs = {y: {sid: _evaluate(tl, rw, crops, ctls.get(sid), rthr) for sid, tl in tls.items()} for y, rw in replay_wys.items()}
     base = next(s for s in strategies if s["is_baseline"])
     base_crops = {sp.crop["id"] for sp in tls[base["id"]].spans}
     host = _host_crop(tls[base["id"]])                       # pest-break host (today's main crop)
@@ -373,7 +410,7 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
                                          "mm/yr", wsrc, f"Replay {y}")
             exposure["replay"][str(y)] = blk
         exposure["scenario"] = {"dT_c": dT, "dP_pct": dP}
-        slope = SLOPE_PCT[preset_id]
+        slope = slope_pct(preset_id)
         sf = 1 + slope["value"] / 5
         exposure["erosion_index_E"] = _sn_c(_rng(C, cn, lambda r: r["E"] * sf), "rain-weighted bare days/yr", wsrc,
                                             "spec B4.4 E = sum_d (1-cover) x rain_risk x (1 + slope%/5); water days "
@@ -587,7 +624,8 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
             sw = sp.crop.get("seeding_window")
             if not sw or sp.entry["role"] in ("water",) or sp.entry.get("note", "").startswith("Carried"):
                 continue
-            if sp.entry["plant"] == "12-01" and sp.crop.get("perennial") and sp.entry["role"] == "forage":
+            if (sp.entry["plant"] == "12-01" or sp.entry.get("season_boundary")) and sp.crop.get("perennial") \
+                    and sp.entry["role"] == "forage":
                 continue  # stand season boundary, not a seeding
             d, a, b = doy0(sp.entry["plant"]), doy0(sw["start"]), doy0(sw["end"])
             ok = a <= d <= b
@@ -616,7 +654,8 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
 
         u_inputs = _count_unverified(tl, crops)
         rec = {
-            "id": s["id"], "location_id": preset_id, "name": s["name"], "is_baseline": s["is_baseline"],
+            "id": s["id"], "location_id": preset_id, "name": s["name"],
+            **({"short_name": s["short_name"]} if s.get("short_name") else {}), "is_baseline": s["is_baseline"],
             "cycle_years": N, "calendar": s["calendar"], "allocation_rule": s.get("allocation_rule"),
             "exposure": exposure, "water": water, "scores": scores, "composite": comp_sn,
             "risk_profile": {
@@ -651,6 +690,8 @@ def score(preset_id: str, weights: dict | None = None, constraints: dict | None 
                 "weather_years": list(years),
             },
         }
+        if _region(preset_id) == "bc":
+            bc.adapt(rec, preset_id)   # US-only text -> BC wording (rotation_engine/bc.py); CA never enters
         out.append(rec)
 
     _apply_ranks(out)

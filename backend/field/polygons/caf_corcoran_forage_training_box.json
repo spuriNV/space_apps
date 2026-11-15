@@ -1,0 +1,48 @@
+{
+  "preset_id": "caf_corcoran_forage",
+  "size_km": 10,
+  "centre": {
+    "lon": -119.565686,
+    "lat": 36.038441
+  },
+  "bbox_epsg32610": [
+    804433.7,
+    3988671.9,
+    814433.7,
+    3998671.9
+  ],
+  "bbox_epsg4326": [
+    -119.623015,
+    35.991843,
+    -119.508295,
+    36.085017
+  ],
+  "geometry_epsg4326": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -119.51226973914684,
+          35.99184344445809
+        ],
+        [
+          -119.50829463486039,
+          36.0818346718711
+        ],
+        [
+          -119.61916523788136,
+          36.08501739990797
+        ],
+        [
+          -119.6230147175718,
+          35.99501574503133
+        ],
+        [
+          -119.51226973914684,
+          35.99184344445809
+        ]
+      ]
+    ]
+  },
+  "note": "Square in EPSG:32610 centred on the field centroid. Registry fields are not used for training: their ML calendar reuses the model trained around the family's original field (backend/ai)."
+}

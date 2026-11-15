@@ -1,0 +1,195 @@
+[
+  {
+    "date": "2023-07-26",
+    "title": "City of Salmon Arm limits water use to 1 day per week - Kelowna Capital News",
+    "source": "kelownacapnews.com",
+    "url": "https://www.kelownacapnews.com/news/city-of-salmon-arm-limits-water-use-to-1-day-per-week/",
+    "rank": 3,
+    "place_match": [
+      "Salmon Arm"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.kelownacapnews.com/news/city-of-salmon-arm-limits-water-use-to-1-day-per-week/",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  },
+  {
+    "date": "2023-08-03",
+    "title": "Rollout of Salmon Arm water restrictions educational for city and public",
+    "source": "saobserver.net",
+    "url": "https://www.saobserver.net/news/rollout-of-salmon-arm-water-restrictions-educational-for-city-and-public/",
+    "rank": 3,
+    "place_match": [
+      "Salmon Arm"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.saobserver.net/news/rollout-of-salmon-arm-water-restrictions-educational-for-city-and-public/",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  },
+  {
+    "date": "2023-08-04",
+    "title": "No watering for Whitevale residents as Bessette Creek at Level 5 drought - Vernon News",
+    "source": "castanet.net",
+    "url": "https://www.castanet.net/news/Vernon/440230/No-watering-for-Whitevale-residents-as-Bessette-Creek-at-Level-5-drought",
+    "rank": 3,
+    "place_match": [
+      "Bessette"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.castanet.net/news/Vernon/440230/No-watering-for-Whitevale-residents-as-Bessette-Creek-at-Level-5-drought",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  },
+  {
+    "date": "2023-08-16",
+    "title": "Targeted actions protect chinook runs in Thompson Okanagan",
+    "source": "news.gov.bc.ca",
+    "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+    "rank": 1,
+    "place_match": [
+      "Salmon River",
+      "Bessette",
+      "Thompson Okanagan"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "spec_cited_page",
+    "_publisher_url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  },
+  {
+    "date": "2023-08-17",
+    "title": "Salmon River , Bessette Creek protection orders issued to save water for salmon - Vernon News",
+    "source": "castanet.net",
+    "url": "https://www.castanet.net/news/Vernon/442121/Salmon-River-Bessette-Creek-protection-orders-issued-to-save-water-for-salmon",
+    "rank": 3,
+    "place_match": [
+      "Salmon River",
+      "Bessette"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.castanet.net/news/Vernon/442121/Salmon-River-Bessette-Creek-protection-orders-issued-to-save-water-for-salmon",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  },
+  {
+    "date": "2023-08-31",
+    "title": "Westwold farmer fight for water catches ear of BC United leader - Vernon News",
+    "source": "castanet.net",
+    "url": "https://www.castanet.net/news/Vernon/444445/Westwold-farmers-fight-for-water-catches-ear-of-BC-United-leader",
+    "rank": 3,
+    "place_match": [
+      "Westwold"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.castanet.net/news/Vernon/444445/Westwold-farmers-fight-for-water-catches-ear-of-BC-United-leader",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  },
+  {
+    "date": "2023-09-09",
+    "title": "Regional district director wants better communication over Westwold water restrictions - Kamloops News",
+    "source": "castanet.net",
+    "url": "https://www.castanet.net/news/Kamloops/445790/Regional-district-director-wants-better-communication-over-Westwold-water-restrictions",
+    "rank": 3,
+    "place_match": [
+      "Westwold"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.castanet.net/news/Kamloops/445790/Regional-district-director-wants-better-communication-over-Westwold-water-restrictions",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  },
+  {
+    "date": "2023-09-13",
+    "title": "Foregoing a salmon return not an option , minister says of Westwold water dispute - Vernon News",
+    "source": "castanet.net",
+    "url": "https://www.castanet.net/news/Vernon/446557/Foregoing-a-salmon-return-not-an-option-minister-says-of-Westwold-water-dispute",
+    "rank": 3,
+    "place_match": [
+      "Westwold"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.castanet.net/news/Vernon/446557/Foregoing-a-salmon-return-not-an-option-minister-says-of-Westwold-water-dispute",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  },
+  {
+    "date": "2023-09-14",
+    "title": "Ralston says salmon run would be wiped out without protection order in Westwold",
+    "source": "saobserver.net",
+    "url": "https://www.saobserver.net/local-news/ralston-says-salmon-run-would-be-wiped-out-without-protection-order-in-westwold/",
+    "rank": 3,
+    "place_match": [
+      "Westwold"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "gdelt",
+    "_publisher_url": "https://www.saobserver.net/local-news/ralston-says-salmon-run-would-be-wiped-out-without-protection-order-in-westwold/",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  },
+  {
+    "date": "2023-09-29",
+    "title": "North Okanagan water restrictions eased despite drought",
+    "source": "Salmon Arm Observer",
+    "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxONUFUejNpQ3NjZ0VpT3U5V25ZQjRFcEdmOW9PQXV2UmRzR210M3RUQlFoRUZJTkpPeWxIYWNSYzZwdjhwTlVLQW9hdEMyVjVGSWpLX1VYMElaRzlfTmJFWmRxZWdBdDZFQUFTWTJFTVJSYWc4Q0xRaXpVeTMyaEFjT0k3SVlESHhUc1pLZ1cwc0Y4Nkl0?oc=5",
+    "rank": 3,
+    "place_match": [
+      "Salmon Arm"
+    ],
+    "query_id": "bc_salmon_2023",
+    "signal": {
+      "dataset": "smap_l3",
+      "value_pct": null,
+      "lead_days": null
+    },
+    "_via": "google_news",
+    "_publisher_url": "https://saobserver.net",
+    "_derived_from": "backend/news/out/bc_opener.json"
+  }
+]

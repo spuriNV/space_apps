@@ -70,8 +70,9 @@ def legend() -> dict[int, dict]:
     return leg
 
 
-def box_5070(preset: str, half=HALF_BOX_M):
+def box_5070(preset: str, half=None):
     lon, lat = PRESETS[preset]["centre"]
+    half = half or PRESETS[preset].get("half_box_m") or HALF_BOX_M  # 8 km for the original two, 2 km for registry fields
     x, y = to_crs("EPSG:4326", CDL_CRS).transform(lon, lat)
     snap = lambda v: GRID_ORIGIN + 30 * round((v - GRID_ORIGIN) / 30)
     return snap(x - half), snap(y - half), snap(x + half), snap(y + half)

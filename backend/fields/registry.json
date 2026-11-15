@@ -1,0 +1,2018 @@
+{
+ "about": "CropLytics field registry. One entry per real field (DWR / Land IQ 2023 outline, CDL-checked). Read with backend/fields/fieldreg.py. family picks the rotation set (rice -> CAR0-CAR3 from car_colusa_rice, forage -> CAF0-CAF3 from caf_tulare_forage) and the trained ML calendar model (template). weather_point is the POWER/NOAA request point (null = polygon centroid). ncei_stations null = chosen by backend/regional fetch_ncei.py (nearest 3 with >=70% coverage) and written back here. reservoirs are the CDEC storage stations shown for the field. water is filled by backend/fields/water_sources.py from public boundary layers. fields_other_regions holds fields outside California (region 'bc'), read only when asked for (fieldreg region=None or 'bc', or FIELDSHIFT_FIELDS); they carry not_available reasons instead of the California-only lookups.",
+ "fields": [
+  {
+   "id": "car_colusa_rice",
+   "name": "Colusa County rice check",
+   "farmer_name": "Rice field 4 miles east of Williams",
+   "family": "rice",
+   "county": {
+    "fips": "06011",
+    "name": "Colusa"
+   },
+   "usdm_counties": [
+    "06011"
+   ],
+   "dwr_unique_id": "0605542",
+   "centroid": {
+    "lon": -122.083339,
+    "lat": 39.141386
+   },
+   "area_ha": 60.25,
+   "weather_point": [
+    -122.1,
+    39.15
+   ],
+   "search_centre": [
+    -122.1,
+    39.15
+   ],
+   "target_ha": 60.0,
+   "cdl_half_box_m": 8000,
+   "ncei_stations": [
+    "USC00041948",
+    "USC00049699",
+    "USC00049781"
+   ],
+   "reservoirs": [
+    "SHA",
+    "ORO"
+   ],
+   "slope_pct": 0.0,
+   "why": "Original rice example: CDL rice 2021, fallow 2022 (drought), rice 2023; best purity of 22 such fields near Williams.",
+   "selected_by": "backend/field/fieldshift_field/select_fields.py",
+   "acres": 148.9,
+   "template": "car_colusa_rice",
+   "polygon": "backend/field/polygons/car_colusa_rice.geojson",
+   "original": true,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -122.083339,
+     39.141386
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Glenn-Colusa Irrigation District",
+    "other_agencies": [],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-021.52",
+     "name": "SACRAMENTO VALLEY - COLUSA",
+     "basin": "SACRAMENTO VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": false,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Colusa Groundwater Authority GSA - Colusa",
+      "id": 323,
+      "url": "colusagroundwater.org",
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 92,
+      "dwr_status": "Approved",
+      "submitted": "2022-01-28",
+      "updated": "2024-04-24"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "not listed (DWR jurisdiction)",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "caf_tulare_forage",
+   "name": "Kings County forage-for-dairy check",
+   "farmer_name": "Alfalfa field 6 miles south of Hanford",
+   "family": "forage",
+   "county": {
+    "fips": "06031",
+    "name": "Kings"
+   },
+   "usdm_counties": [
+    "06031",
+    "06107"
+   ],
+   "dwr_unique_id": "1603054",
+   "centroid": {
+    "lon": -119.634704,
+    "lat": 36.236747
+   },
+   "area_ha": 29.47,
+   "weather_point": [
+    -119.6,
+    36.2
+   ],
+   "search_centre": [
+    -119.6,
+    36.2
+   ],
+   "target_ha": 32.0,
+   "cdl_half_box_m": 8000,
+   "ncei_stations": [
+    "USC00042012",
+    "USC00043747",
+    "USC00049367"
+   ],
+   "reservoirs": [
+    "PNF"
+   ],
+   "slope_pct": 0.5,
+   "why": "Original forage example: most alfalfa and corn years of 11 qualifying fields south of Hanford.",
+   "selected_by": "backend/field/fieldshift_field/select_fields.py",
+   "acres": 72.8,
+   "template": "caf_tulare_forage",
+   "polygon": "backend/field/polygons/caf_tulare_forage.geojson",
+   "original": true,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -119.634704,
+     36.236747
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Kings County Water District",
+    "other_agencies": [
+     "Lakeside Irrigation Water District",
+     "Kaweah Delta Water Conservation District",
+     "Kings County"
+    ],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-022.11",
+     "name": "SAN JOAQUIN VALLEY - KAWEAH",
+     "basin": "SAN JOAQUIN VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": true,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Greater Kaweah GSA",
+      "id": 281,
+      "url": "www.greaterkaweahgsa.org",
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 164,
+      "dwr_status": "Inadequate - Under Review",
+      "submitted": "2026-01-13",
+      "updated": "2026-01-23"
+     },
+     {
+      "gsp_id": 165,
+      "dwr_status": "Inadequate - Under Review",
+      "submitted": "2026-01-13",
+      "updated": "2026-01-23"
+     },
+     {
+      "gsp_id": 166,
+      "dwr_status": "Inadequate - Under Review",
+      "submitted": "2026-01-13",
+      "updated": "2026-01-23"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "returned to DWR",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "car_glenn_rice",
+   "name": "Rice field 3 miles southwest of Glenn",
+   "farmer_name": "Rice field 3 miles southwest of Glenn",
+   "family": "rice",
+   "county": {
+    "fips": "06021",
+    "name": "Glenn"
+   },
+   "usdm_counties": [
+    "06021"
+   ],
+   "dwr_unique_id": "1107325",
+   "centroid": {
+    "lon": -122.058848,
+    "lat": 39.496621
+   },
+   "area_ha": 81.2,
+   "acres": 200.6,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00049699",
+    "USC00046506",
+    "USC00041948"
+   ],
+   "reservoirs": [
+    "SHA",
+    "ORO"
+   ],
+   "slope_pct": 0.0,
+   "why": "Large (200 ac) Glenn-Colusa ID-area check; rice every year 2008-2025 except fallow in the 2022 drought; purity 98-100%.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "car_colusa_rice",
+   "polygon": "backend/field/polygons/car_glenn_rice.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -122.058848,
+     39.496621
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Provident Irrigation District",
+    "other_agencies": [],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-021.52",
+     "name": "SACRAMENTO VALLEY - COLUSA",
+     "basin": "SACRAMENTO VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": false,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Glenn Groundwater Authority GSA",
+      "id": 369,
+      "url": "http://www.countyofglenn.net/",
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 92,
+      "dwr_status": "Approved",
+      "submitted": "2022-01-28",
+      "updated": "2024-04-24"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "not listed (DWR jurisdiction)",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "car_richvale_rice",
+   "name": "Rice field 3 miles northwest of Richvale",
+   "farmer_name": "Rice field 3 miles northwest of Richvale",
+   "family": "rice",
+   "county": {
+    "fips": "06007",
+    "name": "Butte"
+   },
+   "usdm_counties": [
+    "06007"
+   ],
+   "dwr_unique_id": "0407584",
+   "centroid": {
+    "lon": -121.797933,
+    "lat": 39.510775
+   },
+   "area_ha": 27.1,
+   "acres": 67.0,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00046521",
+    "USC00046685",
+    "USC00041948"
+   ],
+   "reservoirs": [
+    "ORO",
+    "SHA"
+   ],
+   "slope_pct": 0.0,
+   "why": "Continuous rice all 18 CDL years (2008-2025), never fallowed, even in 2022: Feather River water, a contrast to the Colusa/Glenn fields that went fallow.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "car_colusa_rice",
+   "polygon": "backend/field/polygons/car_richvale_rice.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -121.797933,
+     39.510775
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Western Canal Water District",
+    "other_agencies": [
+     "Butte County of"
+    ],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-021.70",
+     "name": "SACRAMENTO VALLEY - BUTTE",
+     "basin": "SACRAMENTO VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "Medium",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": false,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Western Canal Water District GSA",
+      "id": 120,
+      "url": "westerncanal.com",
+      "exclusive": "No"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 98,
+      "dwr_status": "Approved",
+      "submitted": "2022-01-28",
+      "updated": "2022-02-14"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "not listed (DWR jurisdiction)",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "car_biggs_rice",
+   "name": "Rice field 2 miles northwest of Biggs",
+   "farmer_name": "Rice field 2 miles northwest of Biggs",
+   "family": "rice",
+   "county": {
+    "fips": "06007",
+    "name": "Butte"
+   },
+   "usdm_counties": [
+    "06007"
+   ],
+   "dwr_unique_id": "0402356",
+   "centroid": {
+    "lon": -121.740014,
+    "lat": 39.439276
+   },
+   "area_ha": 61.8,
+   "acres": 152.7,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00046521",
+    "USC00046685",
+    "USC00041948"
+   ],
+   "reservoirs": [
+    "ORO",
+    "SHA"
+   ],
+   "slope_pct": 0.0,
+   "why": "Rice with rotation fallow years 2012, 2017, 2019 and 2024 but not 2022; shows a recent (2024) bare year.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "car_colusa_rice",
+   "polygon": "backend/field/polygons/car_biggs_rice.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -121.740014,
+     39.439276
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Richvale Irrigation District",
+    "other_agencies": [
+     "Butte County of"
+    ],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-021.70",
+     "name": "SACRAMENTO VALLEY - BUTTE",
+     "basin": "SACRAMENTO VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "Medium",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": false,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Richvale Irrigation District GSA",
+      "id": 112,
+      "url": "http://richvaleid.org/",
+      "exclusive": "No"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 98,
+      "dwr_status": "Approved",
+      "submitted": "2022-01-28",
+      "updated": "2022-02-14"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "not listed (DWR jurisdiction)",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "car_robbins_rice",
+   "name": "Rice field 1 mile northeast of Robbins",
+   "farmer_name": "Rice field 1 mile northeast of Robbins",
+   "family": "rice",
+   "county": {
+    "fips": "06101",
+    "name": "Sutter"
+   },
+   "usdm_counties": [
+    "06101"
+   ],
+   "dwr_unique_id": "5105847",
+   "centroid": {
+    "lon": -121.695534,
+    "lat": 38.876067
+   },
+   "area_ha": 58.2,
+   "acres": 143.8,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00049781",
+    "USC00042294",
+    "USW00023271"
+   ],
+   "reservoirs": [
+    "ORO",
+    "SHA"
+   ],
+   "slope_pct": 0.0,
+   "why": "Sutter Basin rice that grew sunflower instead of rice in 2014 and 2022, the two drought years: a dry-year rotation crop rather than bare fallow.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "car_colusa_rice",
+   "polygon": "backend/field/polygons/car_robbins_rice.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -121.695534,
+     38.876067
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Reclamation District No. 1500 - Sutter Basin",
+    "other_agencies": [
+     "Sutter Mutual Water Company"
+    ],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-021.62",
+     "name": "SACRAMENTO VALLEY - SUTTER",
+     "basin": "SACRAMENTO VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "Medium",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": false,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Reclamation District No. 1500 GSA",
+      "id": 239,
+      "url": null,
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 112,
+      "dwr_status": "Approved",
+      "submitted": "2022-01-28",
+      "updated": "2022-02-14"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "not listed (DWR jurisdiction)",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "car_zamora_rice",
+   "name": "Rice field 6 miles north of Zamora",
+   "farmer_name": "Rice field 6 miles north of Zamora",
+   "family": "rice",
+   "county": {
+    "fips": "06113",
+    "name": "Yolo"
+   },
+   "usdm_counties": [
+    "06113"
+   ],
+   "dwr_unique_id": "5703065",
+   "centroid": {
+    "lon": -121.850815,
+    "lat": 38.873659
+   },
+   "area_ha": 59.0,
+   "acres": 145.8,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00049781",
+    "USC00041948",
+    "USC00042294"
+   ],
+   "reservoirs": [
+    "SHA",
+    "ORO"
+   ],
+   "slope_pct": 0.0,
+   "why": "West-side Yolo rice; fallow in 2022 and again in 2024, rice in all other years.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "car_colusa_rice",
+   "polygon": "backend/field/polygons/car_zamora_rice.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -121.850815,
+     38.873659
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Reclamation District No 108",
+    "other_agencies": [],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-021.67",
+     "name": "SACRAMENTO VALLEY - YOLO",
+     "basin": "SACRAMENTO VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": false,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Yolo Subbasin GSA",
+      "id": 217,
+      "url": "http://yologroundwater.org",
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 96,
+      "dwr_status": "Approved",
+      "submitted": "2022-01-28",
+      "updated": "2022-02-14"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "not listed (DWR jurisdiction)",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "car_grimes_rice",
+   "name": "Rice field 4 miles west of Grimes",
+   "farmer_name": "Rice field 4 miles west of Grimes",
+   "family": "rice",
+   "county": {
+    "fips": "06011",
+    "name": "Colusa"
+   },
+   "usdm_counties": [
+    "06011"
+   ],
+   "dwr_unique_id": "0606192",
+   "centroid": {
+    "lon": -121.964595,
+    "lat": 39.060385
+   },
+   "area_ha": 61.0,
+   "acres": 150.7,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00041948",
+    "USC00049781",
+    "USC00049699"
+   ],
+   "reservoirs": [
+    "SHA",
+    "ORO"
+   ],
+   "slope_pct": 0.0,
+   "why": "Colusa rice with the most fallow years of the candidates (2014, 2015, 2017, 2020, 2021, 2022): a field that sits out dry years.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "car_colusa_rice",
+   "polygon": "backend/field/polygons/car_grimes_rice.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -121.964595,
+     39.060385
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Colusa Drain Water Users Association",
+    "other_agencies": [],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-021.52",
+     "name": "SACRAMENTO VALLEY - COLUSA",
+     "basin": "SACRAMENTO VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": false,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Colusa Groundwater Authority GSA - Colusa",
+      "id": 323,
+      "url": "colusagroundwater.org",
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 92,
+      "dwr_status": "Approved",
+      "submitted": "2022-01-28",
+      "updated": "2024-04-24"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "not listed (DWR jurisdiction)",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "caf_corcoran_forage",
+   "name": "Forage field 4 miles south of Corcoran (Tulare Lake bed)",
+   "farmer_name": "Forage field 4 miles south of Corcoran (Tulare Lake bed)",
+   "family": "forage",
+   "county": {
+    "fips": "06031",
+    "name": "Kings"
+   },
+   "usdm_counties": [
+    "06031"
+   ],
+   "dwr_unique_id": "1602930",
+   "centroid": {
+    "lon": -119.565686,
+    "lat": 36.038441
+   },
+   "area_ha": 56.7,
+   "acres": 140.1,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00042012",
+    "USC00043747",
+    "USC00049367"
+   ],
+   "reservoirs": [
+    "PNF"
+   ],
+   "slope_pct": 0.5,
+   "why": "In the old Tulare Lake bed south of Corcoran: alfalfa 2015-2019, wheat/corn 2020-2022, idle in 2023 and 2024 (the 2023 re-flooding; DWR left it unclassified in 2023), alfalfa again in 2025.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "caf_tulare_forage",
+   "polygon": "backend/field/polygons/caf_corcoran_forage.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -119.565686,
+     36.038441
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Corcoran Irrigation District",
+    "other_agencies": [
+     "Kings County",
+     "Kings River Conservation District"
+    ],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-022.12",
+     "name": "SAN JOAQUIN VALLEY - TULARE LAKE",
+     "basin": "SAN JOAQUIN VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": true,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "El Rico GSA",
+      "id": 358,
+      "url": null,
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 42,
+      "dwr_status": "Inadequate",
+      "submitted": "2020-01-29",
+      "updated": "2026-08-05"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "probationary",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "caf_goshen_forage",
+   "name": "Alfalfa field 2 miles southwest of Goshen",
+   "farmer_name": "Alfalfa field 2 miles southwest of Goshen",
+   "family": "forage",
+   "county": {
+    "fips": "06107",
+    "name": "Tulare"
+   },
+   "usdm_counties": [
+    "06107"
+   ],
+   "dwr_unique_id": "5426286",
+   "centroid": {
+    "lon": -119.450698,
+    "lat": 36.323595
+   },
+   "area_ha": 30.0,
+   "acres": 74.1,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00049367",
+    "USC00043747",
+    "USC00042012"
+   ],
+   "reservoirs": [
+    "TRM"
+   ],
+   "slope_pct": 0.5,
+   "why": "Classic dairy rotation: alfalfa stands broken by single corn years (2012, 2018, 2019, 2024); forage in all 18 CDL years.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "caf_tulare_forage",
+   "polygon": "backend/field/polygons/caf_goshen_forage.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -119.450698,
+     36.323595
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Kaweah Delta Water Conservation District",
+    "other_agencies": [],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-022.11",
+     "name": "SAN JOAQUIN VALLEY - KAWEAH",
+     "basin": "SAN JOAQUIN VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": true,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Greater Kaweah GSA",
+      "id": 281,
+      "url": "www.greaterkaweahgsa.org",
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 164,
+      "dwr_status": "Inadequate - Under Review",
+      "submitted": "2026-01-13",
+      "updated": "2026-01-23"
+     },
+     {
+      "gsp_id": 165,
+      "dwr_status": "Inadequate - Under Review",
+      "submitted": "2026-01-13",
+      "updated": "2026-01-23"
+     },
+     {
+      "gsp_id": 166,
+      "dwr_status": "Inadequate - Under Review",
+      "submitted": "2026-01-13",
+      "updated": "2026-01-23"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "returned to DWR",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "caf_tipton_forage",
+   "name": "Forage field 2 miles southeast of Tipton",
+   "farmer_name": "Forage field 2 miles southeast of Tipton",
+   "family": "forage",
+   "county": {
+    "fips": "06107",
+    "name": "Tulare"
+   },
+   "usdm_counties": [
+    "06107"
+   ],
+   "dwr_unique_id": "5407282",
+   "centroid": {
+    "lon": -119.296995,
+    "lat": 36.038361
+   },
+   "area_ha": 15.3,
+   "acres": 37.8,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00042012",
+    "USC00044957",
+    "USC00049367"
+   ],
+   "reservoirs": [
+    "SCC"
+   ],
+   "slope_pct": 0.5,
+   "why": "Dairy forage field that switches between alfalfa (2019-2023) and winter wheat / corn double crops (2024-2025); forage every year 2016-2025.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "caf_tulare_forage",
+   "polygon": "backend/field/polygons/caf_tipton_forage.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -119.296995,
+     36.038361
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Lower Tule River Irrigation District",
+    "other_agencies": [],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-022.13",
+     "name": "SAN JOAQUIN VALLEY - TULE",
+     "basin": "SAN JOAQUIN VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": true,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Lower Tule River Irrigation District GSA",
+      "id": 42,
+      "url": null,
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 65,
+      "dwr_status": "Inadequate",
+      "submitted": "2020-01-31",
+      "updated": "2026-07-26"
+     },
+     {
+      "gsp_id": 43,
+      "dwr_status": "Inadequate",
+      "submitted": "2020-01-31",
+      "updated": "2026-07-27"
+     },
+     {
+      "gsp_id": 63,
+      "dwr_status": "Inadequate",
+      "submitted": "2020-01-31",
+      "updated": "2026-07-26"
+     },
+     {
+      "gsp_id": 48,
+      "dwr_status": "Inadequate",
+      "submitted": "2020-01-31",
+      "updated": "2026-07-26"
+     },
+     {
+      "gsp_id": 56,
+      "dwr_status": "Inadequate",
+      "submitted": "2020-01-31",
+      "updated": "2026-07-26"
+     },
+     {
+      "gsp_id": 57,
+      "dwr_status": "Inadequate",
+      "submitted": "2020-01-31",
+      "updated": "2026-07-26"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "probationary",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "caf_riverdale_forage",
+   "name": "Alfalfa field 2 miles northwest of Riverdale",
+   "farmer_name": "Alfalfa field 2 miles northwest of Riverdale",
+   "family": "forage",
+   "county": {
+    "fips": "06019",
+    "name": "Fresno"
+   },
+   "usdm_counties": [
+    "06019"
+   ],
+   "dwr_unique_id": "1025577",
+   "centroid": {
+    "lon": -119.891544,
+    "lat": 36.454761
+   },
+   "area_ha": 39.3,
+   "acres": 97.1,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USW00023110",
+    "USC00043083",
+    "USC00043747"
+   ],
+   "reservoirs": [
+    "PNF"
+   ],
+   "slope_pct": 0.5,
+   "why": "West Fresno field fallowed in the 2013-2014 drought, then alfalfa 2016-2024 with one wheat year (2020).",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "caf_tulare_forage",
+   "polygon": "backend/field/polygons/caf_riverdale_forage.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -119.891544,
+     36.454761
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Riverdale Irrigation District",
+    "other_agencies": [
+     "Kings River Conservation District",
+     "Riverdale Public Utilitiy District"
+    ],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-022.08",
+     "name": "SAN JOAQUIN VALLEY - KINGS",
+     "basin": "SAN JOAQUIN VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": true,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "North Fork Kings GSA",
+      "id": 187,
+      "url": "www.northforkkings.org",
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 22,
+      "dwr_status": "Under Periodic Review",
+      "submitted": "2020-01-28",
+      "updated": "2022-08-01"
+     },
+     {
+      "gsp_id": 25,
+      "dwr_status": "Under Periodic Review",
+      "submitted": "2020-01-28",
+      "updated": "2023-10-31"
+     },
+     {
+      "gsp_id": 26,
+      "dwr_status": "Under Periodic Review",
+      "submitted": "2020-01-28",
+      "updated": "2022-08-01"
+     },
+     {
+      "gsp_id": 28,
+      "dwr_status": "Under Periodic Review",
+      "submitted": "2020-01-28",
+      "updated": "2022-08-01"
+     },
+     {
+      "gsp_id": 23,
+      "dwr_status": "Under Periodic Review",
+      "submitted": "2020-01-28",
+      "updated": "2022-08-01"
+     },
+     {
+      "gsp_id": 24,
+      "dwr_status": "Under Periodic Review",
+      "submitted": "2020-01-28",
+      "updated": "2022-08-01"
+     },
+     {
+      "gsp_id": 31,
+      "dwr_status": "Under Periodic Review",
+      "submitted": "2020-01-28",
+      "updated": "2023-07-20"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "not listed (DWR jurisdiction)",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "caf_elnido_forage",
+   "name": "Alfalfa field 2 miles northeast of El Nido",
+   "farmer_name": "Alfalfa field 2 miles northeast of El Nido",
+   "family": "forage",
+   "county": {
+    "fips": "06047",
+    "name": "Merced"
+   },
+   "usdm_counties": [
+    "06047"
+   ],
+   "dwr_unique_id": "2413970",
+   "centroid": {
+    "lon": -120.475337,
+    "lat": 37.158544
+   },
+   "area_ha": 27.2,
+   "acres": 67.2,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00045532",
+    "USC00045118",
+    "USC00045233"
+   ],
+   "reservoirs": [
+    "EXC"
+   ],
+   "slope_pct": 0.5,
+   "why": "Merced alfalfa 2010-2016 and 2019-2025, broken by wheat (2017) and cotton (2018); highest purity of the Merced candidates.",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "caf_tulare_forage",
+   "polygon": "backend/field/polygons/caf_elnido_forage.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-15",
+    "point": [
+     -120.475337,
+     37.158544
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": null,
+    "other_agencies": [],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-15",
+     "verified": true
+    },
+    "nearest_district": {
+     "name": "Merced Irrigation District",
+     "within_m": 1000,
+     "others": [],
+     "note": "the field centroid is in no DWR water district; Merced Irrigation District is within 1000 m"
+    },
+    "subbasin": {
+     "number": "5-022.04",
+     "name": "SAN JOAQUIN VALLEY - MERCED",
+     "basin": "SAN JOAQUIN VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-15",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-15",
+     "verified": true
+    },
+    "critically_overdrafted": true,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-15",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "Merced Subbasin GSA",
+      "id": 219,
+      "url": "www.countyofmerced.com",
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-15",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 9,
+      "dwr_status": "Incomplete",
+      "submitted": "2020-01-28",
+      "updated": "2025-09-04"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-15",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "not listed (DWR jurisdiction)",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-15",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "caf_newman_forage",
+   "name": "Alfalfa field 3 miles north of Newman",
+   "farmer_name": "Alfalfa field 3 miles north of Newman",
+   "family": "forage",
+   "county": {
+    "fips": "06099",
+    "name": "Stanislaus"
+   },
+   "usdm_counties": [
+    "06099"
+   ],
+   "dwr_unique_id": "5007334",
+   "centroid": {
+    "lon": -121.004591,
+    "lat": 37.361966
+   },
+   "area_ha": 40.5,
+   "acres": 100.1,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": 2000,
+   "ncei_stations": [
+    "USC00046168",
+    "USC00049073",
+    "USW00023258"
+   ],
+   "reservoirs": [
+    "SNL"
+   ],
+   "slope_pct": 0.5,
+   "why": "West-side Stanislaus alfalfa with a wheat/corn and corn break (2017-2018) and an oats/wheat break (2023-2024).",
+   "selected_by": "backend/fields/pick_fields.py",
+   "template": "caf_tulare_forage",
+   "polygon": "backend/field/polygons/caf_newman_forage.geojson",
+   "original": false,
+   "water": {
+    "looked_up": "2026-11-14",
+    "point": [
+     -121.004591,
+     37.361966
+    ],
+    "method": "layers queried at the field's polygon centroid",
+    "district": "Central California Irrigation District",
+    "other_agencies": [
+     "San Joaquin River Exchange Contractors Water Authority"
+    ],
+    "district_source": {
+     "title": "DWR i03 Water Districts",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_WaterDistricts/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "subbasin": {
+     "number": "5-022.07",
+     "name": "SAN JOAQUIN VALLEY - DELTA-MENDOTA",
+     "basin": "SAN JOAQUIN VALLEY"
+    },
+    "subbasin_source": {
+     "title": "DWR Bulletin 118 groundwater basins (i08_B118_CA_GroundwaterBasins)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_CA_GroundwaterBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "sgma_priority": "High",
+    "sgma_priority_source": {
+     "title": "DWR SGMA 2019 Basin Prioritization",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/MapServer/1",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "critically_overdrafted": true,
+    "critically_overdrafted_source": {
+     "title": "DWR critically overdrafted basins",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_CriticallyOverdraftedBasins/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsa": [
+     {
+      "name": "San Joaquin River Exchange Contractors GSA",
+      "id": 10,
+      "url": "http://www.sjrecwa.net/",
+      "exclusive": "Yes"
+     }
+    ],
+    "gsa_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Agencies (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Agencies/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "gsp": [
+     {
+      "gsp_id": 174,
+      "dwr_status": "Inadequate - Under Review",
+      "submitted": "2026-05-28",
+      "updated": "2026-06-01"
+     }
+    ],
+    "gsp_source": {
+     "title": "DWR SGMA Portal, Groundwater Sustainability Plan areas (i03)",
+     "url": "https://gis.water.ca.gov/arcgis/rest/services/Boundaries/i03_Groundwater_Sustainability_Plan_Areas/FeatureServer/0",
+     "accessed": "2026-11-14",
+     "verified": true
+    },
+    "adjudicated_area": null,
+    "state_board": {
+     "status": "returned to DWR",
+     "url": "https://www.waterboards.ca.gov/water_issues/programs/sgma/groundwater_basins/",
+     "accessed": "2026-11-14",
+     "verified": true,
+     "listed": {
+      "probationary": [
+       "Tulare Lake Subbasin",
+       "Tule Subbasin"
+      ],
+      "under_evaluation": [
+       "Pleasant Valley Subbasin"
+      ],
+      "returned_to_dwr": [
+       "Chowchilla Subbasin",
+       "Delta-Mendota Subbasin",
+       "Kaweah Subbasin"
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "fields_other_regions": [
+  {
+   "id": "bc_salmon_river_forage",
+   "region": "bc",
+   "name": "Salmon River valley forage field (Shuswap, BC)",
+   "farmer_name": "Hay field in the Salmon River valley, 10 km southwest of downtown Salmon Arm",
+   "family": "forage",
+   "county": {
+    "fips": "5939",
+    "name": "Columbia-Shuswap",
+    "kind": "regional district",
+    "code_system": "Statistics Canada SGC census division (59 = BC)",
+    "province": "BC"
+   },
+   "usdm_counties": [],
+   "dwr_unique_id": null,
+   "centroid": {
+    "lon": -119.382594,
+    "lat": 50.643441
+   },
+   "area_ha": 21.51,
+   "acres": 53.2,
+   "weather_point": null,
+   "search_centre": null,
+   "target_ha": null,
+   "cdl_half_box_m": null,
+   "ncei_stations": null,
+   "eccc_stations": [
+    "116FRMN",
+    "1167337"
+   ],
+   "reservoirs": [],
+   "slope_pct": null,
+   "why": "BC example: the lower Salmon River was under the 16 Aug 2023 fish population protection order that stopped about 398 licence holders irrigating forage. AAFC classes this outline Pasture / Forages in every mapped year 2014-2025. Built on non-reserve farmland (6.5 km from the nearest reserve); see docs/bc-first-nations.md.",
+   "selected_by": "backend/bc/select_field.py",
+   "template": "bc_salmon_river_forage",
+   "polygon": "backend/field/polygons/bc_salmon_river_forage.geojson",
+   "original": false,
+   "water": null,
+   "water_context": {
+    "watershed": "Salmon River (Shuswap), lower reach; Bessette Creek is the other 2023 order area",
+    "orders": [
+     {
+      "date": "2023-08-16",
+      "kind": "order",
+      "title": "Fish population protection orders M0238_2023 (lower Salmon River) and M0239_2023 (Bessette Creek): about 398 licence holders to stop using water for forage crops",
+      "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305",
+      "verified": true
+     },
+     {
+      "date": "2026-07-28",
+      "kind": "order",
+      "title": "Temporary protection order issued for the Salmon River",
+      "url": "https://news.gov.bc.ca/releases/2026WLRS0042-000965",
+      "verified": true
+     },
+     {
+      "date": "2026-08-08",
+      "kind": "rescission",
+      "title": "Order rescinded as farmers and ranchers dealt with elevated wildfire risk (BC's wording)",
+      "url": "https://news.gov.bc.ca/releases/2026WLRS0042-000965",
+      "verified": true
+     },
+     {
+      "date": "2026-08-19",
+      "kind": "order",
+      "title": "New temporary protection order: 458 surface water and groundwater licences and transitioning groundwater users in the Salmon River watershed stop irrigating forage crops, lawns, fairways and gardens; effective 19 Aug 2026",
+      "url": "https://news.gov.bc.ca/releases/2026WLRS0042-000965",
+      "verified": true,
+      "licences": 458,
+      "effective": "2026-08-19"
+     }
+    ],
+    "note": "No California-style water district or SGMA basin. Surface and groundwater licences are issued by the Province under the Water Sustainability Act; this field's licence is not looked up (the lookup would identify an owner)."
+   },
+   "not_available": {
+    "openet": "OpenET covers the western United States only; there is no field-scale measured water use for BC.",
+    "cimis": "CIMIS is California's station network; BC has two ECCC climate stations near this field (one closed in 2021).",
+    "insurance": "USDA RMA crop-insurance records cover the United States only; BC Production Insurance loss data is not public at field or county level.",
+    "sgma": "SGMA, water districts and CDEC reservoirs are California institutions; BC water licensing is not integrated.",
+    "cdl": "No USDA Cropland Data Layer in Canada; AAFC's Annual Crop Inventory is used instead (one Pasture / Forages class, no alfalfa class).",
+    "soil_survey": "No field-scale soil API in BC like SSURGO; the AAFC Soil Landscapes of Canada v3.2 polygon (1:1,000,000) at the field is used instead, with ISRIC SoilGrids v2 (a 250 m global model) as the fallback.",
+    "outlook": "The coming-season outlooks (NOAA CPC, US Drought Monitor, CDEC) are US products; not built for BC.",
+    "ml_calendar": "The machine-learning calendar and stress models were trained on California fields and were not run here."
+   }
+  }
+ ]
+}

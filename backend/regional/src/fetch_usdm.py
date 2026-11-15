@@ -5,7 +5,7 @@ import pandas as pd
 from common import *
 
 URL = "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent"
-COUNTIES = {"car_colusa_rice": ["06011"], "caf_tulare_forage": ["06031", "06107"]}
+COUNTIES = {pid: p["usdm_counties"] for pid, p in PRESETS.items()}   # from the registry (CAF also has Tulare 06107 as context)
 
 def main():
     for pid, fips_list in COUNTIES.items():
@@ -31,7 +31,7 @@ def main():
             "native_res": "county polygon", "auth": "none", "counties": {f: sorted(cum[cum.fips == f].county.unique().tolist()) for f in fips_list},
             "rows_per_county_stat": {f: int((cum.fips == f).sum()) for f in fips_list},
             "date_min": str(df.map_date.min().date()), "date_max": str(df.map_date.max().date()),
-            "preset_county_note": "caf point (36.20,-119.60) is inside Kings County (06031) per Census geocoder; Tulare (06107) included as adjacent context.",
+            "preset_county_note": "registry county (backend/fields/registry.json)" if pid != "caf_tulare_forage" else "caf point (36.20,-119.60) is inside Kings County (06031) per Census geocoder; Tulare (06107) included as adjacent context.",
             "footprint_geojson": None})
         print(pid, {f: int((cum.fips == f).sum()) for f in fips_list}, df.map_date.min().date(), df.map_date.max().date())
 

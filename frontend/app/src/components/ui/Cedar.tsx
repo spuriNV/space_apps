@@ -1,5 +1,5 @@
-// Cedar: small field buddy that explains the numbers on screen. Rule-based, no model call.
-import { useMemo, useState } from 'react';
+// Cedar: small field helper that explains the numbers on screen. Rule-based, no model call.
+import { useState } from 'react';
 import type { Location, Regional, RotationStrategy } from '../../types';
 import { mmToAfac, ordinal } from '../../lib';
 import { soilFacts } from './shared';
@@ -14,7 +14,7 @@ export type CedarCtx = {
 
 type Msg = { who: 'cedar' | 'you'; text: string };
 
-const HELLO = "Hey — I'm Cedar. Ask me about water, soil, or what these meters mean. Short answers only.";
+const HELLO = "I'm Cedar. Ask me about water, soil, or what these meters mean. Short answers only.";
 
 function reply(q: string, ctx: CedarCtx): string {
   const t = q.toLowerCase();
@@ -56,10 +56,10 @@ function reply(q: string, ctx: CedarCtx): string {
   }
   if (/nation|reserve|first|indigenous|splatsin|neskonlith/.test(t)) {
     const fn = ctx.loc.first_nations;
-    if (!fn) return "This demo field isn't on reserve. Open the Nations card on Pick for nearby reserves and Splatsin on the lower river.";
+    if (!fn) return "This demo field isn't on reserve. Nearby reserves are in the Nations card, when a BC field is open.";
     return fn.field_on_reserve
       ? "This field is on reserve land — we'd only show that with the Nation's permission."
-      : `Not on reserve. Nearest is about ${fn.nearest_km} km (${fn.nearest_nation}). Splatsin sits on the lower Salmon River. We don't speak for any Nation.`;
+      : `Not on reserve. Nearest is about ${fn.nearest_km} km (${fn.nearest_nation}). We don't speak for any Nation. Details are in the Nations card on this panel.`;
   }
   if (/help|what can|ask/.test(t)) {
     return "Try: “Will my water cover it?”, “What’s the soil?”, “Is it dry?”, or “Any First Nations nearby?”";
@@ -74,7 +74,6 @@ export function CedarChat({ ctx }: { ctx: CedarCtx }) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [msgs, setMsgs] = useState<Msg[]>([{ who: 'cedar', text: HELLO }]);
-  const id = useMemo(() => ctx.loc.id, [ctx.loc.id]);
 
   const ask = (q: string) => {
     const text = q.trim();
@@ -84,39 +83,25 @@ export function CedarChat({ ctx }: { ctx: CedarCtx }) {
   };
 
   return (
-    <div className={`cedar ${open ? 'open' : ''}`} data-testid="cedar">
-      {!open && (
-        <button type="button" className="cedar-fab" onClick={() => setOpen(true)} title="Ask Cedar about the numbers">
-          <span className="cedar-avatar" aria-hidden>C</span>
-          <span>Ask Cedar</span>
-        </button>
-      )}
+    <section className={`cedar ${open ? 'open' : ''}`} data-testid="cedar" key={ctx.loc.id}>
+      <button type="button" className="cedar-head" onClick={() => setOpen(!open)} aria-expanded={open} data-testid="cedar-toggle">
+        <span className="cedar-avatar" aria-hidden>C</span>
+        <span className="cedar-title"><b>Ask Cedar</b><small>Explains the numbers on this panel. Not advice.</small></span>
+      </button>
       {open && (
-        <div className="cedar-panel" role="dialog" aria-label="Cedar field buddy">
-          <header className="cedar-head">
-            <span className="cedar-avatar" aria-hidden>C</span>
-            <div>
-              <b>Cedar</b>
-              <small>Explains the numbers · not advice</small>
-            </div>
-            <button type="button" className="cedar-x" onClick={() => setOpen(false)} aria-label="Close Cedar">×</button>
-          </header>
-          <div className="cedar-msgs" key={id}>
-            {msgs.map((m, i) => (
-              <p key={i} className={`cedar-msg ${m.who}`}>{m.text}</p>
-            ))}
+        <div className="cedar-body">
+          <div className="cedar-msgs" aria-live="polite">
+            {msgs.map((m, i) => <p key={i} className={`cedar-msg ${m.who}`}>{m.text}</p>)}
           </div>
           <div className="cedar-chips">
-            {CHIPS.map((c) => (
-              <button key={c} type="button" onClick={() => ask(c)}>{c}</button>
-            ))}
+            {CHIPS.map((c) => <button key={c} type="button" className="btn btn-outline btn-sm" onClick={() => ask(c)}>{c}</button>)}
           </div>
           <form className="cedar-form" onSubmit={(e) => { e.preventDefault(); ask(input); }}>
-            <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about water or soil…" aria-label="Ask Cedar" />
-            <button type="submit">Ask</button>
+            <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about water or soil" aria-label="Ask Cedar" />
+            <button type="submit" className="btn btn-primary btn-sm">Ask</button>
           </form>
         </div>
       )}
-    </div>
+    </section>
   );
 }

@@ -1,54 +1,38 @@
 {
- "_note": "Offline Coming season for the BC Salmon River demo. Same shape as the CA outlook file: seasons, drought, storage, allocations — filled with BC story, not CDEC/CVP.",
- "label": "Outlook, not a forecast",
- "presets": {
-  "bsr_salmon_forage": {
-   "allocations": {
-    "project": "Lower Salmon River surface licences",
-    "items": [
-     { "year": 2021, "pct": 100 },
-     { "year": 2022, "pct": 100 },
-     { "year": 2023, "pct": 0 },
-     { "year": 2024, "pct": 100 },
-     { "year": 2025, "pct": 100 }
-    ],
-    "next": "2023 shows 0% as the fish-protection curtailment on forage irrigation (Aug 2023). Enter your own licence limit on Compare.",
-    "url": "https://news.gov.bc.ca/releases/2023FOR0052-001305"
-   },
-   "cpc_seasonal_outlook": {
-    "seasons": [
-     { "season": "NDJ", "temperature": { "category": "above normal", "probability": { "value": 40 } }, "precipitation": { "category": "equal chances", "probability": { "value": null } }, "issued": "2026-10-15" },
-     { "season": "DJF", "temperature": { "category": "above normal", "probability": { "value": 33 } }, "precipitation": { "category": "above normal", "probability": { "value": 40 } }, "issued": "2026-10-15" },
-     { "season": "JFM", "temperature": { "category": "equal chances", "probability": { "value": null } }, "precipitation": { "category": "above normal", "probability": { "value": 40 } }, "issued": "2026-10-15" },
-     { "season": "FMA", "temperature": { "category": "above normal", "probability": { "value": 40 } }, "precipitation": { "category": "equal chances", "probability": { "value": null } }, "issued": "2026-10-15" }
-    ]
-   },
-   "drought": {
-    "cpc_drought_outlook": { "seasonal": { "category": "No_Drought", "target": "January 31", "issued": "10/31/2026" } },
-    "us_drought_monitor": { "worst_category": "None", "map_date": "2026-11-10", "county": "Columbia-Shuswap" }
-   },
-   "reservoirs_now": {
-    "SHU": {
-     "name": "SHUSWAP LAKE (illustrative)",
-     "storage_af": { "value": 0 },
-     "capacity_af": { "value": 0 },
-     "pct_of_cdec_average": { "value": null },
-     "pct_of_capacity": { "value": null },
-     "storage_year_ago_af": { "value": null },
-     "latest_daily_date": "2026-11-13",
-     "note": "Natural lake; not a farm allocation reservoir. Streamflow and licence rules matter more here."
+  "_note": "EXAMPLE FILE, not live data. Shaped like the coming-season outlook the backend is building (backend/outlook). The app uses it only for parts no live source covers yet, and labels those parts 'Example numbers, not live yet.'",
+  "label": "Outlook, not a forecast",
+  "presets": {
+    "car_colusa_rice": {
+      "allocations": {
+        "project": "State Water Project, final allocation to contractors",
+        "items": [
+          { "year": 2021, "pct": 5 },
+          { "year": 2022, "pct": 5 },
+          { "year": 2023, "pct": 100 },
+          { "year": 2024, "pct": 40 },
+          { "year": 2025, "pct": 50 }
+        ],
+        "next": "DWR usually announces the first 2027 allocation around 1 December.",
+        "url": "https://water.ca.gov/Programs/State-Water-Project/Management/SWP-Water-Contractors"
+      }
+    },
+    "caf_tulare_forage": {
+      "allocations": {
+        "project": "Groundwater pumping allocation from your groundwater sustainability agency (GSA)",
+        "items": [],
+        "next": "Tulare Lake subbasin has been on state probation since April 2024; the GSA sets each year's pumping allocation. Enter yours on the Compare screen.",
+        "url": "https://www.waterboards.ca.gov/water_issues/programs/gmp/tulare-lake.html"
+      }
     }
-   }
+  },
+  "example_full": {
+    "seasons": [
+      { "season": "NDJ", "temperature": { "category": "above normal", "probability": { "value": 40 } }, "precipitation": { "category": "above normal", "probability": { "value": 33 } }, "issued": "2026-10-15" },
+      { "season": "DJF", "temperature": { "category": "above normal", "probability": { "value": 33 } }, "precipitation": { "category": "above normal", "probability": { "value": 40 } }, "issued": "2026-10-15" },
+      { "season": "JFM", "temperature": { "category": "equal chances", "probability": { "value": null } }, "precipitation": { "category": "above normal", "probability": { "value": 40 } }, "issued": "2026-10-15" }
+    ],
+    "drought_outlook": { "seasonal": { "category": "No_Drought", "target": "January 31", "issued": "10/31/2026" } },
+    "drought_monitor": { "worst_category": "D0 abnormally dry", "map_date": "2026-11-10", "county": "Example County" },
+    "reservoirs": { "EX1": { "name": "EXAMPLE RESERVOIR", "storage_af": { "value": 1500000 }, "capacity_af": { "value": 3000000 }, "pct_of_cdec_average": { "value": 85 }, "pct_of_capacity": { "value": 50 }, "storage_year_ago_af": { "value": 1700000 }, "latest_daily_date": "2026-11-13" } }
   }
- },
- "example_full": {
-  "seasons": [
-   { "season": "NDJ", "temperature": { "category": "above normal", "probability": { "value": 40 } }, "precipitation": { "category": "equal chances", "probability": { "value": null } }, "issued": "2026-10-15" },
-   { "season": "DJF", "temperature": { "category": "above normal", "probability": { "value": 33 } }, "precipitation": { "category": "above normal", "probability": { "value": 40 } }, "issued": "2026-10-15" },
-   { "season": "JFM", "temperature": { "category": "equal chances", "probability": { "value": null } }, "precipitation": { "category": "above normal", "probability": { "value": 40 } }, "issued": "2026-10-15" }
-  ],
-  "drought_outlook": { "seasonal": { "category": "No_Drought", "target": "January 31", "issued": "10/31/2026" } },
-  "drought_monitor": { "worst_category": "None", "map_date": "2026-11-10", "county": "Columbia-Shuswap" },
-  "reservoirs": {}
- }
 }

@@ -1,0 +1,113 @@
+{
+  "dataset": "landsat",
+  "url": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/landsat-c2-l2",
+  "params": {
+    "collection": "landsat-c2-l2",
+    "datetime": "2016-01-01/2026-11-15",
+    "intersects": "polygons/caf_tipton_forage.geojson",
+    "bands": {
+      "blue": "blue",
+      "green": "green",
+      "red": "red",
+      "nir": "nir08",
+      "swir1": "swir16"
+    },
+    "mask": "qa_pixel",
+    "clear_rule": "QA_PIXEL (bit6 clear or bit7 water) and not bits 0,1,3,4,5; Tier 1 only",
+    "dedupe": "one row per date (S2) / per date+platform (Landsat), keeping most valid pixels"
+  },
+  "fetched_at": "2026-11-15T01:33:36+00:00",
+  "footprint_geojson": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -119.29918182757676,
+          36.04010121539409
+        ],
+        [
+          -119.29917565794737,
+          36.039679748198374
+        ],
+        [
+          -119.29915788657614,
+          36.03846631531394
+        ],
+        [
+          -119.29913714447622,
+          36.03678269709342
+        ],
+        [
+          -119.29912227286668,
+          36.03669049413763
+        ],
+        [
+          -119.29908575724868,
+          36.0366365927434
+        ],
+        [
+          -119.29905981120837,
+          36.036598288894666
+        ],
+        [
+          -119.29901519548145,
+          36.0365744951708
+        ],
+        [
+          -119.29505934195694,
+          36.03661924378269
+        ],
+        [
+          -119.29491062496332,
+          36.0366191101224
+        ],
+        [
+          -119.29484816510164,
+          36.03667264832151
+        ],
+        [
+          -119.29481247144214,
+          36.03675890342527
+        ],
+        [
+          -119.29480921774417,
+          36.03678136194592
+        ],
+        [
+          -119.29480921415093,
+          36.036830287313805
+        ],
+        [
+          -119.2948560046991,
+          36.04014072115437
+        ],
+        [
+          -119.29918182757676,
+          36.04010121539409
+        ]
+      ]
+    ]
+  },
+  "native_res_m": 30,
+  "timestep": "per scene (irregular)",
+  "units": {
+    "ndvi": "unitless",
+    "ndwi": "unitless",
+    "bsi": "unitless",
+    "clear_frac": "fraction of polygon pixels"
+  },
+  "fill_value": "NaN",
+  "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
+  "n_items_found": 493,
+  "n_rows_raw": 492,
+  "n_rows": 492,
+  "duplicates_dropped": 0,
+  "errors": [
+    {
+      "scene_id": "LE07_L2SP_041035_20220708_02_T1",
+      "error": "read failed https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/etm/2022/041/035/LE07_L2SP_041035_20220708_20220903_02_T1/LE07_L2SP_041035_20220708_20220903_02_T1_SR_B3.TIF: '/vsicurl/https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/etm/2022/041/035/LE07_L2"
+    }
+  ],
+  "seconds": 145,
+  "ndvi_out_of_range_dropped": []
+}

@@ -1,7 +1,7 @@
 // Farmer-run year sim: pick a rotation + weather year, then watch cover and water play on the map timeline.
 import type { Location, RotationStrategy } from '../../types';
 import { mmToAfac, tOf } from '../../lib';
-import { isBC } from '../ui/shared';
+import { isBC } from '../../api';
 import type { SimMode } from '../ui/FieldTimeline';
 import Icon from '../Icons';
 
@@ -44,10 +44,10 @@ export function SimRun(p: {
     }, tOf(year, 0));
   };
   return (
-    <div className="c2-in-block sim-run" data-testid="sim-run">
+    <div className="sim-run" data-testid="sim-run">
       <h3>Play a year on the map</h3>
       <p className="how">Watch the field’s cover change month by month, and its water use against your limit.</p>
-      <div className="seg small wrap" role="group" aria-label="Weather year for the sim">
+      <div className="seg small sim-seg" role="group" aria-label="Weather year for the sim">
         {(['typical', '2022', '2023'] as Weather[]).map((w) => (
           <button key={w} type="button" className={p.weather === w ? 'on' : ''} onClick={() => p.setWeather(w)} data-testid={`sim-weather-${w}`}>
             {L[w]}
@@ -59,9 +59,9 @@ export function SimRun(p: {
         {need > p.allocation ? <em className="over"> · short by {(need - p.allocation).toFixed(1)}</em> : <em className="ok"> · fits</em>}
       </p>
       {p.running ? (
-        <button type="button" className="btn wide" onClick={p.onStop} data-testid="sim-stop">Stop sim</button>
+        <button type="button" className="btn btn-outline wide" onClick={p.onStop} data-testid="sim-stop">Stop sim</button>
       ) : (
-        <button type="button" className="btn primary wide" onClick={start} data-testid="sim-start">
+        <button type="button" className="btn btn-primary wide" onClick={start} data-testid="sim-start">
           Play {year} on the map<Icon name="play" size={16} />
         </button>
       )}

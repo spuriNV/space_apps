@@ -1,0 +1,133 @@
+{
+  "dataset": "s2",
+  "url": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-2-l2a",
+  "params": {
+    "collection": "sentinel-2-l2a",
+    "datetime": "2015-06-23/2026-11-14",
+    "intersects": "polygons/caf_tipton_forage.geojson",
+    "bands": {
+      "blue": "B02",
+      "green": "B03",
+      "red": "B04",
+      "nir": "B08",
+      "swir1": "B11"
+    },
+    "mask": "SCL",
+    "clear_rule": "SCL in {2,4,5,6}",
+    "dedupe": "one row per date (S2) / per date+platform (Landsat), keeping most valid pixels"
+  },
+  "fetched_at": "2026-11-15T00:13:11+00:00",
+  "footprint_geojson": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -119.29918182757676,
+          36.04010121539409
+        ],
+        [
+          -119.29917565794737,
+          36.039679748198374
+        ],
+        [
+          -119.29915788657614,
+          36.03846631531394
+        ],
+        [
+          -119.29913714447622,
+          36.03678269709342
+        ],
+        [
+          -119.29912227286668,
+          36.03669049413763
+        ],
+        [
+          -119.29908575724868,
+          36.0366365927434
+        ],
+        [
+          -119.29905981120837,
+          36.036598288894666
+        ],
+        [
+          -119.29901519548145,
+          36.0365744951708
+        ],
+        [
+          -119.29505934195694,
+          36.03661924378269
+        ],
+        [
+          -119.29491062496332,
+          36.0366191101224
+        ],
+        [
+          -119.29484816510164,
+          36.03667264832151
+        ],
+        [
+          -119.29481247144214,
+          36.03675890342527
+        ],
+        [
+          -119.29480921774417,
+          36.03678136194592
+        ],
+        [
+          -119.29480921415093,
+          36.036830287313805
+        ],
+        [
+          -119.2948560046991,
+          36.04014072115437
+        ],
+        [
+          -119.29918182757676,
+          36.04010121539409
+        ]
+      ]
+    ]
+  },
+  "native_res_m": 10,
+  "timestep": "per scene (irregular)",
+  "units": {
+    "ndvi": "unitless",
+    "ndwi": "unitless",
+    "bsi": "unitless",
+    "clear_frac": "fraction of polygon pixels"
+  },
+  "fill_value": "NaN",
+  "auth": "none (Planetary Computer anonymous SAS token via planetary-computer package)",
+  "n_items_found": 1604,
+  "n_rows_raw": 1598,
+  "n_rows": 749,
+  "duplicates_dropped": 849,
+  "errors": [
+    {
+      "scene_id": "S2A_MSIL2A_20200610T183921_R070_T11SKA_20200826T205257",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/11/S/KA/2020/06/10/S2A_MSIL2A_20200610T183921_N0212_R070_T11SKA_20200826T205257.SAFE/GRANULE/L2A_T11SKA_A025950_20200610T184818/IMG_DATA/R10m/T11SKA_20200610T183921_B02_10m.tif: CURL error: Could not resolve host: sentinel2l2a01.b"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20200531T183921_R070_T11SKA_20200911T151831",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/11/S/KA/2020/05/31/S2A_MSIL2A_20200531T183921_N0212_R070_T11SKA_20200911T151831.SAFE/GRANULE/L2A_T11SKA_A025807_20200531T184459/IMG_DATA/R10m/T11SKA_20200531T183921_B04_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20200531T183921_R070_T11SKV_20200911T151841",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/11/S/KV/2020/05/31/S2A_MSIL2A_20200531T183921_N0212_R070_T11SKV_20200911T151841.SAFE/GRANULE/L2A_T11SKV_A025807_20200531T184459/IMG_DATA/R10m/T11SKV_20200531T183921_B04_10m.tif: CURL error: Could not resolve host: sentinel2l2a01.b"
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20200829T183921_R070_T11SKV_20200907T140909",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/11/S/KV/2020/08/29/S2A_MSIL2A_20200829T183921_N0212_R070_T11SKV_20200907T140909.SAFE/GRANULE/L2A_T11SKV_A027094_20200829T185306/IMG_DATA/R10m/T11SKV_20200829T183921_B02_10m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20200630T183921_R070_T11SKA_20200908T080033",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/11/S/KA/2020/06/30/S2A_MSIL2A_20200630T183921_N0212_R070_T11SKA_20200908T080033.SAFE/GRANULE/L2A_T11SKA_A026236_20200630T184506/IMG_DATA/R20m/T11SKA_20200630T183921_B11_20m.tif: Read failed. See previous exception for details."
+    },
+    {
+      "scene_id": "S2A_MSIL2A_20160721T183922_R070_T11SKA_20210212T064609",
+      "error": "read failed https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/11/S/KA/2016/07/21/S2A_MSIL2A_20160721T183922_N0212_R070_T11SKA_20210212T064609.SAFE/GRANULE/L2A_T11SKA_A005644_20160721T185351/IMG_DATA/R10m/T11SKA_20160721T183922_B08_10m.tif: Read failed. See previous exception for details."
+    }
+  ],
+  "seconds": 2042,
+  "ndvi_out_of_range_dropped": []
+}

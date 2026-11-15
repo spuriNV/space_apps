@@ -1,0 +1,139 @@
+{
+  "field_id": "caf_corcoran_forage",
+  "generated_at": "2026-11-15T14:51:19+00:00",
+  "sources": {
+    "tmax": "NOAA NCEI GHCN-D station mean (data/cache/<fid>/ncei.parquet); NASA POWER T2M_MAX where no station reports",
+    "eto": "FAO-56 Penman-Monteith (backend/engine weather.pm_eto): station Tmax/Tmin, POWER ALLSKY_SFC_SW_DWN, WS2M, RH2M; elevation 106.13 m, latitude 36.038",
+    "imerg": "NASA GPM IMERG V07 daily (Final, Late after 2025-09-30), backend/nasa imerg.parquet",
+    "smap_pct": "NASA SMAP L4 SPL4SMGP.008 sm_rootzone_pctl (backend/nasa smap_l4.parquet); GRACE-DA GRACEDADM_CLSM025GL_7D rtzsm_inst percentile where SMAP is missing",
+    "ndvi_modis": "MOD13Q1.061 NDVI at the field centroid (missing), good/marginal pixels",
+    "ndvi_hls": "field-median NDVI, S2 L2A (backend/field) first, then HLS (backend/nasa, nasa_open), then Landsat C2 L2",
+    "water": "S2/Landsat NDWI > 0.3 or SCL water > 50% on the field, or OPERA DSWx-HLS water >= 50% of the clear field",
+    "lst": "ECOSTRESS ECO_L2T_LSTE.002 (backend/nasa) where cached, else MODIS MOD11A2.061 LST_Day_1km (Planetary Computer)",
+    "esi": "ECOSTRESS ECO_L4T_ESI.002 where cached; else ECOSTRESS ECO_L3T_JET ETdaily / Penman-Monteith ETo (same ratio as ESI, AppEEARS bundle in data/cache/_appeears); else OpenET Ensemble monthly ET / Penman-Monteith ETo",
+    "usdm": "US Drought Monitor county statistics, cumulative % area in D3-D4 (data/cache/<fid>/usdm*.parquet)"
+  },
+  "tables": {
+    "obs_field": {
+      "rows": 514,
+      "by_sensor": {
+        "s2": 514
+      },
+      "coverage": {
+        "ndvi": {
+          "n": 514,
+          "first": "2015-10-05",
+          "last": "2026-11-11"
+        },
+        "bsi": {
+          "n": 514,
+          "first": "2015-10-05",
+          "last": "2026-11-11"
+        },
+        "scl_veg_frac": {
+          "n": 514,
+          "first": "2015-10-05",
+          "last": "2026-11-11"
+        },
+        "modis_ndvi_clim": {
+          "n": 0,
+          "first": null,
+          "last": null
+        },
+        "opera_water_frac": {
+          "n": 11,
+          "first": "2023-03-02",
+          "last": "2023-06-30"
+        },
+        "smap_pct": {
+          "n": 498,
+          "first": "2015-10-05",
+          "last": "2026-09-02"
+        },
+        "imerg_7d_mm": {
+          "n": 514,
+          "first": "2015-10-05",
+          "last": "2026-11-11"
+        }
+      }
+    },
+    "weekly": {
+      "rows": 1401,
+      "coverage": {
+        "ndvi_modis": {
+          "n": 0,
+          "first": null,
+          "last": null
+        },
+        "ndvi_hls": {
+          "n": 478,
+          "first": "2015-10-05",
+          "last": "2026-11-02"
+        },
+        "lst_k": {
+          "n": 0,
+          "first": null,
+          "last": null
+        },
+        "lst_minus_tmax_c": {
+          "n": 0,
+          "first": null,
+          "last": null
+        },
+        "esi": {
+          "n": 521,
+          "first": "2016-01-04",
+          "last": "2025-12-22"
+        },
+        "smap_pct": {
+          "n": 1231,
+          "first": "2003-02-03",
+          "last": "2026-08-31"
+        },
+        "imerg_30d_mm": {
+          "n": 1376,
+          "first": "2000-06-26",
+          "last": "2026-11-02"
+        },
+        "t2m_max_c": {
+          "n": 1401,
+          "first": "2000-01-03",
+          "last": "2026-11-02"
+        },
+        "eto_mm": {
+          "n": 1401,
+          "first": "2000-01-03",
+          "last": "2026-11-02"
+        },
+        "opera_water_frac": {
+          "n": 14,
+          "first": "2023-02-27",
+          "last": "2023-06-26"
+        },
+        "usdm_d3plus_pct": {
+          "n": 619,
+          "first": "2014-12-29",
+          "last": "2026-11-02"
+        },
+        "crop": {
+          "n": 939,
+          "first": "2008-01-07",
+          "last": "2025-12-29"
+        }
+      },
+      "source_counts": {
+        "lst_source": {},
+        "esi_source": {
+          "openet_monthly_et_over_pm_eto": 521
+        },
+        "sm_source": {
+          "grace_da_rootzone_pctl": 941,
+          "smap_l4_rootzone_pctl": 290
+        },
+        "tmax_source": {
+          "ncei_stations": 1401
+        }
+      }
+    }
+  }
+}

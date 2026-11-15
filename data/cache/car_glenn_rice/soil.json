@@ -1,0 +1,226 @@
+{
+ "mukey": "458898",
+ "muname": "Willows clay, dense subsoil, slightly saline-alkali",
+ "drainage_class": "Poorly drained",
+ "hydrologic_group": "D",
+ "dominant_component": {
+  "compname": "Willows",
+  "comppct_r": "85",
+  "taxorder": "Mollisols"
+ },
+ "awc_mm_per_m": {
+  "value": 110.5,
+  "unit": "mm/m",
+  "low": 110.9,
+  "high": 119.8,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted awc_r (cm/cm x 1000), comppct-weighted, area-weighted over map units; low/high = awc_l/awc_h"
+ },
+ "om_pct": {
+  "value": 1.1,
+  "unit": "%",
+  "low": 0.6,
+  "high": 1.61,
+  "method": "lookup",
+  "source": {
+   "id": "ssurgo_sda",
+   "title": "USDA NRCS SSURGO via Soil Data Access",
+   "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+   "accessed": "2026-11-14",
+   "verified": true
+  },
+  "note": "0-100 cm depth-weighted om_r"
+ },
+ "texture_class": "clay loam",
+ "texture_detail": {
+  "sand_pct": 31.4,
+  "silt_pct": 28.9,
+  "clay_pct": 39.7,
+  "surface_horizon_texture_code": "C",
+  "method": "USDA triangle on 0-100 cm weighted sand/silt/clay"
+ },
+ "ec_ds_per_m": 4.0,
+ "map_units": [
+  {
+   "mukey": "458898",
+   "muname": "Willows clay, dense subsoil, slightly saline-alkali",
+   "area_share": 0.545,
+   "components": [
+    {
+     "compname": "Willows",
+     "comppct_r": "85",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Mollisols"
+    },
+    {
+     "compname": "Myers",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Plaza",
+     "comppct_r": "4",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Castro",
+     "comppct_r": "4",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Riz",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  },
+  {
+   "mukey": "458807",
+   "muname": "Plaza silty clay loam, dense subsoil, slightly saline-alkali",
+   "area_share": 0.413,
+   "components": [
+    {
+     "compname": "Plaza",
+     "comppct_r": "85",
+     "drainage_class": "Somewhat poorly drained",
+     "hydrologic_group": "C",
+     "taxorder": "Alfisols"
+    },
+    {
+     "compname": "Tehama",
+     "comppct_r": "10",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Willows",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  },
+  {
+   "mukey": "458581",
+   "muname": "Arbuckle gravelly loam, 0 to 1 percent slopes, water table, MLRA 17",
+   "area_share": 0.039,
+   "components": [
+    {
+     "compname": "Arbuckle",
+     "comppct_r": "85",
+     "drainage_class": "Moderately well drained",
+     "hydrologic_group": "C",
+     "taxorder": "Alfisols"
+    },
+    {
+     "compname": "Plaza",
+     "comppct_r": "10",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Willows",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  },
+  {
+   "mukey": "458699",
+   "muname": "Marvin silty clay loam, slightly saline-alkali, 0 to 1 percent slopes",
+   "area_share": 0.003,
+   "components": [
+    {
+     "compname": "Marvin",
+     "comppct_r": "85",
+     "drainage_class": "Somewhat poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Alfisols"
+    },
+    {
+     "compname": "Willows",
+     "comppct_r": "10",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Zamora",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  },
+  {
+   "mukey": "458899",
+   "muname": "Willows clay, dense subsoil, moderately saline-alkali",
+   "area_share": 0.0,
+   "components": [
+    {
+     "compname": "Willows",
+     "comppct_r": "85",
+     "drainage_class": "Poorly drained",
+     "hydrologic_group": "D",
+     "taxorder": "Mollisols"
+    },
+    {
+     "compname": "Myers",
+     "comppct_r": "5",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Plaza",
+     "comppct_r": "4",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Castro",
+     "comppct_r": "4",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    },
+    {
+     "compname": "Riz",
+     "comppct_r": "2",
+     "drainage_class": null,
+     "hydrologic_group": null,
+     "taxorder": null
+    }
+   ]
+  }
+ ],
+ "footprint": "field polygon backend/field/polygons/car_glenn_rice.geojson",
+ "source": {
+  "id": "ssurgo_sda",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/",
+  "verified": true
+ }
+}

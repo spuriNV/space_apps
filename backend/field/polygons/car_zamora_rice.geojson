@@ -1,0 +1,151 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "preset_id": "car_zamora_rice",
+        "name": "Rice field 6 miles north of Zamora",
+        "area_ha": 58.96,
+        "centroid": {
+          "lon": -121.850815,
+          "lat": 38.873659
+        },
+        "crs": "EPSG:4326 (lon, lat)",
+        "crs_working": "EPSG:32610",
+        "boundary_source": {
+          "id": "dwr_landiq_crop_mapping_2023",
+          "title": "DWR Statewide Crop Mapping 2023 (Land IQ), final",
+          "url": "https://utility.arcgis.com/usrsvcs/servers/d94e891e00364e49a2ed9e9e2e27837d/rest/services/Planning/i15_Crop_Mapping_2023/MapServer/0",
+          "verified": true,
+          "dwr_unique_id": "5703065",
+          "dwr_attributes": {
+            "UniqueID": "5703065",
+            "ACRES": 145.76321618,
+            "COUNTY": "Yolo",
+            "CLASS1": "**",
+            "SUBCLASS1": "**",
+            "CROPTYP1": "****",
+            "CROPTYP2": "R1",
+            "MAIN_CROP": "R1",
+            "MAIN_CROP_DATE": 237
+          }
+        },
+        "selection_rule": "registry field (backend/fields/pick_fields.py): CDL Rice in >= 6 of 2016-2025, every other year fallow except at most one, Rice in 2025; ranked by purity",
+        "cdl_majority_by_year": {
+          "2008": "Rice",
+          "2009": "Rice",
+          "2010": "Rice",
+          "2011": "Rice",
+          "2012": "Rice",
+          "2013": "Rice",
+          "2014": "Rice",
+          "2015": "Rice",
+          "2016": "Rice",
+          "2017": "Rice",
+          "2018": "Rice",
+          "2019": "Rice",
+          "2020": "Rice",
+          "2021": "Rice",
+          "2022": "Fallow/Idle Cropland",
+          "2023": "Rice",
+          "2024": "Fallow/Idle Cropland",
+          "2025": "Rice"
+        },
+        "selected_at": "2026-11-14T23:38:53+00:00",
+        "candidates_considered": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -121.84848731557084,
+              38.88042936377741
+            ],
+            [
+              -121.8530663223231,
+              38.88041584210439
+            ],
+            [
+              -121.85306967034415,
+              38.876457698083044
+            ],
+            [
+              -121.85306421667208,
+              38.87442510536275
+            ],
+            [
+              -121.85306721884174,
+              38.86807121495164
+            ],
+            [
+              -121.85306091805835,
+              38.86703998112839
+            ],
+            [
+              -121.85300271082119,
+              38.86686655532656
+            ],
+            [
+              -121.85294992491679,
+              38.86683027288758
+            ],
+            [
+              -121.84938997331103,
+              38.86679525011161
+            ],
+            [
+              -121.84869647211508,
+              38.866776493373706
+            ],
+            [
+              -121.84863491146697,
+              38.866811650450295
+            ],
+            [
+              -121.84861393850002,
+              38.86952944233162
+            ],
+            [
+              -121.84859899233034,
+              38.87140089958822
+            ],
+            [
+              -121.84857786395486,
+              38.87318288876502
+            ],
+            [
+              -121.84856678772739,
+              38.87528684245367
+            ],
+            [
+              -121.84857278308361,
+              38.87727771430615
+            ],
+            [
+              -121.84854741016841,
+              38.87743243840682
+            ],
+            [
+              -121.8485076543272,
+              38.87753337540984
+            ],
+            [
+              -121.8484678993843,
+              38.877634311570205
+            ],
+            [
+              -121.84847523862018,
+              38.87954175027511
+            ],
+            [
+              -121.84848731557084,
+              38.88042936377741
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

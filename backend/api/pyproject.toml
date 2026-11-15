@@ -3,7 +3,15 @@ name = "fieldshift-api"
 version = "0.1.0"
 description = "Field Shift API: serves spec B3 routes from real outputs or fixtures"
 requires-python = ">=3.12,<3.13"
-dependencies = ["fastapi>=0.115", "uvicorn>=0.30", "jsonschema>=4.21", "httpx>=0.27", "rotation-engine"]
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "jsonschema>=4.21",
+    "httpx>=0.27",
+    "rotation-engine",
+    "fpdf2>=2.9.0",
+    "shapely>=2.0",
+]
 
 [tool.uv.sources]
 rotation-engine = { path = "../engine", editable = true }

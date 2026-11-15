@@ -151,5 +151,6 @@
   "n_rows": 724,
   "duplicates_dropped": 873,
   "errors": [],
-  "seconds": 610
+  "seconds": 610,
+  "ndvi_out_of_range_dropped": []
 }

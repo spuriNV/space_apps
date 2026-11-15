@@ -156,5 +156,6 @@
       "error": "read failed https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/oli-tirs/2022/042/035/LC09_L2SP_042035_20220403_20220405_02_T1/LC09_L2SP_042035_20220403_20220405_02_T1_SR_B6.TIF: '/vsicurl/https://landsateuwest.blob.core.windows.net/landsat-c2/level-2/standard/oli-tirs/2022/042/0"
     }
   ],
-  "seconds": 118
+  "seconds": 118,
+  "ndvi_out_of_range_dropped": []
 }

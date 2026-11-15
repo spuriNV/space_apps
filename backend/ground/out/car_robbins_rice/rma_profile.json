@@ -1,0 +1,131 @@
+{
+ "preset_id": "car_robbins_rice",
+ "years": [
+  2010,
+  2024
+ ],
+ "file_url_template": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip",
+ "page_url": "https://www.rma.usda.gov/tools-reports/summary-of-business/cause-loss",
+ "layout_url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/COL_Summary_of_Business_with_Month_All_Years.pdf",
+ "grouping": {
+  "drought": [
+   "Drought",
+   "Failure of Irrigation Supply"
+  ],
+  "excess_moisture": [
+   "Excess Moisture/Precipitation/Rain",
+   "Flood",
+   "Cold Wet Weather"
+  ],
+  "heat": [
+   "Heat",
+   "Hot Wind"
+  ],
+  "other": "all remaining causes (incl. cold/frost/freeze, wind, hail, insects, disease, ARPI/SCO/ECO etc.)"
+ },
+ "profiles": {
+  "Sutter County|rice": {
+   "scope": "Sutter County",
+   "crop": "rice",
+   "commodity_names_matched": [
+    "Rice"
+   ],
+   "total_indemnity_usd": 248803261.00000003,
+   "years_with_indemnity": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "indemnity_by_year_usd": {
+    "2014": 14233259.0,
+    "2015": 17583046.0,
+    "2016": 414213.99999999994,
+    "2017": 22950303.999999996,
+    "2018": 2320555.0,
+    "2019": 11679813.0,
+    "2020": 8104637.0,
+    "2021": 33315767.0,
+    "2022": 86967769.0,
+    "2023": 15119770.0,
+    "2024": 36114127.0
+   },
+   "shares": {
+    "share_drought": {
+     "value": 0.6685,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Sutter County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_excess_moisture": {
+     "value": 0.3165,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Sutter County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_heat": {
+     "value": 0.0073,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Sutter County rice, 2010-2024, summed over all insurance plans"
+    },
+    "share_other": {
+     "value": 0.0076,
+     "unit": "fraction of indemnity",
+     "method": "computed",
+     "source": {
+      "id": "usda_rma_col",
+      "title": "USDA RMA Cause of Loss, Summary of Business (colsom, 2010-2024)",
+      "url": "https://pubfs-rma.fpac.usda.gov/pub/Web_Data_Files/Summary_of_Business/cause_of_loss/colsom_YYYY.zip (2010-2024)",
+      "accessed": "2026-11-14",
+      "verified": true
+     },
+     "note": "Sutter County rice, 2010-2024, summed over all insurance plans"
+    }
+   },
+   "raw_cause_shares": {
+    "Failure of Irrigation Supply": 0.6685,
+    "Excess Moisture/Precipitation/Rain": 0.3139,
+    "Heat": 0.0073,
+    "Wildlife": 0.0023,
+    "Failure of Irrigation Equipment": 0.0023,
+    "Flood": 0.002,
+    "Wind/Excess Wind": 0.0012,
+    "Other (Snow, Lightning, Etc.)": 0.0008,
+    "Hail": 0.0007,
+    "Cold Wet Weather": 0.0007,
+    "Decline in Price": 0.0004
+   },
+   "share_peril_unattributed": 0.0,
+   "caveat": "Insurance history, not a forecast."
+  }
+ }
+}

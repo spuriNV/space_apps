@@ -1,0 +1,48 @@
+{
+  "preset_id": "caf_goshen_forage",
+  "size_km": 10,
+  "centre": {
+    "lon": -119.450698,
+    "lat": 36.323595
+  },
+  "bbox_epsg32610": [
+    813639.5,
+    4020691.2,
+    823639.5,
+    4030691.2
+  ],
+  "bbox_epsg4326": [
+    -119.508307,
+    36.276941,
+    -119.393025,
+    36.370228
+  ],
+  "geometry_epsg4326": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -119.3971739012283,
+          36.27694061186197
+        ],
+        [
+          -119.39302472492403,
+          36.366916305853515
+        ],
+        [
+          -119.50428484328629,
+          36.37022774760824
+        ],
+        [
+          -119.50830667975659,
+          36.280241240939546
+        ],
+        [
+          -119.3971739012283,
+          36.27694061186197
+        ]
+      ]
+    ]
+  },
+  "note": "Square in EPSG:32610 centred on the field centroid. Registry fields are not used for training: their ML calendar reuses the model trained around the family's original field (backend/ai)."
+}

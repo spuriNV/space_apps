@@ -1,0 +1,116 @@
+{
+  "field_id": "car_colusa_rice",
+  "generated_at": "2026-11-15T15:13:01+00:00",
+  "evidence": "The crop looked stressed in 7 weeks over 2015-2026 (both checks agree), mostly late August; most often dry soil (NASA GRACE-DA) and weaker growth than in its other rice years (Sentinel-2).",
+  "latest_season": {
+    "year": 2026,
+    "evidence": "Neither stress check flagged the same week over the 2026 season.",
+    "weeks_flagged_both": 0,
+    "weeks_flagged_one": 2,
+    "crop": "Rice",
+    "crop_assumed": true
+  },
+  "evaluation": {
+    "weeks_scored": 146,
+    "flag_rate_zscore": 0.2465753424657534,
+    "flag_rate_iforest": 0.10273972602739725,
+    "agreement": 0.7465753424657534,
+    "usdm_d3_weeks": 34,
+    "usdm_no_d3_weeks": 112,
+    "recall_usdm_d3_zscore": 0.5588235294117647,
+    "flag_rate_no_drought_zscore": 0.15178571428571427,
+    "lift_usdm_d3_zscore": 3.6816608996539797,
+    "recall_usdm_d3_iforest": 0.058823529411764705,
+    "flag_rate_no_drought_iforest": 0.11607142857142858,
+    "lift_usdm_d3_iforest": 0.5067873303167421,
+    "recall_usdm_d3_zscore_field_only": 0.058823529411764705,
+    "flag_rate_no_drought_zscore_field_only": 0.1875,
+    "recall_usdm_d3_iforest_loyo": 0.2647058823529412,
+    "flag_rate_no_drought_iforest_loyo": 0.16964285714285715,
+    "events": [
+      {
+        "name": "2015 season, Drought Monitor D3+ weeks",
+        "year": 2015,
+        "start": "2015-06-01",
+        "end": "2015-09-21",
+        "weeks_in_window": 17,
+        "flagged_zscore": 13,
+        "flagged_iforest": 0,
+        "flagged_both": 0,
+        "recall_zscore": 0.7647058823529411,
+        "recall_iforest": 0.0
+      },
+      {
+        "name": "2021 season, Drought Monitor D3+ weeks",
+        "year": 2021,
+        "start": "2021-06-07",
+        "end": "2021-09-27",
+        "weeks_in_window": 17,
+        "flagged_zscore": 6,
+        "flagged_iforest": 2,
+        "flagged_both": 1,
+        "recall_zscore": 0.35294117647058826,
+        "recall_iforest": 0.11764705882352941
+      }
+    ],
+    "wet_cool_weeks": 32,
+    "false_positive_proxy_zscore": 0.21875,
+    "false_positive_proxy_iforest": 0.15625
+  },
+  "checks": {
+    "julaug_2021": {
+      "applicable": true,
+      "flagged_zscore": 2,
+      "flagged_iforest": 0,
+      "weeks": 9,
+      "pass": false
+    },
+    "julaug_2022": {
+      "applicable": false,
+      "note": "2022: Fallow/Idle Cropland on this field (no crop to stress)"
+    },
+    "flood_2023_water_not_stress": {
+      "water_weeks": 1,
+      "flagged": 0,
+      "pass": true
+    },
+    "fallow_not_stress": {
+      "fallow_years": [
+        2016,
+        2020,
+        2022
+      ],
+      "weeks": 50,
+      "flag_rate_zscore": 1.0,
+      "flag_rate_iforest": 1.0,
+      "note": "fallow weeks are scored (they look anomalous) but are shown as fallow, never as crop stress, and are left out of the evidence sentence"
+    }
+  },
+  "no_crop_years_excluded_from_evidence": [
+    2016,
+    2020,
+    2022
+  ],
+  "events_source": "US Drought Monitor county statistics: weeks with >= 50% of the county in D3 (extreme) or D4 (exceptional) drought, cumulative statistic, max over the field's counties",
+  "inputs": {
+    "lst_source": {},
+    "esi_source": {
+      "openet_monthly_et_over_pm_eto": 98,
+      "ecostress_jet_et_over_pm_eto": 83
+    },
+    "sm_source": {
+      "grace_da_rootzone_pctl": 154,
+      "smap_l4_rootzone_pctl": 47
+    }
+  },
+  "input_coverage_scored_weeks": {
+    "z_ndvi": 127,
+    "z_lst": 0,
+    "z_esi": 123,
+    "z_sm": 143,
+    "z_eto": 146,
+    "z_imerg30": 146
+  },
+  "how_to_read": "A week is flagged when the field looks unusual for that week of the year in a stress direction. Both checks = stronger evidence. No labelled stress events exist, so there is no accuracy; the Drought Monitor weeks show whether flags line up with known drought.",
+  "credit": "Stress method, reasons and evidence sentence: spuriNV (ds branch); real NASA inputs and Drought Monitor events: backend/ai."
+}

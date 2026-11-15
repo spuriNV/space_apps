@@ -12,12 +12,20 @@ def summary(pid, cpc, wn, hist, irr, ctx):
         if x["category"] == "equal chances": return f"no tilt for {what}"
         return f"a {x['probability']['value']:.0f}% chance of {x['category']} {what}"
     parts = []
-    if pid == "car_colusa_rice":
+    if fieldreg.get(pid)["family"] == "rice":
         parts.append(f"This is an outlook, not a forecast: NOAA's Climate Prediction Center gives {tilt(prec('DJF'), 'rain')} for Dec-Feb and {tilt(prec('FMA'), 'rain')} for Feb-Apr, and {tilt(tmp('DJF'), 'temperature')} for Dec-Feb (about 33% is what any category gets in an average year).")
     else:
         parts.append(f"This is an outlook, not a forecast: NOAA's Climate Prediction Center gives {tilt(prec('DJF'), 'rain')} for Dec-Feb and {tilt(prec('JFM'), 'rain')} for Jan-Mar, with {tilt(tmp('DJF'), 'temperature')} for Dec-Feb (about 33% is what any category gets in an average year).")
     res = wn["reservoirs"]
-    if pid == "car_colusa_rice":
+    if RESERVOIRS[pid] not in (["SHA", "ORO"], ["PNF"]):   # registry fields with other reservoirs
+        bits = []
+        for k in RESERVOIRS[pid]:
+            x = res[k]
+            if x["storage_af"]["value"] is None: continue
+            pa = x["pct_of_cdec_average"]["value"]
+            bits.append(f"{x['name'].title()} holds {af(x['storage_af']['value'])} acre-feet" + (f" ({pa:.0f}% of CDEC's average for 13 Nov)" if pa is not None else ""))
+        if bits: parts.append("; ".join(bits) + ".")
+    elif pid == "car_colusa_rice" or RESERVOIRS[pid] == ["SHA", "ORO"]:
         s, o = res["SHA"], res["ORO"]
         parts.append(f"Shasta holds {af(s['storage_af']['value'])} acre-feet ({s['pct_of_cdec_average']['value']:.0f}% of CDEC's average for 13 Nov) and Oroville {af(o['storage_af']['value'])} acre-feet ({o['pct_of_cdec_average']['value']:.0f}% of average).")
     else:

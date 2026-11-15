@@ -26,9 +26,15 @@ export const haToAc = (ha: number) => ha * 2.47105;
 export const mmToIn = (mm: number) => mm / 25.4;
 export const afacToMm = (af: number) => af * 304.8;
 export const mmToAfac = (mm: number) => mm / 304.8;
+/** A dryland rotation: the API marks every crop year in its calendar `irrigated: false`. Its irrigation need is 0 by design. */
+export const RAIN_FED = 'Rain-fed (no irrigation)';
+export const isRainFed = (s: { calendar?: { irrigated?: boolean }[] }) => !!s.calendar?.length && s.calendar.every((c) => c.irrigated === false);
+/** "3.1 acre-ft/acre", or the rain-fed label for a dryland rotation. */
+export const needText = (s: { calendar?: { irrigated?: boolean }[] }, af: number) => (isRainFed(s) ? RAIN_FED : `${af.toFixed(1)} acre-ft/acre`);
 
 export const CLASS_LABEL: Record<CoverClass, string> = { b: 'Bare', p: 'Partial cover', c: 'Covered', w: 'Water', u: 'Unknown (cloud)' };
 export const CLASS_COLOR: Record<CoverClass, string> = { b: '#a8703f', p: '#b7d77a', c: '#2f9e4b', w: '#3d97e8', u: '#6b7280' };
+/** Soil texture (data colours; never used for chrome): sand tan, silt light, clay brown. */
 export const SOIL_COLOR = { sand: '#d9b46a', silt: '#e9e3d3', clay: '#7a4a2b' } as const;
 export const RISK_COLOR = { rain: '#6cb6ff', frost: '#b8f0ff', heat: '#ff6b5e', dry: '#ffb44a' } as const;
 export const RISK_LABEL = { rain: 'Heavy rain', frost: 'Frost', heat: 'Heat', dry: 'Dry spell' } as const;
@@ -75,9 +81,11 @@ export function fieldState(cal: Calendar, t: number, detector: 'rule' | 'ml'): F
 
 export interface CellState { cls: CoverClass; ndvi: number; et: number }
 /** Per-cell value = field value for the date x the cell's fixed spatial offset (mock/cells.json). */
-export function cellState(_loc: Location, fs: FieldState, c: CellProps): CellState {
+export function cellState(loc: Location, fs: FieldState, c: CellProps): CellState {
   let cls = fs.cls, ndvi: number;
+  const partialFlood = loc.id === 'caf_tulare_forage';
   if (cls === 'u') return { cls, ndvi: 0, et: 0 };
+  if (cls === 'w' && partialFlood && c.low < 0.38) cls = c.low < 0.2 ? 'p' : 'b';
   if (cls === 'w') ndvi = 0.02 + 0.02 * c.v;
   else if (cls === 'b') ndvi = 0.14 + 0.04 * c.v;
   else if (fs.cls === 'w') ndvi = cls === 'p' ? 0.27 : 0.15;

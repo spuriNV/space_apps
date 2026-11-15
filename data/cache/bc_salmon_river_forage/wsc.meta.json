@@ -1,0 +1,70 @@
+{
+ "title": "Water Survey of Canada hydrometric data, Salmon River (Shuswap): HYDAT daily means + provisional real-time",
+ "urls": {
+  "hydat_daily_mean": "https://api.weather.gc.ca/collections/hydrometric-daily-mean",
+  "realtime": "https://api.weather.gc.ca/collections/hydrometric-realtime",
+  "provisional_csv": "https://wateroffice.ec.gc.ca/services/real_time_data/csv/inline",
+  "station_page": "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=08LE021"
+ },
+ "fetched_at": "2026-11-15T15:09:55Z",
+ "auth": "none",
+ "stations": {
+  "08LE021": {
+   "name": "SALMON RIVER NEAR SALMON ARM",
+   "lon": -119.33053,
+   "lat": 50.69251,
+   "drainage_km2": 1555.0,
+   "operator": "B.C. Ministry of Environment (WSC network)",
+   "role": "lower river, downstream of the field",
+   "station": "08LE021",
+   "hydat_first": "1911-06-01",
+   "hydat_last": "2025-12-31",
+   "provisional_first": "2026-01-01",
+   "provisional_last": "2026-11-15",
+   "discharge_first": "1911-06-01",
+   "discharge_last": "2026-11-15",
+   "water_temp_first": "2025-05-01",
+   "water_temp_last": "2026-11-15",
+   "latest_realtime": {
+    "datetime_utc": "2026-11-15T14:10:00Z",
+    "datetime_local": "2026-11-15T06:10:00-08:00",
+    "discharge_m3s": 0.879,
+    "level_m": -0.176
+   }
+  },
+  "08LE020": {
+   "name": "SALMON RIVER AT FALKLAND",
+   "lon": -119.55864,
+   "lat": 50.49853,
+   "drainage_km2": 1049.0,
+   "operator": "Water Survey of Canada",
+   "role": "upper river, about 25 km upstream; reports water temperature",
+   "station": "08LE020",
+   "hydat_first": "1911-05-23",
+   "hydat_last": "2025-12-31",
+   "provisional_first": "2026-01-01",
+   "provisional_last": "2026-11-15",
+   "discharge_first": "1911-05-23",
+   "discharge_last": "2026-11-15",
+   "water_temp_first": "2025-05-01",
+   "water_temp_last": "2026-11-15",
+   "latest_realtime": {
+    "datetime_utc": "2026-11-15T14:20:00Z",
+    "datetime_local": "2026-11-15T06:20:00-08:00",
+    "discharge_m3s": 0.467,
+    "level_m": 0.568
+   }
+  }
+ },
+ "units": {
+  "discharge_m3s": "m3/s",
+  "level_m": "m (assumed datum)",
+  "water_temp_c": "degC (daily mean of hourly)",
+  "water_temp_max_c": "degC (daily max of hourly)"
+ },
+ "notes": [
+  "approval 'approved' = HYDAT; 'provisional' = real-time data averaged to UTC days, subject to revision (WSC: provisional data have not been checked and may change).",
+  "Water temperature is published for 08LE020 (Falkland) only, from about May 2025."
+ ],
+ "licence": "Open Government Licence - Canada (https://open.canada.ca/en/open-government-licence-canada)"
+}
