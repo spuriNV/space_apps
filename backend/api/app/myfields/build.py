@@ -6,6 +6,7 @@ import datetime as dt
 import json
 import time
 
+from ..anyloc import bc as BC
 from ..anyloc import build as B
 from ..anyloc import fetch as F
 from . import geom as G
@@ -34,6 +35,14 @@ async def analyse(fid: str, name: str, poly: dict, area_ha: float, power_cache, 
     ms, sections = {}, {}
     cw = [list(reversed(r)) for p in parts for r in p]   # ArcGIS: outer rings clockwise, holes counter-clockwise (ours are the opposite)
     in_ca_box = B.CA_BOX[0] <= lon <= B.CA_BOX[2] and B.CA_BOX[1] <= lat <= B.CA_BOX[3]
+    if BC.in_bc_box(lon, lat) and not in_ca_box:
+        try:
+            async with F.client() as c0:
+                rd0 = await asyncio.wait_for(BC.regional_district(c0, lon, lat), 8)
+        except Exception:  # noqa: BLE001
+            rd0 = None
+        if isinstance(rd0, str):
+            return await analyse_bc(fid, name, poly, area_ha, power_cache, note, rd0)
     from water_sources import AG_WORDS, SWRCB, L as LAYERS  # noqa: PLC0415
 
     async def timed(k, coro, deadline):
@@ -255,6 +264,172 @@ async def analyse(fid: str, name: str, poly: dict, area_ha: float, power_cache, 
         "_notes": {"analysis": "Built live for a user-drawn polygon: NASA POWER (centroid), SSURGO (area-weighted), CDL (sampled), DWR/Land IQ fields overlapping, "
                                "county and DWR water layers. Satellite series, IMERG, SMAP, GRACE, NASADEM and OpenET are not computed (sections.*).",
                    "boundary": "outline drawn by the user", "engine": f"rotation set reused from {B.TEMPLATES[family]} (no new agronomy)"},
+    }
+    ms["total"] = round((time.perf_counter() - t0) * 1000)
+    return loc, {}, items, {"timings_ms": ms, "sections": sections}
+
+
+
+# ------------------------------------------------------------------ British Columbia (bannered: BC drawn fields)
+async def analyse_bc(fid: str, name: str, poly: dict, area_ha: float, power_cache, note: dict | None, rd: str):
+    """BC tier 1 for a drawn polygon: ECCC climate, SLC soil, AAFC crop inventory (sampled), regional district, ALR, BC rotation set."""
+    parts = G.polys(poly)
+    nverts = sum(len(r) - 1 for p in parts for r in p)
+    pts, (lon, lat) = G.sample_parts(poly, 25)
+    today = dt.date.today().isoformat()
+    t0 = time.perf_counter()
+    ms, sections = {}, {}
+
+    async def timed(k, coro, deadline):
+        t = time.perf_counter()
+        try:
+            return await asyncio.wait_for(coro, deadline)
+        finally:
+            ms[k] = round((time.perf_counter() - t) * 1000)
+
+    async with F.client() as c:
+        pw, bcd, aci, alr = await asyncio.gather(
+            timed("power", power_cache.get(c, lon, lat), 30),
+            timed("bc", B.bc_stage1(c, lon, lat, today), 20),
+            timed("aci", BC.aci_history(c, pts), 20),
+            timed("alr", BC.alr_clip(c, poly, lon, lat), 20),
+            return_exceptions=True)
+    bcd = bcd if isinstance(bcd, dict) else {}
+    sections["boundary"] = B.sec("ready", source="user_drawn", vertices=nverts, parts=len(parts))
+    sections["county"] = B.sec("ready", source="bc_regional_districts_wfs", regional_district=rd)
+    df = pmeta = None
+    if isinstance(pw, Exception):
+        sections["weather"] = B.sec("error", f"NASA POWER did not answer ({type(pw).__name__}: {str(pw)[:120]})")
+    else:
+        df, pmeta = pw
+        sections["weather"] = B.sec("ready", source="nasa_power_daily", range=[pmeta["date_min"], pmeta["date_max"]], at="polygon centroid")
+    sections["daily"] = dict(sections["weather"])
+    # ECCC climate stations
+    stations, eccc_clim = [], None
+    ec = bcd.get("eccc")
+    if isinstance(ec, dict) and ec["stations"]:
+        stations = [{"network": "ECCC", "id": s["id"], "name": s["name"].title().replace(" Cs", " CS"), "distance_km": s["distance_km"],
+                     "years": [int(s["daily"][0][:4]), int(s["daily"][1][:4])]} for s in ec["stations"]]
+        eccc_clim = {"stations": ec["stations"], "monthly": ec["monthly"],
+                     "source": B.src("eccc_climate", "ECCC daily/monthly climate (MSC GeoMet OGC API)", BC.ECCC + "/climate-monthly", today)}
+        sections["stations"] = B.sec("ready", source="eccc_geomet", stations=[s["id"] for s in ec["stations"]], climate_summary=bool(ec["monthly"]))
+    else:
+        sections["stations"] = B.sec("error" if isinstance(ec, Exception) else "unavailable",
+                                     f"ECCC station lookup failed ({type(ec).__name__})" if isinstance(ec, Exception) else "no ECCC daily climate station within 80 km")
+    # crop history (AAFC ACI majority class per year over the sample points)
+    if isinstance(aci, Exception) or not aci:
+        sections["crop_history"] = B.sec("error" if isinstance(aci, Exception) else "unavailable",
+                                         f"AAFC crop inventory did not answer ({type(aci).__name__})" if isinstance(aci, Exception) else "the AAFC crop inventory does not map this field")
+        hist, purity, aci = {}, {}, {}
+    else:
+        hist, purity = B.crop_history(aci, BC.aci_legend())
+        sections["crop_history"] = B.sec("ready", source="aafc_aci", years=[min(aci), max(aci)], points_sampled=max(v["n"] for v in aci.values()))
+    legend = BC.aci_legend()
+    mix = {str(y): [{"crop": legend.get(k, f"ACI class {k}"), "share": round(n / v["n"], 2)}
+                    for k, n in sorted(v["counts"].items(), key=lambda kv: -kv[1])[:3]] for y, v in sorted(aci.items())}
+    family, fam_why, cropland = BC.family_bc(aci)
+    sections["family"] = B.sec("ready" if aci else "unavailable", fam_why, family=family, template=B.BC_TEMPLATE, cropland=cropland)
+    # soil (SLC)
+    slc = BC.slc_at(lon, lat)
+    if slc:
+        soil, engine_soil = B.slc_soil(slc, today)
+        sections["soil"] = B.sec("ready", source="aafc_slc_v3_2", poly_id=slc["poly_id"])
+    else:
+        why = "no Soil Landscapes of Canada soil data for this field (SLC v3.2 has soil tables for BC's farmed landscapes only)"
+        soil = {"mukey": "unavailable", "muname": why, "drainage_class": "unknown", "hydrologic_group": "unknown",
+                "awc_mm_per_m": B.blocked_sn("mm/m", why), "om_pct": B.blocked_sn("%", why), "texture_class": "unknown",
+                "source": {"id": "ssurgo_sda", "url": "https://sdmdataaccess.sc.egov.usda.gov/", "verified": False}}
+        sections["soil"] = B.sec("unavailable", why)
+        engine_soil = None
+    sections["water"] = B.sec("unavailable", "BC water licences and groundwater aquifers are not looked up for drawn fields (the California layers do not apply)")
+    water = B.water_block(None, family)
+    # ALR + parcel context
+    parcel = None
+    if isinstance(alr, tuple):
+        _g, share = alr
+        p = bcd.get("parcel") if isinstance(bcd.get("parcel"), dict) else {}
+        parcel = {"parcel_class": p.get("parcel_class"), "owner_type": p.get("owner_type"), "parcel_area_ha": p.get("area_ha"),
+                  "alr_share_of_parcel": round(share, 3), "clip": "share of the drawn field inside the Agricultural Land Reserve"}
+        sections["alr"] = B.sec("ready", source="bc_alr_wfs", alr_share=round(share, 3))
+    else:
+        sections["alr"] = B.sec("error", f"ALR lookup failed ({type(alr).__name__})")
+    # land status + Nation tools (as anyloc)
+    land = BC.land_status_bc(bcd["reserve"]) if isinstance(bcd.get("reserve"), dict) else None
+    sections["land_status"] = (B.sec("ready", source="bc_reserves_wfs", kind=land["kind"]) if land else
+                               B.sec("error", "reserve / tribal land lookup failed") if isinstance(bcd.get("reserve"), Exception)
+                               else B.sec("ready", source="bc_reserves_wfs", kind=None))
+    # strategies: BC rotation set
+    items = None
+    if df is not None:
+        from ..anyloc import engine_bridge  # noqa: PLC0415
+        entry = B.engine_entry(fid, name, family, "bc", {"lon": lon, "lat": lat})
+        t = time.perf_counter()
+        try:
+            items = B._plain(await asyncio.to_thread(engine_bridge.run, fid, entry, df, lat, pmeta.get("elevation_m"), pmeta["url"], engine_soil))
+            for st in items:
+                gaps = (st.get("brief") or {}).get("gaps")
+                if isinstance(gaps, list):
+                    st["brief"]["gaps"] = [{"text": g, "source_ids": []} if isinstance(g, str) else g for g in gaps]
+            sections["strategies"] = B.sec("ready", f"BC rotation set (BC0-BC3, {B.BC_TEMPLATE}) scored with NASA POWER weather at the polygon centre"
+                                           + ("" if engine_soil else "; no soil drainage check"), template=B.BC_TEMPLATE)
+        except Exception as e:  # noqa: BLE001
+            sections["strategies"] = B.sec("error", f"rotation engine failed ({type(e).__name__}: {str(e)[:160]})")
+        ms["engine"] = round((time.perf_counter() - t) * 1000)
+    else:
+        sections["strategies"] = B.sec("error", "needs NASA POWER weather, which did not answer")
+        ms["engine"] = None
+    sections.update(B.tier2_sections())
+    row, col, _, _, foot = F.power_cell(lon, lat)
+    elev = (pmeta or {}).get("elevation_m")
+    p_src = B.src("nasa_power_daily", "NASA POWER daily point", (pmeta or {}).get("url", F.POWER_URL), today)
+    area_src = B.src("user_drawn_polygon", "Outline drawn by the user; geodesic area", "urn:fieldshift:user", today, True)
+    place = f"{rd}, BC"
+    ds_stat = lambda k: {"status": sections[k]["status"] if sections[k]["status"] != "ready" else "real", **({"reason": sections[k]["reason"]} if sections[k].get("reason") else {})}  # noqa: E731
+    loc = {
+        "id": fid, "name": name, "dwr_unique_id": None,
+        "region_adapter": "bc", "region": "bc", "regime": "not assessed (user-drawn field)",
+        "state_fips": "", "county_fips": "",
+        "geometry": poly, "centroid": {"lon": lon, "lat": lat},
+        "area_ha": B.sn(round(area_ha, 2), "ha", area_src, "geodesic area of the drawn polygon", "computed"),
+        "crs_working": "EPSG:32610",
+        "family": family, "farmer_name": name, "acres": round(area_ha * 2.47105, 1), "county_name": rd, "state_code": "BC",
+        "regional_district": rd, "template": B.BC_TEMPLATE,
+        "why_chosen": "You drew this field. " + fam_why[:1].upper() + fam_why[1:] + ".",
+        "soil": soil,
+        "terrain": {"slope_mean_pct": B.blocked_sn("%", "NASADEM not computed for drawn fields"), "slope_p90_pct": B.blocked_sn("%", "NASADEM not computed for drawn fields"),
+                    "elev_m": (B.sn(elev, "m", p_src, "elevation of the POWER (MERRA-2) grid cell, NOT a field DEM value", "lookup") if elev is not None
+                               else B.blocked_sn("m", "POWER did not answer")),
+                    "low_spot_fraction": B.blocked_sn("fraction", "NASADEM not computed for drawn fields")},
+        "water": water, "market_preference": "no_preference", "stations": stations,
+        "land_status": land, "nation_tools": BC.nation_tools(land, salmon=bcd.get("salmon") is True, water=water),
+        "climate_eccc": eccc_clim, "parcel": parcel,
+        "regional_cell": {"grid": "POWER_MERRA2_0.5x0.625", "row": row, "col": col, "footprint": foot},
+        "datasets": {"power": {**ds_stat("weather"), **({"range": [pmeta["date_min"], pmeta["date_max"]]} if pmeta else {})},
+                     "cdl": {"status": "unavailable", "reason": "the Cropland Data Layer is US-only; BC uses the AAFC Annual Crop Inventory (sections.crop_history)"},
+                     "imerg": {"status": "not_computed"}, "smap_l3": {"status": "not_computed"},
+                     "smap_l4": {"status": "not_computed"}, "grace": {"status": "not_computed"}, "hls": {"status": "not_computed"},
+                     "s2": {"status": "not_computed"}, "modis": {"status": "not_computed"}, "ecostress": {"status": "not_computed"},
+                     "dem": {"status": "not_computed"}, "openet": {"status": "unavailable", "reason": "not queried for drawn fields (monthly quota)"},
+                     "cimis": {"status": "blocked", "reason": "needs CIMIS appKey"}, "cdec": {"status": "not_computed"},
+                     "usdm": {"status": "not_computed"}, "rma": {"status": "not_computed"}, "news": {"status": "not_computed"}},
+        "nasa_datasets": ([{"id": "power", "name": "NASA POWER daily weather", "tells_you": "Daily heat, cold, rain and the reference crop water demand (ETo) for your area.",
+                            "resolution": "about 50 km (0.5 x 0.625 deg)", "date_range": [pmeta["date_min"], pmeta["date_max"]] if pmeta else None,
+                            "rows": pmeta["rows"] if pmeta else 0, "status": "live" if pmeta else "blocked",
+                            "used_in": ["daily", "strategies water use", "heat and frost days"], "source_url": "https://power.larc.nasa.gov/"}]
+                          + [{"id": i, "name": n, "tells_you": t, "resolution": r, "date_range": None, "rows": 0, "status": "pending",
+                              "used_in": [], "source_url": u, "note": B.TIER2_WHY} for i, n, t, r, u in B.NASA_STATIC]),
+        "crop_history": hist, "crop_history_purity": purity, "dwr_2023": None,
+        "observed_cover": {"typically_bare_doy_ranges": [], "bare_doy_file": None, "years_used": [],
+                           "detector": "not computed for drawn fields (needs the Sentinel-2/Landsat series)"},
+        "events": [],
+        "user_field": {"name": name, "place": place, "vertices": nverts, "parts": {"count": len(parts), "items": [{"part": i + 1, "area_ha": round(G.part_ha(p), 2), "acres": round(G.part_ha(p) * 2.47105, 1), "holes": len(p) - 1} for i, p in enumerate(parts)]},
+                       "sample_points": len(pts), "spans": {"counties": [], "regional_districts": [rd], "districts": [], "gsas": [], "subbasins": []}, "dwr_fields": [],
+                       "crop_mix": mix, "simplified": note,
+                       "method": "AAFC Annual Crop Inventory majority class per year over a grid of up to 25 sample points inside the parts and outside holes (purity = share of points in that class); "
+                                 "Soil Landscapes of Canada polygon at the interior point; ECCC climate stations nearest the centroid; NASA POWER at the interior point nearest the centroid"},
+        "_notes": {"analysis": "Built live for a user-drawn BC polygon: NASA POWER (centroid), ECCC climate stations, AAFC Soil Landscapes of Canada, AAFC Annual Crop Inventory (sampled), "
+                               "regional district and Agricultural Land Reserve context. Satellite series, IMERG, SMAP, GRACE, NASADEM and OpenET are not computed (sections.*).",
+                   "boundary": "outline drawn by the user", "engine": f"rotation set reused from {B.BC_TEMPLATE} (no new agronomy)"},
     }
     ms["total"] = round((time.perf_counter() - t0) * 1000)
     return loc, {}, items, {"timings_ms": ms, "sections": sections}

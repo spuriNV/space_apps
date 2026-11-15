@@ -368,8 +368,9 @@ async def score(pid: str, body: AL.ScoreRequest, req: Request, resp: Response):
             df, pmeta = await asyncio.wait_for(AL.STORE.get(c, lon, lat), 30)
         from ..anyloc import engine_bridge  # noqa: PLC0415
         fam = loc.get("family", "other")
-        entry = {"id": pid, "name": loc["name"], "family": "rice" if fam == "rice" else "forage", "template": loc["template"], "region": "ca",
-                 "centroid": loc["centroid"], "slope_pct": 0.0 if fam == "rice" else 0.5}
+        entry = ({"id": pid, "name": loc["name"], "family": "rice" if fam == "rice" else "forage", "template": loc["template"], "region": "ca",
+                  "centroid": loc["centroid"], "slope_pct": 0.0 if fam == "rice" else 0.5} if loc.get("region") != "bc"
+                 else B.engine_entry(pid, loc["name"], fam, "bc", loc["centroid"]))
         soil = loc.get("soil") or {}
         esoil = {k: soil.get(k) for k in ("drainage_class", "hydrologic_group", "mukey", "muname")} if soil.get("mukey") not in (None, "unavailable") else None
         try:

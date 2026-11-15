@@ -633,6 +633,16 @@ _sv = _mf.GUARD.active; _mf.GUARD.active = _mf.MAX_CONCURRENT
 rr = client.post("/api/my-fields", json={"name": "limit", "geometry": _rect(-122.05, 39.2, 600, 600)}, headers={"X-Forwarded-For": "198.51.100.61"})
 _mok(rr.status_code == 429, "concurrency bound -> 429")
 _mf.GUARD.active = _sv
+# ---- BEGIN BC drawn field (myfields/build.py analyse_bc) ------------------------------------------------------
+_rbc = client.post("/api/my-fields", json={"name": "Fraser Valley", "geometry": _rect(-122.52, 49.09, 450, 450)}, headers={"X-Forwarded-For": "198.51.100.80"})
+if _mok(_rbc.status_code == 200, f"BC drawn field 200 {'' if _rbc.status_code == 200 else _rbc.text[:200]}"):
+    _bc = _rbc.json()
+    _mok(not _errs(_LOC_V, _bc), f"BC drawn field schema-valid {_errs(_LOC_V, _bc)}")
+    _mok(_bc["region"] == "bc" and _bc.get("regional_district") and _bc["crop_history"] and _bc["sections"]["crop_history"].get("source") == "aafc_aci",
+         f"BC region, regional district {_bc.get('regional_district')}, {len(_bc['crop_history'])} ACI years")
+    _txt = json.dumps({k: v for k, v in _bc.items() if k not in ("soil", "nasa_datasets", "datasets", "sections", "_notes")})
+    _mok("USDA" not in _txt and "US counties" not in _txt, "BC drawn field text has no USDA / US counties")
+# ---- END BC drawn field ------------------------------------------------------------------------------------------
 # ---- end my fields ===========================================================================================
 # ======================================================================================================
 # ---- Nation tools (app/nation): /api/locations/{pid}/nation[/drought_rotation|groundwater|land_season|funding|report.*]
