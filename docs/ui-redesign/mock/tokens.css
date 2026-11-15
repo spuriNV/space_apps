@@ -1,0 +1,102 @@
+/* CropLytics sidebar redesign: tokens. Drop-in replacement for the :root block at the top of
+   frontend/app/src/styles.css (names kept where they already exist; new names are additive).
+   Values are platform-neutral; see REDESIGN.md section 3 for the Compose / SwiftUI mapping. */
+:root {
+  /* type: unchanged faces and scale */
+  --font-ui: 'Libre Franklin', 'Franklin Gothic Book', Arial, sans-serif;
+  --font-head: 'Zilla Slab', 'Rockwell', Georgia, serif;
+  --fs-fine: 13px; --fs-small: 14.5px; --fs-body: 16px; --fs-answer: 20px; --fs-head: 22px; --fs-title: 28px;
+  --head-weight: 600; --head-size: var(--fs-head); --title-size: var(--fs-title);
+
+  /* surfaces (light) */
+  --app-bg: #e4e4dc;
+  --panel: #f7f6f0;            /* paper: panel, sheet, top bar */
+  --panel-2: #efeee7;          /* sunken: search field, disclosure row, segmented track */
+  --raised: #ffffff;           /* cards on paper (glance card), segmented thumb */
+  --text: #191c16;             /* 15.9:1 on panel */
+  --text-2: #363a31;           /* 10.7:1 */
+  --muted: #5a5e54;            /* 6.1:1 on panel, 5.7:1 on panel-2 */
+  --line: rgba(25, 28, 22, 0.14);       /* dividers between rows */
+  --line-soft: rgba(25, 28, 22, 0.08);  /* card edges */
+  --outline: #84877d;          /* boundaries that must be seen: chip and input edges, 3.4:1 */
+
+  /* the spot green, used as ink, not as a slab */
+  --accent: #2f5d34;           /* primary fill, links, focus ring, active tab underline; 7.1:1 on panel */
+  --accent-hover: #284f2c;     /* primary hover: white 9.4:1 */
+  --accent-pressed: #22442a;
+  --accent-ink: #ffffff;       /* on accent: 7.7:1 */
+  --accent-container: #e3ecdd; /* SELECTED state: tonal fill for chips, rows, segmented, tonal buttons */
+  --accent-container-hover: #d7e4d0;
+  --on-accent-container: #1d3a21; /* text on container: 10.3:1 */
+  --accent-outline: #5f8a5c;   /* selected edge / check icon on container: 3.3:1 */
+  --link: #2f5d34;
+
+  /* status: unchanged meaning */
+  --good: #2f5d34; --warn: #8a5a00; --bad: #a12a1c; --amber: #8a5a00; --warn-ink: #ffffff;
+  --warn-container: #f4ead6; --on-warn-container: #6b4600; /* 7.0:1, only for the once-per-panel example notice */
+  --mark: #191c16;
+  --head-band: #2f5d34;        /* now only the 3px band under the top bar */
+  --head-ink: #ffffff; --head-ink-2: #dfe9dc;
+
+  /* state layers: ink over the element's own fill */
+  --state-hover: rgba(25, 28, 22, 0.05);
+  --state-pressed: rgba(25, 28, 22, 0.10);
+  --state-strong: rgba(25, 28, 22, 0.14);  /* pressed on an already-tinted fill */
+  --tint: var(--state-hover); --tint-2: rgba(25, 28, 22, 0.09);
+  --accent-soft: var(--accent-container); /* legacy alias */
+  --focus-ring: 0 0 0 2px var(--panel), 0 0 0 4px var(--accent);
+
+  /* shape */
+  --r-xs: 4px;     /* legend swatches, status squares, meter tracks (ends) */
+  --r-sm: 8px;     /* thumbnails, tooltips, map label boxes stay 2px (print look on imagery) */
+  --r-md: 12px;    /* cards, list rows, disclosure row, menu items */
+  --r-lg: 16px;    /* floating panel, popovers, menus */
+  --r-xl: 20px;    /* phone bottom sheet top corners */
+  --r-full: 999px; /* buttons, chips, segmented control, search field, icon buttons */
+  --radius: var(--r-md); /* legacy alias: anything still on var(--radius) becomes 12px, not 2px */
+
+  /* elevation (shadow colour is the ink, not pure black) */
+  --e0: none;
+  --e1: 0 1px 2px rgba(25, 28, 22, 0.08), 0 1px 1px rgba(25, 28, 22, 0.04);          /* cards, segmented thumb */
+  --e2: 0 2px 6px rgba(25, 28, 22, 0.10), 0 12px 32px rgba(25, 28, 22, 0.20);        /* panel floating over the map */
+  --e3: 0 4px 12px rgba(25, 28, 22, 0.14), 0 24px 48px rgba(25, 28, 22, 0.24);       /* menus, date picker */
+  --e-sheet: 0 -2px 8px rgba(25, 28, 22, 0.10), 0 -12px 32px rgba(25, 28, 22, 0.18); /* phone sheet */
+  --e-stuck: 0 1px 0 var(--line), 0 6px 12px -8px rgba(25, 28, 22, 0.25);           /* sticky header / footer once content passes under */
+  --shadow: var(--e2);
+
+  /* spacing (4-pt) */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px; --s-8: 32px;
+
+  /* sizes */
+  --h-btn: 44px; --h-btn-sm: 36px; --h-chip: 36px; --h-seg: 40px; --h-icon-btn: 40px; --hit: 44px;
+  --panel-w: min(460px, 46vw);
+
+  /* motion */
+  --dur-1: 120ms;  /* hover, press colour */
+  --dur-2: 180ms;  /* chip select, segmented thumb, icon rotate */
+  --dur-3: 240ms;  /* disclosure expand, sticky header compress */
+  --dur-4: 320ms;  /* sheet snap, panel enter */
+  --ease-std: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.05, 0.7, 0.1, 1);   /* entering */
+  --ease-in: cubic-bezier(0.3, 0, 0.8, 0.15);    /* leaving */
+}
+
+/* Dark: reserved for the native apps when the OS is in dark mode, and for a future web
+   prefers-color-scheme switch. The web app stays light until the skill allows a dark look. */
+[data-theme="dark"] {
+  --app-bg: #0f110d;
+  --panel: #171a15; --panel-2: #20241d; --raised: #23281f;
+  --text: #ecebe3; --text-2: #c9cbc0; --muted: #a3a69a;   /* 14.7, 10.7, 7.1 :1 */
+  --line: rgba(236, 235, 227, 0.14); --line-soft: rgba(236, 235, 227, 0.08); --outline: #6c7066;
+  --accent: #9fcb9b; --accent-hover: #b0d6ac; --accent-pressed: #8dbd89; --accent-ink: #10260f; /* 8.8:1 */
+  --accent-container: #2b3f2b; --accent-container-hover: #344b34; --on-accent-container: #cfe6c9; /* 8.6:1 */
+  --accent-outline: #7fae7b; --link: #9fcb9b;
+  --good: #9fcb9b; --warn: #e0b04a; --bad: #f08a7a; --amber: #e0b04a;
+  --warn-container: #3a2e14; --on-warn-container: #f1d38f;
+  --state-hover: rgba(236, 235, 227, 0.06); --state-pressed: rgba(236, 235, 227, 0.12); --state-strong: rgba(236, 235, 227, 0.16);
+  --tint: var(--state-hover); --tint-2: rgba(236, 235, 227, 0.10);
+  --focus-ring: 0 0 0 2px var(--panel), 0 0 0 4px var(--accent);
+  --e1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --e2: 0 2px 6px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.5);
+  --e3: 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.55);
+}
