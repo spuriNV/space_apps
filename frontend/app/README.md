@@ -22,7 +22,7 @@ node ../../design/tools/shoot-app.mjs                         # screenshots -> d
 
 ## Screens
 
-1. **Pick your field** (`ui/Options.tsx` `FieldPicker`): one list with a satellite thumbnail (outline drawn, `public/thumbs/`), a 2023–2026 season strip, one line of facts and one of what is notable.
+1. **Pick your field** (`ui/Options.tsx` `FieldPicker`): every field `GET /api/locations` serves (a map pin for each; names show on hover at state zoom), a search box (town, county, crop, district) and Rice / Forage chips over one list with a satellite thumbnail (outline drawn, `public/thumbs/`), a 2023–2026 season strip, one line of facts and one of what is notable.
 2. **Field now** (`ui/FieldNow.tsx`): a visual summary (thumbnail, this year's strip with a today tick, small bars for rain vs normal, water need vs limit, greenness, soil and groundwater percentiles) and five short answers (what's growing, rain, water need vs limit, soil and groundwater vs usual, and what the soil is like: a sand/silt/clay bar, water held, drainage, salt and one rotation sentence; rows with no value are hidden). Each answer loads on its own (skeleton, then "Not available right now" after 15 s). More detail: green cover, crop water use (OpenET measured, model alongside), crop stress and standing water (NASA OPERA), heat and frost, the ISS photo and NASA dataset list, soil, slope, water, insurance, bare days, last seasons, sources.
 3. **Coming season** (`season/ComingSeason.tsx`): three sentences (winter rain, water supply, next season's need for today's rotation); More detail has the outlooks, drought, reservoirs, ground water, allocations, snowpack, bare stretch and every rotation.
 4. **This field's year** (`year/YearSheet.tsx`): typical year and 2023–2026 strips, events, "Replay on the map". More detail: ML comparison with a plain verdict, crop-stress weeks (hover for why), OPERA standing water, earlier years.
@@ -53,7 +53,7 @@ node ../../design/tools/shoot-app.mjs                         # screenshots -> d
 | Crop stress, standing water, measured water use, insurance, glossary | `GET .../stress`, `.../water_seen` (else the OPERA column of `nasa_series`), `.../openet`, `.../insurance`, `GET /api/glossary` |
 | Crop-insurance totals until `/insurance` answers | `src/mock/field_extra.json` (copied from backend/ground) |
 
-The water district shows "not looked up yet" until the location route carries a looked-up district. Nothing else is example data when the API answers.
+The water row shows the looked-up district, GSA and basin status (`water.district`, `water.gsa`, `water.sgma_status` with its link), leaving out empty values; "not looked up yet" only when the API does not answer. A field whose `/outlook` or `/calendar_ml` is not built yet (404) says "not ready for this field yet" instead of showing another field's example; a new field borrows the bundled rice or forage example only while the API is down. Nothing else is example data when the API answers.
 
 ## API fields still wanted
 

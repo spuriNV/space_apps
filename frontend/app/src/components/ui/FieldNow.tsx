@@ -118,7 +118,7 @@ export function FieldNow(p: FieldNowProps) {
     <div className="glance" data-testid="glance">
       <div className="gl-top">
         <span className="gl-thumb">
-          <img src={`${import.meta.env.BASE_URL}thumbs/${loc.id}.jpg`} alt="" />
+          <img src={`${import.meta.env.BASE_URL}thumbs/${loc.id}.jpg`} alt="" onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} />
           {p.thumb && <svg viewBox="0 0 360 240" preserveAspectRatio="none" aria-hidden="true"><polygon points={loc.geometry.coordinates[0].map(([x, y]) => `${(((x - p.thumb!.bbox[0]) / (p.thumb!.bbox[2] - p.thumb!.bbox[0])) * 360).toFixed(1)},${(((p.thumb!.bbox[3] - y) / (p.thumb!.bbox[3] - p.thumb!.bbox[1])) * 240).toFixed(1)}`).join(' ')} /></svg>}
         </span>
         <span className="gl-season">

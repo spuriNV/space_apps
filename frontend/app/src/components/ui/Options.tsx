@@ -65,22 +65,35 @@ export function FieldPanel(p: FieldPanelProps) {
  *  one line of facts in grower units and one line of what is notable. BC is a quiet text row at the bottom. */
 export function FieldPicker(p: { locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void }) {
   const thumbs = useThumbs();
+  const [q, setQ] = useState('');
+  const [fam, setFam] = useState<string | null>(null);
+  const fams = (['rice', 'forage'] as const).map((f) => ({ f, n: p.locations.filter((l) => familyOf(l) === f).length })).filter((x) => x.n > 0);
+  const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const shown = p.locations.filter((l) => (!fam || familyOf(l) === fam) && words.every((w) => `${fieldName(l)} ${county(l)} county ${latestCrop(l).crop} ${l.water?.district ?? ''}`.toLowerCase().includes(w)));
   return (
     <section className="picker2" data-testid="fields-panel">
       <header className="pk-head">
         <h1>Pick your field</h1>
         {p.onClose && <button className="pk-close" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>}
       </header>
+      {p.locations.length > 1 && (
+        <div className="pk-filter">
+          <label className="pk-search"><Icon name="search" size={16} /><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by town, county or crop" aria-label="Search fields" data-testid="pk-search" /></label>
+          <div className="pk-chips" role="group" aria-label="Crop">
+            {fams.map(({ f, n }) => <button key={f} className={fam === f ? 'on' : ''} aria-pressed={fam === f} onClick={() => setFam(fam === f ? null : f)} data-testid={`chip-${f}`}>{f === 'rice' ? 'Rice' : 'Forage'} <small>{n}</small></button>)}
+          </div>
+        </div>
+      )}
       {p.live === false && <p className="offline-note" data-testid="offline-note">The CropLytics server is not answering, so every number is an example. Start the API (see the README) and reload for real data.</p>}
       {p.locations.length === 0 && <p className="loading-note">Loading the fields…</p>}
       <ul className="pk-list" data-testid="field-table">
-        {p.locations.map((l) => {
+        {shown.map((l) => {
           const now = latestCrop(l), th = thumbs?.[l.id], strip = p.strips[l.id];
           return (
             <li key={l.id}>
               <button className={`pk-row ${p.selectedId === l.id ? 'on' : ''}`} onClick={() => p.onSelect(l.id)} data-testid={`row-${l.id}`}>
                 <span className="pk-thumb">
-                  <img src={`${import.meta.env.BASE_URL}thumbs/${l.id}.jpg`} alt={`Satellite view of ${fieldName(l)}`} />
+                  <img src={`${import.meta.env.BASE_URL}thumbs/${l.id}.jpg`} alt={`Satellite view of ${fieldName(l)}`} onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} />
                   {th && <svg viewBox="0 0 360 240" preserveAspectRatio="none" aria-hidden="true"><polygon points={outlinePts(l, th.bbox)} /></svg>}
                 </span>
                 <span className="pk-body">
@@ -96,10 +109,13 @@ export function FieldPicker(p: { locations: Location[]; live: boolean | null; st
           );
         })}
       </ul>
+      {p.locations.length > 0 && !shown.length && <p className="loading-note">No field matches. <button className="link" onClick={() => { setQ(''); setFam(null); }}>Show all</button></p>}
       <button className="pk-bc" onClick={p.onBC}>British Columbia: not set up yet. <u>See why</u></button>
     </section>
   );
 }
+/** Crop family: from the API, else from the field id (car_ rice, caf_ forage). */
+const familyOf = (l: Location) => l.family ?? (l.id.startsWith('car') ? 'rice' : l.id.startsWith('caf') ? 'forage' : 'other');
 /** Field outline in thumbnail coordinates (360 x 240, plate carrée over a small box). */
 function outlinePts(l: Location, b: number[]) {
   return l.geometry.coordinates[0].map(([x, y]) => `${(((x - b[0]) / (b[2] - b[0])) * 360).toFixed(1)},${(((b[3] - y) / (b[3] - b[1])) * 240).toFixed(1)}`).join(' ');
@@ -110,8 +126,8 @@ function notable(l: Location) {
   const fallow = Object.entries(l.crop_history).filter(([y, c]) => +y >= 2016 && cropName(c) === 'Left fallow').map(([y]) => +y);
   if (fallow.includes(2022)) notes.push('Left fallow in the 2022 drought');
   else if (fallow.length) notes.push(`Left fallow in ${fallow[fallow.length - 1]}`);
-  if (l.water?.source === 'surface') notes.push(l.id.startsWith('car') ? 'Sacramento River water' : 'surface water');
-  else if (l.water?.source) notes.push(/probation/i.test(l.water.sgma_status?.text ?? '') ? 'wells; basin on state probation since 2024' : 'wells');
+  if (l.water?.source === 'surface') notes.push(l.water_real && l.water.district ? `surface water, ${l.water.district}` : 'surface water');
+  else if (l.water?.source) notes.push(/probation/i.test(l.water.sgma_status?.text ?? '') ? 'wells; basin on state probation' : 'wells');
   const s = notes.join('; ');
   return s ? s.charAt(0).toUpperCase() + s.slice(1) + '.' : '';
 }
