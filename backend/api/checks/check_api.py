@@ -391,5 +391,93 @@ if ESTIMATES:
 r = client.options("/api/locations", headers={"Origin": "http://localhost:5171", "Access-Control-Request-Method": "GET"})
 ok = r.headers.get("access-control-allow-origin") == "http://localhost:5171"
 fails += not ok; print(("PASS" if ok else "FAIL") + " CORS preflight localhost:5171")
+# ======================================================================================================
+# ---- analyse any location (app/anyloc): GET /api/analyze + pt_* sub-routes. Live upstream calls (POWER, SDA, CDL,
+# DWR, FCC); a fresh temp cache so the first call is cold. Self-contained block (own helper, own counters).
+# ======================================================================================================
+import tempfile as _tf  # noqa: E402
+import time as _t  # noqa: E402
+import app.anyloc as _al  # noqa: E402
+
+_al.CACHE = Path(_tf.mkdtemp(prefix="anyloc_check_"))
+_LOC_V, _STR_V = validator("location.schema.json"), validator("responses.schema.json", "Strategies")
+_DAILY_V, _SCORE_V = validator("responses.schema.json", "Daily"), validator("responses.schema.json", "Score")
+_PTS = [  # (label, lat, lon, ip, expectations)
+    ("rice near Colusa (DWR 2023 rice field 0602326)", 39.1894, -122.0276, "198.51.100.1", {"family": "rice", "region": "ca", "boundary": "ready", "water": "ready"}),
+    ("alfalfa near Tulare (DWR 2023 alfalfa field 5412895)", 36.3110, -119.4617, "198.51.100.2", {"family": "forage", "region": "ca", "boundary": "ready", "water": "ready"}),
+    ("Nevada desert (Esmeralda County)", 38.0, -117.2, "198.51.100.3", {"family": "other", "region": "other", "boundary": "unavailable", "water": "unavailable"}),
+]
+
+
+def _ok(cond, label):
+    global fails
+    fails += not cond
+    print(("PASS" if cond else "FAIL") + " anyloc " + label)
+    return cond
+
+
+def _errs(v, d):
+    return [f"{'/'.join(map(str, e.absolute_path))}: {e.message[:90]}" for e in list(v.iter_errors(d))[:3]]
+
+
+print("\nanalyse any location:")
+for label, lat, lon, ip, exp in _PTS:
+    H = {"X-Forwarded-For": ip}
+    t0 = _t.time(); r = client.get(f"/api/analyze?lat={lat}&lon={lon}", headers=H); cold = _t.time() - t0
+    if not _ok(r.status_code == 200, f"{label}: GET /api/analyze 200 ({cold:.1f} s cold) {'' if r.status_code == 200 else r.text[:200]}"):
+        continue
+    d = r.json(); pid = d["id"]
+    e = _errs(_LOC_V, d)
+    _ok(not e, f"{pid}: location payload schema-valid {e}")
+    _ok(r.headers.get("X-Data-Source") == "live" and d.get("_source") == "live", f"{pid}: X-Data-Source/_source = live")
+    st = d["sections"]
+    _ok(all(v["status"] in d["analysis"]["section_statuses"] for v in st.values()), f"{pid}: every section status in {d['analysis']['section_statuses']}")
+    _ok(all(st[k]["status"] == "ready" for k in ("weather", "soil", "crop_history", "county", "strategies")),
+        f"{pid}: tier 1 ready (weather, soil, crop_history, county, strategies): {[(k, st[k]['status']) for k in ('weather', 'soil', 'crop_history', 'county', 'strategies')]}")
+    _ok(d["family"] == exp["family"] and d["region"] == exp["region"], f"{pid}: family {d['family']} / region {d['region']} == {exp['family']} / {exp['region']}")
+    _ok(st["boundary"]["status"] == exp["boundary"] and st["water"]["status"] == exp["water"],
+        f"{pid}: boundary {st['boundary']['status']}, water {st['water']['status']} (expected {exp['boundary']}, {exp['water']})")
+    _ok(st["openet"]["status"] == "unavailable" and st["imerg"]["status"] == "not_computed", f"{pid}: tier 2 marked (openet unavailable, imerg not_computed)")
+    _ok(cold < 20, f"{pid}: cold analysis < 20 s ({cold:.1f} s; upstream {d['analysis']['timings_ms']})")
+    t0 = _t.time(); r2 = client.get(f"/api/analyze?lat={lat}&lon={lon}", headers=H); warm = _t.time() - t0
+    _ok(r2.status_code == 200 and r2.json()["analysis"]["cache"] == "hit" and warm < 0.5, f"{pid}: repeat tap is a cache hit in {warm * 1000:.0f} ms")
+    r3 = client.get(f"/api/locations/{pid}", headers=H)
+    _ok(r3.status_code == 200 and r3.json()["id"] == pid and not _errs(_LOC_V, r3.json()), f"{pid}: GET /api/locations/{{pid}} 200, same payload")
+    rs = client.get(f"/api/locations/{pid}/strategies", headers=H)
+    _ok(rs.status_code == 200 and not _errs(_STR_V, rs.json()) and len(rs.json()["items"]) == 4,
+        f"{pid}: /strategies 200, 4 items, schema-valid {_errs(_STR_V, rs.json()) if rs.status_code == 200 else rs.text[:120]}")
+    if rs.status_code == 200:
+        want = "car" if exp["family"] == "rice" else "caf"
+        _ok(all(i["id"].startswith(want) and i["location_id"] == pid for i in rs.json()["items"]), f"{pid}: strategies are the {want.upper()}0-3 rotation set for this point")
+    rd = client.get(f"/api/locations/{pid}/daily?from=2024-01-01&to=2024-12-31", headers=H)
+    _ok(rd.status_code == 200 and not _errs(_DAILY_V, rd.json()) and len(rd.json()["rows"]) == 366
+        and all(x["tmax_c"] is not None and x["eto_mm"] is not None for x in rd.json()["rows"]), f"{pid}: /daily 2024 = 366 POWER rows with ETo, schema-valid")
+    rsc = client.post(f"/api/locations/{pid}/score", json={"weights": {"water_use": 4}, "scenario": {"dT_c": 2, "dP_pct": -10}}, headers=H)
+    _ok(rsc.status_code == 200 and not _errs(_SCORE_V, rsc.json()) and len(rsc.json()["ranking"]) == 4,
+        f"{pid}: POST /score 200, schema-valid ranking {'' if rsc.status_code == 200 else rsc.text[:150]}")
+    rst = client.get(f"/api/analyze/{pid}/status")
+    _ok(rst.status_code == 200 and rst.json()["cached"] is True and rst.json()["sections"]["weather"]["status"] == "ready", f"{pid}: /api/analyze/{{pid}}/status cached")
+    rc = client.get(f"/api/locations/{pid}/calendar", headers=H)
+    _ok(rc.status_code == 404 and "not computed for tapped points" in rc.json()["detail"], f"{pid}: /calendar 404 'not computed for tapped points'")
+# guards and edge cases
+r = client.get("/api/analyze?lat=95&lon=0")
+_ok(r.status_code == 422, "lat out of range -> 422")
+r = client.get("/api/locations/pt_n999999_w1220000")
+_ok(r.status_code == 404, "malformed point id -> 404")
+r = client.get("/api/locations/car_colusa_rice")
+_ok(r.status_code == 200 and r.json()["_source"] == "real", "preset ids still served by the preset routes (car_colusa_rice real)")
+_saved = _al.GUARD.active
+_al.GUARD.active = _al.MAX_CONCURRENT        # simulate two analyses in progress
+r = client.get("/api/analyze?lat=37.0&lon=-120.0&refresh=1", headers={"X-Forwarded-For": "198.51.100.9"})
+_ok(r.status_code == 429 and int(r.headers.get("Retry-After", 0)) > 0, f"busy -> 429 with Retry-After ({r.status_code}, {r.headers.get('Retry-After')})")
+_al.GUARD.active = _saved
+_old = _al.PER_IP_MIN
+_al.PER_IP_MIN = 0                           # per-IP new-spot limit reached
+r = client.get("/api/analyze?lat=37.0&lon=-120.0&refresh=1", headers={"X-Forwarded-For": "198.51.100.10"})
+_ok(r.status_code == 429 and "address" in r.json()["detail"], "per-IP new-spot limit -> 429")
+_al.PER_IP_MIN = _old
+r = client.get(f"/api/analyze?lat={_PTS[0][1]}&lon={_PTS[0][2]}", headers={"X-Forwarded-For": "198.51.100.10"})
+_ok(r.status_code == 200 and r.json()["analysis"]["cache"] == "hit", "cached spots are still served when the new-spot limit is reached")
+# ---- end analyse any location ================================================================================
 print(f"\n{'ALL PASS' if not fails else str(fails) + ' FAIL'}")
 sys.exit(1 if fails else 0)

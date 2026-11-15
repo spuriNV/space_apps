@@ -114,6 +114,26 @@ Known data caveats the UI should not hide: POWER overstates rain vs the NCEI sta
 - Who fills `Location.datasets` entries (shape is free: `{status, meta_path, ...}`)?
 - Fixture polygons are placeholder squares around the preset centres, not CDL-checked fields.
 
+## Analyse any location (`app/anyloc/`)
+
+Tap anywhere: `GET /api/analyze?lat=&lon=` (or `POST /api/analyze {lat, lon}`) builds a location payload for that spot live, in the same shape as `/api/locations/{id}` (schema-valid), with `_source: "live"` / `X-Data-Source: live`. The id is `pt_<n|s><lat x 1e4>_<e|w><lon x 1e4>` (4 decimals, e.g. `pt_n391894_w1220276`). Code: `app/anyloc/` (`fetch.py` upstream calls, `build.py` payload, `engine_bridge.py` engine run, `__init__.py` routes, cache, guards); `main.py` only includes the router (before the preset routes; its routes match `pt_*` ids only).
+
+Tier 1 (computed on the tap, 2-5 s cold, ~10 ms cached): NASA POWER daily (per 0.5 x 0.625 deg cell, cached 24 h), DWR/Land IQ 2023 field outline containing the point (else a 200 m square), county (FCC census API), SSURGO via SDA over the footprint, CDL 2008-2025 at up to 10 points in the field (CroplandCROS `getSamples`), family from CDL (rice: rice in >= 3 of the last 10 years; forage: alfalfa in >= 2 or forage classes in >= 5; else `other`), DWR water layers (California only: district, B118 subbasin, SGMA priority, critically overdrafted, GSA, GSP, adjudicated, State Water Board list), and the engine (`score()` with the family's rotation set: rice -> CAR0-3, forage/other -> CAF0-3; POWER only, no NOAA stations, family slope placeholder). Tier 2 (IMERG, SMAP, GRACE, S2/Landsat/HLS, NASADEM, calendar, zones, grid, insurance, outlook, news, ...) is `not_computed` for points; OpenET is never queried (`unavailable`).
+
+Extra keys on the payload: `sections.<name> = {status, reason?, ...}` with status `ready | not_computed | unavailable | error` (tier 1: `boundary, county, weather, daily, crop_history, family, soil, water, strategies`; tier 2: `imerg, smap, grace, satellite_cover, terrain, openet, calendar, zones, grid, insurance, outlook, stress, news, models, transitions, water_seen, nasa_series`), `analysis = {id, point, computed_at, expires_at, cache: miss|hit|hit_shared, timings_ms, matches_preset, section_statuses}`, `region` (`ca` or `other`), `region_adapter` (`ca` or `other`), `family` (`rice|forage|other`), `template`, `crop_history_purity`, `dwr_2023`. `matches_preset` is the registry id when the tap falls inside a preset field's outline (show the preset instead).
+
+| Route (pt_* ids) | Answer |
+|---|---|
+| `GET /api/analyze?lat&lon[&refresh=1]`, `POST /api/analyze` | payload above; 422 for lat/lon out of range; 429 + `Retry-After` when busy or rate-limited; 504 if the whole analysis exceeds 45 s |
+| `GET /api/analyze/{pid}/status` | `{id, point, in_flight, cached, computed_at?, expires_at?, sections?, timings_ms?}`; never computes |
+| `GET /api/locations/{pid}` | same as `/api/analyze` for the id's point (computes on a miss) |
+| `GET /api/locations/{pid}/daily?from&to` | `Daily` envelope from 2015: POWER tmax/tmin/precip, Hargreaves ETo, heat flags; the other preset columns are null |
+| `GET /api/locations/{pid}/strategies` | `Strategies` envelope (engine, family rotation set, default weights) |
+| `POST /api/locations/{pid}/score` | `Score` envelope, same body as the preset route |
+| `GET /api/locations/{pid}/<other>` | 404 `"<route> is not computed for tapped points ..."` |
+
+Guards (env vars, defaults sized for Render's 512 MB free instance): `ANYLOC_MAX_CONCURRENT=2` engine runs at once (cold analyses and re-scores), `ANYLOC_PER_IP_MIN=6` and `ANYLOC_PER_IP_HOUR=40` new spots per client IP, `ANYLOC_GLOBAL_HOUR=400` new spots per hour for the instance, `ANYLOC_READS_PER_MIN=120` cached reads per IP; every upstream call has its own timeout (4-5 s connect, 6-25 s read) and a size cap. Cache: `ANYLOC_CACHE_DIR` (default `data/cache/_points/`, git- and docker-ignored, gzip JSON + one parquet per POWER cell), `ANYLOC_TTL_H=168` (15 min when a tier-1 section errored), `ANYLOC_MAX_POINTS=1500` points kept. On Render the disk resets on deploy/restart; nothing depends on it. Measured: process peak RSS 137 MB idle, 191 MB after a cold analysis, 213 MB after 7.
+
 ## Deploy (Render)
 
 One Docker service serves the API and the built frontend from the same origin (`/api/...` plus the app at `/`). The root `Dockerfile` builds `frontend/app` (`VITE_API_BASE=/api`), installs `backend/api` with the engine, copies the committed outputs and `data/cache`, and runs uvicorn on `$PORT` with `FRONTEND_DIST` set (the API mounts the built app, SPA fallback for non-`/api` paths). The image is about 500 MB. No keys are needed: the app serves the committed cache.
