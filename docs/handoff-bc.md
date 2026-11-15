@@ -208,8 +208,10 @@ Guides:
 
 ## Commands to resume
 
+**Do not rebase this branch.** The first WIP commit (`caeb53a`) was built on an older main, so on its own it reverts some teammates' frontend and design files. The merge commit `2234059` restores them, and the branch tip differs from main only in the BC files (`git diff origin/main...wip/bc-field --stat`). A rebase would replay those reverts. Merge main in, or, when finishing, copy the BC paths onto a fresh branch from main.
+
 ```sh
-git fetch origin && git switch wip/bc-field && git rebase origin/main   # resolve if main moved
+git fetch origin && git switch wip/bc-field && git merge origin/main   # MERGE, do not rebase (see note below)
 cd backend/bc && uv sync
 
 # ACI zips (~1.6 GB) are not in the repo: download them, then re-clip (needed only to rebuild the outline or history)
