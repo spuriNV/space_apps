@@ -15,7 +15,9 @@ export const county = (l: Location) => l.county_name ?? l.county ?? (l.id === 'c
 /** "Kings County" in California; "Columbia-Shuswap, BC" (a regional district) in British Columbia. */
 export const place = (l: Location) => (l.spot ? spotPlace(l) : l.region === 'bc' ? `${county(l)}, BC` : `${county(l)} County`);
 /** A tapped spot's place: its county (and state outside California), or the coordinates when no US county was found. */
-const spotPlace = (l: Location) => (l.county_name ? `${l.county_name} County${l.state_code && l.state_code !== 'CA' ? `, ${l.state_code}` : ''}` : l.spot?.state === 'ready' ? 'Outside the US counties' : 'Finding the county');
+const spotPlace = (l: Location) => (l.region === 'bc'
+  ? `${(l as { regional_district?: string | null }).regional_district || l.county_name || 'British Columbia'}, BC`
+  : l.county_name ?`${l.county_name} County${l.state_code && l.state_code !== 'CA' ? `, ${l.state_code}` : ''}` : l.spot?.state === 'ready' ? 'Outside the US counties' : 'Finding the county');
 /** The weather stations behind heat, frost and station rain. */
 export const stationsName = (l: Location) => (l.region === 'bc' ? 'Environment Canada (ECCC) weather stations near the field' : 'NOAA weather stations near the field');
 /** The yearly crop map. */

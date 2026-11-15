@@ -57,7 +57,7 @@ export function FieldPanel(p: FieldPanelProps) {
         {loading && <p className="spot-progress" role="status" data-testid="spot-progress">Reading weather, soil and crop maps…</p>}
         {loc.mine && <MineNotices loc={loc} onRetry={p.onSpotRetry} onFix={() => p.onMine?.('redraw')} />}
         {sp?.state === 'error' && !loc.mine && <div className="notice spot-notice" role="alert" data-testid="spot-error"><span>{sp.error}</span>{p.onSpotRetry && <button className="btn btn-outline btn-sm" onClick={p.onSpotRetry}>Try again</button>}</div>}
-        {sp?.state === 'ready' && sp.cropland === false && <div className="notice spot-notice" data-testid="spot-not-farm"><b>This may not be farmland.</b> The USDA crop map shows little or no cropping here, so the rotations below are a stand-in.</div>}
+        {sp?.state === 'ready' && sp.cropland === false && <div className="notice spot-notice" data-testid="spot-not-farm"><b>This may not be farmland.</b> The {loc.region === 'bc' ? 'AAFC crop inventory' : 'USDA crop map'} shows little or no cropping here, so the rotations below are a stand-in.</div>}
       </>}
       answer={isToday ? <WaterAnswer strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} state={p.dataState} /> : <Answer headline={facts.stage ?? 'Loading…'} sub="Pick Today in the Viewing control to check your water." loading={!facts.stage && p.dataState === 'loading'} />}
       detailWhat="Meters, this week, soil, NASA sources, 3D"
