@@ -120,10 +120,9 @@ export default function App() {
     const to = setTimeout(() => ok && setTimedOut(selected.id), 15000);
     api.getField(selected, live, (b) => ok && setData(b)).then((b) => ok && setData(b));
     api.getDaily(selected.id).then((r) => ok && setDaily({ id: selected.id, ...r }));
-    if (!spot) {
-      api.getOutlook(selected.id, live).then((o) => ok && setOutlook({ id: selected.id, o }));
-      api.getISS(selected).then((v) => ok && setISS({ id: selected.id, v }));
-    }
+    // always resolve outlook (presets load the file; tapped/drawn fields get a quiet "not built yet" so Coming season never spins)
+    api.getOutlook(selected.id, live).then((o) => ok && setOutlook({ id: selected.id, o }));
+    if (!spot) api.getISS(selected).then((v) => ok && setISS({ id: selected.id, v }));
     return () => { ok = false; clearTimeout(to); };
   }, [selected, live]);
   // re-score through POST /score when the water allocation changes (engine applies the allocation check)

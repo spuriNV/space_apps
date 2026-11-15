@@ -41,7 +41,9 @@ Pick a field, then try:
 - "Compare";
 - "Print a summary for your adviser".
 
-Scroll into the field on the map for the 3D view (crop, then soil moisture, then groundwater). Without the API running, the app falls back to example data and says so.
+Scroll into the field on the map for the 3D view (crop, then soil moisture, then groundwater), or use **Look under the field in 3D** / **See this field’s year (3D)** on the field panel. Without the API running, the app falls back to example data and says so.
+
+**Nation tools example:** on Pick your field, open **Nation tools example** (Torres-Martinez Reservation farm field), or go to `#spot=pt_n335100_w1161200`. Land status is tribal land; open the tools for drought rotation, groundwater, land and season, and funding.
 
 Current screenshots are in `design/screenshots/app/`.
 

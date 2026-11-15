@@ -605,15 +605,24 @@ function adaptOutlook(o: any, w: any, al: any, origin: { cpc: Origin; water: Ori
     },
   };
 }
+const outlookGap = (detail: string): Outlook => ({
+  issued: null, seasons: [], droughtNow: null, droughtOutlook: null, reservoirs: [], allocations: null, notReady: true,
+  prov: {
+    cpc: P('outlook_cpc', 'Winter outlooks (NOAA)', 'api', detail),
+    water: P('outlook_water', 'Drought and reservoirs', 'api', detail),
+    alloc: P('outlook_alloc', 'Water allocations', 'api', detail),
+  },
+});
 export async function getOutlook(id: string, live: boolean): Promise<Outlook> {
+  // tapped spots and drawn fields: the API has no /outlook route (only presets). Never leave the panel on Loading…
+  if (isLite(id)) return outlookGap(isMine(id) ? 'not built for a drawn field yet' : 'not built for a tapped spot yet');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ex = outlookExample as any;
   const exAlloc = ex.presets[id]?.allocations ?? null;
   const { body: full, missing } = live ? await apiRealOr404(`/api/locations/${id}/outlook`) : { body: null, missing: false };
   if (full) return fromOutlookFile(full.presets?.[id] ?? full, exAlloc, orig(full));
   // the API is up but this field's outlook is not built yet: say so quietly instead of showing another field's example
-  if (missing || (live && !ex.presets[id])) return { issued: null, seasons: [], droughtNow: null, droughtOutlook: null, reservoirs: [], allocations: null, notReady: true,
-    prov: { cpc: P('outlook_cpc', 'Winter outlooks (NOAA)', 'api', 'not ready for this field yet'), water: P('outlook_water', 'Drought and reservoirs', 'api', 'not ready for this field yet'), alloc: P('outlook_alloc', 'Water allocations', 'api', 'not ready for this field yet') } };
+  if (missing || (live && !ex.presets[id])) return outlookGap('not ready for this field yet');
   return adaptOutlook(ex.example_full, ex.example_full, exAlloc, { cpc: 'mock', water: 'mock', alloc: 'mock' }, 'example file');
 }
 
