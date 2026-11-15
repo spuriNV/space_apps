@@ -23,11 +23,11 @@ Fixture numbers are placeholders (`method: assumed`, `verified: false`, source `
 
 ## Routes
 
-Paths are relative to the repo root; first existing file wins. `{id}` is `car_colusa_rice` or `caf_tulare_forage` (else 404). Fixtures live in `fixtures/{id}/<name>.json` (or `fixtures/<name>.json` for global routes).
+Paths are relative to the repo root; first existing file wins. `{id}` is any field in `backend/fields/registry.json` (14 fields; else 404). Fixtures live in `fixtures/{id}/<name>.json` (or `fixtures/<name>.json` for global routes) and exist only for the original two; a registry field without a built output gets 404, never another field's fixture. `/news` for a registry field falls back to its family template's news (same valley).
 
 | Route | Fixture | Real lookup |
 |---|---|---|
-| `GET /api/locations` | `fixtures/locations.json` (static copy; API assembles from per-preset locations) | assembled from per-preset location; `real` only if both are real |
+| `GET /api/locations?family=&county=` | `fixtures/locations.json` (static copy) | one location payload per registry field (originals first). `family=rice|forage`, `county=` name or FIPS (`Tulare`, `06107`, `107`). Response adds `count`, `filters` and `facets` (field counts by family and county over the whole registry) |
 | `GET /api/locations/{id}` | `location.json` | `backend/api/out/{id}/location.json`, `data/cache/{id}/location.json`, `backend/field/out/{id}/location.json`, `backend/engine/out/{id}/location.json` |
 | `GET .../daily?from&to` | `daily.json` | `backend/api/out/{id}/daily.json`, `data/cache/{id}/daily.json`, `backend/regional/out/{id}/daily.json` |
 | `GET .../features/weekly` | `features_weekly.json` | `backend/api/out/{id}/features_weekly.json`, `data/cache/{id}/features_weekly.json`, `backend/field/out/{id}/features_weekly.json` |
@@ -50,6 +50,7 @@ Paths are relative to the repo root; first existing file wins. `{id}` is `car_co
 | `GET .../insurance` | none | `backend/ground/out/{id}/rma_profile.json` (USDA RMA cause of loss), served as is |
 | `GET .../stress` | none | `backend/ai/out/{id}/stress_weekly.json` + API-computed `summary.by_year`, + `stress_summary`/`stress_eval(uation)` if backend/ai writes them |
 | `GET .../grid?layer=` | none (404 if backend/field has not run) | `backend/field/out/{id}/grid.geojson` |
+| `GET .../transitions` | none (404 if not built) | `backend/ai/out/{id}/transitions.json`: green-up, harvest and alfalfa cutting dates per detector method |
 | `GET /api/health` | | not in spec; shows root and presets |
 
 `trends` layers: `smap_anomaly|heatwave_days|grace_gw_pct|precip_anomaly|modis_ndvi_anomaly|usdm_d2_weeks|reservoir_storage`. `from`/`to` filter `rows`/`items` by their `date` string.
@@ -62,7 +63,7 @@ Paths are relative to the repo root; first existing file wins. `{id}` is `car_co
 
 | Route | Source | Notes |
 |---|---|---|
-| `GET /api/locations`, `/api/locations/{id}` | real | as before, plus: `dwr_unique_id` (DWR/Land IQ field ID from backend/field/polygons); `soil.ec_ds_per_m` and `soil.texture_detail` (SSURGO, data/cache/<id>/soil.json); **`nasa_datasets`** (list: `id, name, tells_you` (plain words), `resolution, date_range, rows, status` live/pending/blocked, `used_in, source_url, note`) for the "NASA data behind this field" panel; `terrain.*` now **NASADEM** (smoothed slope, elevation, low-spot fraction) from backend/nasa_open; `datasets.*` statuses updated (`real` for IMERG, GRACE, HLS, DEM, OpenET once cached) |
+| `GET /api/locations`, `/api/locations/{id}` | real | registry fields add `family`, `farmer_name`, `acres`, `county_name`, `template`, `why_chosen`; **`water`** is now looked up (backend/fields/water_sources.py): `district` (DWR i03 Water Districts, null if none at the centroid), `other_agencies`, `sgma_subbasin` + `_number`, `sgma_priority` (2019), `critically_overdrafted`, `gsa`, `sgma_status.text` (subbasin, priority, State Water Board status, DWR GSP assessment) with source URL, `cdec_stations` (registry reservoirs) and `lookup` (every layer's raw answer, URL and date); `water.source` stays the spec statement (U) for the original two and null elsewhere. As before, plus: `dwr_unique_id` (DWR/Land IQ field ID from backend/field/polygons); `soil.ec_ds_per_m` and `soil.texture_detail` (SSURGO, data/cache/<id>/soil.json); **`nasa_datasets`** (list: `id, name, tells_you` (plain words), `resolution, date_range, rows, status` live/pending/blocked, `used_in, source_url, note`) for the "NASA data behind this field" panel; `terrain.*` now **NASADEM** (smoothed slope, elevation, low-spot fraction) from backend/nasa_open; `datasets.*` statuses updated (`real` for IMERG, GRACE, HLS, DEM, OpenET once cached) |
 | `GET .../daily?from&to` | real | **2015-01-01 to the latest POWER near-real-time day (2026-11-11)**. New columns: `imerg_precip_mm` + `imerg_run` (GPM IMERG Final, Late after 2025-09-30; to 2026-11-13), `smap_sm_pct` (SMAP L4 root-zone percentile), `smap_rootzone_m3m3`, `smap_l3_sm_m3m3`, `grace_gw_pct` (weekly), `power_run` (`archive`/`nrt`), `cover_source` (`s2_landsat` or `hls`). NCEI station columns stay null after the station cache ends |
 | `GET .../features/weekly` | real | weeks through 2026; `imerg_7d_mm`, `smap_sm`, `smap_sm_pct`, `grace_*_pct`, `modis_ndvi_anomaly`, `esi` filled where the dataset is cached |
 | `GET .../trends?layer=&year=` | real for all 7 layers once SMAP/MODIS are cached | `grace_gw_pct` (annual mean GRACE-DA groundwater percentile, 2003-2026), `smap_anomaly` (SMAP L4 root-zone standardized anomaly, sd), `modis_ndvi_anomaly` (MOD13Q1 NDVI minus 2000-2025 same-period mean). Still one cell (`row 0, col 0`) |

@@ -542,8 +542,9 @@ def nasa_datasets(p: str, nasa: dict) -> list:
               SRC["ecostress"]["url"]),
         entry("dswx", "OPERA surface water (DSWx)", "When and how much of the field was under water (winter flooding, floods).",
               "30 m, every few days", rng("dswx"), rows("dswx"), st("dswx"), ["field now", "winter flooding check", "nasa_series"],
-              SRC["dswx"]["url"], "Scenes only where OPERA has processed HLS; none exist over the Colusa field for the 2020-21 and 2021-22 winters."
-              if p == "car_colusa_rice" else "Fetched for spring 2023 (Tulare Lake re-flooding)."),
+              SRC["dswx"]["url"], ("Scenes only where OPERA has processed HLS; none exist over the Colusa field for the 2020-21 and 2021-22 winters."
+              if p == "car_colusa_rice" else "Fetched for the winters 2022-23 to 2026-27." if p.startswith("car_")
+              else "Fetched for spring 2023 (Tulare Lake re-flooding).")),
         entry("hls", "HLS (Harmonized Landsat Sentinel-2)", "What is growing on the field and when it is bare, green or flooded, every 2-3 days.",
               "30 m, every 2-3 days", rng("hls"), rows("hls"), st("hls"), ["calendar?source=hls", "nasa_series"], SRC["hls"]["url"]),
         entry("landsat", "Landsat 8/9 (NASA/USGS)", "Field greenness record used with Sentinel-2 in the main calendar.", "30 m, 8-16 days",
@@ -607,7 +608,7 @@ def water_seen(p: str, nasa: dict) -> dict | None:
               for r in d.itertuples()]
     c = d[d.frac_clear >= 0.8].copy()
     seasons = []
-    if p == "car_colusa_rice":
+    if p.startswith("car_"):   # rice fields: winters
         c = c[c.date.dt.month.isin([11, 12, 1, 2, 3, 4])]
         c["season"] = np.where(c.date.dt.month >= 11, c.date.dt.year, c.date.dt.year - 1)
         label = lambda y: f"{y}-{(y + 1) % 100:02d} winter"  # noqa: E731
@@ -623,7 +624,11 @@ def water_seen(p: str, nasa: dict) -> dict | None:
                         "water_seen": bool(len(wet))})
     full = [s for s in seasons if s["clear_scenes"] >= 5]
     n_w = sum(s["water_seen"] for s in full)
-    if p == "car_colusa_rice":
+    if p.startswith("car_") and p != "car_colusa_rice":
+        summary = (f"NASA OPERA saw more than half of this field under water in {n_w} of {len(full)} winters with at least 5 clear "
+                   "satellite views (fetched for 2022-23 to 2026-27). Much of it is classed as partial surface water (shallow water "
+                   "mixed with stubble or soil), which greenness-based images can miss.")
+    elif p == "car_colusa_rice":
         summary = (f"NASA OPERA saw more than half of this field under water in {n_w} of {len(full)} winters with at least 5 clear "
                    "satellite views (2016-17 to 2025-26). Much of it is classed as partial surface water (shallow water mixed with "
                    "stubble or soil), which greenness-based images can miss. No OPERA images exist over this field for the 2020-21 "

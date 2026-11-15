@@ -12,7 +12,10 @@ from pydantic import BaseModel, Field
 ROOT = Path(os.environ.get("FIELDSHIFT_ROOT", Path(__file__).resolve().parents[3]))
 FIX = ROOT / "fixtures"
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # backend/api, for nasa_build
-PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
+sys.path.insert(0, str(ROOT / "backend" / "fields"))
+import fieldreg  # noqa: E402  field registry (backend/fields/registry.json)
+
+PRESETS = fieldreg.ids()   # every registry field; the original two first
 LAYERS = ["smap_anomaly", "heatwave_days", "grace_gw_pct", "precip_anomaly", "modis_ndvi_anomaly", "usdm_d2_weeks", "reservoir_storage"]
 DEFAULT_W = {"water_use": 1, "forage_value": 1, "n_fixation": 1, "erosion": 1, "organic_matter": 1, "market": 1,
              "pest_break": 0, "infiltration": 0, "n_scavenging": 0, "income": 0}
@@ -26,7 +29,7 @@ LOOKUP = {
     "models": ["data/cache/{p}/models.json", "backend/ai/out/{p}/models.json", "backend/field/out/{p}/models.json"],
     "zones": ["backend/api/out/{p}/zones.json", "data/cache/{p}/zones.json", "backend/field/out/{p}/zones.json"],
     "trends": ["backend/api/out/{p}/trends_{l}.json", "backend/regional/out/{p}/trends_{l}.json", "data/cache/{p}/trends_{l}.json"],
-    "news": ["backend/news/out/{p}.json", "data/cache/{p}/news.json"],
+    "news": ["backend/news/out/{p}.json", "data/cache/{p}/news.json", "backend/news/out/{t}.json"],  # {t}: family template
     "validation": ["backend/api/out/{p}/validation.json", "backend/regional/out/{p}/validation.json", "backend/field/out/{p}/validation.json", "data/cache/{p}/validation.json"],
     "bc_news": ["backend/news/out/bc_opener.json", "backend/news/out/bc_news.json", "data/cache/bc/news.json"],
     "bc_signal": ["backend/api/out/bc_signal.json", "backend/regional/out/bc_signal.json", "data/cache/bc/signal.json"],
@@ -41,6 +44,7 @@ LOOKUP = {
     "crop_history": ["backend/field/out/{p}/crop_history.json"],
     "grid": ["backend/field/out/{p}/grid.geojson"],
     "calendar_ml": ["backend/ai/out/{p}/calendar_ml.json"],
+    "transitions": ["backend/ai/out/{p}/transitions.json"],
     "outlook": ["backend/outlook/out/{p}/outlook.json"],
 }
 FIXTURE = {
@@ -67,7 +71,7 @@ def _read(path: Path) -> Any:
 def resolve(kind: str, p: str | None = None, l: str | None = None, c: str | None = None, key: str | None = None):
     """Return (payload_dict, 'real'|'fixture'). Bare lists in real files are wrapped as {"items": [...]}.
     If a real file is a dict keyed by crop id (crops.json), `key` selects the entry."""
-    fmt = dict(p=p, l=l, c=c)
+    fmt = dict(p=p, l=l, c=c, t=fieldreg.template(p) if p and fieldreg.has(p) else p)
     for rel in LOOKUP[kind]:
         f = ROOT / rel.format(**fmt)
         if f.is_file():
@@ -86,7 +90,7 @@ def resolve(kind: str, p: str | None = None, l: str | None = None, c: str | None
                 if isinstance(it, dict) and it.get("id") == c:
                     return it, "real"
     f = FIX / FIXTURE[kind].format(**fmt)
-    if not f.is_file():
+    if not f.is_file() or (p and fieldreg.has(p) and not fieldreg.is_original(p) and "{p}" in FIXTURE[kind]):
         raise HTTPException(404, f"no data for {kind} {fmt}")
     return _read(f), "fixture"
 
@@ -131,13 +135,25 @@ def health():
 
 
 @app.get("/api/locations")
-def locations(resp: Response):
+def locations(resp: Response, family: str | None = Query(None, pattern="^(rice|forage)$"), county: str | None = None):
+    """Every registry field (backend/fields/registry.json). ?family=rice|forage and ?county=<name or FIPS> filter the list;
+    `facets` counts all fields by family and county so a picker can build its filters."""
     items, srcs = [], []
-    for p in PRESETS:
-        d, s = resolve("location", p)
+    for f in fieldreg.fields(family, county):
+        try:
+            d, s = resolve("location", f["id"])
+        except HTTPException:   # registry field whose payload is not built yet: skip it rather than fail the list
+            continue
         items.append({k: v for k, v in d.items() if k not in ("_fixture", "_source")}); srcs.append(s)
-    src = "real" if all(s == "real" for s in srcs) else "fixture"
-    out = {"items": items, "_fixture": True} if src == "fixture" else {"items": items}
+    src = "real" if srcs and all(s == "real" for s in srcs) else "fixture"
+    fam, cty = {}, {}
+    for f in fieldreg.fields():
+        fam[f["family"]] = fam.get(f["family"], 0) + 1
+        cty[f["county"]["name"]] = cty.get(f["county"]["name"], 0) + 1
+    out = {"items": items, "count": len(items), "filters": {"family": family, "county": county},
+           "facets": {"family": fam, "county": dict(sorted(cty.items()))}}
+    if src == "fixture":
+        out["_fixture"] = True
     return send(resp, out, src)
 
 
@@ -463,6 +479,16 @@ def calendar_ml(pid: str, resp: Response):
     check_preset(pid)
     d = _real_only("calendar_ml", pid)
     d["location_id"] = pid
+    return send(resp, d, "real")
+
+
+@app.get("/api/locations/{pid}/transitions")
+def transitions(pid: str, resp: Response):
+    """Green-up, harvest and cutting dates per detector method (backend/ai transitions.json). Real only, 404 if not built."""
+    check_preset(pid)
+    d = _real_only("transitions", pid)
+    if isinstance(d, dict):
+        d["location_id"] = pid
     return send(resp, d, "real")
 
 

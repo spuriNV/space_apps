@@ -10,7 +10,7 @@
   },
   "properties": {
     "id": {"type": "string"},
-    "location_id": {"enum": ["car_colusa_rice", "caf_tulare_forage"]},
+    "location_id": {"type": "string", "pattern": "^ca[rf]_[a-z0-9_]+$"},
     "name": {"type": "string"},
     "is_baseline": {"type": "boolean"},
     "cycle_years": {"type": "integer", "minimum": 1},

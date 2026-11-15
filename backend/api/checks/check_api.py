@@ -10,7 +10,10 @@ from fastapi.testclient import TestClient  # noqa: E402
 from jsonschema import Draft202012Validator  # noqa: E402
 from referencing import Registry, Resource  # noqa: E402
 
-from app.main import ROOT, PRESETS, LAYERS, app  # noqa: E402
+from app.main import ROOT, PRESETS, LAYERS, app, fieldreg  # noqa: E402
+
+ALL_FIELDS = list(PRESETS)                      # every registry field gets the core routes (below)
+PRESETS = [p for p in PRESETS if fieldreg.is_original(p)]   # the original two get every route and content check
 
 SCHEMAS = ROOT / "schemas"
 reg = Registry()
@@ -33,10 +36,12 @@ EXPECT_REAL = ["/api/locations", "/api/locations/{id}", "/daily", "/features/wee
                "/trends?layer=heatwave_days", "/trends?layer=precip_anomaly", "/trends?layer=usdm_d2_weeks", "/trends?layer=reservoir_storage", "/trends?layer=grace_gw_pct", "/news", "/validation", "/calendar", "/grid", "/api/bc/news", "/api/crops/{cid}"]
 EXPECT_FIXTURE_OK = {"/models": "no producer (AI workstream)", "/api/bc/signal": "SMAP/GRACE need Earthdata (blocked)",
                      }
-EXPECT_REAL += ["/openet", "/nasa_now", "/nasa_series", "/insurance", "/stress", "/water_seen", "/api/glossary"]
+EXPECT_REAL += ["/openet", "/nasa_now", "/nasa_series", "/insurance", "/stress", "/water_seen", "/api/glossary", "/transitions",
+                "/calendar_ml", "/outlook"]
 # NASA AppEEARS layers: must be real once their cache exists for both presets (backend/nasa); fixture is allowed only before that
 for _layer, _ds in (("smap_anomaly", "smap_l4"), ("modis_ndvi_anomaly", "modis")):
-    if all((ROOT / "data" / "cache" / _p / f"{_ds}.parquet").exists() for _p in PRESETS):
+    if all((ROOT / "data" / "cache" / _p / f"{_ds}.parquet").exists() and (ROOT / "backend/api/out" / _p / f"trends_{_layer}.json").exists()
+           for _p in PRESETS):
         EXPECT_REAL.append(f"/trends?layer={_layer}")
     else:
         EXPECT_FIXTURE_OK[f"/trends?layer={_layer}"] = f"{_ds} not cached yet (AppEEARS task pending in backend/nasa)"
@@ -58,7 +63,7 @@ def check(method, url, validator_, body=None, expect=200):
             key = url.split("?")[0]
             if key.endswith("/trends"):
                 key += "?layer=" + url.split("layer=")[1].split("&")[0]
-            for pid in PRESETS:
+            for pid in ALL_FIELDS:
                 key = key.replace(pid, "{id}")
             if "/api/crops/" in key:
                 key = "/api/crops/{cid}"
@@ -138,6 +143,45 @@ for p in PRESETS:
     for cid in crop_ids:
         check("GET", f"/api/crops/{cid}", validator("crop.schema.json"))
 check("GET", "/api/locations/nope", ANY, expect=404)
+check("GET", "/api/locations/nope/transitions", ANY, expect=404)
+
+# ---- registry: list, filters, and the core routes for every field
+rl = client.get("/api/locations").json()
+BUILT = [p for p in ALL_FIELDS if (ROOT / "backend/api/out" / p / "location.json").exists()]   # payloads built so far
+ok = rl["count"] == len(BUILT) and len(ALL_FIELDS) == 14 and [i["id"] for i in rl["items"]][:2] == ["car_colusa_rice", "caf_tulare_forage"]
+fails += not ok; print(("PASS" if ok else "FAIL") + f" /api/locations lists {rl['count']} built of {len(ALL_FIELDS)} registry fields, originals first")
+if len(BUILT) < len(ALL_FIELDS):
+    print(f"INFO registry fields not built yet (skipped by /api/locations): {[p for p in ALL_FIELDS if p not in BUILT]}")
+for q, fam, cty in (("family=rice", "rice", None), ("family=forage", "forage", None), ("county=Tulare", None, "Tulare"),
+                    ("county=06031", None, "06031"), ("family=forage&county=kings", "forage", "kings"),
+                    ("county=Colusa", None, "Colusa"), ("family=rice&county=Kings", "rice", "Kings")):
+    want = len([f for f in fieldreg.fields(fam, cty) if f["id"] in BUILT])
+    n = client.get(f"/api/locations?{q}").json()["count"]
+    ok = n == want
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" /api/locations?{q} -> {n} (want {want})")
+check("GET", "/api/locations?family=wheat", ANY, expect=422)
+ok = all(i.get("family") and i.get("farmer_name") and i.get("acres") and (i.get("water") or {}).get("sgma_subbasin")
+         for i in rl["items"])
+fails += not ok; print(("PASS" if ok else "FAIL") + " every location item has family, farmer_name, acres, water.sgma_subbasin")
+for p in BUILT:
+    if p in PRESETS:
+        continue
+    L = f"/api/locations/{p}"
+    check("GET", L, validator("location.schema.json"))
+    check("GET", L + "/daily?from=2023-03-01&to=2023-03-31", validator("responses.schema.json", "Daily"))
+    check("GET", L + "/features/weekly", validator("responses.schema.json", "FeaturesWeekly"))
+    r = check("GET", L + "/strategies", validator("responses.schema.json", "Strategies"))
+    ok = r is not None and r.status_code == 200 and all(s_["location_id"] == p for s_ in r.json()["items"])
+    fails += not ok; print(("PASS" if ok else "FAIL") + f" {p} strategies carry location_id {p}")
+    check("POST", L + "/score", validator("responses.schema.json", "Score"), {"weights": {"water_use": 4}})
+    for route in ("/zones", "/news", "/validation", "/calendar", "/grid?layer=ndvi_2023_q3", "/openet", "/insurance",
+                  "/water_seen", "/trends?layer=heatwave_days&year=2023"):
+        check("GET", L + route, ANY)
+    # outputs of later steps (backend/ai, backend/outlook): checked when built, else must be a clean 404
+    for route, rel in (("/models", "backend/ai/out/{p}/models.json"), ("/stress", "backend/ai/out/{p}/stress_weekly.json"),
+                       ("/calendar_ml", "backend/ai/out/{p}/calendar_ml.json"), ("/transitions", "backend/ai/out/{p}/transitions.json"),
+                       ("/outlook", "backend/outlook/out/{p}/outlook.json")):
+        check("GET", L + route, ANY, expect=200 if (ROOT / rel.format(p=p)).exists() else 404)
 check("GET", "/api/bc/news", validator("responses.schema.json", "News"))
 check("GET", "/api/bc/signal", validator("responses.schema.json", "BcSignal"))
 rg = check("GET", "/api/glossary", validator("responses.schema.json", "Glossary"))

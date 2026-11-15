@@ -23,11 +23,14 @@ import nasa_build as NB
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent / "out"
-PRESETS = ["car_colusa_rice", "caf_tulare_forage"]
-NAMES = {"car_colusa_rice": "Colusa County rice check", "caf_tulare_forage": "Kings County forage-for-dairy check"}
-COUNTY = {"car_colusa_rice": "011", "caf_tulare_forage": "031"}   # CAF centre is in Kings County (06031), not Tulare
-FIPS = {"car_colusa_rice": "06011", "caf_tulare_forage": "06031"}
-BASELINE_CROP = {"car_colusa_rice": "Rice", "caf_tulare_forage": "Alfalfa"}
+sys.path.insert(0, str(ROOT / "backend" / "fields"))
+import fieldreg  # noqa: E402  field registry (backend/fields/registry.json)
+
+PRESETS = fieldreg.ids()
+NAMES = {p: fieldreg.get(p)["name"] for p in PRESETS}
+FIPS = {p: fieldreg.get(p)["county"]["fips"] for p in PRESETS}   # CAF centre is in Kings County (06031), not Tulare
+COUNTY = {p: f[2:] for p, f in FIPS.items()}
+BASELINE_CROP = {p: {"rice": "Rice", "forage": "Alfalfa"}[fieldreg.get(p)["family"]] for p in PRESETS}
 ACCESSED = "2026-11-14"
 DAILY_FROM = "2015-01-01"
 
@@ -147,10 +150,57 @@ def doy_ranges(mask: np.ndarray) -> list[list[int]]:
     return merged
 
 
+def fixture_id(p: str) -> str:
+    """Registry fields have no fixtures of their own; spec-stated items (regime, market preference) come from their template."""
+    return p if fieldreg.is_original(p) else fieldreg.template(p)
+
+
+def water_block(p: str, fix: dict) -> dict:
+    """Location.water: the looked-up water source from the registry (district, SGMA subbasin, GSA, priority, State Water Board
+    status, each with its source URL), keeping the old keys so existing readers work."""
+    reg = fieldreg.get(p)
+    w = reg.get("water") or {}
+    sb = w.get("subbasin") or {}
+    board = w.get("state_board") or {}
+    gsp = [g.get("dwr_status") for g in (w.get("gsp") or []) if g.get("dwr_status")]
+    bits = [f"{sb.get('name', '').split(' - ')[-1].title()} Subbasin ({sb.get('number')})" if sb else None,
+            f"{w.get('sgma_priority')} priority" if w.get("sgma_priority") else None,
+            "critically overdrafted" if w.get("critically_overdrafted") else None,
+            f"State Water Board: {board.get('status')}" if board else None,
+            f"DWR GSP assessment: {sorted(set(gsp))[0]}" if len(set(gsp)) == 1 else (f"DWR GSP assessments: {', '.join(sorted(set(gsp)))}" if gsp else None)]
+    return {
+        "source": fix["water"]["source"] if fieldreg.is_original(p) else None,
+        "source_note": ("spec statement (U)" if fieldreg.is_original(p) else "surface vs groundwater use not looked up for this field"),
+        "allocation_input": fix["water"]["allocation_input"],
+        "district": w.get("district"),
+        "other_agencies": w.get("other_agencies", []),
+        "sgma_subbasin": sb.get("name"),
+        "sgma_subbasin_number": sb.get("number"),
+        "sgma_priority": w.get("sgma_priority"),
+        "critically_overdrafted": w.get("critically_overdrafted"),
+        "gsa": [g["name"] for g in (w.get("gsa") or [])],
+        "sgma_status": {"text": "; ".join(b for b in bits if b) or None, "url": board.get("url") or (w.get("gsp_source") or {}).get("url"),
+                        "verified": bool(w)},
+        "cdec_stations": reg["reservoirs"],
+        "lookup": w,
+    }
+
+
+def events_for(p: str, fix: dict) -> list:
+    """Spec events (fixtures) for the original two. Registry fields: the rice family's valley-wide 2022/2023 events; for forage only
+    the Tulare Lake flood, and only for the field in the lake bed (SGMA status comes from water.lookup instead)."""
+    if fieldreg.is_original(p):
+        return fix["events"]
+    if fieldreg.get(p)["family"] == "rice":
+        return fix["events"]
+    return [e for e in fix["events"] if e["type"] == "flood"] if p == "caf_corcoran_forage" else []
+
+
 def build_location(x: Ctx):
     p = x.p
+    reg = fieldreg.get(p)
     props = x.poly["properties"]
-    fix = jload(ROOT / "fixtures" / p / "location.json")      # spec-stated (U) items: regime, water, market, events
+    fix = jload(ROOT / "fixtures" / fixture_id(p) / "location.json")  # spec-stated (U) items: regime, market, events
     bs = props["boundary_source"]
     area = sn(props["area_ha"], "ha", {"id": bs["id"], "title": bs["title"], "url": bs["url"], "accessed": props["selected_at"][:10], "verified": True},
               "polygon area in EPSG:32610 from the DWR/Land IQ 2023 field outline chosen by backend/field")
@@ -214,11 +264,15 @@ def build_location(x: Ctx):
     loc = {
         "id": p, "name": NAMES[p], "dwr_unique_id": bs.get("dwr_unique_id"), "region_adapter": "ca", "regime": fix["regime"], "state_fips": "06", "county_fips": COUNTY[p],
         "geometry": x.poly["geometry"], "centroid": props["centroid"], "area_ha": area, "crs_working": "EPSG:32610",
-        "soil": soil, "terrain": terrain, "water": fix["water"], "market_preference": fix["market_preference"],
+        "family": reg["family"], "farmer_name": reg["farmer_name"], "acres": reg["acres"], "county_name": reg["county"]["name"],
+        "template": reg["template"], "why_chosen": reg["why"],
+        "soil": soil, "terrain": terrain, "water": water_block(p, fix), "market_preference": fix["market_preference"],
         "stations": stations,
         "regional_cell": {"grid": "POWER_MERRA2_0.5x0.625", "row": cell[0], "col": cell[1], "footprint": cell[2]},
-        "datasets": datasets, "nasa_datasets": NB.nasa_datasets(p, x.nasa), "crop_history": ch, "observed_cover": observed, "events": fix["events"],
-        "_notes": {"water_and_market": "water.* and market_preference are spec statements marked U (see fixtures); not looked up",
+        "datasets": datasets, "nasa_datasets": NB.nasa_datasets(p, x.nasa), "crop_history": ch, "observed_cover": observed, "events": events_for(p, fix),
+        "_notes": {"water_and_market": ("water.district, water.sgma_* and water.lookup are looked up from DWR and State Water Board "
+                                        "layers (backend/fields/water_sources.py); water.source and market_preference are spec statements "
+                                        "marked U" + ("" if fieldreg.is_original(p) else f" taken from the {reg['template']} example")),
                    "boundary": props["boundary_source"]["title"],
                    "terrain": (f"NASADEM via backend/nasa_open/out/{p}/terrain.json (smoothed 150 m; raw values there as *_raw)" if nasadem else "no DEM"), "cdl_majority_by_year": "see crop_history (CDL)"},
     }
@@ -324,7 +378,7 @@ def build_weekly(x: Ctx):
 def trend_file(x: Ctx, layer: str, unit: str, grid: str, source: dict, by_year: dict, note: str, default_year: int):
     years = sorted(by_year)
     series = [{"year": int(y), "value": by_year[y]} for y in years]
-    markers = [{"date": e["date"], "title": e["title"], "url": e["url"], "verified": e["verified"]} for e in jload(ROOT / "fixtures" / x.p / "location.json")["events"]]
+    markers = [{"date": e["date"], "title": e["title"], "url": e["url"], "verified": e["verified"]} for e in events_for(x.p, jload(ROOT / "fixtures" / fixture_id(x.p) / "location.json"))]
     write(x.p, f"trends_{layer}.json", {
         "location_id": x.p, "layer": layer, "unit": unit, "grid": grid, "source": source, "note": note,
         "default_year": default_year, "years": [int(y) for y in years],
@@ -356,7 +410,7 @@ def build_trends(x: Ctx):
                f"Weeks per year (by USDM map date) with >= 50% of county {FIPS[x.p]} in D2 (severe drought) or worse. "
                "County statistic, not a grid; `cells` has one entry. The 50% cut-off is ours (U).", 2022)
     # reservoir storage: mean of daily storage, thousand acre-feet, summed over the preset's reservoirs
-    stns = jload(ROOT / "fixtures" / x.p / "location.json")["water"]["cdec_stations"]
+    stns = fieldreg.get(x.p)["reservoirs"]
     c = x.cdec[x.cdec.station.isin(stns)].copy()
     c["year"] = c.date.dt.year
     s = c.groupby(["year", "station"]).storage_af.mean().unstack().sum(axis=1) / 1000
