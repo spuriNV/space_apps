@@ -1,0 +1,8 @@
+.dh { margin-top: var(--s-4); }
+.dh-list { list-style: none; margin: var(--s-2) 0 0; padding: 0; display: grid; gap: var(--s-2); }
+.dh-list li { display: grid; gap: 2px; padding: var(--s-3); background: var(--panel-2); border-radius: var(--r-md); font-size: var(--fs-small); line-height: 1.4; }
+.dh-list a { color: var(--accent); text-decoration: underline; }
+.dh-list small { font-size: var(--fs-fine); }
+.ra { display: inline-flex; align-items: center; gap: 6px; margin-top: var(--s-2); min-height: var(--h-btn-sm); padding: 0 var(--s-3); border: 1px solid var(--accent-outline); border-radius: var(--r-md); background: var(--panel); color: var(--accent); font: inherit; font-size: var(--fs-small); cursor: pointer; }
+.ra[aria-pressed="true"] { background: var(--accent-container); }
+.ra:focus-visible { outline: none; box-shadow: var(--focus-ring); }

@@ -854,5 +854,13 @@ for _lf, _jur in ((next((f for f in _lbc if f["properties"]["name"].startswith("
     _ok(_ld.status_code == 200 and _lj2.get("jurisdiction") == _jur and _lj2["tools"]["funding"].startswith("/api/locations/pt_") and _lj2["area_acres"] > 0 and _lj2["centroid"]["lat"], f"/api/lands/{_lid}: {_lj2.get('name')} ({_jur}), tools link to its centroid, {len(_lj2.get('nearby', []))} nearby within 15 km")
 _ok(client.get("/api/lands/nope").status_code == 404, "/api/lands/nope -> 404")
 # ---- end lands ================================================================================================
+# ---- Farming with a disability help ============================================================================
+print("\nDisability help:")
+_dh = client.get("/api/help/disability?region=bc").json()
+_dc = client.get("/api/help/disability?region=ca").json()
+_ok(any(p["id"] == "workbc_ats" for p in _dh["programs"]) and not any(p["id"] == "workbc_ats" for p in _dc["programs"]), "/api/help/disability: BC lists WorkBC ATS, CA does not")
+_ok(any(p["id"] == "california_agrability" for p in _dc["programs"]) and all(p["url"].startswith("https://") and "verified" in p and p["checked"] and p["line"] for p in _dc["programs"] + _dh["programs"]), "/api/help/disability: California AgrAbility listed; every program has https url, verified flag, date and a plain line")
+_ok(client.get("/api/help/disability?region=xx").status_code == 422, "/api/help/disability?region=xx -> 422")
+# ---- end disability help ======================================================================================
 print(f"\n{'ALL PASS' if not fails else str(fails) + ' FAIL'}")
 sys.exit(1 if fails else 0)

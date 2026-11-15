@@ -6,18 +6,19 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type PointerEvent as RPointerEvent, type KeyboardEvent as RKeyboardEvent } from 'react';
 import Icon from '../Icons';
 import { MoreDetail } from './Detail';
+import { ReadAloud } from '../help/ReadAloud';
 import { FLOW, StepLine, type FlowId } from './shared';
 
 export type Tone = 'good' | 'warn' | 'neutral';
 export interface Fact { label: string; value: ReactNode; tone?: Tone }
 
 /** The answer to the step's question, big and plain: "No. Short by about 0.9 acre-ft per acre." */
-export function Answer({ tone = 'neutral', headline, sub, loading }: { tone?: Tone; headline: ReactNode; sub?: ReactNode; loading?: boolean }) {
+export function Answer({ tone = 'neutral', headline, sub, loading, speak }: { tone?: Tone; headline: ReactNode; sub?: ReactNode; loading?: boolean; speak?: string }) {
   if (loading) return <div className="step-answer" aria-busy="true"><span className="skel skel-val" /><span className="skel" /></div>;
   return (
     <div className={`step-answer ${tone}`} data-testid="step-answer" role="status">
       <i className="sa-dot" aria-hidden="true">{tone === 'good' ? <Icon name="check" size={18} /> : tone === 'warn' ? '!' : null}</i>
-      <div><b>{headline}</b>{sub && <span>{sub}</span>}</div>
+      <div><b>{headline}</b>{sub && <span>{sub}</span>}{speak && <ReadAloud text={speak} />}</div>
     </div>
   );
 }

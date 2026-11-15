@@ -1,0 +1,58 @@
+{
+  "checked": "2026-11-15",
+  "note": "Programs for farmers and ranchers with disabilities. Links were checked on the date shown; where verified is false the page could not be fetched by our checker and the program was confirmed from search results instead.",
+  "programs": [
+    {
+      "id": "nifa_agrability",
+      "regions": ["ca", "bc"],
+      "name": "USDA AgrAbility (NIFA)",
+      "who": "Farmers, ranchers, farm workers and family members in the US who have a disability or health condition.",
+      "line": "A USDA-funded program that pairs state Extension offices with disability groups to help you keep farming, at no cost to eligible farmers.",
+      "provides": ["on-farm assessments", "assistive technology guidance", "farm safety education", "peer support networks"],
+      "url": "https://www.nifa.usda.gov/agrability-assistive-technology-program-farmers-disabilities",
+      "verified": true,
+      "checked": "2026-11-15",
+      "note": "Confirmed on the NIFA page via search results; contact SM.AgrAbility@usda.gov."
+    },
+    {
+      "id": "national_agrability",
+      "regions": ["ca", "bc"],
+      "name": "National AgrAbility Project",
+      "who": "Farmers and ranchers with disabilities anywhere in the US, and the state projects that serve them.",
+      "line": "Run by Purdue University; finds the AgrAbility project for your state and has guides on tools, farm tasks and funding.",
+      "provides": ["state project finder", "assistive technology toolbox", "financing FAQ", "veteran and underserved outreach"],
+      "url": "https://www.agrability.org/",
+      "verified": false,
+      "checked": "2026-11-15",
+      "note": "Site's TLS chain didn't verify from our checker; confirmed via search results."
+    },
+    {
+      "id": "california_agrability",
+      "regions": ["ca"],
+      "name": "California AgrAbility (UC Davis)",
+      "who": "California farmers, ranchers and farm workers with a disability or injury.",
+      "line": "California's state AgrAbility project: consultations, farm site assessments and safety evaluations. It does not pay for equipment itself.",
+      "provides": ["individual consultations", "farm site assessments", "safety evaluations", "case management"],
+      "url": "https://calagrability.ucdavis.edu/",
+      "verified": false,
+      "checked": "2026-11-15",
+      "note": "Page confirmed via search results only (UC Davis Biological and Agricultural Engineering)."
+    },
+    {
+      "id": "workbc_ats",
+      "regions": ["bc"],
+      "name": "WorkBC Assistive Technology Services",
+      "who": "People in British Columbia, including self-employed people, whose disability or functional limit is a barrier to work.",
+      "line": "Run by the Neil Squire Society; funds work devices, equipment, workplace changes and vehicle modifications. Phone 1-844-453-5506.",
+      "provides": ["assistive devices and equipment", "workplace modification", "ergonomic supports", "vehicle modification"],
+      "url": "https://www.neilsquire.ca/individual-programs-services/workbc-ats/",
+      "verified": false,
+      "checked": "2026-11-15",
+      "note": "neilsquire.ca refuses automated fetches (403); confirmed via search results. Confirm current coverage at workbc-ats.ca."
+    }
+  ],
+  "gaps": [
+    "The Canadian Agricultural Safety Association (casa-acsa.ca) was checked and has no disability-specific farm program, so it is not listed.",
+    "No USDA Farm Service Agency page for producers with disabilities was found; AgrAbility's financing FAQ points people to local FSA offices for loans."
+  ]
+}

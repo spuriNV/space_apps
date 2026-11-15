@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from .myfields import router as myfields_router  # user-drawn fields (app/myfields); my_* ids only
+from .help import router as help_router  # /api/help/disability
 from .lands import router as lands_router  # /api/lands: reserves and tribal lands for the map
 from .nation import router as nation_router  # Nation tools (app/nation): /api/locations/{pid}/nation/*
 from .week import router as week_router  # this week + reach (app/week)
@@ -72,6 +73,7 @@ app.add_middleware(CORSMiddleware, allow_origin_regex=r"https?://(localhost|127\
                    allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Data-Source"])
 app.include_router(chat_router)
 app.include_router(lands_router)
+app.include_router(help_router)
 app.include_router(nation_router)  # before anyloc: its pt_* catch-all would 404 the /nation routes
 app.include_router(week_router)  # before anyloc: its pt_* catch-all would swallow /this_week
 app.include_router(anyloc_router)  # before the preset routes: /api/analyze and /api/locations/pt_* (other ids fall through)

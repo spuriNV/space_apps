@@ -1,6 +1,7 @@
 // "This week" card at the top of Field now: GET /api/locations/{id}/this_week.
 // Irrigation verdict + 7-day need strip, field access chips, 7-day forecast, alerts. Sections follow `sections.*`:
 // unavailable / not_applicable parts are hidden, fallback / partial parts carry a quiet tag. Hidden for my_ ids (404).
+import { ReadAloud } from '../help/ReadAloud';
 import { useState } from 'react';
 import type { Location } from '../../types';
 import { RouteProblem, SKEL, useRoute } from './useRoute';
@@ -61,7 +62,7 @@ function Glance({ w }: { w: Week }) {
   return (
     <div className="tw-body">
       <WeekChart forecast={w.forecast} irrDays={irr.days} access={showAcc ? acc.days : undefined} verdict={irr.verdict} needIn={gauge ? acIn ?? 0 : null} showGauge={gauge} />
-      {!gauge && showIrr && <p className="tw-verdict">{irr.verdict}</p>}
+      {!gauge && showIrr && <><p className="tw-verdict">{irr.verdict}</p><ReadAloud text={irr.verdict} /></>}
       {showAcc && <p className="tw-sub">{acc.line}</p>}
     </div>
   );
@@ -87,6 +88,7 @@ function Body({ w, pick, setPick }: { w: Week; pick: number | null; setPick: (i:
       {showIrr && (
         <div className="tw-block" data-testid="tw-irrigation">
           <p className="tw-verdict">{irr.verdict}</p>
+          <ReadAloud text={irr.verdict} />
           {irr.kind === 'irrigate' && acIn != null && <p className="tw-sub"><b>{acIn < 0.05 ? '0' : acIn.toFixed(1)}</b> acre-in/acre</p>}
           {strip && (
             <div className="tw-strip" role="img" aria-label={`Daily irrigation need: ${needs.map((n, i) => `${wd(irr.days![i].date)} ${f1(inch(n ?? 0))} in`).join(', ')}`}>

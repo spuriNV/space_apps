@@ -50,6 +50,7 @@ def main() -> int:
         shutil.rmtree(OUT)
     get("/api/locations", "locations.json")
     get("/api/glossary", "glossary.json")
+    get("/api/help/disability", "help/disability.json")
     get("/api/bc/news", "bc/news.json")
     get("/api/bc/signal", "bc/signal.json")
     crops: set[str] = set()
