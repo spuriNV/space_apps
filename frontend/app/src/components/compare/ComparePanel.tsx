@@ -125,7 +125,6 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
   const rows = useMemo(() => all.map((m) => { const a = m.get(alt, weather, ctx), b = m.get(today, weather, ctx); return { m, a, b, v: verdict(a, b, m.higherIsBetter) }; }), [alt, today, weather, ctx, flat, detail]); // eslint-disable-line react-hooks/exhaustive-deps
   const gains = rows.filter((r) => r.v === 'better'), losses = rows.filter((r) => r.v === 'worse');
   const unclear = rows.filter((r) => r.v === 'unclear' || r.v === 'same'), none = rows.filter((r) => r.v === 'none');
-  const lead = (r: (typeof rows)[number] | undefined, k: 'gain' | 'loss') => (r ? `${r.m[k].toLowerCase()}, ${delta(r.m, r.a.v!, r.b.v!)}` : 'nothing clear');
   const water = (s: RotationStrategy) => af(n(rep(s, weather, 'irrigation_need_mm') ?? s.water.irrigation_need_mm));
   const fits = (s: RotationStrategy) => { const w = water(s); return (w.hi ?? 0) <= p.allocation ? 'Fits your limit' : (w.lo ?? 0) > p.allocation ? 'Over your limit' : 'May go over your limit'; };
   const ranked = [...strategies].sort((a, b) => b.composite.value - a.composite.value);
@@ -135,8 +134,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
     <section className="sheet compare2" data-testid="compare">
       <header className="sheet-head">
         <div>
-          <h2>If you switched, what would you gain and what would you give up?</h2>
-          <p className="sheet-lede"><b>{alt.short_name}</b> against what you do now ({today.short_name.toLowerCase()}): you’d gain <b className="good">{lead(gains[0], 'gain')}</b>. You’d give up <b className="bad">{lead(losses[0], 'loss')}</b>.</p>
+          <h2>{alt.short_name} vs {today.short_name.split(' +')[0].toLowerCase()} today</h2>
         </div>
         <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
       </header>
@@ -196,7 +194,8 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
           </div>
           <aside className="gl-col side">
             <h3>Water against your limit <What k="waterBalance" /></h3>
-            <p><b>{fits(alt)}</b>: needs {water(alt).v?.toFixed(1)} acre-ft/acre ({rng(UNIT[0], water(alt))}) ({WEATHER[weather].toLowerCase()}); today needs {water(today).v?.toFixed(1)}.{/safflower|wheat/i.test(alt.name) ? ' An upper bound: soil water stored over winter is not counted.' : ''}</p>
+            <p><b>{fits(alt)}.</b> Needs {water(alt).v?.toFixed(1)} acre-ft/acre. Your limit: {p.allocation.toFixed(1)}.</p>
+            <p className="how d-only">{rng(UNIT[0], water(alt)) ? `${rng(UNIT[0], water(alt)).replace(/^likely/, 'Likely')} acre-ft/acre, ` : ''}{WEATHER[weather].toLowerCase()}. Today needs {water(today).v?.toFixed(1)}.{/safflower|wheat/i.test(alt.name) ? ' An upper bound: soil water stored over winter is not counted.' : ''}</p>
             <p className="how d-only">{openetText(p.strategies)} That checks crop water use for today’s crop only; irrigation need and the other rotations use the same method, unchecked.</p>
             <div className="d-only">
             <h3>Bare days <What k="bare" /></h3>
@@ -207,7 +206,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
             <p className="how">{[...none.map((r) => r.m.label), ...SCORE.filter((m) => flat.has(m.key)).map((m) => m.label), 'Dollars per acre (no price data yet)'].map((x, i) => (i ? x.toLowerCase() : x)).join(', ')}.</p>
             <p className="how">Bars: the span of likely values; the tick is the best estimate. A gain counts only when the two spans don’t overlap.</p>
             </div>
-            <MoreDetail what="All rotations, soil and feed scores, your priorities and what-ifs" />
+            <MoreDetail what="All rotations and what-ifs" />
             <button className="btn primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Print this comparison for your adviser<Icon name="right" size={16} /></button>
           </aside>
         </div>

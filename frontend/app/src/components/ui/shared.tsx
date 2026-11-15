@@ -68,7 +68,7 @@ export function Actions({ onStep }: { onStep: (s: Step) => void }) {
     <div className="actions">
       {ACTIONS.map((a) => (
         <button key={a.id} className={`action ${a.id === 'brief' ? 'primary' : ''}`} onClick={() => onStep(a.id)} data-testid={`step-${a.id}`}>
-          <span><b>{a.label}</b><small>{a.sub}</small></span>
+          <span><b>{a.label}</b></span>
         </button>
       ))}
     </div>

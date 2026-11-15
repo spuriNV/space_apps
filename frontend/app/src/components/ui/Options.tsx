@@ -39,11 +39,11 @@ export function FieldPanel(p: FieldPanelProps) {
         <p className="fp-id">{fieldCode(loc).replace('DWR ', 'State field no. ')}, {coords(loc)}</p>
       </header>
       <div className="panel-scroll">
-        <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}<small>{isToday ? `Today, ${whenT(p.t)}. Pick another date under “Viewing” to look back.` : <button className="link" onClick={() => p.setT(TODAY_T)}>Back to today</button>}</small></h2>
+        <h2 className="fp-h">{isToday ? 'Your field now' : 'Your field in ' + whenT(p.t)}{!isToday && <small><button className="link" onClick={() => p.setT(TODAY_T)}>Back to today</button></small>}</h2>
         <FieldNow dataState={p.dataState} dailyState={p.dailyState} thumb={thumbs?.[loc.id] ?? null} extras={p.extras} nasaNow={p.nasaNow} loc={loc} cal={p.cal} regional={p.regional} regionalLive={p.regionalLive} strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} t={p.t} daily={p.daily} prov={p.prov} />
-        <MoreDetail what="NASA data and sources, soil, slope and insurance, past seasons, 3D view" />
+        <MoreDetail what="Sources, past seasons, 3D" />
         <div className="d-only">
-        <h2 className="fp-h" data-testid="nasa-section">NASA data behind this field<small>What each one tells you, how coarse it is, and whether it is live.</small></h2>
+        <h2 className="fp-h" data-testid="nasa-section">NASA data behind this field</h2>
         <ISSFigure iss={p.iss} />
         {p.nasa ? <NasaList list={p.nasa} /> : <p className="muted">Loading…</p>}
         <h2 className="fp-h">About the ground<small><button className="link" onClick={() => p.onStep('drill')} data-testid="step-drill">Look under the field in 3D: crop, soil moisture, groundwater</button></small></h2>
@@ -69,7 +69,6 @@ export function FieldPicker(p: { locations: Location[]; live: boolean | null; st
     <section className="picker2" data-testid="fields-panel">
       <header className="pk-head">
         <h1>Pick your field</h1>
-        <p>What is happening on it now, what this winter may bring, and what another rotation would cost in water.</p>
         {p.onClose && <button className="pk-close" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>}
       </header>
       {p.live === false && <p className="offline-note" data-testid="offline-note">The CropLytics server is not answering, so every number is an example. Start the API (see the README) and reload for real data.</p>}
@@ -111,10 +110,10 @@ function notable(l: Location) {
   const fallow = Object.entries(l.crop_history).filter(([y, c]) => +y >= 2016 && cropName(c) === 'Left fallow').map(([y]) => +y);
   if (fallow.includes(2022)) notes.push('Left fallow in the 2022 drought');
   else if (fallow.length) notes.push(`Left fallow in ${fallow[fallow.length - 1]}`);
-  if (l.water.source !== 'surface') notes.push('wells, in a basin under state groundwater probation since 2024');
-  else notes.push('surface water from the Sacramento River');
+  if (l.water?.source === 'surface') notes.push(l.id.startsWith('car') ? 'Sacramento River water' : 'surface water');
+  else if (l.water?.source) notes.push(/probation/i.test(l.water.sgma_status?.text ?? '') ? 'wells; basin on state probation since 2024' : 'wells');
   const s = notes.join('; ');
-  return s.charAt(0).toUpperCase() + s.slice(1) + '.';
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) + '.' : '';
 }
 
 let thumbsP: Promise<Record<string, { bbox: number[] }>> | null = null;

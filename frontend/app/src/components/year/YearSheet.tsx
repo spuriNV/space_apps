@@ -79,7 +79,7 @@ export default function YearSheet(p: YearSheetProps) {
       <div className="ys-head">
         <div className="ys-title">
           <h2>This field’s year</h2>
-          <p>{diff}{up != null ? `; the crop greened up in ${dk(up)}` : ''}. {last < 2026 ? `${last + 1} imagery is not processed yet.` : ''}</p>
+          <p>{diff}.{up != null ? ` Green from ${dk(up)}.` : ''}{last < 2026 ? ` ${last + 1} not processed yet.` : ''}</p>
         </div>
         <div className="seg small ml-seg d-only" data-testid="ml-toggle">
           <button className={!both ? 'on' : ''} onClick={() => setBoth(false)}>Satellite rule</button>
@@ -118,7 +118,7 @@ export default function YearSheet(p: YearSheetProps) {
         })}
       </div>
       <div className="ys-foot">
-        <span className="ys-md"><MoreDetail what="Machine-learning comparison, crop-stress weeks, standing water, earlier years" /></span>
+        <span className="ys-md"><MoreDetail what="Machine learning, earlier years" /></span>
         {p.events.length > 0 && <span className="ys-events">{p.events.map((e) => <button key={e.date + e.type} className="link" onClick={() => p.setT(dateToT(e.date))} title={e.title}>{e.short}</button>)}</span>}
         <button className="link d-only" onClick={() => p.setShowEarlier(!p.showEarlier)} data-testid="earlier">{p.showEarlier ? 'Show only the last 4 seasons' : 'Show earlier years (2016–2022)'}</button>
         <span className="muted">{p.calSource}, every 10 days, whole field.{both ? ` Machine learning: ${p.ml?.model ?? 'random forest'} on Sentinel-2, trained on neighbouring fields.` : ''} Rain from NASA GPM IMERG. Click a square to move the map to that date.</span>

@@ -12,6 +12,7 @@ import { What } from './What';
 const PART = ['early', 'mid', 'late'];
 const dk = (d: number) => `${PART[d % 3]} ${MONTHS[Math.floor(d / 3)]}`;
 export const whenT = (t: number) => `${dk(dekadOf(t))} ${yearOf(t)}`;
+const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
 const band = (pct: number, hi: string, mid: string, lo: string) => (pct >= 67 ? hi : pct > 33 ? mid : lo);
 const vsNormal = (pct: number | null, wet: string, dry: string) => (pct == null ? '' : pct >= 115 ? wet : pct <= 85 ? dry : 'about normal');
 
@@ -85,7 +86,7 @@ function Meter(m: { label: string; value: string | null; state: LoadState; pct: 
       {m.value == null ? (m.state === 'timeout' ? <span className="m-val na">Not available</span> : <span className="skel" />) : <>
         <span className="m-val">{m.value}</span>
         <i className="m-track">{m.pct != null && <em className={`m-fill ${m.warn ? 'warn' : ''}`} style={{ width: `${m.pct * 100}%` }} />}{m.mark != null && <b className="m-mark" style={{ left: `${Math.min(1, m.mark) * 100}%` }} title={m.markLabel} />}</i>
-        <span className="m-note">{m.note}{m.mark != null ? ` · line = ${m.markLabel}` : ''}</span>
+        <span className="m-note">{m.note}</span>
       </>}
     </div>
   );
@@ -131,15 +132,15 @@ export function FieldNow(p: FieldNowProps) {
       </div>
       <div className="gl-grid">
         <Meter label="Rain since 1 Oct" value={rain ? `${fmtIn(rain.inches)} in` : null} state={p.dailyState} pct={rain && rain.normal ? Math.min(1, rain.inches / (Math.max(rain.inches, rain.normal) * 1.25)) : null} mark={rain && rain.normal ? rain.normal / (Math.max(rain.inches, rain.normal) * 1.25) : null} markLabel="normal" note={rain?.pct != null ? `${Math.round(rain.pct)}% of normal` : ''} />
-        <Meter label="Water need, a year" value={needAf != null ? `${needAf.toFixed(1)} acre-ft/acre` : null} state={p.dataState} pct={needAf != null && limit ? Math.min(1, needAf / (Math.max(needAf, limit) * 1.2)) : null} mark={needAf != null && limit ? limit / (Math.max(needAf, limit) * 1.2) : null} markLabel="limit" warn={needAf != null && limit != null && needAf > limit} note={limit != null ? `limit ${limit.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}` : ''} />
-        <Meter label="Greenness" value={fs && fs.cls !== 'u' ? fs.ndvi.toFixed(2) : null} state={p.dataState} pct={fs && fs.cls !== 'u' ? Math.max(0, Math.min(1, fs.ndvi)) : null} mark={0.6} markLabel="full canopy" note={fs && fs.cls !== 'u' ? `0 to 1, ${whenT(dt)}` : ''} />
+        <Meter label="Water need, a year" value={needAf != null ? `${needAf.toFixed(1)} acre-ft/acre` : null} state={p.dataState} pct={needAf != null && limit ? Math.min(1, needAf / (Math.max(needAf, limit) * 1.2)) : null} mark={needAf != null && limit ? limit / (Math.max(needAf, limit) * 1.2) : null} markLabel="limit" warn={needAf != null && limit != null && needAf > limit} note={limit != null ? `Limit ${limit.toFixed(1)}${p.exampleLimit ? ' (example)' : ''}` : ''} />
+        <Meter label="Greenness" value={fs && fs.cls !== 'u' ? fs.ndvi.toFixed(2) : null} state={p.dataState} pct={fs && fs.cls !== 'u' ? Math.max(0, Math.min(1, fs.ndvi)) : null} mark={0.6} markLabel="full canopy" note={fs && fs.cls !== 'u' ? cap(whenT(dt)) : ''} />
         <div className="meter">
           <span className="m-label">Soil and groundwater</span>
           {!p.regional ? (p.dataState === 'timeout' ? <span className="m-val na">Not available</span> : <span className="skel" />) : <>
             <span className="m-dots">
               <i className="m-track"><em className="m-mid" />{smap != null && <b className="dot soil" style={{ left: `${smap}%` }} title={`Soil moisture ${ordinal(Math.round(smap))} percentile`} />}{grace != null && <b className="dot gw" style={{ left: `${grace}%` }} title={`Groundwater ${ordinal(Math.round(grace))} percentile`} />}</i>
             </span>
-            <span className="m-note"><i className="k soil" />soil {smap != null ? ordinal(Math.round(smap)) : '–'} <i className="k gw" />groundwater {grace != null ? ordinal(Math.round(grace)) : '–'}; 50 is normal</span>
+            <span className="m-note"><i className="k soil" />Soil {smap != null ? ordinal(Math.round(smap)) : '–'}, <i className="k gw" />groundwater {grace != null ? ordinal(Math.round(grace)) : '–'}</span>
           </>}
         </div>
       </div>
@@ -168,7 +169,7 @@ export function FieldNow(p: FieldNowProps) {
         <dd>
           {rain ? <>
             <b>{rain.period.current ? '' : 'No readings for this winter yet. '}{rain.pct != null ? `${rain.period.current ? 'So far' : 'Last season was'} ${vsNormal(rain.pct, 'wetter than normal', 'drier than normal')}` : ''}</b>
-            <span>{fmtIn(rain.inches)} inches {rain.period.label}; normal is {rain.normal != null ? `${fmtIn(rain.normal)} inches` : 'not known'}{rain.pct != null ? ` (${Math.round(rain.pct)}% of normal)` : ''}.</span>
+            <span>{fmtIn(rain.inches)} in {rain.period.current ? 'since 1 Oct' : rain.period.label}.{rain.normal != null ? ` Normal: ${fmtIn(rain.normal)} in.` : ''}</span>
             <cite>{rain.source === 'imerg' ? 'NASA GPM IMERG satellite rain over the field (one reading for a 6-mile square)' : 'NOAA weather stations near the field, averaged'}; normal = the same dates in the {rain.nSeasons} seasons before. <Src p={p.prov.daily} /></cite>
           </> : pend(p.dailyState)}
         </dd>
@@ -192,7 +193,8 @@ export function FieldNow(p: FieldNowProps) {
           <dt>Will the water limit cover irrigation? <What k="waterBalance" /></dt>
           <dd>
             <b>{p.allocation == null ? `About ${mmToAfac(need.value).toFixed(1)} acre-feet per acre a year` : mmToAfac(need.value) > p.allocation ? `Short by about ${(mmToAfac(need.value) - p.allocation).toFixed(1)} acre-feet per acre` : 'Fits your limit in a typical year'}</b>
-            <span>Today’s rotation needs about {mmToAfac(need.value).toFixed(1)} acre-feet per acre a year (likely {mmToAfac(need.low ?? need.value).toFixed(1)}–{mmToAfac(need.high ?? need.value).toFixed(1)}){p.allocation != null ? `; the limit is ${p.allocation.toFixed(1)}` : ''}.{p.exampleLimit && <em className="ex-limit"> {p.allocation?.toFixed(1)} is an example limit, change to yours on Compare.</em>}</span>
+            <span>Needs {mmToAfac(need.value).toFixed(1)} acre-ft/acre a year.{p.allocation != null ? ` Limit: ${p.allocation.toFixed(1)}.` : ''}{p.exampleLimit && <em className="ex-limit">example, change it on Compare</em>}</span>
+            <span className="d-only">Likely {mmToAfac(need.low ?? need.value).toFixed(1)}–{mmToAfac(need.high ?? need.value).toFixed(1)} acre-ft/acre.</span>
             <cite>Rotation model with NASA POWER weather: crop water use minus rain, typical year 2015–2025. <Src p={p.prov.strategies} /></cite>
           </dd>
         </div>
@@ -202,7 +204,7 @@ export function FieldNow(p: FieldNowProps) {
         <dd>
           {!p.regional ? pend(p.dataState) : <b>{smap == null ? 'No soil reading' : band(smap, 'Soil wetter than usual', 'Soil about normal', 'Soil drier than usual')}; {grace == null ? 'no groundwater reading' : band(grace, 'more groundwater than usual', 'groundwater about normal', 'less groundwater than usual').toLowerCase()}</b>}
           <span className="d-only">{smap != null && `Soil moisture ${ordinal(Math.round(smap))} percentile for the date${sm && sm.t < t - 1 ? ` (latest, ${whenT(sm.t)})` : ''}; 50 is normal. `}{grace != null && `Groundwater ${ordinal(Math.round(grace))} percentile${gr && gr.t < t - 1 ? ` (latest, ${whenT(gr.t)})` : ''}, whole basin, not your own well.`}</span>
-          <cite>{p.regionalLive.soilSource === 'grace_da' ? 'Soil: NASA GRACE-FO with a land model, root zone, one reading for a 17-mile square (NASA SMAP readings still downloading).' : `Soil: NASA SMAP satellite, one reading for a 6-mile square${p.regionalLive.smap ? '' : ' (example numbers)'}.`} Groundwater: NASA GRACE-FO satellites{p.regionalLive.grace ? '' : ' (example numbers)'}, weekly. <Src p={p.prov.regional} /></cite>
+          <cite>{p.regionalLive.soilSource === 'grace_da' ? 'NASA GRACE-FO' : 'NASA SMAP and GRACE-FO'}. <Src p={p.prov.regional} /></cite>
         </dd>
       </div>
       <div className="ans d-only">

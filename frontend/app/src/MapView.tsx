@@ -21,7 +21,7 @@ const STYLE: StyleSpecification = {
     { id: 'roads', type: 'line', source: 'omt', 'source-layer': 'transportation', minzoom: 8, filter: ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary']]], paint: { 'line-color': 'rgba(255,236,170,0.5)', 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.6, 14, 2.2] } },
     { id: 'admin', type: 'line', source: 'omt', 'source-layer': 'boundary', filter: ['all', ['<=', ['get', 'admin_level'], 4], ['!=', ['get', 'maritime'], 1]], paint: { 'line-color': 'rgba(255,255,255,0.6)', 'line-width': 1.1, 'line-dasharray': [3, 2] } },
     { id: 'place', type: 'symbol', source: 'omt', 'source-layer': 'place', filter: ['in', ['get', 'class'], ['literal', ['city', 'town', 'state']]],
-      layout: { 'text-field': ['coalesce', ['get', 'name:en'], ['get', 'name']], 'text-font': ['Noto Sans Bold'], 'text-size': ['interpolate', ['linear'], ['zoom'], 4, ['match', ['get', 'class'], 'state', 13, 11], 12, 15], 'text-letter-spacing': ['match', ['get', 'class'], 'state', 0.18, 0.02], 'text-transform': ['match', ['get', 'class'], 'state', 'uppercase', 'none'], 'symbol-sort-key': ['get', 'rank'], 'text-padding': 6 },
+      layout: { 'text-field': ['coalesce', ['get', 'name:en'], ['get', 'name']], 'text-font': ['Noto Sans Bold'], 'text-size': ['interpolate', ['linear'], ['zoom'], 4, ['match', ['get', 'class'], 'state', 14, 13], 12, 16], 'text-letter-spacing': ['match', ['get', 'class'], 'state', 0.18, 0.02], 'text-transform': ['match', ['get', 'class'], 'state', 'uppercase', 'none'], 'symbol-sort-key': ['get', 'rank'], 'text-padding': 6 },
       paint: { 'text-color': ['match', ['get', 'class'], 'state', 'rgba(255,255,255,0.75)', '#ffffff'], 'text-halo-color': 'rgba(5,10,16,0.85)', 'text-halo-width': 1.5 } },
   ],
 };
@@ -172,7 +172,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
           const w = loc.centroid.lon - (ds.footprint_m * ox) / m.lon, s = loc.centroid.lat - (ds.footprint_m * oy) / m.lat;
           const e = w + ds.footprint_m / m.lon, n = s + ds.footprint_m / m.lat;
           fps.push(rect(w, s, e, n, { color: ds.color }));
-          lbls.push({ type: 'Feature', properties: { color: ds.color, label: ds.id === 'grace' ? `Groundwater (NASA GRACE-FO): one reading for this ${(ds.footprint_m / 1609).toFixed(0)}-mile square; the satellites sense about 190 miles` : `${({ smap: 'Soil moisture (NASA SMAP)', imerg: 'Rainfall (NASA GPM)', modis: 'Greenness (NASA MODIS)' } as Record<string, string>)[ds.id] ?? ds.name}: one reading covers this square (${(ds.footprint_m / 1609).toFixed(0)} miles across)${ds.id === 'smap' && !live.current.regionalLive.smap ? '; readings still downloading' : ''}` }, geometry: { type: 'Point', coordinates: [e, n] } });
+          lbls.push({ type: 'Feature', properties: { color: ds.color, label: `${({ grace: 'Groundwater', smap: 'Soil moisture', imerg: 'Rainfall', modis: 'Greenness' } as Record<string, string>)[ds.id] ?? ds.name}: this ${(ds.footprint_m / 1609).toFixed(0)}-mile square${ds.id === 'smap' && !live.current.regionalLive.smap ? ' (still downloading)' : ''}` }, geometry: { type: 'Point', coordinates: [e, n] } });
         } else if (ds.id !== 'hls') {
           const pad = ds.footprint_m * 2, lines: number[][][] = [];
           const w = b.w - pad / m.lon, e = b.e + pad / m.lon, s = b.s - pad / m.lat, n = b.n + pad / m.lat;

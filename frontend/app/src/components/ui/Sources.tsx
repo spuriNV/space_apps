@@ -6,7 +6,8 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
     ['HLS (Harmonized Landsat Sentinel-2), NASA/USGS', 'Bare, green or flooded every few days; the field calendar. 30 m.'],
     ['Landsat 8 and 9, NASA/USGS', 'Greenness since 2016, inside HLS and the 3D view. 30 m.'],
     ['GPM IMERG, NASA/JAXA', 'Daily rain over the field; rain since 1 Oct and its 2001–2025 normal. 0.1°.'],
-    ['GRACE-FO data assimilation, NASA', 'Groundwater and root-zone soil moisture percentiles, weekly. 0.25°.'],
+    ['GRACE-FO data assimilation, NASA', 'Groundwater and root-zone soil moisture percentiles, weekly, run through a land model. One reading for a 17-mile square; the satellites themselves sense about 190 miles. Groundwater is the whole basin, not your own well.'],
+    ['SMAP, NASA', 'Root-zone soil moisture, one reading for a 6-mile square, when its readings are in.'],
     ['OPERA surface water (DSWx), NASA JPL', 'Standing water on the field in each clear image. 30 m.'],
     ['NASA POWER', 'Sun, wind and humidity for crop water use (the rotation model). 0.5°.'],
     ['NASADEM, NASA JPL', 'Slope and low spots. 30 m.'],
@@ -19,7 +20,7 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
   { title: 'Ground data', items: [
     ['NOAA weather stations (GHCN-Daily)', 'Hot days (104 °F), frost nights, heavy-rain days.'],
     ['USDA Cropland Data Layer', 'The crop grown each year, 2008–2025.'],
-    ['USDA soil survey (SSURGO)', 'Soil type, water held, drainage, salt.'],
+    ['USDA soil survey (SSURGO)', 'Soil type, sand, silt and clay (top 3 feet), water held, drainage, salt.'],
     ['DWR / Land IQ crop mapping 2023', 'The field outline and state field number.'],
     ['USDA Risk Management Agency', 'Crop-insurance payouts by county, crop and cause.'],
     ['NOAA Climate Prediction Center, US Drought Monitor', 'Winter outlooks and drought, county.'],

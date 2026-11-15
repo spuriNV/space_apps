@@ -82,7 +82,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <section>
             <h2>3. The option: {s.name.replace(/ \(current\)/, '')}</h2>
             <div className="p-months">{s.month_cover.split('').map((c, i) => <div key={i}><span>{MONTHS[i]}</span><i style={{ background: CLASS_COLOR[c as CoverClass] }} /><em>{s.calendar_months[i]}</em></div>)}</div>
-            <p className="p-water">Irrigation need about <b>{afv(need.value)} acre-feet per acre</b> a year (likely {afv(need.low)}–{afv(need.high)}){s.is_baseline ? '' : `, against ${afv(needB.value)} for what the field grows now`}. {upper ? ' An upper bound: soil water stored over winter is not counted, so a dry-farmed or one-irrigation crop can need much less.' : ''} Your limit is {p.allocation.toFixed(1)}{limitWord}: <b className={over ? 'st bad' : within ? 'st good' : 'st warn'}>{over ? 'over the limit' : within ? 'fits' : 'may go over'}</b>.{cite(need.source)} In a dry year like 2022: {afv(s.exposure.replay['2022']?.irrigation_need_mm.value)}; a wet year like 2023: {afv(s.exposure.replay['2023']?.irrigation_need_mm.value)}.</p>
+            <p className="p-water">Irrigation need about <b>{afv(need.value)} acre-feet per acre</b> a year{upper ? '*' : ''}{s.is_baseline ? '' : `, against ${afv(needB.value)} for what the field grows now`}. Your limit is {p.allocation.toFixed(1)}{limitWord}: <b className={over ? 'st bad' : within ? 'st good' : 'st warn'}>{over ? 'over the limit' : within ? 'fits' : 'may go over'}</b>.{cite(need.source)} In a dry year like 2022: {afv(s.exposure.replay['2022']?.irrigation_need_mm.value)}.</p>
           </section>
 
           {tr && (
@@ -100,7 +100,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
               <tbody>{strategies.map((x) => { const nd = x.water.irrigation_need_mm, bd = ctx.bare[x.id]?.v ?? x.exposure.bare_days_per_year.value, hb = ctx.heat[x.id]?.v; const ov = mmToAfac(nd.low ?? nd.value) > p.allocation, ok = mmToAfac(nd.high ?? nd.value) <= p.allocation; return (
                 <tr key={x.id} className={x.id === s.id ? 'pick' : ''}><th>{x.short_name}{x.is_baseline ? ' (today)' : ''}</th><td>{afv(nd.value)} ({afv(nd.low)}–{afv(nd.high)}){/safflower|wheat/i.test(x.name) ? '*' : ''}</td><td>{ov ? 'over' : ok ? 'fits' : 'may go over'}</td><td>{Math.round(bd)}{x.is_baseline && ctx.bare[x.id] ? ' seen' : ' est.'}</td><td>{hb != null ? hb.toFixed(1) : '–'}</td></tr>); })}</tbody>
             </table>
-            <p className="p-note">Seen = satellite record for this field; est. = rotation model. * Upper bound: stored soil water not counted.</p>
+            <p className="p-note">Seen = satellite record for this field; est. = rotation model. * Upper bound: soil water stored over winter is not counted, so a dry-farmed or one-irrigation crop can need much less.</p>
           </section>
 
           <section>
