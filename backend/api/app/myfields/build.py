@@ -11,9 +11,9 @@ from ..anyloc import fetch as F
 from . import geom as G
 
 
-async def _post_layer(c, url, ring_cw, fields):
+async def _post_layer(c, url, rings, fields):
     import httpx  # noqa: PLC0415
-    g = json.dumps({"rings": [ring_cw], "spatialReference": {"wkid": 4326}})
+    g = json.dumps({"rings": rings, "spatialReference": {"wkid": 4326}})
     r = await c.post(url + "/query", data={"geometry": g, "geometryType": "esriGeometryPolygon", "inSR": 4326, "spatialRel": "esriSpatialRelIntersects",
                                            "outFields": fields, "returnGeometry": "false", "resultRecordCount": 100, "f": "json"},
                      timeout=httpx.Timeout(10.0, connect=4.0))
@@ -26,12 +26,13 @@ async def _post_layer(c, url, ring_cw, fields):
 
 async def analyse(fid: str, name: str, poly: dict, area_ha: float, power_cache, note: dict | None) -> tuple[dict, dict, list | None, dict]:
     """Returns (location payload, daily {} , strategies items or None, {timings_ms, sections})."""
-    ring = poly["coordinates"][0]
-    pts, (lon, lat) = G.sample_grid(ring, 25)
+    parts = G.polys(poly)
+    nverts = sum(len(r) - 1 for p in parts for r in p)
+    pts, (lon, lat) = G.sample_parts(poly, 25)
     today = dt.date.today().isoformat()
     t0 = time.perf_counter()
     ms, sections = {}, {}
-    cw = list(reversed(ring))          # ArcGIS wants outer rings clockwise
+    cw = [list(reversed(r)) for p in parts for r in p]   # ArcGIS: outer rings clockwise, holes counter-clockwise (ours are the opposite)
     in_ca_box = B.CA_BOX[0] <= lon <= B.CA_BOX[2] and B.CA_BOX[1] <= lat <= B.CA_BOX[3]
     from water_sources import AG_WORDS, SWRCB, L as LAYERS  # noqa: PLC0415
 
@@ -43,7 +44,10 @@ async def analyse(fid: str, name: str, poly: dict, area_ha: float, power_cache, 
             ms[k] = round((time.perf_counter() - t) * 1000)
 
     xs = sorted(pts, key=lambda p: p[0]); ys = sorted(pts, key=lambda p: p[1])
-    probe = {tuple(p) for p in (xs[0], xs[-1], ys[0], ys[-1])} - {(lon, lat)}
+    probe = {tuple(p) for p in (xs[0], xs[-1], ys[0], ys[-1])}
+    if len(parts) > 1:
+        probe |= {tuple(G.sample_grid(p, 1)[1]) for p in parts}
+    probe = set(sorted(probe - {(lon, lat)})[:8])
     async with F.client() as c:
         cty, dwr, pw, cdlmeta, board, *others = await asyncio.gather(
             timed("county", F.county(c, lon, lat), 8),
@@ -63,13 +67,13 @@ async def analyse(fid: str, name: str, poly: dict, area_ha: float, power_cache, 
             return dict(zip(names, res))
 
         soil_raw, cdl, wat, spans = await asyncio.gather(
-            timed("soil", F.ssurgo(c, ring[:-1] + [ring[0]]) if not outside_us else B._none(), 20),
+            timed("soil", F.ssurgo(c, None, G.wkt_geom(poly)) if not outside_us else B._none(), 20),
             timed("cdl", B._none() if no_cdl else F.cdl_history(c, pts, cdlmeta[0]) if not isinstance(cdlmeta, Exception) else B._raise(cdlmeta), 20),
             timed("water", F.water(c, lon, lat, LAYERS, AG_WORDS, today) if ca_now else B._none(), 10),
             timed("spans", span_layers() if ca_now else B._none(), 12),
             return_exceptions=True)
 
-    sections["boundary"] = B.sec("ready", source="user_drawn", vertices=len(ring) - 1)
+    sections["boundary"] = B.sec("ready", source="user_drawn", vertices=nverts, parts=len(parts))
     # county
     if isinstance(cty, dict):
         sections["county"] = B.sec("ready", source="fcc_census_area_2020")
@@ -244,9 +248,9 @@ async def analyse(fid: str, name: str, poly: dict, area_ha: float, power_cache, 
         "observed_cover": {"typically_bare_doy_ranges": [], "bare_doy_file": None, "years_used": [],
                            "detector": "not computed for drawn fields (needs the Sentinel-2/Landsat series)"},
         "events": [],
-        "user_field": {"name": name, "place": place, "vertices": len(ring) - 1, "sample_points": len(pts), "spans": span, "dwr_fields": dwr_fields,
+        "user_field": {"name": name, "place": place, "vertices": nverts, "parts": {"count": len(parts), "items": [{"part": i + 1, "area_ha": round(G.part_ha(p), 2), "acres": round(G.part_ha(p) * 2.47105, 1), "holes": len(p) - 1} for i, p in enumerate(parts)]}, "sample_points": len(pts), "spans": span, "dwr_fields": dwr_fields,
                        "crop_mix": mix, "simplified": note,
-                       "method": "CDL majority class per year over a grid of up to 25 sample points inside the polygon (purity = share of points in that class); "
+                       "method": "CDL majority class per year over a grid of up to 25 sample points inside the parts and outside holes (purity = share of points in that class); "
                                  "SSURGO map units weighted by area inside the polygon; POWER at the interior point nearest the centroid"},
         "_notes": {"analysis": "Built live for a user-drawn polygon: NASA POWER (centroid), SSURGO (area-weighted), CDL (sampled), DWR/Land IQ fields overlapping, "
                                "county and DWR water layers. Satellite series, IMERG, SMAP, GRACE, NASADEM and OpenET are not computed (sections.*).",

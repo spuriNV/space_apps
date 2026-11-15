@@ -4,7 +4,8 @@ from __future__ import annotations
 import math
 
 R_AUTH = 6371007.2          # authalic radius of WGS84 (m): spherical area formula with this radius is within ~0.1 % of the ellipsoid
-MAX_VERTICES, MIN_HA, MAX_HA = 200, 0.5, 2000.0
+MAX_VERTICES, MIN_HA, MAX_HA = 400, 0.5, 2000.0
+MAX_PARTS, MAX_HOLES = 20, 20
 
 
 class GeomError(ValueError):
@@ -58,18 +59,12 @@ def self_intersects(ring) -> bool:
     return False
 
 
-def validate(geometry) -> tuple[dict, float]:
-    """(clean GeoJSON Polygon: closed, counter-clockwise, 6 decimals; area in ha) or raise GeomError with a plain reason."""
-    if not isinstance(geometry, dict) or geometry.get("type") != "Polygon":
-        t = geometry.get("type") if isinstance(geometry, dict) else type(geometry).__name__
-        raise GeomError(f"geometry must be a single GeoJSON Polygon (got {t}); draw one shape at a time")
-    rings = geometry.get("coordinates")
-    if not isinstance(rings, list) or not rings or not isinstance(rings[0], list):
-        raise GeomError("Polygon has no coordinates")
-    if len(rings) != 1:
-        raise GeomError("polygons with holes are not supported; draw the outer outline only")
+def _clean_ring(raw, what) -> list:
+    """Closed ring of 6-decimal [lon, lat] from raw GeoJSON positions (consecutive duplicates dropped)."""
+    if not isinstance(raw, list):
+        raise GeomError(f"{what} has no coordinates")
     ring = []
-    for p in rings[0]:
+    for p in raw:
         if not isinstance(p, (list, tuple)) or len(p) < 2 or not all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) for v in p[:2]):
             raise GeomError("every position must be [longitude, latitude] numbers")
         lon, lat = float(p[0]), float(p[1])
@@ -81,20 +76,93 @@ def validate(geometry) -> tuple[dict, float]:
     if len(ring) > 1 and ring[0] == ring[-1]:
         ring.pop()
     if len(ring) < 3:
-        raise GeomError("a polygon needs at least 3 distinct corners")
-    if len(ring) > MAX_VERTICES:
-        raise GeomError(f"polygon has {len(ring)} vertices; the limit is {MAX_VERTICES}")
+        raise GeomError(f"{what} needs at least 3 distinct corners")
     ring.append(ring[0])
-    if self_intersects(ring):
-        raise GeomError("polygon crosses or touches itself; redraw it without crossing edges")
-    ha = area_m2(ring) / 1e4
+    return ring
+
+
+def polys(geometry) -> list:
+    """List of polygons (each [shell, hole, ...]) of a Polygon or MultiPolygon geometry."""
+    return [geometry["coordinates"]] if geometry["type"] == "Polygon" else list(geometry["coordinates"])
+
+
+def to_geometry(parts) -> dict:
+    return {"type": "Polygon", "coordinates": parts[0]} if len(parts) == 1 else {"type": "MultiPolygon", "coordinates": parts}
+
+
+def part_ha(part) -> float:
+    return (area_m2(part[0]) - sum(area_m2(h) for h in part[1:])) / 1e4
+
+
+def in_part(lon, lat, part) -> bool:
+    return in_ring(lon, lat, part[0]) and not any(in_ring(lon, lat, h) for h in part[1:])
+
+
+def _edges_hit(pa, pb) -> bool:
+    for i in range(len(pa) - 1):
+        for j in range(len(pb) - 1):
+            if _seg_hit(pa[i], pa[i + 1], pb[j], pb[j + 1]):
+                return True
+    return False
+
+
+def validate(geometry) -> tuple[dict, float]:
+    """(clean GeoJSON Polygon/MultiPolygon: closed rings, shells counter-clockwise, holes clockwise, 6 decimals; total area in ha
+    = parts minus holes) or raise GeomError with a plain reason."""
+    t = geometry.get("type") if isinstance(geometry, dict) else None
+    if t not in ("Polygon", "MultiPolygon"):
+        raise GeomError(f"geometry must be a GeoJSON Polygon or MultiPolygon (got {t if t else type(geometry).__name__})")
+    coords = geometry.get("coordinates")
+    if not isinstance(coords, list) or not coords:
+        raise GeomError(f"{t} has no coordinates")
+    raw_parts = [coords] if t == "Polygon" else coords
+    if len(raw_parts) > MAX_PARTS:
+        raise GeomError(f"{len(raw_parts)} parts; the limit is {MAX_PARTS}")
+    parts, total = [], 0
+    for k, rp in enumerate(raw_parts, 1):
+        if not isinstance(rp, list) or not rp:
+            raise GeomError("Polygon has no coordinates")
+        if len(rp) - 1 > MAX_HOLES:
+            raise GeomError(f"part {k} has {len(rp) - 1} holes; the limit is {MAX_HOLES} per part")
+        part = []
+        for i, r in enumerate(rp):
+            ring = _clean_ring(r, "a hole" if i else "a polygon")
+            total += len(ring) - 1
+            if total > MAX_VERTICES:
+                raise GeomError(f"geometry has more than {MAX_VERTICES} vertices in total (the limit)")
+            part.append(ring)
+        parts.append(part)
+    # one local projection for every ring, so rings can be compared with each other
+    allpts = [p for part in parts for r in part for p in r]
+    lat0 = sum(p[1] for p in allpts) / len(allpts)
+    kx, ky = 111320 * math.cos(math.radians(lat0)), 110574
+    loc = [[[(p[0] * kx, p[1] * ky) for p in r] for r in part] for part in parts]
+    for part, lp in zip(parts, loc):
+        for i, (r, l) in enumerate(zip(part, lp)):
+            if self_intersects(r):
+                raise GeomError("a hole crosses or touches itself; redraw it without crossing edges" if i else "polygon crosses or touches itself; redraw it without crossing edges")
+        for i, h in enumerate(part[1:], 1):
+            if _edges_hit(lp[0], lp[i]) or not all(in_ring(p[0], p[1], part[0]) for p in h):
+                raise GeomError("a hole must lie fully inside its polygon and not touch its edge")
+            for j in range(1, i):
+                if _edges_hit(lp[j], lp[i]) or in_ring(h[0][0], h[0][1], part[j]) or in_ring(part[j][0][0], part[j][0][1], h):
+                    raise GeomError("holes must not overlap or touch each other")
+    for a in range(len(parts)):
+        for b in range(a + 1, len(parts)):
+            if any(_edges_hit(x, y) for x in loc[a] for y in loc[b]) or in_part(*parts[a][0][0], parts[b]) or in_part(*parts[b][0][0], parts[a]):
+                raise GeomError(f"parts {a + 1} and {b + 1} overlap or touch; parts must be separate")
+    ha = sum(part_ha(p) for p in parts)
     if ha < MIN_HA:
         raise GeomError(f"area {ha:.2f} ha is under the {MIN_HA} ha minimum (about 1.2 acres)")
     if ha > MAX_HA:
         raise GeomError(f"area {ha:,.0f} ha is over the {MAX_HA:,.0f} ha maximum (about 4,900 acres)")
-    if _signed(ring) < 0:
-        ring.reverse()
-    return {"type": "Polygon", "coordinates": [ring]}, ha
+    for part in parts:
+        if _signed(part[0]) < 0:
+            part[0].reverse()
+        for h in part[1:]:
+            if _signed(h) > 0:
+                h.reverse()
+    return to_geometry(parts), ha
 
 
 def in_ring(lon, lat, ring) -> bool:
@@ -115,21 +183,30 @@ def centroid(ring):
     return cx / (3 * a), cy / (3 * a)
 
 
-def sample_grid(ring, max_pts=25):
-    """Evenly spaced points inside the ring: the finest bbox grid that yields at most max_pts, at least 1 point.
-    Returns (points [[lon, lat]], interior point nearest the centroid)."""
+def main_centroid(geometry):
+    """Centroid of the shell of the largest part (by net area)."""
+    ps = polys(geometry)
+    return centroid(max(ps, key=part_ha)[0])
+
+
+def sample_grid(part, max_pts=25):
+    """Evenly spaced points inside the part (inside the shell, outside holes): the finest bbox grid that yields at most max_pts,
+    at least 1 point. `part` is [shell, hole, ...] (a bare ring is accepted). Returns (points [[lon, lat]], interior point nearest the centroid)."""
+    if part and isinstance(part[0][0], (int, float)):
+        part = [part]
+    ring = part[0]
     xs, ys = [p[0] for p in ring], [p[1] for p in ring]
     best = []
     for n in range(2, 16):
         pts = [[min(xs) + (i + .5) * (max(xs) - min(xs)) / n, min(ys) + (j + .5) * (max(ys) - min(ys)) / n]
                for i in range(n) for j in range(n)]
-        pts = [p for p in pts if in_ring(p[0], p[1], ring)]
+        pts = [p for p in pts if in_part(p[0], p[1], part)]
         if len(pts) > max_pts:
             break
         if len(pts) >= len(best):
             best = pts
     cx, cy = centroid(ring)
-    if in_ring(cx, cy, ring):
+    if in_part(cx, cy, part):
         inner = [cx, cy]
         if len(best) < max_pts:
             best = [inner] + best
@@ -138,3 +215,29 @@ def sample_grid(ring, max_pts=25):
     if not best:
         best = [inner]
     return [[round(p[0], 6), round(p[1], 6)] for p in best], [round(inner[0], 6), round(inner[1], 6)]
+
+
+def sample_parts(geometry, max_pts=25):
+    """Sample points over all parts (budget split by net area, at least 1 each). Returns (points, interior point of the largest part)."""
+    ps = polys(geometry)
+    areas = [part_ha(p) for p in ps]
+    tot = sum(areas) or 1
+    budget = [max(1, round(max_pts * a / tot)) for a in areas]
+    while sum(budget) > max_pts and max(budget) > 1:
+        budget[budget.index(max(budget))] -= 1
+    pts, inner = [], None
+    big = areas.index(max(areas))
+    for i, (p, b) in enumerate(zip(ps, budget)):
+        q, ip = sample_grid(p, b)
+        pts += q
+        if i == big:
+            inner = ip
+    return pts, inner
+
+
+def wkt_geom(geometry) -> str:
+    """WKT POLYGON / MULTIPOLYGON of the geometry (holes included)."""
+    def ring(r):
+        return "(" + ",".join(f"{x:.6f} {y:.6f}" for x, y in r) + ")"
+    ps = ["(" + ",".join(ring(r) for r in p) + ")" for p in polys(geometry)]
+    return "POLYGON" + ps[0] if len(ps) == 1 else "MULTIPOLYGON(" + ",".join(ps) + ")"

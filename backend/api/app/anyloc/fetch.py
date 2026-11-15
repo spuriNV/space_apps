@@ -254,10 +254,10 @@ def _wavg(h, key, top=0, bot=100):
     return num / den if den else None
 
 
-async def ssurgo(c, ring) -> dict | None:
+async def ssurgo(c, ring, wkt_str=None) -> dict | None:
     """SSURGO summary over the footprint (0-100 cm, component- and area-weighted), the registry's soil.json shape.
     None where SSURGO has no map unit (outside the US survey area)."""
-    w = wkt(ring)
+    w = wkt_str or wkt(ring)
     areas = await _sda(c, f"SELECT mukey, mupolygongeo.STIntersection(geometry::STGeomFromText('{w}',4326)).STArea() AS a "
                           f"FROM mupolygon WHERE mukey IN (SELECT * FROM SDA_Get_Mukey_from_intersection_with_WktWgs84('{w}'))")
     share: dict[str, float] = {}

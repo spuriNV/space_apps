@@ -585,17 +585,41 @@ _bow = {"type": "Polygon", "coordinates": [[[-122.03, 39.19], [-122.02, 39.20], 
 _circ = lambda n: {"type": "Polygon", "coordinates": [[[-122.03 + 0.004 * _m.cos(2 * _m.pi * i / n), 39.19 + 0.004 * _m.sin(2 * _m.pi * i / n)] for i in range(n)] + [[-122.03 + 0.004, 39.19]]]}
 for label, geo, name, why in (
         ("self-intersecting bowtie", _bow, "x", "crosses"),
-        ("201 vertices", _circ(201), "x", "201 vertices"),
-        ("MultiPolygon", {"type": "MultiPolygon", "coordinates": [_rice["coordinates"]]}, "x", "single"),
-        ("holes", {"type": "Polygon", "coordinates": _rice["coordinates"] + [[[-122.03, 39.19], [-122.029, 39.19], [-122.029, 39.191], [-122.03, 39.19]]]}, "x", "holes"),
+        ("401 vertices", _circ(401), "x", "400 vertices"),
+        ("not a polygon", {"type": "Point", "coordinates": [-122.03, 39.19]}, "x", "Polygon or MultiPolygon"),
         ("too small (0.1 ha)", _rect(-122.03, 39.19, 30, 30), "x", "minimum"),
         ("too large (4,000 ha)", _rect(-122.03, 39.19, 6325, 6325), "x", "maximum"),
         ("out of range coordinates", {"type": "Polygon", "coordinates": [[[200, 39], [201, 39], [201, 40], [200, 39]]]}, "x", "outside"),
         ("no name", _rice, "  ", "name")):
     rv = client.post("/api/my-fields", json={"name": name, "geometry": geo}, headers=_HM)
     _mok(rv.status_code == 422 and why in rv.json()["detail"], f"{label} -> 422 ({str(rv.json().get('detail'))[:70]})")
-# 200 corners fit in an id (simplified if needed)
 import app.myfields.fid as _fid  # noqa: E402
+# multi-part and holes (v:2 ids)
+_ra, _rb = _rect(-122.03, 39.19, 640, 640), _rect(-122.00, 39.19, 640, 640)
+_hole = lambda g, w, h: {"type": "Polygon", "coordinates": g["coordinates"] + [_rect(-122.03, 39.19, w, h)["coordinates"][0]]}
+_rm = client.post("/api/my-fields", json={"name": "Two blocks", "geometry": {"type": "MultiPolygon", "coordinates": [_ra["coordinates"], _rb["coordinates"]]}}, headers={"X-Forwarded-For": "198.51.100.71"})
+_mok(_rm.status_code == 200, f"MultiPolygon of two Colusa rectangles -> 200 {'' if _rm.status_code == 200 else _rm.text[:200]}")
+if _rm.status_code == 200:
+    _dm = _rm.json(); _uf = _dm["user_field"]
+    _mok(_dm["geometry"]["type"] == "MultiPolygon" and _uf["parts"]["count"] == 2 and len(_uf["parts"]["items"]) == 2, "echoes MultiPolygon, user_field.parts.count == 2")
+    _mok(abs(_dm["acres"] - 2 * 101.2) < 8 and abs(_dm["acres"] - sum(i["acres"] for i in _uf["parts"]["items"])) < 0.3, f"acres {_dm['acres']} = sum of parts {[i['acres'] for i in _uf['parts']['items']]}")
+    _mok(not _errs(_LOC_V, _dm), f"MultiPolygon payload schema-valid {_errs(_LOC_V, _dm)}")
+    _mok(_dm["sections"]["crop_history"]["points_sampled"] >= 2, "sample points taken in both parts")
+_rh = client.post("/api/my-fields", json={"name": "Donut", "geometry": _hole(_ra, 300, 300)}, headers={"X-Forwarded-For": "198.51.100.72"})
+_mok(_rh.status_code == 200 and _rh.json()["acres"] < client.post("/api/my-fields", json={"name": "Solid", "geometry": _ra}, headers={"X-Forwarded-For": "198.51.100.73"}).json()["acres"] - 15
+     and _rh.json()["geometry"]["type"] == "Polygon" and len(_rh.json()["geometry"]["coordinates"]) == 2, f"rectangle with a hole -> fewer acres ({_rh.json().get('acres') if _rh.status_code == 200 else _rh.text[:120]})")
+_ro = client.post("/api/my-fields", json={"name": "x", "geometry": {"type": "MultiPolygon", "coordinates": [_ra["coordinates"], _rect(-122.028, 39.19, 640, 640)["coordinates"]]}}, headers={"X-Forwarded-For": "198.51.100.74"})
+_mok(_ro.status_code == 422 and "overlap" in _ro.json()["detail"], f"overlapping parts -> 422 ({_ro.json().get('detail')})")
+_rx = client.post("/api/my-fields", json={"name": "x", "geometry": {"type": "Polygon", "coordinates": _ra["coordinates"] + [_rect(-122.0, 39.19, 100, 100)["coordinates"][0]]}}, headers={"X-Forwarded-For": "198.51.100.75"})
+_mok(_rx.status_code == 422 and "inside its polygon" in _rx.json()["detail"], f"hole outside its shell -> 422 ({_rx.json().get('detail')})")
+_vv1 = {"v": 1, "n": "Old id", "c": [x for i, p in enumerate(_ra["coordinates"][0][:-1]) for x in ((round(p[0] * 1e5), round(p[1] * 1e5)) if i == 0 else (round(p[0] * 1e5) - round(_ra["coordinates"][0][i - 1][0] * 1e5), round(p[1] * 1e5) - round(_ra["coordinates"][0][i - 1][1] * 1e5)))]}
+import base64 as _b64, zlib as _zl, json as _js  # noqa: E402
+_oldid = "my_" + _b64.urlsafe_b64encode(_zl.compress(_js.dumps(_vv1, separators=(",", ":")).encode(), 9)).rstrip(b"=").decode()
+_ro1 = client.get(f"/api/my-fields/{_oldid}", headers={"X-Forwarded-For": "198.51.100.76"})
+_mok(_ro1.status_code == 200 and _ro1.json()["name"] == "Old id" and 35 < _ro1.json()["area_ha"]["value"] < 45, f"old v:1 id still loads ({_ro1.status_code})")
+_i2, _p2, _h2, _ = _fid.encode("rt", _hole(_ra, 300, 300))
+_mok(_fid.decode(_i2)[1] == _p2 and _fid.decode(_i2)[1]["type"] == "Polygon", "v:2 id with a hole round-trips")
+# 200 corners fit in an id (simplified if needed)
 _noisy = {"type": "Polygon", "coordinates": [[[-122.03 + (0.004 + 0.0004 * ((i * 7919) % 13) / 13) * _m.cos(2 * _m.pi * i / 200), 39.19 + (0.004 + 0.0004 * ((i * 7919) % 13) / 13) * _m.sin(2 * _m.pi * i / 200)] for i in range(200)]]}
 _noisy["coordinates"][0].append(_noisy["coordinates"][0][0])
 _i, _p, _h, _n = _fid.encode("noisy", _noisy)

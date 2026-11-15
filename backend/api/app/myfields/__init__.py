@@ -240,15 +240,16 @@ class CreateBody(BaseModel):
 
 
 def _summary(fid, name, poly, ha):
-    ring = poly["coordinates"][0]
-    cx, cy = G.centroid(ring)
+    shells = [p[0] for p in G.polys(poly)]
+    cx, cy = G.main_centroid(poly)
     return {"id": fid, "name": name, "acres": round(ha * 2.47105, 1), "area_ha": round(ha, 2), "centroid": {"lon": round(cx, 6), "lat": round(cy, 6)},
-            "bbox": [min(p[0] for p in ring), min(p[1] for p in ring), max(p[0] for p in ring), max(p[1] for p in ring)], "geometry": poly}
+            "bbox": [min(p[0] for r in shells for p in r), min(p[1] for r in shells for p in r), max(p[0] for r in shells for p in r), max(p[1] for r in shells for p in r)],
+            "geometry": poly, "parts": len(shells)}
 
 
 @router.post("/api/my-fields")
 async def create(body: CreateBody, req: Request, resp: Response):
-    """Validate (single Polygon, <= 200 corners, 0.5-2,000 ha, no self-crossing), encode the id, analyse. 422 on bad geometry."""
+    """Validate (Polygon or MultiPolygon, <= 20 parts, <= 20 holes per part, <= 400 corners, 0.5-2,000 ha, no crossing or overlap), encode the id, analyse. 422 on bad geometry."""
     try:
         fid, poly, ha, note = FID.encode(body.name, body.geometry)
         name = FID.clean_name(body.name)
@@ -400,7 +401,7 @@ def week_resolver(pid: str) -> dict | None:
     if not isinstance(pid, str) or not pid.startswith(FID.PREFIX):
         return None
     name, poly, ha = FID.decode(pid)
-    cx, cy = G.centroid(poly["coordinates"][0])
+    cx, cy = G.main_centroid(poly)
     hit = cache_get(pid)
     loc = (hit or {}).get("loc") or {}
     cb, bb = B.CA_BOX, (-139.1, 48.2, -114.0, 60.0)
