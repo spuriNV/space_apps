@@ -1,5 +1,7 @@
 # CropLytics for iOS
 
+Native iPhone app. The map is still MapKit, and "under the field" is a separate SceneKit screen. The next build replaces both with MapLibre Native so pinch-zoom raises the same crop / soil-moisture / groundwater stack as Android. That work is specified in [`HANDOFF.md`](HANDOFF.md). Do not wrap croplytics.xyz.
+
 A native iPhone app for CropLytics, the crop-rotation planner for California growers and their advisers, built on NASA Earth data (NASA Space Apps 2026). It reads the live API at `https://croplytics-app.onrender.com/api` and keeps the last answers on the phone, so a field you opened before still shows offline with a "Saved on <date>" note.
 
 It mirrors the web app's farmer-first scope (PLAN.md, "Farmer-first default"). If the web app drops a feature, drop it here too.
@@ -73,7 +75,7 @@ Fixtures in `CropLytics/Resources/Fixtures` are trimmed copies of the live API's
 
 - **Asset catalog not in the build on this Mac.** Xcode 16.4's asset compiler needs an iOS 18 simulator runtime and this machine has only 17.4 and 17.5, so `Resources/Assets.xcassets` (1024 pt icon, accent colour, launch colour) is excluded in `project.yml` and the icon ships as `CFBundleIconFiles` PNGs. On a machine with the iOS 18.5 runtime, remove the exclude and set `ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon`; App Store builds need the catalog icon. To build against the 17.5 runtime with Xcode 16.4, the SDK was pointed at it with `xcrun simctl runtime match set iphoneos18.5 21F79` (undo with `xcrun simctl runtime match set iphoneos18.5 --default`).
 - iPhone only (`TARGETED_DEVICE_FAMILY = 1`); the layouts would need a sidebar for iPad.
-- Answers are for today only; the web app's date control and "This field's year" are not in the phone app.
+- The viewing date, replay, and "This field's year" are in the app. The map does not tilt into a 3D stack; that gap is [`HANDOFF.md`](HANDOFF.md).
 
 ## App Store release: what it would take
 
