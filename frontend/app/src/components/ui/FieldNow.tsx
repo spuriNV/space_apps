@@ -169,7 +169,6 @@ export function FieldNow(p: FieldNowProps) {
         <dd>
           {st ? <b><i className={`sw-${st.sw}`} />{st.text}</b> : pend(p.dataState)}
           <span className="d-only">{crop ? `${cropName(crop)} on record for ${yr}.` : `${yr} crop map not published yet (${bc ? 'AAFC' : 'USDA'}, early ${yr + 1}). ${lastRec}: ${cropName(loc.crop_history[lastRec]).toLowerCase()}.`} {st?.sub}</span>
-          <cite>{calSource(p.prov.calendar)}, 100 ft squares; crop from the {cropMapName(loc)}.{behindNote} <Src p={p.prov.calendar} /></cite>
         </dd>
       </div>
       )}
@@ -206,7 +205,6 @@ export function FieldNow(p: FieldNowProps) {
           </> : cw ? <>
             <b>{cw.period.current ? 'So far this year' : 'Last year'}: {vsNormal(cw.pct, 'more than normal', 'less than normal')}</b>
             <span>About {fmtIn(cw.inches)} in of water {cw.period.label}, estimated; normal is {fmtIn(cw.normal)} in. That is {mmToAfac(cw.inches * 25.4).toFixed(1)} acre-feet per acre.{ms ? ` ${openetEst ? 'Estimated for this field' : 'Measured on this field by OpenET'} for ${ms.label}: ${fmtIn(ms.inches)} in (our model for those months: ${fmtIn(ms.model)} in).` : ''}</span>
-            <cite>Estimate: rotation model driven by NASA POWER sun, wind and humidity{ms ? '; measured: OpenET satellite data, which ends a few months behind' : ''}. {gOpenet ? '' : openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
             <GapLine gap={gOpenet} missing={!p.extras.openet} />
           </> : !p.strategies || !p.daily ? pend(p.daily ? p.dataState : p.dailyState) : <b>No rotation model for this field</b>}
           {sp && spotGap('openet')}

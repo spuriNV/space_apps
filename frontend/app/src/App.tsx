@@ -11,6 +11,7 @@ import { calSource } from './components/ui/shared';
 const tStart = (earlier: boolean) => tOf(earlier ? YEARS[0] : RECENT_FROM, 0);
 import ComingSeason from './components/season/ComingSeason';
 import ComparePanel from './components/compare/ComparePanel';
+import { FieldTimeline, type SimMode } from './components/ui/FieldTimeline';
 import RotationBrief from './components/brief/RotationBrief';
 import { BCCard, LayersDrawer } from './components/Panels';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
@@ -71,6 +72,7 @@ export default function App() {
   const [outlook, setOutlook] = useState<{ id: string; o: api.Outlook } | null>(null);
   const [iss, setISS] = useState<{ id: string; v: Awaited<ReturnType<typeof api.getISS>> } | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [sim, setSim] = useState<SimMode>(null); // Compare's "run a year on the map": a one-year playback with a water banner
   const [panel, setPanel] = useState<Panel>('none');
   const [cardOpen, setCardOpen] = useState(true);
   const [layersOpen, setLayersOpen] = useState(false);
@@ -148,9 +150,16 @@ export default function App() {
   }, [alloc, selected, live, data?.id]);
   useEffect(() => {
     if (!playing) return;
+    if (sim) {
+      const end = tOf(sim.year, 35);
+      const h = setInterval(() => setT((v) => { if (v >= end) { setPlaying(false); return end; } return v + 1; }), 160);
+      return () => clearInterval(h);
+    }
     const h = setInterval(() => setT((v) => (v >= T_MAX ? tStart(showEarlier) : Math.max(v + 1, tStart(showEarlier)))), 220);
     return () => clearInterval(h);
-  }, [playing, showEarlier]);
+  }, [playing, showEarlier, sim]);
+  const stopSim = useCallback(() => { setPlaying(false); setSim(null); setT(TODAY_T); }, []);
+  const runSim = useCallback((next: NonNullable<SimMode>, startT: number) => { setSim(next); setT(startT); setPlaying(true); }, []);
 
   const d = data && data.id === selectedId ? data : null;
   useEffect(() => { (window as unknown as Record<string, unknown>).__app = { setT, select: (id: string) => select(id), ready: !!d }; });
@@ -163,6 +172,7 @@ export default function App() {
   const prov: api.ProvMap = { ...(selected ? locProv[selected.id] ?? mf.prov[selected.id] : {}), ...(d?.prov ?? {}), ...(dl ? { daily: dl.prov } : {}), ...(ol ? { outlook_cpc: ol.prov.cpc, outlook_water: ol.prov.water, outlook_alloc: ol.prov.alloc } : {}) };
 
   const select = useCallback((id: string) => {
+    setSim(null);
     const loc = locations.find((l) => l.id === id);
     if (!loc) return;
     if (!api.isSpot(id)) dropSpot();
@@ -243,7 +253,7 @@ export default function App() {
     setPanel((p) => (p === id ? 'none' : id));
     setYearOpen(false);
   };
-  const goHome = () => { dropSpot(); setSelectedId(null); setPanel('none'); setYearOpen(false); setBcOpen(false); setBriefOpen(false); map.current?.flyHome(); };
+  const goHome = () => { setSim(null); setPlaying(false); dropSpot(); setSelectedId(null); setPanel('none'); setYearOpen(false); setBcOpen(false); setBriefOpen(false); map.current?.flyHome(); };
   const goBC = () => { setBcOpen(true); setPanel('none'); setYearOpen(false); map.current?.flyTo(49.9, -121.0, 6.4); };
   const onStep = (s: Step) => {
     if (!selected) return;
@@ -367,7 +377,13 @@ export default function App() {
 
       {panel === 'season' && selected && d && <ComingSeason nasaNow={d.nasaNow} regional={regional} regionalLive={regionalLive} loc={selected} outlook={ol} cal={d.cal} daily={dl?.daily ?? null} strategies={d.strategies} allocation={allocation[selected.id]} exampleLimit={exampleLimit} prov={prov} onCompare={() => setPanel('compare')} onClose={() => setPanel('none')} />}
       {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} daily={dl?.daily ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} live={!!live} cal={d.cal} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
-        onBrief={(id) => { setBriefPick(id); setBriefOpen(true); }} onClose={() => setPanel('none')} />}
+        onBrief={(id) => { setBriefPick(id); setBriefOpen(true); }} sim={sim} simRunning={!!sim && playing} onRunSim={runSim} onStopSim={stopSim} onClose={() => { if (sim) stopSim(); setPanel('none'); }} />}
+
+      {sim && selected && d?.cal && (
+        <div className="sim-dock" data-testid="sim-dock" style={phone ? undefined : { left: `calc(50% + ${(leftInset - rightInset) / 2}px)` }}>
+          <FieldTimeline t={t} setT={setT} playing={playing} setPlaying={setPlaying} cal={d.cal} events={events} sim={sim} />
+        </div>
+      )}
 
       {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} reserves={!!selected && api.isBC(selected)} onClose={() => setLayersOpen(false)} />}
 

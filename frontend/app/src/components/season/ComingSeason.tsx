@@ -101,17 +101,6 @@ export default function ComingSeason(p: { nasaNow: NasaNow | null; regional: Reg
           {wc?.note && <p className="how">{wc.note}</p>}
           <cite>BC Gov News; orders under the Water Sustainability Act. <Src p={p.prov.water} /></cite>
           </> : <>
-          <h3>Water in storage now</h3>
-          <ul className="olist">
-            {o?.reservoirs.map((r) => (
-              <li key={r.id}>
-                <b>{words(r.name)} reservoir</b>
-                <span>{r.pctAvg != null ? `${Math.round(r.pctAvg)}% of average for the date` : ''}{r.pctCap != null ? `, ${Math.round(r.pctCap)}% full` : ''}. {maf(r.storageAf)}{r.yearAgoAf ? `; a year ago ${maf(r.yearAgoAf)}` : ''}.</span>
-              </li>
-            ))}
-            {!o?.reservoirs.length && <li><span>Not loaded.</span></li>}
-          </ul>
-          <cite>California Data Exchange Center (CDEC), {o?.reservoirs[0]?.date ? fmtDate(o.reservoirs[0].date) : 'latest'}; “average” is CDEC’s own for the date. <Src p={o?.prov.water} /></cite>
 
           </>}
           <h3>Water in the ground going into winter</h3>

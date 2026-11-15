@@ -11,6 +11,8 @@ import { CLASS_COLOR, RAIN_FED, isRainFed, mmToAfac, needText } from '../../lib'
 import Icon from '../Icons';
 import { openetText } from '../ui/shared';
 import { HOT_F, hotBareDays, type Daily } from '../../season';
+import { SimRun } from './SimRun';
+import type { SimMode } from '../ui/FieldTimeline';
 
 /** Hot days on bare soil per rotation: NOAA station highs >= 104 °F in the months the rotation leaves the field bare or thin. */
 /** Per-field context: hot days on bare soil (NOAA stations) and bare days (satellite-seen for today, model for the others). */
@@ -95,7 +97,7 @@ const HEAT: [number, string][] = [[0, 'Normal heat'], [2, '4 °F warmer'], [4, '
 /** Scores that are the same for every rotation on this field carry no information: list them as "not scored yet". */
 const constantScores = (ss: RotationStrategy[]) => new Set(SCORE.filter((m) => { const v = ss.map((s) => s.scores[m.key as ScoreKey]?.value); return v.every((x) => x == null || x === v[0]); }).map((m) => m.key));
 
-export default function ComparePanel(p: { loc: Location; strategies: RotationStrategy[]; daily: Daily | null; cal: Calendar | null; live: boolean; allocation: number; exampleLimit: boolean; setAllocation: (v: number) => void; onBrief: (id: string) => void; onClose: () => void }) {
+export default function ComparePanel(p: { loc: Location; strategies: RotationStrategy[]; daily: Daily | null; cal: Calendar | null; live: boolean; allocation: number; exampleLimit: boolean; setAllocation: (v: number) => void; onBrief: (id: string) => void; sim: SimMode; simRunning: boolean; onRunSim: (sim: NonNullable<SimMode>, startT: number) => void; onStopSim: () => void; onClose: () => void }) {
   // farmer priorities (0-4) and a rain / temperature what-if, re-scored by the rotation model (POST /score)
   const [weights, setWeights] = useState<Partial<Record<ScoreKey, number>>>({});
   const [scen, setScen] = useState<Scenario>({ dT_c: 0, dP_pct: 0 });
@@ -205,12 +207,9 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
             <div className="d-only">
             <h3>Bare days <What k="bare" /></h3>
             <p className="how">Today: {ctx.bare[today.id]?.v != null ? `${ctx.bare[today.id].v} days a year, seen by satellite ${ctx.bareYears[0]}–${ctx.bareYears[ctx.bareYears.length - 1]}` : `${Math.round(today.exposure.bare_days_per_year.value)} days a year (estimated)`}. Other rotations: estimated by the rotation model. {BARE_DEF}</p>
-            <h3>No clear difference</h3>
-            <p className="how">{unclear.map((r, i) => (i ? r.m.label.toLowerCase() : r.m.label)).join(', ') || 'None'}. The likely ranges overlap, so the inputs aren’t precise enough to say which is better.</p>
-            <h3>Not scored yet</h3>
-            <p className="how">{[...none.map((r) => r.m.label), ...SCORE.filter((m) => flat.has(m.key)).map((m) => m.label), 'Dollars per acre (no price data yet)'].map((x, i) => (i ? x.toLowerCase() : x)).join(', ')}.</p>
             <p className="how">Bars: the span of likely values; the tick is the best estimate. A gain counts only when the two spans don’t overlap.</p>
             </div>
+            <SimRun loc={p.loc} strategies={p.strategies} allocation={p.allocation} pickId={alt.id} weather={weather} setWeather={setWeather} onRun={p.onRunSim} running={p.simRunning} onStop={p.onStopSim} />
             <MoreDetail what="All rotations and what-ifs" />
             <button className="btn btn-primary wide" onClick={() => p.onBrief(alt.id)} data-testid="to-brief">Print this comparison for your adviser<Icon name="right" size={16} /></button>
           </aside>

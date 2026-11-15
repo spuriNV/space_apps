@@ -20,7 +20,7 @@ export function FirstNationsCard({ loc }: { loc: Location }) {
   if (!s && !fn) return null;
   const statement = fn?.statement ?? s!.statement;
   const onReserve = fn?.field_on_reserve ?? s!.field_on_reserve;
-  const km = fn?.nearest_km ?? s!.nearest_km, nation = fn?.nearest_nation ?? s!.nearest_nation;
+  const km = fn?.nearest_km ?? s!.nearest_km, nation = fn?.nearest_nation ?? s!.nearest_nation, reserve = fn?.nearest_reserve ?? s!.nearest_reserve;
   const lower = fn?.lower_river_nation ?? (s ? { nation: s.lower_river_nation, url: '', reserve: '' } : null);
   const river = loc.water_context?.watershed.split(/[(;,]/)[0].trim() || 'river';
   const near = (fn?.nearby ?? []).filter((r) => r.distance_to_field_km <= NEAR_KM).sort((a, b) => a.distance_to_field_km - b.distance_to_field_km);
@@ -30,8 +30,8 @@ export function FirstNationsCard({ loc }: { loc: Location }) {
       <h2 className="fp-h">Working with First Nations</h2>
       <p className="fn-statement">{statement}</p>
       <ul className="fn-lines">
-        <li>{onReserve ? 'This field is on reserve land.' : `This field is not on reserve land; nearest reserve ${km} km (${nation}).`}</li>
-        {lower && <li>Nation on the lower {river}: {lower.nation}.{linkOf(lower) && <> <a href={linkOf(lower)!} target="_blank" rel="noreferrer">{lower.nation} lands page</a></>}</li>}
+        <li>{onReserve ? 'This field is on reserve land.' : `This field is not on reserve land. Nearest: ${reserveName(reserve)}, about ${km} km (${nation}).`}</li>
+        {lower && <li>Nation on the lower {river}: {lower.nation}{lower.reserve ? ` (${reserveName(lower.reserve)})` : ''}.{linkOf(lower) && <> <a href={linkOf(lower)!} target="_blank" rel="noreferrer">{lower.nation} lands page</a></>}</li>}
       </ul>
       <div className="d-only fn-more" data-testid="first-nations-detail">
         {fn === undefined ? <p className="muted">Loading…</p> : fn === null ? <p className="gap-line">More on the Nations is not available right now.</p> : <>
