@@ -1,6 +1,24 @@
 package app.croplytics.ui.app
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.layout.offset
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import app.croplytics.ui.components.DetailReveal
+import app.croplytics.ui.components.IconDisc
+import app.croplytics.ui.components.MoreDetailRow
+import app.croplytics.ui.components.PillButton
+import app.croplytics.ui.components.PillKind
+import app.croplytics.ui.components.focusRing
+import app.croplytics.ui.components.motion
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +46,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,86 +90,105 @@ import app.croplytics.ui.theme.CropLyticsTheme
 import kotlin.math.log10
 import kotlin.math.sqrt
 
-/** Solid paper top bar (web phone layout): wordmark, field switcher, then the "Viewing" date and Map layers. 3 dp spot-green band under it. */
+/** Paper top bar (web phone layout): wordmark, field switcher, menu holding Viewing and Map layers; 3 dp green band under it. */
 @Composable
 fun TopBar(state: MainUiState, onHome: () -> Unit, onSwitch: () -> Unit, onDate: () -> Unit, onLayers: () -> Unit) {
     val c = CropLyticsTheme.colors
     val sel = state.selected
+    var menu by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth().background(c.paper).statusBarsPadding().testTag("topbar")) {
-        Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 8.dp, top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(start = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 "CropLytics",
-                Modifier.clickable(role = Role.Button, onClickLabel = "Back to all of California", onClick = onHome).padding(vertical = 8.dp).semantics { heading() },
+                Modifier.clip(RoundedCornerShape(8.dp)).focusRing(RoundedCornerShape(8.dp)).clickable(role = Role.Button, onClickLabel = "Back to all of California", onClick = onHome)
+                    .padding(horizontal = 4.dp, vertical = 8.dp).semantics { heading() },
                 style = MaterialTheme.typography.titleLarge, color = c.accent,
             )
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(8.dp))
+            Box(Modifier.width(1.dp).height(32.dp).background(c.line))
             Row(
-                Modifier.weight(1f).clickable(role = Role.Button, onClickLabel = "Change field", onClick = onSwitch).padding(vertical = 4.dp).testTag("field-switch"),
+                Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).focusRing(RoundedCornerShape(12.dp)).clickable(role = Role.Button, onClickLabel = "Change field", onClick = onSwitch)
+                    .padding(horizontal = 10.dp, vertical = 6.dp).testTag("field-switch"),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text(sel?.let { "${it.id.county} County, ${it.id.acres} acres" } ?: "No field picked", style = MaterialTheme.typography.labelSmall, color = c.muted, maxLines = 1)
+                    Text(sel?.let { "${it.id.place}, ${it.id.acres} acres" } ?: "No field picked", style = MaterialTheme.typography.labelSmall, color = c.muted, maxLines = 1)
                     Text(sel?.id?.name ?: "Pick your field", style = MaterialTheme.typography.titleSmall, color = c.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null, tint = c.muted)
             }
+            Box {
+                IconDisc("Menu: viewing date and map layers", icon = Icons.Filled.Menu, ghost = true, modifier = Modifier.testTag("menu")) { menu = true }
+                DropdownMenu(menu, { menu = false }, shape = RoundedCornerShape(16.dp), containerColor = c.raised, shadowElevation = 12.dp) {
+                    DropdownMenuItem(
+                        text = { Column { Text("Viewing", style = MaterialTheme.typography.labelSmall, color = c.muted); Text(if (state.isToday) "Today, ${Timeline.when_(state.t)}" else Timeline.label(state.t), style = MaterialTheme.typography.labelLarge, color = c.text) } },
+                        onClick = { menu = false; onDate() }, modifier = Modifier.testTag("date-control"),
+                    )
+                    DropdownMenuItem(text = { Text("Map layers", style = MaterialTheme.typography.labelLarge, color = c.text) }, onClick = { menu = false; onLayers() }, modifier = Modifier.testTag("layers-btn"))
+                }
+            }
         }
-        Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, bottom = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Chip("Viewing", if (state.isToday) "Today, ${Timeline.when_(state.t)}" else Timeline.label(state.t), Modifier.weight(1f).testTag("date-control"), onDate)
-            Chip(null, "Map layers", Modifier.testTag("layers-btn"), onLayers)
-        }
-        HorizontalDivider(color = c.line)
         Box(Modifier.fillMaxWidth().height(3.dp).background(c.headBand))
     }
 }
 
+/** "Showing mid Jul 2022 · Back to today": a pill floating over the map when the viewing date is not today. */
 @Composable
-private fun Chip(small: String?, label: String, modifier: Modifier, onClick: () -> Unit) {
+fun DateBanner(t: Int, onToday: () -> Unit, modifier: Modifier = Modifier) {
     val c = CropLyticsTheme.colors
     Row(
-        modifier.border(1.dp, c.line, RoundedCornerShape(3.dp)).clickable(role = Role.Button, onClick = onClick).heightIn(min = 40.dp).padding(horizontal = 10.dp, vertical = 4.dp),
+        modifier.shadow(6.dp, CircleShape).clip(CircleShape).background(c.raised).padding(start = 16.dp, end = 4.dp).testTag("date-banner"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (small != null) { Text(small, style = MaterialTheme.typography.labelSmall, color = c.muted); Spacer(Modifier.width(6.dp)) }
-        Text(label, Modifier.weight(1f, fill = false), style = MaterialTheme.typography.labelLarge, color = c.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        if (small != null) Icon(Icons.Filled.KeyboardArrowDown, null, tint = c.muted, modifier = Modifier.size(18.dp))
+        Text("Showing ${Timeline.label(t)}", style = MaterialTheme.typography.labelMedium, color = c.text)
+        PillButton("Back to today", PillKind.Text, small = true, onClick = onToday)
     }
 }
 
-/** "Showing mid Jul 2022 · Back to today" when the viewing date is not today. */
-@Composable
-fun DateBanner(t: Int, onToday: () -> Unit) {
-    val c = CropLyticsTheme.colors
-    Row(Modifier.fillMaxWidth().background(c.panel2).padding(horizontal = 12.dp, vertical = 4.dp).testTag("date-banner"), verticalAlignment = Alignment.CenterVertically) {
-        Text("Showing ${Timeline.label(t)}", Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = c.text)
-        TextButton(onClick = onToday) { Text("Back to today", color = c.accent) }
-    }
-}
-
-/** The sections as text tabs at the bottom (web mob-tabs): Now, Season, Year, Compare, Print. Disabled until a field is picked. */
+/** The sections at the bottom (spec 4.11): 64 dp, the active label inside a tonal pill; disabled until a field is picked. */
 @Composable
 fun BottomTabs(selected: Tab?, enabled: Boolean, onTab: (Tab) -> Unit) {
     val c = CropLyticsTheme.colors
     Column(Modifier.fillMaxWidth().background(c.paper).navigationBarsPadding()) {
-        HorizontalDivider(color = c.line)
-        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+        Box(Modifier.fillMaxWidth().height(1.dp).background(c.line))
+        Row(Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Tab.entries.forEach { t ->
                 val on = t == selected
-                Column(
-                    Modifier.weight(1f).fillMaxHeight()
-                        .clickable(enabled = enabled, role = Role.Tab) { onTab(t) }
-                        .semantics { this.selected = on }
-                        .testTag("mtab-${t.name}"),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                val bg by animateColorAsState(if (on) c.accentContainer else Color.Transparent, motion(180), label = "tab")
+                Box(
+                    Modifier.weight(1f).heightIn(min = 48.dp).clip(CircleShape).focusRing().clickable(enabled = enabled, role = Role.Tab) { onTab(t) }
+                        .semantics { this.selected = on }.testTag("mtab-${t.name}"),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Box(Modifier.fillMaxWidth().height(3.dp).background(if (on) c.accent else c.paper))
                     Text(
-                        t.short, Modifier.padding(vertical = 12.dp), style = MaterialTheme.typography.labelLarge,
-                        color = when { !enabled -> c.muted.copy(alpha = 0.5f); on -> c.text; else -> c.muted }, maxLines = 1,
+                        t.short, Modifier.clip(CircleShape).background(bg).padding(horizontal = 12.dp, vertical = 6.dp),
+                        style = MaterialTheme.typography.labelMedium, maxLines = 1,
+                        color = when { !enabled -> c.muted.copy(alpha = 0.45f); on -> c.onAccentContainer; else -> c.text2 },
                     )
                 }
             }
         }
+    }
+}
+
+/** Pill search field (spec 4.12): sunken fill, raised with a green ring while typing. */
+@Composable
+fun SearchPill(value: String, onValue: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier) {
+    val c = CropLyticsTheme.colors
+    var focused by remember { mutableStateOf(false) }
+    Row(
+        modifier.fillMaxWidth().heightIn(min = 48.dp).clip(CircleShape).background(if (focused) c.raised else c.panel2)
+            .border(if (focused) 2.dp else 1.dp, if (focused) c.accent else c.lineSoft, CircleShape).padding(start = 16.dp, end = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Filled.Search, null, Modifier.size(18.dp), tint = c.muted)
+        Spacer(Modifier.width(10.dp))
+        Box(Modifier.weight(1f)) {
+            if (value.isEmpty()) Text(placeholder, style = MaterialTheme.typography.bodyMedium, color = c.muted, maxLines = 1)
+            BasicTextField(value, onValue, Modifier.fillMaxWidth().onFocusChanged { focused = it.isFocused }, singleLine = true,
+                textStyle = MaterialTheme.typography.bodyMedium.copy(color = c.text), cursorBrush = SolidColor(c.accent))
+        }
+        if (value.isNotEmpty()) IconDisc("Clear search", icon = Icons.Filled.Clear, ghost = true) { onValue("") }
     }
 }
 
@@ -166,18 +205,13 @@ fun FieldSwitcher(state: MainUiState, onPick: (String) -> Unit, onBC: () -> Unit
     val shown = items.filter { q.isBlank() || (it.title + it.sub).lowercase().contains(q.trim().lowercase()) }
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = c.paper) {
         Column(Modifier.padding(horizontal = 16.dp).testTag("field-menu")) {
-            OutlinedTextField(
-                q, { q = it }, Modifier.fillMaxWidth().testTag("search"), placeholder = { Text("Find a field by town, county or crop") },
-                leadingIcon = { Icon(Icons.Filled.Search, null) }, singleLine = true, shape = RoundedCornerShape(3.dp),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = c.accent, unfocusedBorderColor = c.line),
-            )
+            SearchPill(q, { q = it }, "Find a field by town, county or crop", Modifier.testTag("search"))
             LazyColumn(Modifier.fillMaxWidth().heightIn(max = 520.dp).navigationBarsPadding()) {
                 items(shown, key = { it.key }) { it ->
-                    Column(Modifier.fillMaxWidth().clickable { it.go(); onDismiss() }.background(if (it.key == state.selectedId) c.panel2 else c.paper).padding(vertical = 10.dp).testTag("switch-${it.key}")) {
+                    Column(Modifier.fillMaxWidth().padding(vertical = 1.dp).clip(RoundedCornerShape(12.dp)).background(if (it.key == state.selectedId) c.accentContainer else Color.Transparent).clickable { it.go(); onDismiss() }.padding(12.dp).testTag("switch-${it.key}")) {
                         Text(it.title, style = MaterialTheme.typography.titleSmall, color = c.text)
                         Text(it.sub, style = MaterialTheme.typography.bodySmall, color = c.muted)
                     }
-                    HorizontalDivider(color = c.lineSoft)
                 }
                 if (shown.isEmpty()) item { Text("No field matches.", Modifier.padding(16.dp), color = c.muted) }
             }
@@ -197,11 +231,12 @@ fun DateSheet(state: MainUiState, quick: List<QuickDate>, years: List<Int>, onPi
                 quick.forEach { q ->
                     val on = state.t == q.t
                     Column(
-                        Modifier.border(1.dp, if (on) c.accent else c.line, RoundedCornerShape(3.dp)).background(if (on) c.accent else c.paper, RoundedCornerShape(3.dp))
-                            .clickable { onPick(q.t); onDismiss() }.padding(horizontal = 12.dp, vertical = 6.dp),
+                        Modifier.clip(RoundedCornerShape(16.dp)).background(if (on) c.accentContainer else Color.Transparent)
+                            .then(if (on) Modifier else Modifier.border(1.dp, c.outline, RoundedCornerShape(16.dp)))
+                            .focusRing(RoundedCornerShape(16.dp)).clickable { onPick(q.t); onDismiss() }.padding(horizontal = 14.dp, vertical = 8.dp),
                     ) {
-                        Text(q.label, style = MaterialTheme.typography.labelLarge, color = if (on) c.onAccent else c.text)
-                        Text(q.sub, style = MaterialTheme.typography.labelSmall, color = if (on) c.onAccent else c.muted)
+                        Text(q.label, style = MaterialTheme.typography.labelMedium, color = if (on) c.onAccentContainer else c.text)
+                        Text(q.sub, style = MaterialTheme.typography.labelSmall, color = if (on) c.onAccentContainer else c.muted)
                     }
                 }
             }
@@ -213,17 +248,17 @@ fun DateSheet(state: MainUiState, quick: List<QuickDate>, years: List<Int>, onPi
                             val tt = Timeline.tOf(y, k * 3 + 1); val future = tt > state.todayT
                             val on = Timeline.yearOf(state.t) == y && Timeline.stepOf(state.t) / 3 == k
                             Text(
-                                m, Modifier.border(1.dp, if (on) c.accent else c.lineSoft, RoundedCornerShape(2.dp)).background(if (on) c.accent else c.paper)
-                                    .clickable(enabled = !future) { onPick(tt); onDismiss() }.padding(horizontal = 7.dp, vertical = 6.dp),
-                                style = MaterialTheme.typography.labelMedium, color = if (future) c.muted.copy(alpha = 0.4f) else if (on) c.onAccent else c.text,
+                                m, Modifier.clip(CircleShape).background(if (on) c.accentContainer else Color.Transparent)
+                                    .clickable(enabled = !future) { onPick(tt); onDismiss() }.heightIn(min = 36.dp).padding(horizontal = 9.dp, vertical = 8.dp),
+                                style = MaterialTheme.typography.labelMedium, color = if (future) c.muted.copy(alpha = 0.4f) else if (on) c.onAccentContainer else c.text,
                             )
                         }
                     }
                 }
             }
-            Row {
-                TextButton(onClick = onEarlier) { Text(if (state.showEarlier) "Hide earlier years" else "Show earlier years (2016–2022)", color = c.accent) }
-                if (!state.isToday) TextButton(onClick = { onPick(state.todayT); onDismiss() }) { Text("Back to today", color = c.accent) }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
+                PillButton(if (state.showEarlier) "Hide earlier years" else "Show earlier years (2016–2022)", PillKind.Outline, small = true, onClick = onEarlier)
+                if (!state.isToday) PillButton("Back to today", PillKind.Outline, small = true) { onPick(state.todayT); onDismiss() }
             }
             Spacer(Modifier.height(16.dp))
         }
@@ -283,7 +318,7 @@ fun BCCard(onClose: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Hatch(Modifier.size(11.dp), c.warn); Spacer(Modifier.width(6.dp))
             Text("Out of scope for now", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium, color = c.warn)
-            TextButton(onClick = onClose) { Text("Close", color = c.accent) }
+            IconDisc("Close", onClick = onClose)
         }
         Text(BC.TITLE, style = MaterialTheme.typography.titleLarge, color = c.text)
         Text(BC.INTRO, style = MaterialTheme.typography.bodyMedium, color = c.text2)
@@ -317,24 +352,11 @@ fun What(g: Gloss, api: Map<String, Pair<String, String>>) {
     var open by remember { mutableStateOf(false) }
     val (term, text) = api[g.apiKey] ?: (g.term to g.text)
     Column {
-        Text(
-            if (open) "Close" else "What’s this?",
-            Modifier.clickable(role = Role.Button) { open = !open }.padding(vertical = 6.dp),
-            style = MaterialTheme.typography.labelMedium.copy(textDecoration = TextDecoration.Underline), color = c.accent,
-        )
-        if (open) Text("$term. $text", Modifier.background(c.panel2).padding(8.dp), style = MaterialTheme.typography.bodySmall, color = c.text)
+        PillButton(if (open) "Close" else "What’s this?", PillKind.Text, small = true, modifier = Modifier.offset(x = (-12).dp)) { open = !open }
+        DetailReveal(open) { Text("$term. $text", Modifier.clip(RoundedCornerShape(12.dp)).background(c.panel2).padding(12.dp), style = MaterialTheme.typography.bodySmall, color = c.text) }
     }
 }
 
-/** The one "More detail" switch for the whole app (Detail.tsx). */
+/** The one "More detail" switch for the whole app (Detail.tsx), drawn as the spec's disclosure row. */
 @Composable
-fun MoreDetailButton(on: Boolean, what: String, onToggle: () -> Unit) {
-    val c = CropLyticsTheme.colors
-    Column(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).border(1.dp, if (on) c.accent else c.line, RoundedCornerShape(3.dp))
-            .clickable(role = Role.Button, onClickLabel = if (on) "Show less" else "Show more") { onToggle() }.padding(12.dp).testTag("more-detail"),
-    ) {
-        Text(if (on) "Less detail" else "More detail", style = MaterialTheme.typography.labelLarge, color = c.accent)
-        Text(if (on) "Back to the short version" else what, style = MaterialTheme.typography.bodySmall, color = c.muted)
-    }
-}
+fun MoreDetailButton(on: Boolean, what: String, onToggle: () -> Unit) = MoreDetailRow(on, what, Modifier.testTag("more-detail"), onToggle)

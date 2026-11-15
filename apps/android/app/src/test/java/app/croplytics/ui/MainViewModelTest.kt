@@ -61,7 +61,9 @@ class MainViewModelTest {
         repo.scoreResult = { repo.ready(Fixtures.scored3.items) }
         advanceUntilIdle()
         vm.select(id); advanceUntilIdle()
-        assertEquals(MapCommand.FlyToField(id, MapCommand.FlyToField.Mode.Card), cmds.last())
+        val fly = cmds.last() as MapCommand.FlyToField
+        assertEquals(MapCommand.FlyToField.Mode.Card, fly.mode)
+        assertEquals(39.14, fly.lat, 0.01) // the command carries the field's centre
         val f = vm.field.value!!
         assertEquals(id, f.item.id.id)
         assertEquals(5.0, f.limit!!, 1e-9)

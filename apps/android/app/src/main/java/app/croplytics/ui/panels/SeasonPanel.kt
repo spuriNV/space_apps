@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -39,7 +40,12 @@ fun LazyListScope.seasonPanel(state: MainUiState, data: FieldData, glossary: Map
         data.item.loc, o, data.nasaNow.dataOrNull, data.regional.dataOrNull, data.strategies.dataOrNull.orEmpty(), data.calendar.dataOrNull?.calendar,
         data.daily.dataOrNull, data.limit ?: 3.0, data.exampleLimit, state.todayT, notReady,
     )
-    item(key = "cs-head") { HeadBand("Coming season: what’s likely this winter and next year", "${v.headline}.${v.outlookTag?.let { " $it" } ?: ""}", Modifier.testTag("coming-season")) }
+    item(key = "cs-head") {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).testTag("coming-season")) {
+            Text("Coming season: what’s likely this winter and next year", style = MaterialTheme.typography.headlineSmall, color = CropLyticsTheme.colors.text, modifier = Modifier.semantics { heading() })
+            Text("${v.headline}.${v.outlookTag?.let { " $it" } ?: ""}", style = MaterialTheme.typography.bodyMedium, color = CropLyticsTheme.colors.text2)
+        }
+    }
     item(key = "cs-sum") {
         Column(Modifier.testTag("season-summary")) {
             listOf("Winter rain" to v.winterRain, "Water supply" to v.supply, "Next season, today’s rotation" to v.nextNeed).forEachIndexed { i, (h, t) ->
@@ -98,14 +104,13 @@ fun LazyListScope.seasonPanel(state: MainUiState, data: FieldData, glossary: Map
             Cite("Rotation model driven by NASA POWER sun, wind and humidity, weather 2015–2025. Safflower and wheat are upper bounds (stored soil water not counted).")
         }
     }
-    item(key = "cs-compare") { ActionRow("Compare rotations", "What each option would need, against your limit", primary = true) { a.openTab(app.croplytics.ui.app.Tab.Compare) } }
+    item(key = "cs-compare") { app.croplytics.ui.components.PillButton("Compare rotations", app.croplytics.ui.components.PillKind.Primary, Modifier.fillMaxWidth().padding(16.dp)) { a.openTab(app.croplytics.ui.app.Tab.Compare) } }
 }
 
 @Composable
 internal fun Section(title: String, content: @Composable () -> Unit) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        HorizontalDivider(color = CropLyticsTheme.colors.text, thickness = 2.dp)
-        Text(title, style = MaterialTheme.typography.titleMedium, color = CropLyticsTheme.colors.text, modifier = Modifier.semantics { heading() })
+    Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 24.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(title, style = MaterialTheme.typography.titleLarge, color = CropLyticsTheme.colors.text, modifier = Modifier.semantics { heading() })
         content()
     }
 }
@@ -120,7 +125,7 @@ internal fun Section(title: String, content: @Composable () -> Unit) {
 internal fun Table(head: List<String>, rows: List<List<String>>, warnCells: List<List<Boolean>> = emptyList()) {
     val c = CropLyticsTheme.colors
     Column(Modifier.fillMaxWidth()) {
-        Row(Modifier.fillMaxWidth().background(c.panel2).padding(vertical = 4.dp)) { head.forEachIndexed { i, h -> Text(h, Modifier.weight(if (i == 0) 1.6f else 1f).padding(horizontal = 3.dp), style = MaterialTheme.typography.labelSmall, color = c.muted) } }
+        Row(Modifier.fillMaxWidth().clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp)).background(c.panel2).padding(vertical = 6.dp)) { head.forEachIndexed { i, h -> Text(h, Modifier.weight(if (i == 0) 1.6f else 1f).padding(horizontal = 3.dp), style = MaterialTheme.typography.labelSmall, color = c.muted) } }
         rows.forEachIndexed { ri, r ->
             Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                 r.forEachIndexed { i, v ->

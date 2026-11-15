@@ -30,6 +30,9 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.foundation.layout.statusBars
+import app.croplytics.ui.panels.FieldHeaderBar
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,7 +68,6 @@ import app.croplytics.ui.map.UnderFieldHud
 import app.croplytics.ui.panels.CompareActions
 import app.croplytics.ui.panels.PanelActions
 import app.croplytics.ui.panels.comparePanel
-import app.croplytics.ui.panels.fieldHeader
 import app.croplytics.ui.panels.fieldNowPanel
 import app.croplytics.ui.panels.printPanel
 import app.croplytics.ui.panels.seasonPanel
@@ -117,24 +119,32 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
         BoxWithConstraints(Modifier.padding(inner).fillMaxSize()) {
             val screenH = maxHeight
             val layoutHpx = constraints.maxHeight
-            val peek = if (snap == Snap.Peek) 120.dp else screenH * 0.46f
+            // spec 5.2 snaps: peek 128 dp, half 52%, full stops under the top bar
+            val peek = if (snap == Snap.Peek) 128.dp else screenH * 0.52f
+            val topBarH = 64.dp + with(density) { WindowInsets.statusBars.getTop(this).toDp() }
             BottomSheetScaffold(
                 scaffoldState = scaffold,
                 sheetPeekHeight = peek,
                 sheetContainerColor = c.paper,
-                sheetShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp),
-                sheetShadowElevation = 6.dp,
+                sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                sheetShadowElevation = 8.dp,
                 sheetDragHandle = {
                     Box(
                         Modifier.fillMaxWidth().clickable(role = Role.Button, onClickLabel = "Resize the panel") {
                             snap = when (snap) { Snap.Peek -> Snap.Half; Snap.Half -> Snap.Full; Snap.Full -> Snap.Peek }
-                        }.padding(vertical = 10.dp).semantics { contentDescription = "Resize the field panel" }.testTag("grab"),
+                        }.padding(top = 12.dp, bottom = 12.dp).semantics { contentDescription = "Resize the field panel" }.testTag("grab"),
                         contentAlignment = Alignment.Center,
-                    ) { Box(Modifier.size(width = 40.dp, height = 4.dp).background(c.line, RoundedCornerShape(2.dp))) }
+                    ) { Box(Modifier.size(width = 36.dp, height = 4.dp).background(c.outline.copy(alpha = 0.6f), RoundedCornerShape(2.dp))) }
                 },
                 sheetContent = {
-                    LazyColumn(Modifier.fillMaxWidth().height(screenH - 40.dp).testTag("sheet"), state = listState, contentPadding = PaddingValues(bottom = 24.dp)) {
-                        sheetContent(state, data, compare, briefPick, glossary, vm, onSources = { sourcesOpen = true })
+                    val stuck by remember { derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 8 } }
+                    Column(Modifier.fillMaxWidth().height(screenH - topBarH - 8.dp)) {
+                        if (data != null && state.selectedId != null && state.panelOpen && !state.bcOpen) {
+                            FieldHeaderBar(data, stuck, showActions = state.tab == Tab.Now && snap != Snap.Peek, onClose = vm::closePanel, openTab = vm::openTab)
+                        }
+                        LazyColumn(Modifier.fillMaxWidth().weight(1f).testTag("sheet"), state = listState, contentPadding = PaddingValues(bottom = 24.dp)) {
+                            sheetContent(state, data, compare, briefPick, glossary, vm, onSources = { sourcesOpen = true })
+                        }
                     }
                 },
             ) { _ ->
@@ -151,9 +161,9 @@ fun MainScreen(deepLink: Pair<String, Int>? = null, vm: MainViewModel = hiltView
                     }
                     Column(Modifier.fillMaxWidth().align(Alignment.TopCenter)) {
                         TopBar(state, vm::goHome, { switchOpen = true }, { dateOpen = true }, { vm.setLayersOpen(true) })
-                        if (!state.isToday) DateBanner(state.t, vm::backToToday)
+                        if (!state.isToday) DateBanner(state.t, vm::backToToday, Modifier.align(Alignment.CenterHorizontally).padding(top = 10.dp))
                         if (state.drilled) UnderFieldHud(Modifier.padding(start = 12.dp, top = 8.dp))
-                        if (sel != null && !state.panelOpen) TextButton(onClick = vm::reopenPanel, modifier = Modifier.padding(start = 8.dp).background(c.paper, RoundedCornerShape(3.dp))) { Text(sel.id.name, color = c.accent) }
+                        if (sel != null && !state.panelOpen) app.croplytics.ui.components.PillButton(sel.id.name, app.croplytics.ui.components.PillKind.Tonal, Modifier.padding(start = 12.dp, top = 10.dp), small = true, onClick = vm::reopenPanel)
                     }
                     MapControls(
                         state.camera.bearing, state.camera.pitch,
@@ -198,7 +208,6 @@ private fun androidx.compose.foundation.lazy.LazyListScope.sheetContent(
     val a = PanelActions(vm::setT, vm::backToToday, vm::toggleDetail, vm::drill, onSources, vm::openTab, vm::closePanel)
     when (state.tab) {
         Tab.Now -> {
-            fieldHeader(data, vm::closePanel)
             val cal = data.calendar.dataOrNull?.calendar
             val loading = data.parts.any { it is LoadState.Loading || it is LoadState.Waking }
             val view = FieldNowLogic.build(

@@ -42,6 +42,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
@@ -77,23 +79,21 @@ fun LazyListScope.printPanel(state: MainUiState, data: FieldData, pick: String?,
         val context = LocalContext.current
         val scope = rememberCoroutineScope()
         Column(Modifier.fillMaxWidth().padding(16.dp).testTag("brief"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Summary for your adviser", style = MaterialTheme.typography.titleLarge, color = c.text, modifier = Modifier.semantics { heading() })
+            Text("Summary for your adviser", style = MaterialTheme.typography.headlineSmall, color = c.text, modifier = Modifier.semantics { heading() })
             Text("One page, Letter size. Sentences are fixed templates filled with the model’s numbers, each with a source.", style = MaterialTheme.typography.bodySmall, color = c.muted)
             Text("Option to print", style = MaterialTheme.typography.labelMedium, color = c.text)
             Row(Modifier.horizontalScroll(rememberScrollState()).testTag("brief-pick"), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 strategies.forEach { s ->
-                    val on = CompareLogic.shortName(s) == brief.option
-                    Text(CompareLogic.shortName(s) + if (s.isBaseline) " (today)" else "",
-                        Modifier.border(1.dp, if (on) c.accent else c.line, RoundedCornerShape(3.dp)).background(if (on) c.accent else c.paper).clickable { onPick(s.id) }
-                            .semantics { selected = on }.heightIn(min = 40.dp).padding(horizontal = 10.dp, vertical = 10.dp), style = MaterialTheme.typography.labelMedium, color = if (on) c.onAccent else c.text)
+                    app.croplytics.ui.components.FilterPill(CompareLogic.shortName(s) + if (s.isBaseline) " (today)" else "", CompareLogic.shortName(s) == brief.option) { onPick(s.id) }
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button({ scope.launch { val f = withContext(Dispatchers.IO) { BriefPdf.write(context, brief) }; context.startActivity(BriefPdf.share(context, f, brief.name)) } },
-                    Modifier.weight(1f).heightIn(min = 48.dp).testTag("share-pdf"), shape = RoundedCornerShape(3.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = c.accent, contentColor = c.onAccent)) { Text("Share as PDF") }
-                OutlinedButton({ scope.launch { val f = withContext(Dispatchers.IO) { BriefPdf.write(context, brief) }; BriefPdf.print(context, f, brief.name) } },
-                    Modifier.weight(1f).heightIn(min = 48.dp), shape = RoundedCornerShape(3.dp)) { Text("Print") }
+                app.croplytics.ui.components.PillButton("Share as PDF", app.croplytics.ui.components.PillKind.Primary, Modifier.weight(1f).testTag("share-pdf"), icon = androidx.compose.material.icons.Icons.Filled.Share) {
+                    scope.launch { val f = withContext(Dispatchers.IO) { BriefPdf.write(context, brief) }; context.startActivity(BriefPdf.share(context, f, brief.name)) }
+                }
+                app.croplytics.ui.components.PillButton("Print", app.croplytics.ui.components.PillKind.Outline, Modifier.weight(1f), icon = androidx.compose.material.icons.Icons.Filled.Print) {
+                    scope.launch { val f = withContext(Dispatchers.IO) { BriefPdf.write(context, brief) }; BriefPdf.print(context, f, brief.name) }
+                }
             }
         }
     }
