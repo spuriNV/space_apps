@@ -435,6 +435,9 @@ const SHORT: Record<string, string> = { car0_rice_winterflood: 'Rice + winter fl
 const STRIP_YEAR: Record<string, number> = { caf3_alfalfa_break: 3 }; // show the break year
 const blank = (unit: string, note: string, src?: Source): SourcedNumber => ({ value: 0, low: 0, high: 0, unit, method: 'lookup', note, source: src, blocked: true });
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+/** Outside California the engine's stand-in rotation names say 'alfalfa'; say 'forage' there (the crop is not known to be alfalfa). */
+const neutral = (x: any): any => typeof x === 'string' ? x.replace(/\bAlfalfa hay\b/g, 'Forage hay').replace(/\balfalfa hay\b/g, 'forage hay').replace(/\bAlfalfa\b/g, 'Forage').replace(/\balfalfa\b/g, 'forage') : Array.isArray(x) ? x.map(neutral) : x && typeof x === 'object' ? Object.fromEntries(Object.entries(x).map(([k, v]) => [k, k === 'crop_id' || k === 'id' ? v : neutral(v)])) : x;
+const normStrategyFor = (loc: Location) => (s: any) => normStrategy(loc.region === 'other' ? neutral(s) : s);
 function normStrategy(s: any): RotationStrategy {
   const year = STRIP_YEAR[s.id] ?? 1;
   const strip = monthStrip(s.calendar, year);
@@ -668,7 +671,7 @@ async function getFieldNet(loc: Location, live: boolean, onLate?: (b: FieldBundl
     if (isHls) used.hls = 'live';
   }
   if (mlCal?.years) prov.ml = P('ml', 'Machine-learning calendar (comparison)', orig(mlCal), t('api.mlDetail', { model: ml?.model ?? tx('random forest') }));
-  if (strat?.items?.length) { strategies = strat.items.map(normStrategy); prov.strategies = P('strategies', 'Rotations, water need and scores', orig(strat), lite ? 'rotation model, NASA POWER weather for this field' : 'rotation model, NASA POWER weather'); used.power = 'live'; }
+  if (strat?.items?.length) { strategies = strat.items.map(normStrategyFor(loc)); prov.strategies = P('strategies', 'Rotations, water need and scores', orig(strat), lite ? 'rotation model, NASA POWER weather for this field' : 'rotation model, NASA POWER weather'); used.power = 'live'; }
   else if (lite) prov.strategies = P('strategies', 'Rotations, water need and scores', 'mock', 'still loading or unavailable');
   let reg = reg0;
   // GET .../nasa_series: SMAP root-zone percentile when cached; otherwise NASA's GRACE-FO data-assimilation root-zone percentile
@@ -691,7 +694,7 @@ async function getFieldNet(loc: Location, live: boolean, onLate?: (b: FieldBundl
   if (lite) {
     stratP.then((st) => {
       if (!st?.items?.length) return;
-      const strategies2 = st.items.map(normStrategy);
+      const strategies2 = st.items.map(normStrategyFor(loc));
       const p2 = { ...prov, strategies: P('strategies', 'Rotations, water need and scores', orig(st), 'rotation model, NASA POWER weather for this field') };
       used.power = 'live';
       setTimeout(() => onLate?.({ ...first, strategies: strategies2, prov: p2 }), 0);

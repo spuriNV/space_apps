@@ -514,8 +514,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     if (p.layersOn.grace) {
       const b = 45 * S, col = grace == null ? '#5d636e' : ramp(GRACE_RAMP, grace);
       set('slab-grace', [padded(loc, 230 * S, { b, h: b + (14 + (grace ?? 4) * 0.42) * S, col })]);
-      info.push({ key: 'grace', alt: b + 16 * S, pad: 230 * S, color: '#ff7eb6', tag: t(p.regionalLive.grace ? 'map.tagGrace' : 'map.tagGraceEx'), title: t('map.graceTitle'), value: grace == null ? t('map.gap') : t('map.pctl', { w: grace >= 67 ? t('map.more') : grace > 33 ? t('map.normal') : t('map.less'), n: ordinal(Math.round(grace)) }),
-        note: t('map.basinWide') });
+      info.push({ key: 'grace', alt: b + 16 * S, pad: 230 * S, color: '#ff7eb6', tag: t(p.regionalLive.grace ? 'map.tagGrace' : 'map.tagGraceEx'), title: t(loc.region === 'other' ? 'map.graceTitleRegional' : 'map.graceTitle'), value: grace == null ? t('map.gap') : t('map.pctl', { w: grace >= 67 ? t('map.more') : grace > 33 ? t('map.normal') : t('map.less'), n: ordinal(Math.round(grace)) }),
+        note: t(loc.region === 'other' ? 'map.regionalWide' : 'map.basinWide') });
     } else set('slab-grace', []);
     // corner posts tie the slabs together
     const bb = bbox(loc), m = mPerDeg(loc.centroid.lat), w = 5 * S;

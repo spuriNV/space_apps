@@ -90,13 +90,13 @@ async def bc_stage1(c, lon, lat, today):
     names = ("rd", "reserve", "parcel", "eccc", "salmon", "place")
     res = await asyncio.gather(BC.regional_district(c, lon, lat), BC.reserve_at(c, lon, lat), BC.parcel_at(c, lon, lat),
                                BC.eccc(c, lon, lat, dt.date.fromisoformat(today)), BC.salmon_watershed(c, lon, lat),
-                               BC.canada_place(c, lon, lat), return_exceptions=True)
+                               asyncio.wait_for(BC.canada_place(c, lon, lat), 6), return_exceptions=True)  # place is optional in BC: never let it eat the stage deadline
     return dict(zip(names, res))
 
 
 async def can_stage1(c, lon, lat, today):
     """Canada outside BC: ECCC stations and the nearest named place / province (no BC WFS layers)."""
-    res = await asyncio.gather(BC.eccc(c, lon, lat, dt.date.fromisoformat(today)), BC.canada_place(c, lon, lat), return_exceptions=True)
+    res = await asyncio.gather(BC.eccc(c, lon, lat, dt.date.fromisoformat(today)), asyncio.wait_for(BC.canada_place(c, lon, lat), 15), return_exceptions=True)
     return {"rd": None, "eccc": res[0], "place": res[1]}
 
 

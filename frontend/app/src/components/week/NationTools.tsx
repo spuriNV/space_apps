@@ -152,7 +152,7 @@ function Tools({ loc, s }: { loc: Location; s: Summary }) {
   return (
     <div className="nt-cards">
       <Drought base={base} cutoff={cutoff} setCutoff={setCutoff} />
-      {bc ? <BcWater id={loc.id} /> : gap ? <Card title="Groundwater" id="groundwater"><p className="gap-line">Not available here. {gap}</p></Card> : <Groundwater base={base} />}
+      {bc ? <BcWater id={loc.id} /> : loc.region === 'other' ? <Card title="Groundwater" id="groundwater"><p className="gap-line">{t('nt.gwCaOnly')}</p></Card> : gap ? <Card title="Groundwater" id="groundwater"><p className="gap-line">Not available here. {gap}</p></Card> : <Groundwater base={base} />}
       <LandSeason base={base} />
       {!gap && <FundingCard base={base} id={loc.id} jur={bc || s.location?.jurisdiction === 'BC' ? 'BC' : 'CA'} cutoff={cutoff} />}
     </div>
