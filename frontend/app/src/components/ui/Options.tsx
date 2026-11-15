@@ -12,9 +12,10 @@ import { useEffect, useState } from 'react';
 import { AboutField, StepLine, Workflow, CROP_COL, EventLog, acres, coords, county, cropName, fieldCode, fieldName, latestCrop, place, type Step } from './shared';
 import { ThisWeek } from '../week/ThisWeek';
 import { Answer, KeyFacts, StepShell, type Tone } from './StepShell';
+import { useDetail } from './Detail';
 import { FirstNationsCard } from './FirstNations';
 import { SalmonPanel } from '../salmon/SalmonPanel';
-import { NationTools } from '../week/NationTools';
+import { NationChip, NationTools, ReservePill } from '../week/NationTools';
 import { CatalogGroup } from '../week/CatalogGroup';
 import type { Catalog, CatalogItem } from '../week/catalog';
 import { FieldNow, LastSeasons, latestClearT, rainNow, stage, whenT, type LoadState } from './FieldNow';
@@ -39,6 +40,7 @@ export interface FieldPanelProps {
 export function FieldPanel(p: FieldPanelProps) {
   const { loc } = p;
   const thumbs = useThumbs();
+  const detail = useDetail();
   const [src, setSrc] = useState(false);
   useEffect(() => { setSrc(false); }, [loc.id]);
   const now = latestCrop(loc);
@@ -54,12 +56,13 @@ export function FieldPanel(p: FieldPanelProps) {
       title={isToday ? 'Does today’s plan fit your water?' : `Your field in ${whenT(p.t)}`}
       top={<>
         {loc.mine ? <MineHead loc={loc} onAction={(a) => p.onMine?.(a)} /> : sp && <p className="spot-label" data-testid="spot-label"><i className={`live-dot ${sp.state}`} />Tapped spot · live data</p>}
+        {!loc.mine && (isBC(loc) || sp) && <ReservePill loc={loc} />}
         {loading && <p className="spot-progress" role="status" data-testid="spot-progress">Reading weather, soil and crop maps…</p>}
         {loc.mine && <MineNotices loc={loc} onRetry={p.onSpotRetry} onFix={() => p.onMine?.('redraw')} />}
         {sp?.state === 'error' && !loc.mine && <div className="notice spot-notice" role="alert" data-testid="spot-error"><span>{sp.error}</span>{p.onSpotRetry && <button className="btn btn-outline btn-sm" onClick={p.onSpotRetry}>Try again</button>}</div>}
         {sp?.state === 'ready' && sp.cropland === false && <div className="notice spot-notice" data-testid="spot-not-farm"><b>This may not be farmland.</b> The {loc.region === 'bc' ? 'AAFC crop inventory' : 'USDA crop map'} shows little or no cropping here, so the rotations below are a stand-in.</div>}
       </>}
-      answer={isToday ? <WaterAnswer strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} state={p.dataState} /> : <Answer headline={facts.stage ?? 'Loading…'} sub="Pick Today in the Viewing control to check your water." loading={!facts.stage && p.dataState === 'loading'} />}
+      answer={<>{isToday ? <WaterAnswer strategies={p.strategies} allocation={p.allocation} exampleLimit={p.exampleLimit} state={p.dataState} /> : <Answer headline={facts.stage ?? 'Loading…'} sub="Pick Today in the Viewing control to check your water." loading={!facts.stage && p.dataState === 'loading'} />}<NationChip loc={loc} openDetail={() => detail.set(true)} /></>}
       detailWhat="Meters, this week, soil, NASA sources, 3D"
       detail={<>
         <h2 className="fp-h">{isToday ? 'Your field now, in numbers' : 'Your field in ' + whenT(p.t)}</h2>
@@ -129,7 +132,7 @@ function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategi
  *  "British Columbia" heading (and chip); without one, BC is a quiet "not set up yet" row at the bottom. */
 /** Torres-Martinez Reservation farm field (check_api): opens Nation tools with tribal land status. */
 export const NATION_EXAMPLE = { lat: 33.51, lon: -116.12, label: 'Nation tools example', sub: 'Torres-Martinez Reservation farm field · tribal land · live tap' };
-export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onNationExample?: () => void }) {
+export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onNationsExample?: () => void; onNationExample?: () => void }) {
   const thumbs = useThumbs();
   const [q, setQ] = useState('');
   const [fam, setFam] = useState<string | null>(null);
@@ -146,6 +149,13 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
         {p.onClose && <button className="icon-btn" onClick={p.onClose} title="Close" aria-label="Close"><Icon name="close" size={20} /></button>}
       </header>
       <StepLine id="pick" purpose="Tap a field below, or its pin on the map. Everything after this is about that field." />
+      {p.onNationsExample && p.locations.some(isBC) && (
+        <div className="nx-card" data-testid="nations-example-card">
+          <h2>First Nations example: Salmon River, BC</h2>
+          <p>See Nation tools on a real field: nearby Nations, drought rotation, salmon, funding and a grant-ready report</p>
+          <button className="btn btn-primary" onClick={p.onNationsExample} data-testid="nations-example">Open the example</button>
+        </div>
+      )}
       {p.locations.length > 1 && (
         <div className="pk-filter">
           <label className="pk-search"><Icon name="search" size={16} /><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by town, county or crop" aria-label="Search fields" data-testid="pk-search" /></label>

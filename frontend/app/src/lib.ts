@@ -58,7 +58,8 @@ export const GRACE_RAMP: [number, string][] = [[0, '#8e2148'], [30, '#c9688a'], 
 
 /** Last 10-day step with a clear satellite reading (the calendar ends where the processed imagery ends). */
 export function lastDataT(cal: Calendar) {
-  for (let t = cal.years.length * 36 - 1; t >= 0; t--) { const y = cal.years[Math.floor(t / 36)]; if (y && y.rule[t % 36] && y.rule[t % 36] !== 'u') return t; }
+  const yrs = cal?.years ?? [];
+  for (let t = yrs.length * 36 - 1; t >= 0; t--) { const y = yrs[Math.floor(t / 36)]; if (y && y.rule[t % 36] && y.rule[t % 36] !== 'u') return t; }
   return 0;
 }
 /** The date the satellite answers come from: the timeline date, or the latest reading if the timeline is past it. */
@@ -73,7 +74,7 @@ export function latestAt(vals: (number | null)[], t: number, maxBack = 12): { v:
 
 export interface FieldState { cls: CoverClass; ndvi: number; et: number; disagree: boolean; ruleCls: CoverClass; mlCls: CoverClass }
 export function fieldState(cal: Calendar, t: number, detector: 'rule' | 'ml'): FieldState {
-  const y = cal.years[Math.floor(t / 36)], d = t % 36;
+  const y = cal?.years?.[Math.floor(t / 36)], d = t % 36;
   if (!y) return { cls: 'u', ndvi: 0, et: 0, disagree: false, ruleCls: 'u', mlCls: 'u' };
   const ruleCls = y.rule[d] as CoverClass, mlCls = y.ml[d] as CoverClass;
   return { cls: detector === 'rule' ? ruleCls : mlCls, ndvi: y.ndvi[d], et: y.et_mm_day[d], disagree: ruleCls !== mlCls, ruleCls, mlCls };

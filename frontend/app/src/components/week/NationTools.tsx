@@ -52,6 +52,40 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const LAND: Record<string, string> = { reserve: 'On reserve land', trust: 'On trust land', fee: 'On fee land within a reservation', private: 'Not on reserve or trust land', unknown: 'Land status not known', first_nations_reserve: 'On reserve land', tribal_land: 'On tribal land' };
 const rotShort = (n: string) => n.replace(' (current)', '');
 
+/** Open the Nation tools (waiting for them to load), scroll them into view and pulse them softly (not under reduced motion). */
+export function focusNationTools(tries = 0) {
+  const sec = document.querySelector<HTMLElement>('[data-testid="nation-tools"]');
+  const tg = sec?.querySelector<HTMLButtonElement>('[data-testid="nation-toggle"]');
+  if ((!sec || !tg) && tries < 60) { setTimeout(() => focusNationTools(tries + 1), 200); return; }
+  if (!sec) return;
+  if (tg && tg.getAttribute('aria-expanded') !== 'true') tg.click();
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  sec.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
+  if (!calm) { sec.classList.remove('nt-pulse'); void sec.offsetWidth; sec.classList.add('nt-pulse'); setTimeout(() => sec.classList.remove('nt-pulse'), 1300); }
+}
+
+/** Step 2, under the answer card: the nearest reserve at a glance, one tap to the Nation tools. */
+export function NationChip({ loc, openDetail }: { loc: Location; openDetail: () => void }) {
+  const f = loc.first_nations;
+  if (!f || loc.mine) return null;
+  const name = f.nearest_reserve.toLowerCase().replace(/(^|[\s(])(\p{L})/gu, (_m, a: string, b: string) => a + b.toUpperCase());
+  return (
+    <button className="nt-chip" data-testid="nation-chip" onClick={() => { openDetail(); setTimeout(() => focusNationTools(), 150); }}>
+      <i />{f.field_on_reserve ? 'On reserve land' : `Nearest reserve: ${name}, ${f.nearest_km} km`}<b>Nation tools</b>
+    </button>
+  );
+}
+
+/** Top of the field panel: shown only when the place is on reserve or trust land. */
+export function ReservePill({ loc }: { loc: Location }) {
+  const st = useRoute<Summary>(loc.spot && loc.spot.state !== 'ready' ? null : `/locations/${loc.id}/nation`, 40000);
+  if (st.kind !== 'ok') return null;
+  const s = st.data;
+  if (!['reserve', 'trust', 'first_nations_reserve', 'tribal_land'].includes(s.land_status.value)) return null;
+  const nation = s.land_status.nation ?? s.nearest_nations.find((n) => n.inside)?.nation ?? s.nearest_nations[0]?.nation;
+  return <p className="res-pill" data-testid="reserve-pill" role="status"><i />On reserve land{nation ? `: ${nation}` : ''}</p>;
+}
+
 export function NationTools({ loc }: { loc: Location }) {
   const sp = loc.spot;
   const [open, setOpen] = useState(false);

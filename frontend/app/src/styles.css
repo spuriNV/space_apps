@@ -1834,3 +1834,22 @@ input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-of
 .rain-bar { display: flex; height: 10px; } .rain-bar i { flex: 1; }
 .rain-ticks { display: flex; justify-content: space-between; font-size: var(--fs-fine); }
 .rain-box small { font-size: var(--fs-fine); color: var(--muted); }
+
+/* First Nations example card (step 1), reserve pill (step 2), reserve map layer chip */
+.nx-card { margin: var(--s-3) var(--s-4) var(--s-2); padding: var(--s-4); background: var(--accent-container); border: 1px solid var(--accent-outline); border-radius: var(--r-md); display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-2); }
+.nx-card h2 { font-family: var(--font-head); font-weight: var(--head-weight); font-size: var(--fs-head); color: var(--on-accent-container); margin: 0; }
+.nx-card p { margin: 0; color: var(--on-accent-container); font-size: var(--fs-small); }
+.nx-card .btn { border-radius: var(--r-full); margin-top: var(--s-1); }
+.res-pill { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 var(--s-3); padding: 6px 14px; border-radius: var(--r-full); background: #f6e4d6; color: #6e2f0e; border: 1px solid #b4521f; font-weight: 600; font-size: var(--fs-small); }
+.res-pill i { width: 12px; height: 12px; border-radius: 3px; background: rgba(180, 82, 31, 0.3); border: 2px solid #b4521f; }
+button.res-legend { pointer-events: auto; cursor: pointer; text-align: left; border-radius: var(--r-md); border-color: var(--outline); font-family: inherit; }
+button.res-legend i { border-top: 0; width: 18px; height: 14px; border-radius: 3px; background: rgba(180, 82, 31, 0.25); border: 2.5px solid #b4521f; }
+button.res-legend:not(.on) { opacity: 0.85; } button.res-legend:not(.on) i { background: transparent; border-color: var(--muted); }
+.res-tag { border-radius: 2px; font-weight: 600; opacity: 1; }
+.nt.nt-pulse { animation: nt-pulse 1.2s ease-out 1; border-radius: var(--r-md); }
+@keyframes nt-pulse { 0% { background: var(--accent-container); box-shadow: 0 0 0 8px var(--accent-container); } 100% { background: transparent; box-shadow: 0 0 0 8px transparent; } }
+@media (prefers-reduced-motion: reduce) { .nt.nt-pulse { animation: none; } }
+.nt-chip { display: flex; align-items: center; gap: 8px; width: 100%; margin: var(--s-3) 0 0; padding: 8px 14px; min-height: 40px; border-radius: var(--r-full); background: #f6e4d6; color: #6e2f0e; border: 1px solid #b4521f; font-size: var(--fs-small); text-align: left; cursor: pointer; }
+.nt-chip i { flex: none; width: 12px; height: 12px; border-radius: 3px; background: rgba(180, 82, 31, 0.3); border: 2px solid #b4521f; }
+.nt-chip b { margin-left: auto; white-space: nowrap; text-decoration: underline; text-underline-offset: 2px; }
+.nt-chip:hover { background: #f0d8c6; }

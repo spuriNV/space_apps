@@ -33,6 +33,7 @@ const STYLE: StyleSpecification = {
 const PIN_SVG = `<svg class="pin-svg" width="28" height="36" viewBox="0 0 28 36" aria-hidden="true"><path class="pin-body" d="M14 1.2C7.2 1.2 2 6.3 2 12.9c0 8.4 10.2 20 11.1 21a1.2 1.2 0 0 0 1.8 0C15.8 32.9 26 21.3 26 12.9 26 6.3 20.8 1.2 14 1.2z"/><rect class="pin-field" x="8.5" y="7.5" width="11" height="11" rx="1.5"/><path class="pin-rows" d="M11 9.5v7M14 9.5v7M17 9.5v7"/></svg>`;
 
 export const HOME = { center: [-119.9, 37.35] as [number, number], zoom: 5.75, pitch: 0, bearing: 0 };
+const RES_COLOR = '#b4521f'; // warm terracotta: reserve land, distinct from the yellow selection colour
 const EXPLODE_Z0 = 12.5, EXPLODE_Z1 = 14.2;
 const explodeExpr = (key: string) => ['interpolate', ['linear'], ['zoom'], EXPLODE_Z0, 0, EXPLODE_Z1, ['get', key]] as unknown as number;
 
@@ -47,6 +48,8 @@ export interface MapHandle {
   focusSpot: (lat: number, lon: number) => void;
   /** a field the user drew: fit its outline beside the panel (no zoom-out to the state view) */
   fitField: (loc: Location) => void;
+  /** BC: fit the field and its nearest reserves in view */
+  fitReserves: (loc: Location, fc: GeoJSON.FeatureCollection) => void;
   getMap: () => maplibregl.Map | null;
   /** fly in from the California view, draw the outline, raise the squares and replay every quarter 2016-2026; false when the field has no grid */
   replay: (loc: Location) => boolean;
@@ -56,6 +59,8 @@ interface Props {
   locations: Location[]; bc: BCInfo | null; datasets: Dataset[];
   /** BC: reserve outlines near the selected field, drawn muted for context only (not part of the analysis) */
   reserves?: GeoJSON.FeatureCollection | null;
+  /** show the "Reserve land" legend chip (BC field or spot); clicking it toggles the layer */
+  reservesChip?: boolean; reservesOn?: boolean; onToggleReserves?: () => void;
   selected: Location | null; cells: CellGrid | null; cal: Calendar | null; regional: Regional | null;
   t: number; detector: 'rule' | 'ml'; metric: 'cover' | 'et'; layersOn: Record<string, boolean>; regionalLive: RegionalLive;
   leftInset: number; bottomInset: number; rightInset: number;
@@ -115,8 +120,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves', 'outline-draw']) map.addSource(id, id === 'cells' ? { type: 'geojson', data: fc(), promoteId: 'id' } : { type: 'geojson', data: fc() });
       addCatalogLayers(map, (it) => live.current.onCatalogPick?.(it));
       // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
-      map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(10,12,8,0.5)', 'line-width': 3.6 } });
-      map.addLayer({ id: 'res-line', type: 'line', source: 'reserves', paint: { 'line-color': '#f1ecdd', 'line-opacity': 0.95, 'line-width': 2, 'line-dasharray': [3, 2] } });
+      map.addLayer({ id: 'res-fill', type: 'fill', source: 'reserves', paint: { 'fill-color': RES_COLOR, 'fill-opacity': 0.25 } });
+      map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(247,246,240,0.85)', 'line-width': 4.6 } });
+      map.addLayer({ id: 'res-line', type: 'line', source: 'reserves', paint: { 'line-color': RES_COLOR, 'line-width': 2.5 } });
       map.addLayer({ id: 'fp-fill', type: 'fill', source: 'fp', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.1, 13, 0.03] } });
       map.addLayer({ id: 'fp-line', type: 'line', source: 'fp', paint: { 'line-color': ['get', 'color'], 'line-width': 2, 'line-dasharray': [2, 1.5] } });
       map.addLayer({ id: 'fpgrid-line', type: 'line', source: 'fpgrid', minzoom: 11.5, paint: { 'line-color': ['get', 'color'], 'line-width': 1, 'line-opacity': 0.75 } });
@@ -244,14 +250,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       // label just east of the largest part, at its mid latitude, so the outline itself stays visible
       const ring = polys.map((pp) => pp[0]).sort((a, b) => b.length - a.length)[0] ?? [];
       const ys = ring.map((c) => c[1]), midY = (Math.min(...ys) + Math.max(...ys)) / 2;
-      const at = [Math.max(...ring.map((c) => c[0])), midY];
+      const at = [(Math.min(...ring.map((c) => c[0])) + Math.max(...ring.map((c) => c[0]))) / 2, midY];
       const pr = (f.properties ?? {}) as { name?: string; band?: string; nation?: string; distance_to_field_km?: number };
       const d = document.createElement('div');
       d.className = 'res-tag';
       d.innerHTML = `<b></b><i></i>`;
       d.querySelector('b')!.textContent = reserveName(pr.name ?? 'Reserve');
       d.querySelector('i')!.textContent = pr.nation ?? pr.band ?? '';
-      return { km: pr.distance_to_field_km ?? 99, m: new maplibregl.Marker({ element: d, anchor: 'left', offset: [6, 0] }).setLngLat(at as [number, number]).addTo(map) };
+      return { km: pr.distance_to_field_km ?? 99, m: new maplibregl.Marker({ element: d, anchor: 'center' }).setLngLat(at as [number, number]).addTo(map) };
     }).sort((a, b) => a.km - b.km);
     // neighbouring reserves: keep the nearer one's label when two boxes overlap
     const declutter = () => {
@@ -530,6 +536,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
       if (mode === 'card') map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat], zoom: 10.6, pitch: 0, bearing: 0, padding: pad(), speed: 1.3, ...fly });
       else map.flyTo({ center: [loc.centroid.lon, loc.centroid.lat - (small ? 0.0006 : 0.001)], zoom: (small ? 15.15 : 14.5) - (mode === 'story' ? 0.15 : mode === 'year' ? 0.75 : 0), pitch: mode === 'year' ? 52 : 60, bearing: -24, padding: { ...pad(), right: live.current.rightInset + 330 }, speed: 1.2, ...fly });
     },
+    fitReserves(loc, fc) {
+      const map = mapRef.current; if (!map) return;
+      const fs = [...fc.features].sort((a, b) => ((a.properties as { distance_to_field_km?: number })?.distance_to_field_km ?? 99) - ((b.properties as { distance_to_field_km?: number })?.distance_to_field_km ?? 99)).slice(0, 3);
+      const b = new maplibregl.LngLatBounds([loc.centroid.lon, loc.centroid.lat], [loc.centroid.lon, loc.centroid.lat]);
+      const walk = (c: unknown): void => { if (Array.isArray(c) && typeof c[0] === 'number') b.extend(c as [number, number]); else if (Array.isArray(c)) c.forEach(walk); };
+      for (const f of fs) walk((f.geometry as GeoJSON.Polygon).coordinates);
+      programmatic.current = true;
+      map.fitBounds(b, { padding: pad(), maxZoom: 13, pitch: 0, bearing: 0, duration: 900 });
+    },
     flyHome() { programmatic.current = true; mapRef.current!.flyTo({ ...HOME, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
     flyTo(lat, lon, zoom) { programmatic.current = true; mapRef.current!.flyTo({ center: [lon, lat], zoom, pitch: 0, bearing: 0, padding: { left: 0, right: 0, top: 0, bottom: 0 }, ...fly }); },
     zoomBy(d) {
@@ -582,11 +597,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     <div className={`map-wrap zoom-${zoomClass}`}>
       <div ref={el} className="map" />
       <RainLayer map={mapRef.current} ready={ready} on={!!p.layersOn.rain} leftInset={p.leftInset} bottomInset={p.bottomInset} />
-      {p.reserves && (
-        <div className="res-legend" style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 }} data-testid="reserves-legend">
-          <span><i />Reserve boundaries (context)</span>
-          <small>For context only. Not part of the analysis.</small>
-        </div>
+      {p.reservesChip && (
+        <button className={`res-legend ${p.reservesOn ? 'on' : ''}`} style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 }} onClick={p.onToggleReserves} aria-pressed={!!p.reservesOn} data-testid="reserves-legend">
+          <span><i />Reserve land</span>
+          <small>{p.reservesOn ? 'Shown for context. Tap to hide.' : 'Tap to show on the map.'}</small>
+        </button>
       )}
       {caption && <div className="stack-label replay-cap" style={{ top: 176, left: p.leftInset + (el.current?.clientWidth ?? 1200) / 2 - p.leftInset / 2 }} role="status" aria-live="polite" data-testid="replay-caption"><b>{caption.head}</b><i>{caption.sub}</i></div>}
       {placed.length > 0 && !replayOn && (

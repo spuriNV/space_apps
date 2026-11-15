@@ -142,13 +142,13 @@ const WINTER = [30, 31, 32, 33, 34, 35, 0, 1, 2, 3, 4, 5, 6, 7, 8]; // early Nov
 const PART = ['early', 'mid', 'late'];
 const dekadName = (d: number) => `${PART[d % 3]} ${MONTHS[Math.floor(d / 3)]}`;
 export function bareWindow(cal: Calendar, daily: Daily | null, years: number[]): BareWindow | null {
-  const ys = cal.years.filter((y) => years.includes(y.year) && y.rule.replace(/u/g, '').length > 6);
+  const ys = (cal?.years ?? []).filter((y) => years.includes(y.year) && y.rule.replace(/u/g, '').length > 6);
   if (!ys.length) return null;
   // a winter step counts as "usually bare" when it was bare (greenness below 0.2) in at least half the winters with a clear view
   const bare = WINTER.map((d) => {
     let b = 0, n = 0;
     for (const y of ys) {
-      const yy = d >= 30 ? y : cal.years.find((x) => x.year === y.year + 1);
+      const yy = d >= 30 ? y : (cal?.years ?? []).find((x) => x.year === y.year + 1);
       const c = yy?.rule[d];
       if (!c || c === 'u') continue;
       n++; if (c === 'b') b++;

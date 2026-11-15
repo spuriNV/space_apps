@@ -66,9 +66,10 @@ async function apiRealOr404(route: string): Promise<{ body: any; missing: boolea
     return { body: usable(b) ? b : null, missing: false };
   } catch { return { body: null, missing: false }; }
 }
+const missing404 = new Set<string>(); // routes that answered 404 once: not asked again this session
 async function apiReal(route: string, init?: RequestInit, ms = 12000) {
-  if (!(await apiLive())) return null;
-  try { const b = await get(route, init, ms); return usable(b) ? b : null; } catch { return null; }
+  if (missing404.has(route) || !(await apiLive())) return null;
+  try { const b = await get(route, init, ms); return usable(b) ? b : null; } catch (e) { if (/^404 /.test(String((e as Error).message))) missing404.add(route); return null; }
 }
 
 // ---------- static / editorial ----------
@@ -317,7 +318,7 @@ interface RealCalYear { year: number; segments: { start_doy: number; end_doy: nu
 /** A year with no processed imagery yet (2026): every 10-day step is "no reading". Drawn hatched, never guessed. */
 const blankYear = (year: number, cdl = 'Not published yet'): CalendarYear => ({ year, cdl, rule: 'u'.repeat(36), ml: 'u'.repeat(36), ndvi: Array(36).fill(0), et_mm_day: Array(36).fill(0), greenup_dekad: null, senescence_dekad: null, risks: [] });
 /** Pad a calendar to YEARS (the bundled mock stops at 2025). */
-const padCalendar = (c: Calendar): Calendar => ({ ...c, years: YEARS.map((y, i) => c.years.find((x) => x.year === y) ?? c.years[i] ?? blankYear(y)) });
+const padCalendar = (c: Calendar | undefined): Calendar => ({ ...(c as Calendar), years: YEARS.map((y, i) => (c?.years ?? []).find((x) => x.year === y) ?? (c?.years ?? [])[i] ?? blankYear(y)) });
 /** One year of a real calendar (rule or ML) as 36 ten-day classes. */
 function classString(ry: RealCalYear | undefined, year: number) {
   if (!ry) return 'u'.repeat(36);
@@ -328,7 +329,7 @@ function classString(ry: RealCalYear | undefined, year: number) {
 function convertCalendar(real: { years: RealCalYear[] }, mock: Calendar, hist: Record<string, string>, ml: { years: RealCalYear[] } | null): Calendar {
   const years: CalendarYear[] = YEARS.map((year, yi) => {
     const ry = real.years.find((y) => y.year === year);
-    const my = mock.years[yi] ?? blankYear(year, hist[year] ?? 'Not published yet');
+    const my = mock?.years?.[yi] ?? blankYear(year, hist[year] ?? 'Not published yet');
     if (!ry) return year > 2025 ? blankYear(year, hist[year] ?? 'Not published yet') : my;
     const obs = ry.observations.filter((o) => o.ndvi != null).map((o) => ({ t: Date.parse(o.date), v: o.ndvi as number }));
     const rule = classString(ry, year);
@@ -621,7 +622,7 @@ export async function getField(loc: Location, live: boolean, onLate?: (b: FieldB
   const sm = smapS ?? gdaSoil, gr = seriesOf(ns, 'grace_gw_pct');
   const soilSource: 'smap' | 'grace_da' | null = smapS ? 'smap' : gdaSoil ? 'grace_da' : null;
   soilShown = soilSource;
-  if (sm || gr) {
+  if (reg0 && (sm || gr)) {
     reg = { ...reg0, smap_rootzone_pct: sm ? { ...reg0.smap_rootzone_pct, values: sm } : reg0.smap_rootzone_pct, grace_gw_pct: gr ? { ...reg0.grace_gw_pct, values: gr } : reg0.grace_gw_pct };
     if (smapS) used.smap = 'live';
     if (gr || gdaSoil) used.grace = 'live';
