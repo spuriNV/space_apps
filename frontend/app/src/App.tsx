@@ -15,7 +15,7 @@ import { BCCard, LayersDrawer } from './components/Panels';
 import { FieldPanel, FieldPicker } from './components/ui/Options';
 import { setGlossary } from './components/ui/What';
 import { DetailCtx, useDetailState } from './components/ui/Detail';
-import { ProvList, acres, county, fieldName, type Step } from './components/ui/shared';
+import { ProvList, acres, fieldName, place, type Step } from './components/ui/shared';
 
 // One look (Extension bulletin, tokens at the top of styles.css). Four screens: pick a field, your field now, coming season, compare and print.
 type Panel = 'none' | 'fields' | 'season' | 'compare';
@@ -67,7 +67,8 @@ export default function App() {
   const [yearOpen, setYearOpen] = useState(false);
   const detector = 'rule' as const;
   const metric = 'cover' as const; // the 3D view shows ground cover; measured water use is on the panel (OpenET)
-  const [layersOn, setLayersOn] = useState<Record<string, boolean>>({ hls: true, smap: true, grace: true, imerg: false, modis: false, ecostress: false });
+  const [layersOn, setLayersOn] = useState<Record<string, boolean>>({ hls: true, smap: true, grace: true, imerg: false, modis: false, ecostress: false, reserves: false });
+  const [reserves, setReserves] = useState<{ id: string; fc: GeoJSON.FeatureCollection | null } | null>(null);
   const [allocation, setAllocation] = useState<Record<string, number>>({});
   const [briefOpen, setBriefOpen] = useState(false);
   const [briefPick, setBriefPick] = useState<string | null>(null);
@@ -93,6 +94,17 @@ export default function App() {
     api.getBC().then(setBC);
   }, []);
   const selected = useMemo(() => locations.find((l) => l.id === selectedId) ?? null, [locations, selectedId]);
+  // a real BC field replaces the old "Why not BC yet" row, pins and card
+  const hasBC = locations.some(api.isBC);
+  // reserve outlines near a BC field: context only, fetched when the layer is first switched on
+  const wantReserves = !!selected && api.isBC(selected) && !!layersOn.reserves;
+  useEffect(() => {
+    if (!wantReserves || !selected || reserves?.id === selected.id) return;
+    let ok = true;
+    api.getReserves(selected.id).then((fc) => ok && setReserves({ id: selected.id, fc }));
+    return () => { ok = false; };
+  }, [wantReserves, selected, reserves?.id]);
+  const reservesFc = wantReserves && reserves?.id === selected?.id ? reserves.fc : null;
   useEffect(() => {
     if (!selected || live == null) { setData(null); return; }
     let ok = true;
@@ -179,8 +191,8 @@ export default function App() {
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     const items = [
-      ...locations.map((l) => ({ key: l.id, title: fieldName(l), sub: `${county(l)} County · ${acres(l)} acres${l.dwr_id ? ' · state field no. ' + l.dwr_id : ''}`, icon: 'fields', go: () => select(l.id) })),
-      { key: 'bc', title: 'Sumas Prairie, British Columbia', sub: 'Not set up yet: why', icon: 'info', go: goBC },
+      ...locations.map((l) => ({ key: l.id, title: fieldName(l), sub: `${place(l)} · ${acres(l)} acres${l.dwr_id ? ' · state field no. ' + l.dwr_id : ''}`, icon: 'fields', go: () => select(l.id) })),
+      ...(hasBC ? [] : [{ key: 'bc', title: 'Sumas Prairie, British Columbia', sub: 'Not set up yet: why', icon: 'info', go: goBC }]),
       { key: 'ca', title: 'California', sub: 'Back to the whole state', icon: 'home', go: goHome },
     ];
     return q ? items.filter((i) => (i.title + i.sub).toLowerCase().includes(q)) : items;
@@ -200,7 +212,7 @@ export default function App() {
   return (
     <DetailCtx.Provider value={{ on: detail, set: setDetail }}>
     <div className={`app ${detail ? 'detail-on' : 'detail-off'}`}>
-      <MapView ref={map} locations={locations} bc={bc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
+      <MapView ref={map} locations={locations} bc={hasBC ? null : bc} reserves={reservesFc} datasets={datasets} selected={selected} cells={d?.cells ?? null} cal={d?.cal ?? null} regional={regional}
         t={t} detector={detector} metric={metric} regionalLive={regionalLive} layersOn={layersOn} leftInset={leftInset} rightInset={rightInset} bottomInset={bottomInset}
         onSelect={select} onBC={goBC} onView={setView} />
 
@@ -208,7 +220,7 @@ export default function App() {
         <button className="tb-brand" onClick={goHome} title="Back to all of California">CropLytics</button>
         <div className={`tb-switch ${switchOpen ? 'open' : ''}`}>
           <button className="tb-field" onClick={() => { setSwitchOpen(!switchOpen); setTimeout(() => searchRef.current?.focus(), 0); }} data-testid="field-switch" aria-expanded={switchOpen}>
-            <span><small>{selected ? `${county(selected)} County, ${acres(selected)} acres` : 'No field picked'}</small><b>{selected ? fieldName(selected) : 'Pick your field'}</b></span>
+            <span><small>{selected ? `${place(selected)}, ${acres(selected)} acres` : 'No field picked'}</small><b>{selected ? fieldName(selected) : 'Pick your field'}</b></span>
             <Icon name="down" size={18} />
           </button>
           {switchOpen && (
@@ -273,7 +285,7 @@ export default function App() {
       {panel === 'compare' && selected && d && <ComparePanel loc={selected} strategies={d.strategies} daily={dl?.daily ?? null} allocation={allocation[selected.id]} exampleLimit={exampleLimit} live={!!live} cal={d.cal} setAllocation={(v) => setAllocation({ ...allocation, [selected.id]: v })}
         onBrief={(id) => { setBriefPick(id); setBriefOpen(true); }} onClose={() => setPanel('none')} />}
 
-      {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected}  onClose={() => setLayersOpen(false)} />}
+      {layersOpen && <LayersDrawer datasets={datasets} on={layersOn} toggle={(id) => setLayersOn({ ...layersOn, [id]: !layersOn[id] })} loc={selected} reserves={!!selected && api.isBC(selected)} onClose={() => setLayersOpen(false)} />}
 
       {drilled && panel !== 'compare' && panel !== 'season' && (
         <div className="hud glass" data-testid="hud">
@@ -285,7 +297,7 @@ export default function App() {
           </div>
         </div>
       )}
-            {bc && (bcOpen || nearBC) && panel === 'none' && <div className="bc-float" style={{ left: `calc(${leftInset}px + 24px)` }}><BCCard bc={bc} floating onClose={bcOpen ? () => setBcOpen(false) : undefined} /></div>}
+            {bc && !hasBC && (bcOpen || nearBC) && panel === 'none' && <div className="bc-float" style={{ left: `calc(${leftInset}px + 24px)` }}><BCCard bc={bc} floating onClose={bcOpen ? () => setBcOpen(false) : undefined} /></div>}
 
       <div className="controls" style={{ right: 16 + rightInset, bottom: bottomInset + 14 }}>
         <button className="ctl glass" onClick={goHome} title="Whole of California"><Icon name="home" size={18} /></button>

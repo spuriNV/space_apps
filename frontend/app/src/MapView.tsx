@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { acres, fieldName, latestCrop } from './components/ui/shared';
 import type { BCInfo, Calendar, CellGrid, Dataset, Location, Regional } from './types';
 import type { RegionalLive } from './api';
+import { reserveName } from './components/ui/FirstNations';
 import { atT, latestAt, dataT, CLASS_LABEL, GRACE_RAMP, SMAP_RAMP, cellColor, cellHeight, cellState, clamp, fieldState, gridLayerFor, gridLayerLabel, ordinal, ramp, realCellState } from './lib';
 
 // Tile sources fixed by CONTRACT.md (no API keys).
@@ -43,6 +44,8 @@ export interface MapHandle {
 }
 interface Props {
   locations: Location[]; bc: BCInfo | null; datasets: Dataset[];
+  /** BC: reserve outlines near the selected field, drawn muted for context only (not part of the analysis) */
+  reserves?: GeoJSON.FeatureCollection | null;
   selected: Location | null; cells: CellGrid | null; cal: Calendar | null; regional: Regional | null;
   t: number; detector: 'rule' | 'ml'; metric: 'cover' | 'et'; layersOn: Record<string, boolean>; regionalLive: RegionalLive;
   leftInset: number; bottomInset: number; rightInset: number;
@@ -87,7 +90,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: 'metric' }), 'bottom-right');
     map.on('load', () => {
       el.current?.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
-      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells']) map.addSource(id, { type: 'geojson', data: fc() });
+      for (const id of ['fp', 'fpgrid', 'fplabel', 'field', 'shadow', 'posts', 'slab-grace', 'slab-smap', 'cells', 'reserves']) map.addSource(id, { type: 'geojson', data: fc() });
+      // reserve outlines (BC, context only): muted, dotted, under the field outline; never filled
+      map.addLayer({ id: 'res-casing', type: 'line', source: 'reserves', paint: { 'line-color': 'rgba(10,12,8,0.45)', 'line-width': 3 } });
+      map.addLayer({ id: 'res-line', type: 'line', source: 'reserves', paint: { 'line-color': '#efe9d8', 'line-opacity': 0.9, 'line-width': 1.6, 'line-dasharray': [3, 2] } });
       map.addLayer({ id: 'fp-fill', type: 'fill', source: 'fp', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.1, 13, 0.03] } });
       map.addLayer({ id: 'fp-line', type: 'line', source: 'fp', paint: { 'line-color': ['get', 'color'], 'line-width': 2, 'line-dasharray': [2, 1.5] } });
       map.addLayer({ id: 'fpgrid-line', type: 'line', source: 'fpgrid', minzoom: 11.5, paint: { 'line-color': ['get', 'color'], 'line-width': 1, 'line-opacity': 0.75 } });
@@ -156,6 +162,40 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   }, [p.locations, p.bc, ready]);
 
   useEffect(() => { document.querySelectorAll<HTMLElement>('.pin.site').forEach((el) => el.classList.toggle('on', el.dataset.id === p.selected?.id)); }, [p.selected, p.locations]);
+
+  // ---------- reserve outlines (BC, context only) with paper label boxes ----------
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const feats = p.reserves?.features ?? [];
+    (map.getSource('reserves') as GeoJSONSource).setData(fc(feats));
+    const mk = feats.map((f) => {
+      const g = f.geometry as GeoJSON.Polygon | GeoJSON.MultiPolygon;
+      const polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
+      // label at the middle of the largest part (vertex average of its outer ring)
+      const ring = polys.map((pp) => pp[0]).sort((a, b) => b.length - a.length)[0] ?? [];
+      const at = ring.reduce((a, c) => [a[0] + c[0] / ring.length, a[1] + c[1] / ring.length], [0, 0]);
+      const pr = (f.properties ?? {}) as { name?: string; band?: string; distance_to_field_km?: number };
+      const d = document.createElement('div');
+      d.className = 'res-tag';
+      d.innerHTML = `<b></b><i></i>`;
+      d.querySelector('b')!.textContent = reserveName(pr.name ?? 'Reserve');
+      d.querySelector('i')!.textContent = pr.band ?? '';
+      return { km: pr.distance_to_field_km ?? 99, m: new maplibregl.Marker({ element: d, anchor: 'center' }).setLngLat(at as [number, number]).addTo(map) };
+    }).sort((a, b) => a.km - b.km);
+    // neighbouring reserves: keep the nearer one's label when two boxes overlap
+    const declutter = () => {
+      const kept: DOMRect[] = [];
+      for (const { m } of mk) {
+        const el = m.getElement(); el.style.visibility = 'visible';
+        const r = el.getBoundingClientRect();
+        if (kept.some((k) => r.left < k.right + 4 && r.right > k.left - 4 && r.top < k.bottom + 2 && r.bottom > k.top - 2)) el.style.visibility = 'hidden'; else kept.push(r);
+      }
+    };
+    map.on('move', declutter);
+    const h = setTimeout(declutter, 0);
+    return () => { clearTimeout(h); map.off('move', declutter); mk.forEach(({ m }) => m.remove()); };
+  }, [ready, p.reserves]);
 
   // ---------- field outlines + footprints ----------
   useEffect(() => {
@@ -299,6 +339,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(p, ref) {
   return (
     <div className={`map-wrap zoom-${zoomClass}`}>
       <div ref={el} className="map" />
+      {p.reserves && (
+        <div className="res-legend" style={{ left: p.leftInset + 16, bottom: p.bottomInset + 14 }} data-testid="reserves-legend">
+          <span><i />Reserve boundaries (context)</span>
+          <small>For context only. Not part of the analysis.</small>
+        </div>
+      )}
       {placed.length > 0 && (
         <div className="stack-labels">
           <svg>

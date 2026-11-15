@@ -26,8 +26,28 @@ export interface Location {
   /** USDA RMA crop-insurance payouts for the county and crop (backend/ground rma_profile.json) */
   /** true once GET /api/locations/{id} carries a looked-up water district / GSA (not the project brief's placeholder) */
   water_real?: boolean;
-  rma?: { scope: string; crop: string; total_usd: number; from: number; to: number; top_year: number; top_usd: number; share_drought: number; share_excess_moisture: number | null; source: string; url: string };
+  /** total_usd null: an estimate with only the share of losses by cause (BC has no public loss records) */
+  rma?: { scope: string; crop: string; total_usd: number | null; from: number; to: number; top_year: number; top_usd: number; share_drought: number; share_excess_moisture: number | null; source: string; url: string; shares?: { cause: string; share: number }[] };
   nasadem?: { slope_mean_pct?: number; slope_p90_pct?: number; low_spot_fraction?: number; elev_m?: number }; datasets?: Record<string, { status?: string; reason?: string }>;
+  /** "ca" (default) or "bc", from GET /api/locations */
+  region?: 'ca' | 'bc'; county_kind?: string;
+  /** BC: what California data this field lacks, why, and what fills the gap (GET /api/locations/{id}) */
+  data_gaps?: DataGap[];
+  /** BC: the watershed and the irrigation orders, in place of a California water district */
+  water_context?: { watershed: string; orders: { date: string; title: string; url: string | null }[]; note?: string };
+  /** BC: the First Nations summary on the location route; the full card comes from GET .../first_nations */
+  first_nations?: { statement: string; field_on_reserve: boolean; nearest_km: number; nearest_reserve: string; nearest_nation: string; lower_river_nation: string; route?: string };
+}
+export interface DataGap { id: string; what: string; reason: string; routes: string[]; filled_with?: string }
+export interface FirstNations {
+  statement: string; field_on_reserve: boolean; nearest_km: number; nearest_reserve: string; nearest_nation: string;
+  lower_river_nation: { nation: string; band_number?: string; reserve: string; note?: string; url: string };
+  nearby: { reserve: string; nation: string; band?: string; band_number?: string; area_ha?: number; distance_to_field_km: number }[];
+  engagement_steps: string[];
+  principles: { id: string; name: string; description: string; url: string }[];
+  contacts: { nation: string; department: string; url: string }[];
+  water_timeline: { date: string; title: string; url: string | null; licences?: number; effective?: string }[];
+  reserves_geojson?: string; source?: { title: string; url: string }; notes?: string[];
 }
 
 export type CoverClass = 'b' | 'p' | 'c' | 'w' | 'u';

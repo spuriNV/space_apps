@@ -1,5 +1,5 @@
 // Captures the main app (frontend/app, port 5170) at 1440x900 into design/screenshots/app/.
-// Usage: node design/tools/shoot-app.mjs [name-filter...]   e.g. overview, kings, season, compare   (starts the dev server if needed; start the API on :8000 for live data)
+// Usage: node design/tools/shoot-app.mjs [name-filter...]   e.g. overview, kings, season, compare, bc   (starts the dev server if needed; start the API on :8000 for live data)
 // APP_URL=http://localhost:5171/ to shoot a dev server that is already running elsewhere.
 import { chromium } from 'playwright-core';
 import { spawn } from 'node:child_process';
@@ -77,6 +77,37 @@ if (want('field-now-kings') || want('kings')) {
   await shot('field-now-kings.png');
   await page.evaluate(() => document.querySelector('[data-testid="soil-answer"]')?.scrollIntoView({ block: 'center' }));
   await shot('field-now-kings-soil.png', false);
+}
+// British Columbia (needs an API that serves bc_salmon_river_forage): Field now, the First Nations card under More detail,
+// and the reserve outlines map layer (context only)
+if ((want('bc') || !only.length) && (await page.evaluate(() => window.__app && document.querySelector('[data-testid="field-switch"]')))) {
+  await page.evaluate(() => window.__app.setT((2026 - 2016) * 36 + 31));
+  await page.click('[data-testid="field-switch"]');
+  const has = await page.$('[data-testid="switch-bc_salmon_river_forage"]');
+  if (!has) { console.log('  (no BC field from this API; skipping bc shots)'); await page.keyboard.press('Escape'); }
+  else {
+    await has.click();
+    await page.waitForFunction(() => window.__app?.ready, null, { timeout: 30000 });
+    await page.waitForTimeout(2500);
+    if (want('bc-field-now') || !only.length || only.includes('bc')) await shot('bc-field-now.png');
+    if (want('bc-first-nations') || !only.length || only.includes('bc')) {
+      await page.click('[data-testid="field-panel"] [data-testid="more-detail"]');
+      await page.waitForSelector('[data-testid="first-nations-detail"] h3', { timeout: 20000 }).catch(() => console.log('  (First Nations detail did not load)'));
+      await page.evaluate(() => document.querySelector('[data-testid="first-nations"]')?.scrollIntoView({ block: 'start' }));
+      await shot('bc-first-nations.png', false);
+      await page.click('[data-testid="field-panel"] [data-testid="more-detail"]');
+    }
+    if (want('bc-map-reserves') || !only.length || only.includes('bc')) {
+      await page.click('[data-testid="layers-btn"]');
+      await page.click('[data-testid="layer-reserves"]', { force: true });
+      await page.waitForTimeout(400);
+      await shot('bc-map-reserves-drawer.png', false);
+      await page.click('[data-testid="layers-btn"]');
+      await page.waitForSelector('[data-testid="reserves-legend"]', { timeout: 20000 });
+      await page.evaluate(() => window.__map.easeTo({ zoom: 10.1, duration: 0 }));
+      await shot('bc-map-reserves.png');
+    }
+  }
 }
 if (want('phone')) {
   const ph = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });

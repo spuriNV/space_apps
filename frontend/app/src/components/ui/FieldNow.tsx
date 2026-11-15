@@ -1,12 +1,12 @@
 // "Your field now": plain answers in grower units for the timeline date (today by default).
 // Each answer: a plain sentence first, then the number with its unit, then one small source line.
 import type { Calendar, Location, Regional, RotationStrategy } from '../../types';
-import type { Extras, NasaNow, ProvMap, RegionalLive } from '../../api';
+import { bcGap, isBC, type Extras, type NasaNow, type ProvMap, type RegionalLive } from '../../api';
 import { TODAY_T } from '../../lib';
 import type { Daily } from '../../season';
 import { HOT_F, cropWaterSoFar, fmtIn, fmtShort, heatFrost, rainSoFar, type RainSoFar } from '../../season';
 import { MONTHS, atT, latestAt, dataT, dekadOf, fieldState, lastDataT, mmToAfac, ordinal, yearOf } from '../../lib';
-import { SoilBar, Src, calSource, cropName, openetText, soilFacts } from './shared';
+import { GapLine, SoilBar, Src, calSource, cropMapName, cropName, openetText, soilFacts, stationsName } from './shared';
 import { What } from './What';
 
 const PART = ['early', 'mid', 'late'];
@@ -113,6 +113,9 @@ export function FieldNow(p: FieldNowProps) {
   const limit = p.allocation ?? null, needAf = need ? mmToAfac(need.value) : null;
   const y26 = cal?.years.find((y) => y.year === yr);
   const soil = soilFacts(loc.soil);
+  // BC: California datasets this field lacks (a 404 shows one quiet line; an estimate shows normally, the reason under More detail)
+  const bc = isBC(loc), gOpenet = bcGap(loc, 'openet'), gMl = bcGap(loc, 'ml_calendar');
+  const openetEst = p.prov.openet?.origin === 'estimate';
   return (
     <>
     <div className="glance" data-testid="glance">
@@ -151,8 +154,8 @@ export function FieldNow(p: FieldNowProps) {
         <dt>What is growing, and how far along?</dt>
         <dd>
           {st ? <b><i className={`sw-${st.sw}`} />{st.text}</b> : pend(p.dataState)}
-          <span className="d-only">{crop ? `${cropName(crop)} on record for ${yr}.` : `${yr} crop map not published yet (USDA, early ${yr + 1}). ${lastRec}: ${cropName(loc.crop_history[lastRec]).toLowerCase()}.`} {st?.sub}</span>
-          <cite>{calSource(p.prov.calendar)}, 100 ft squares; crop from the USDA Cropland Data Layer.{behindNote} <Src p={p.prov.calendar} /></cite>
+          <span className="d-only">{crop ? `${cropName(crop)} on record for ${yr}.` : `${yr} crop map not published yet (${bc ? 'AAFC' : 'USDA'}, early ${yr + 1}). ${lastRec}: ${cropName(loc.crop_history[lastRec]).toLowerCase()}.`} {st?.sub}</span>
+          <cite>{calSource(p.prov.calendar)}, 100 ft squares; crop from the {cropMapName(loc)}.{behindNote} <Src p={p.prov.calendar} /></cite>
         </dd>
       </div>
       <div className="ans d-only">
@@ -171,7 +174,7 @@ export function FieldNow(p: FieldNowProps) {
           {rain ? <>
             <b>{rain.period.current ? '' : 'No readings for this winter yet. '}{rain.pct != null ? `${rain.period.current ? 'So far' : 'Last season was'} ${vsNormal(rain.pct, 'wetter than normal', 'drier than normal')}` : ''}</b>
             <span>{fmtIn(rain.inches)} in {rain.period.current ? 'since 1 Oct' : rain.period.label}.{rain.normal != null ? ` Normal: ${fmtIn(rain.normal)} in.` : ''}</span>
-            <cite>{rain.source === 'imerg' ? 'NASA GPM IMERG satellite rain over the field (one reading for a 6-mile square)' : 'NOAA weather stations near the field, averaged'}; normal = the same dates in the {rain.nSeasons} seasons before. <Src p={p.prov.daily} /></cite>
+            <cite>{rain.source === 'imerg' ? 'NASA GPM IMERG satellite rain over the field (one reading for a 6-mile square)' : `${stationsName(loc)}, averaged`}; normal = the same dates in the {rain.nSeasons} seasons before. <Src p={p.prov.daily} /></cite>
           </> : pend(p.dailyState)}
         </dd>
       </div>
@@ -179,13 +182,15 @@ export function FieldNow(p: FieldNowProps) {
         <dt>How much water has the crop used? <What k="et" /></dt>
         <dd>
           {ms && ms.current ? <>
-            <b>Measured so far this year: {fmtIn(ms.inches)} in</b>
-            <span>{ms.label}, measured on this field. Our model for the same months: {fmtIn(ms.model)} in. That is {mmToAfac(ms.inches * 25.4).toFixed(1)} acre-feet per acre.</span>
+            <b>{openetEst ? 'Estimated' : 'Measured'} so far this year: {fmtIn(ms.inches)} in</b>
+            <span>{ms.label}, {openetEst ? 'estimated for' : 'measured on'} this field. Our model for the same months: {fmtIn(ms.model)} in. That is {mmToAfac(ms.inches * 25.4).toFixed(1)} acre-feet per acre.</span>
             <cite>OpenET satellite measurement (ensemble of 6 models built on Landsat), monthly, this field’s outline. <Src p={p.prov.openet} /></cite>
+            <GapLine gap={gOpenet} missing={false} />
           </> : cw ? <>
             <b>{cw.period.current ? 'So far this year' : 'Last year'}: {vsNormal(cw.pct, 'more than normal', 'less than normal')}</b>
             <span>About {fmtIn(cw.inches)} in of water {cw.period.label}, estimated; normal is {fmtIn(cw.normal)} in. That is {mmToAfac(cw.inches * 25.4).toFixed(1)} acre-feet per acre.{ms ? ` Measured on this field by OpenET for ${ms.label}: ${fmtIn(ms.inches)} in (our model for those months: ${fmtIn(ms.model)} in).` : ''}</span>
-            <cite>Estimate: rotation model driven by NASA POWER sun, wind and humidity{ms ? '; measured: OpenET satellite data, which ends a few months behind' : ''}. {openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
+            <cite>Estimate: rotation model driven by NASA POWER sun, wind and humidity{ms ? '; measured: OpenET satellite data, which ends a few months behind' : ''}. {gOpenet ? '' : openetText(p.strategies)} <Src p={p.prov.strategies} /></cite>
+            <GapLine gap={gOpenet} missing={!p.extras.openet} />
           </> : !p.strategies || !p.daily ? pend(p.daily ? p.dataState : p.dailyState) : <b>No rotation model for this field</b>}
         </dd>
       </div>
@@ -223,9 +228,13 @@ export function FieldNow(p: FieldNowProps) {
       <div className="ans d-only">
         <dt>Has the crop been stressed, or the field under water? <What k="stress" /></dt>
         <dd>
-          {p.dataState !== 'ready' ? pend(p.dataState) : <><b>{stressLine(p.extras, t)}</b>
-          <span>{waterLine(p.extras, t)}</span></>}
-          <cite>Crop stress: two statistical methods on satellite greenness and NASA POWER heat and dryness, growing season only. Standing water: NASA OPERA, 100 ft squares, clear images only. <Src p={p.prov.stress ?? p.prov.water_seen} /></cite>
+          {p.dataState !== 'ready' ? pend(p.dataState) : gMl && !p.extras.stress ? <>
+            <GapLine gap={gMl} missing />
+            {p.extras.water && <span>{waterLine(p.extras, t)}</span>}
+          </> : <><b>{stressLine(p.extras, t)}</b>
+          {(!bc || p.extras.water) && <span>{waterLine(p.extras, t)}</span>}
+          {gMl && <GapLine gap={gMl} missing={false} />}</>}
+          {!(gMl && !p.extras.stress) && <cite>Crop stress: two statistical methods on satellite greenness and NASA POWER heat and dryness, growing season only. Standing water: NASA OPERA, 100 ft squares, clear images only. <Src p={p.prov.stress ?? p.prov.water_seen} /></cite>}
         </dd>
       </div>
       <div className="ans d-only">
@@ -234,7 +243,7 @@ export function FieldNow(p: FieldNowProps) {
           {hf ? <>
             <b>{hf.hot} day{hf.hot === 1 ? '' : 's'} at or above {HOT_F} °F {hf.period.current ? 'so far this year' : `in ${hf.period.label.replace('last year, ', '')}`}</b>
             <span>Normal for the same dates: {hf.hotNormal != null ? Math.round(hf.hotNormal) : '?'}. Frost nights (32 °F or lower), {hf.frostPeriod.label}: {hf.frost}; normal {hf.frostNormal != null ? Math.round(hf.frostNormal) : '?'}.</span>
-            <cite>NOAA weather stations near the field. NASA POWER is not used for heat here: it runs about 6 °F hot in summer against the stations. <Src p={p.prov.daily} /></cite>
+            <cite>{stationsName(loc)}. NASA POWER is not used for heat here: {bc ? 'its grid cell sits well above the valley and runs cold' : 'it runs about 6 °F hot in summer against the stations'}. <Src p={p.prov.daily} /></cite>
           </> : pend(p.dailyState)}
         </dd>
       </div>

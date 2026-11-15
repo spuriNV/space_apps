@@ -8,7 +8,7 @@ import { bareWindow, fmtIn } from '../../season';
 import { rainNow } from '../ui/FieldNow';
 import { CLASS_COLOR, MONTHS, TODAY_T, lastDataT, mmToAfac, yearOf } from '../../lib';
 import Icon from '../Icons';
-import { Src, fieldCode, fieldName, acres, county, cropName, openetText } from '../ui/shared';
+import { Src, cleanSoil, fieldCode, fieldName, acres, county, cropName, openetText } from '../ui/shared';
 import { fieldCtx, tradeoffs, HEAT_NOTE } from '../compare/ComparePanel';
 import { BARE_DEF, observedBare, usuallyBareMonths } from '../../bare';
 
@@ -40,7 +40,8 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
   const limitWord = p.exampleLimit ? ' (an example limit; write in yours)' : '';
   const last = p.cal ? yearOf(lastDataT(p.cal)) : 2025;
   const recent = [last - 2, last - 1, last].map((y) => `${y} ${loc.crop_history[y] ? cropName(loc.crop_history[y]).toLowerCase() : '(crop map not out yet)'}`).join(', ');
-  const soil = loc.soil ?? ({} as Location['soil']), awc = soil.awc_mm_per_m?.value, inFt = awc != null ? (awc / 1000) * 12 : null, saline = (soil.ec_ds_per_m ?? 0) >= 4;
+  const bc = loc.region === 'bc';
+  const soil = cleanSoil(loc.soil), awc = soil.awc_mm_per_m?.value, inFt = awc != null ? (awc / 1000) * 12 : null, saline = (soil.ec_ds_per_m ?? 0) >= 4;
   const o = p.outlook, rain = rainNow(p.nasaNow, p.daily, TODAY_T);
   const bw = p.cal ? bareWindow(p.cal, p.daily, p.cal.years.map((y) => y.year).filter((y) => y >= 2016 && y <= 2025)) : null;
   const wet = o?.seasons.filter((x) => x.rain?.category.startsWith('above')).length ?? 0;
@@ -56,7 +57,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
             <div>
               <div className="p-kicker">CropLytics summary for the grower and adviser · prepared 14 Nov 2026</div>
               <h1>{fieldName(loc)}</h1>
-              <div className="p-sub">{acres(loc)} acres, {county(loc)} County, California · {fieldCode(loc).replace('DWR ', 'state field no. ')}</div>
+              <div className="p-sub">{acres(loc)} acres, {bc ? `${county(loc)}, British Columbia` : `${county(loc)} County, California · ${fieldCode(loc).replace('DWR ', 'state field no. ')}`}</div>
             </div>
             <div className="p-option"><span>Option looked at</span><b>{s.short_name}</b>{s.is_baseline && <em>what the field does now</em>}</div>
           </header>
@@ -64,7 +65,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <div className="p-cols">
             <section>
               <h2>1. This field</h2>
-              <p>{soil.muname || soil.texture_class ? <>{soil.muname ? soil.muname.split(',')[0] : soil.texture_class}{[soil.drainage_class?.toLowerCase(), inFt != null ? `holds about ${inFt.toFixed(1)} in of water per foot of soil` : null].filter(Boolean).length ? ': ' : ''}{[soil.drainage_class?.toLowerCase(), inFt != null ? `holds about ${inFt.toFixed(1)} in of water per foot of soil` : null].filter(Boolean).join(', ')}{saline ? ', salty enough to limit salt-sensitive crops' : ''}.</> : null}{cite(loc.area_ha.source)} Water from {loc.water.source === 'surface' ? 'a surface-water district' : 'wells, under a groundwater allocation'}. Last three seasons: {recent}. {ob ? `Bare about ${ob.value} days a year, mostly ${bareWhen} (satellite, ${ob.years[0]}–${ob.years[ob.years.length - 1]}).` : ''} {openetText(strategies)}{cite(base.water.etc_vs_openet_pct?.source)}</p>
+              <p>{soil.muname || soil.texture_class ? <>{soil.muname ? soil.muname.split(',')[0] : soil.texture_class}{[soil.drainage_class?.toLowerCase(), inFt != null ? `holds about ${inFt.toFixed(1)} in of water per foot of soil` : null].filter(Boolean).length ? ': ' : ''}{[soil.drainage_class?.toLowerCase(), inFt != null ? `holds about ${inFt.toFixed(1)} in of water per foot of soil` : null].filter(Boolean).join(', ')}{saline ? ', salty enough to limit salt-sensitive crops' : ''}.</> : null}{cite(loc.area_ha.source)} {bc ? `Water: ${loc.water_context?.watershed.split(';')[0] ?? 'watershed not looked up'}; irrigation was stopped by order in ${loc.water_context?.orders.map((x) => x.date.slice(0, 4)).join(', ') || 'recent dry years'}.` : `Water from ${loc.water.source === 'surface' ? 'a surface-water district' : 'wells, under a groundwater allocation'}.`} Last three seasons: {recent}. {ob ? `Bare about ${ob.value} days a year, mostly ${bareWhen} (satellite, ${ob.years[0]}–${ob.years[ob.years.length - 1]}).` : ''} {openetText(strategies)}{cite(base.water.etc_vs_openet_pct?.source)}</p>
             </section>
             <section>
               <h2>2. What’s likely this season <small>outlooks, not forecasts</small></h2>
@@ -108,7 +109,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
             <ul className="p-review">
               {checks.map((c) => <li key={c.constraint}><label><input type="checkbox" /><span>{plain(c.detail)}</span></label></li>)}
               {review.map((r) => <li key={r.item}><label><input type="checkbox" checked={!!ticks[r.item]} onChange={(e) => setTicks({ ...ticks, [r.item]: e.target.checked })} /><span>{plain(r.item)}</span></label>{r.severity === 'high' && <em className="sev high">important</em>}</li>)}
-              <li><label><input type="checkbox" /><span>This year’s water allocation or pumping limit, and any district rules on winter flooding or fallowing.</span></label></li>
+              <li><label><input type="checkbox" /><span>{bc ? 'This year’s water licence and any order to stop irrigating in the watershed.' : 'This year’s water allocation or pumping limit, and any district rules on winter flooding or fallowing.'}</span></label></li>
               <li><label><input type="checkbox" /><span>Seed, buyer and price for the new crop: dollars are not counted in this summary.</span></label></li>
             </ul>
           </section>
@@ -116,7 +117,7 @@ export default function RotationBrief(p: { loc: Location; strategies: RotationSt
           <footer className="p-foot">
             <div className="p-sources"><b>Sources</b>
               {sources.map((src, i) => <span key={src.id}>{i + 1}. {src.title ?? src.id}{src.verified ? '' : ' (unverified)'}</span>)}
-              <span>NASA: Landsat (NASA/USGS) for the field calendar with Sentinel-2 (ESA), cross-checked with HLS; NASA POWER sun, wind and humidity for crop water use; NASADEM for slope. Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Soil: USDA soil survey (SSURGO). {BARE_DEF} {HEAT_NOTE}</span>
+              <span>NASA: Landsat (NASA/USGS) for the field calendar with Sentinel-2 (ESA), cross-checked with HLS; NASA POWER sun, wind and humidity for crop water use; NASADEM for slope. {bc ? <>Weather: Environment Canada (ECCC) stations. Crop record: AAFC Annual Crop Inventory. Soil: SoilGrids global model. Water orders: BC Gov News. {BARE_DEF} {HEAT_NOTE.replace('NOAA', 'Environment Canada')}</> : <>Outlooks: NOAA Climate Prediction Center, US Drought Monitor, CDEC reservoir reports. Weather: NOAA stations. Soil: USDA soil survey (SSURGO). {BARE_DEF} {HEAT_NOTE}</>}</span>
             </div>
             <div className="p-disclaimer">This summary supports a conversation between grower and adviser; it does not replace one.</div>
             <div>CropLytics, made for the NASA Space Apps challenge “Field Shift: Adapting Farms with NASA Data”.</div>

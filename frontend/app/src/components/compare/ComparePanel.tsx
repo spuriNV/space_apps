@@ -134,7 +134,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
     <section className="sheet compare2" data-testid="compare">
       <header className="sheet-head">
         <div>
-          <h2>{alt.short_name} vs {today.short_name.split(' +')[0].toLowerCase()} today</h2>
+          <h2>{alt.short_name} vs {today.short_name.split(' +')[0].replace(/\s*\(current\)$/i, '').toLowerCase()} today</h2>
         </div>
         <button className="sq-btn" onClick={p.onClose} title="Close"><Icon name="close" size={16} /></button>
       </header>
@@ -233,7 +233,7 @@ export default function ComparePanel(p: { loc: Location; strategies: RotationStr
           </table>
         </div>
       )}
-      <footer className="sheet-foot">Better / worse = the whole likely range is above or below today’s. Water need: rotation model with NASA POWER weather, 2015–2025. {HEAT_NOTE} Supports, doesn’t replace, your adviser.</footer>
+      <footer className="sheet-foot">Better / worse = the whole likely range is above or below today’s. Water need: rotation model with NASA POWER weather, 2015–2025. {p.loc.region === 'bc' ? HEAT_NOTE.replace('NOAA', 'Environment Canada') : HEAT_NOTE} Supports, doesn’t replace, your adviser.</footer>
     </section>
   );
 }

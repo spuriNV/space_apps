@@ -1,7 +1,9 @@
 import type { CoverClass, FieldEvent, Location, Calendar, CalendarYear } from '../../types';
 import { useState } from 'react';
 import { rainOf, type Daily } from '../../season';
-import type { Extras, MLInfo } from '../../api';
+import { bcGap, type Extras, type MLInfo } from '../../api';
+import type { DataGap } from '../../types';
+import { GapLine } from '../ui/shared';
 import { DRIVER } from '../ui/FieldNow';
 import { fmtDate } from '../../lib';
 import { MoreDetail, useDetail } from '../ui/Detail';
@@ -31,7 +33,8 @@ export interface YearSheetProps { events: FieldEvent[]; playing: boolean; setPla
 
 const pct = (x: number | null) => (x == null ? '?' : `${Math.round(x * 100)}%`);
 /** What the machine-learning calendar is worth on this field, in plain words. */
-export function mlVerdict(ml: MLInfo | null) {
+export function mlVerdict(ml: MLInfo | null, gap?: DataGap | null) {
+  if (!ml && gap) return { short: 'Not available in BC', long: `Not available in BC. ${gap.reason}` };
   if (!ml) return { short: 'Not ready for this field yet', long: 'The machine-learning calendar is not ready for this field yet.' };
   const agree = ml.disagreePct != null ? ` The two disagree on ${Math.round(ml.disagreePct)}% of clear satellite days.` : '';
   if (!ml.meetsTarget) return { short: 'Below accuracy target', long: `Below our accuracy target on this field: in 2022, a year it never trained on, it was right ${pct(ml.acc2022)} of the time against a target of 85%, and it misses bare ground too often. The rule calendar stays the answer; this is for comparison only.${agree}` };
@@ -43,7 +46,8 @@ export default function YearSheet(p: YearSheetProps) {
   const detail = useDetail().on;
   const [bothRaw, setBoth] = useState(false);
   const both = bothRaw && detail;
-  const verdict = mlVerdict(p.ml);
+  const gMl = bcGap(p.loc, 'ml_calendar');
+  const verdict = mlVerdict(p.ml, gMl);
   const last = yearOf(lastDataT(p.cal));
   const past = p.cal.years.filter((y) => y.year <= last && y.rule.replace(/u/g, '').length > 6);
   const typ = typical(past);
@@ -96,6 +100,7 @@ export default function YearSheet(p: YearSheetProps) {
         <button className="ys-play" onClick={() => p.setPlaying(!p.playing)} data-testid="play" title={p.playing ? 'Pause' : 'Replay the seasons on the map'}><Icon name={p.playing ? 'pause' : 'play'} size={18} />{p.playing ? 'Pause' : 'Replay on the map'}</button>
         <button className="sq-btn" onClick={() => p.setExpanded(false)} title="Close" data-testid="year-close"><Icon name="down" /></button>
       </div>
+      {gMl && <p className="ml-note d-only"><GapLine gap={gMl} missing={!p.ml} /></p>}
       {both && <p className={`ml-note ${p.ml && !p.ml.meetsTarget ? 'warn' : ''}`} data-testid="ml-note"><b>Machine learning: {verdict.short.toLowerCase()}.</b> {verdict.long}</p>}
       <div className="yr-grid">
         <div className="yr-row yr-months"><span /><span /><div className="yr-m">{MONTHS.map((m) => <span key={m}>{m}</span>)}</div><span className="yr-n">Bare days a year</span><span className="yr-n">1-inch rain days on bare ground</span></div>

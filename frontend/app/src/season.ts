@@ -3,15 +3,26 @@
 import type { Calendar, RotationStrategy } from './types';
 import { MONTHS, dekadOf, yearOf } from './lib';
 
-export interface DailyRow { date: string; precip_mm: number | null; eto_mm: number | null; ncei_precip_mm: number | null; ncei_tmax_c: number | null; ncei_tmin_c: number | null; imerg_precip_mm?: number | null; grace_gw_pct?: number | null }
+export interface DailyRow { date: string; precip_mm: number | null; eto_mm: number | null; ncei_precip_mm: number | null; ncei_tmax_c: number | null; ncei_tmin_c: number | null; imerg_precip_mm?: number | null; grace_gw_pct?: number | null;
+  /** BC: Environment and Climate Change Canada station values (the ncei_* columns are null there) */
+  eccc_tmax_c?: number | null; eccc_tmin_c?: number | null; eccc_precip_mm?: number | null }
 export interface Daily { rows: DailyRow[]; first: string; last: string }
 /** The daily record restricted to days that have `key` (each source has its own end date: stations stop in Dec 2025, NASA IMERG and POWER run to this week). */
 export function only(daily: Daily, key: keyof DailyRow): Daily | null {
   const rows = daily.rows.filter((r) => r[key] != null);
   return rows.length ? { rows, first: rows[0].date, last: rows[rows.length - 1].date } : null;
 }
-/** Daily rain: NASA GPM IMERG over the field when present, else the NOAA station mean. */
-export const rainOf = (r: DailyRow) => r.imerg_precip_mm ?? r.ncei_precip_mm;
+/** Weather-station readings: NOAA stations in California, ECCC stations in BC. */
+export const stTmax = (r: DailyRow) => r.ncei_tmax_c ?? r.eccc_tmax_c ?? null;
+export const stTmin = (r: DailyRow) => r.ncei_tmin_c ?? r.eccc_tmin_c ?? null;
+export const stPrecip = (r: DailyRow) => r.ncei_precip_mm ?? r.eccc_precip_mm ?? null;
+/** The daily record restricted to days where `f` has a value. */
+function onlyBy(daily: Daily, f: (r: DailyRow) => number | null | undefined): Daily | null {
+  const rows = daily.rows.filter((r) => f(r) != null);
+  return rows.length ? { rows, first: rows[0].date, last: rows[rows.length - 1].date } : null;
+}
+/** Daily rain: NASA GPM IMERG over the field when present, else the station mean. */
+export const rainOf = (r: DailyRow) => r.imerg_precip_mm ?? stPrecip(r);
 
 /** Heat threshold for every hot-day count in the app: 104 °F (40 °C), NOAA station highs (PLAN.md decisions, 14 Nov). */
 export const HOT_C = 40, HOT_F = 104;
@@ -68,10 +79,10 @@ export interface RainSoFar { period: Period; inches: number; normal: number | nu
 /** Rain so far this season: NASA GPM IMERG over the field (runs to this week), normal = the same dates in earlier seasons of IMERG.
  *  Falls back to the NOAA stations when IMERG is missing. */
 export function rainSoFar(all: Daily, t: number): RainSoFar | null {
-  const im = only(all, 'imerg_precip_mm'), key: keyof DailyRow = im ? 'imerg_precip_mm' : 'ncei_precip_mm';
-  const daily = im ?? only(all, 'ncei_precip_mm');
+  const im = only(all, 'imerg_precip_mm');
+  const daily = im ?? onlyBy(all, stPrecip);
   if (!daily) return null;
-  const f = (r: DailyRow) => r[key] as number | null;
+  const f = (r: DailyRow) => (im ? r.imerg_precip_mm ?? null : stPrecip(r));
   const p = periodFor(daily, t, 'water');
   const { s } = sumWhere(daily.rows, p.from, p.to, f);
   const nm = normalOf(daily, p, f);
@@ -82,11 +93,11 @@ export function rainSoFar(all: Daily, t: number): RainSoFar | null {
 export interface HeatFrost { period: Period; hot: number; hotNormal: number | null; frost: number; frostNormal: number | null; frostPeriod: Period; nSeasons: number }
 /** Hot days: station high at or above 104 °F (40 °C), the threshold used everywhere in the app. Frost nights: station low at or below 32 °F, counted over the rain season (Oct to Sep). */
 export function heatFrost(all: Daily, t: number): HeatFrost | null {
-  const daily = only(all, 'ncei_tmax_c');
+  const daily = onlyBy(all, stTmax);
   if (!daily) return null;
   const p = periodFor(daily, t, 'calendar'), pf = periodFor(daily, t, 'water');
-  const hotF = (r: DailyRow) => (r.ncei_tmax_c != null && r.ncei_tmax_c >= HOT_C ? 1 : null);
-  const frostF = (r: DailyRow) => (r.ncei_tmin_c != null && F(r.ncei_tmin_c) <= 32 ? 1 : null);
+  const hotF = (r: DailyRow) => { const v = stTmax(r); return v != null && v >= HOT_C ? 1 : null; };
+  const frostF = (r: DailyRow) => { const v = stTmin(r); return v != null && F(v) <= 32 ? 1 : null; };
   const hot = sumWhere(daily.rows, p.from, p.to, hotF).n, frost = sumWhere(daily.rows, pf.from, pf.to, frostF).n;
   const hn = normalOf(daily, p, hotF, 'count'), fn = normalOf(daily, pf, frostF, 'count');
   // normalOf skips seasons with zero events (n = 0); recount those as zero
@@ -157,7 +168,7 @@ export function bareWindow(cal: Calendar, daily: Daily | null, years: number[]):
       const dayOf = (d: number, yy: number) => { const m = Math.floor(d / 3); return [`${yy}-${pad(m + 1)}-${pad([1, 11, 21][d % 3])}`, `${yy}-${pad(m + 1)}-${pad(d % 3 === 2 ? MONTH_END[m] : [10, 20][d % 3])}`]; };
       const [from] = dayOf(d0, d0 >= 30 ? y : y + 1), [, to] = dayOf(d1, d1 >= 30 ? y : y + 1);
       if (from < daily.first || to > daily.last) continue;
-      const n = sumWhere(daily.rows, from, to, (r) => (r.ncei_precip_mm != null && r.ncei_precip_mm >= 25.4 ? 1 : null)).n;
+      const n = sumWhere(daily.rows, from, to, (r) => { const v = stPrecip(r); return v != null && v >= 25.4 ? 1 : null; }).n;
       winters++; if (n > 0) hits++; total += n;
     }
   }
@@ -170,16 +181,17 @@ export { fmtShort };
 /** Hot days (station high >= 104 °F) that land while a rotation leaves the field bare, per year on average.
  *  Uses the rotation's month-by-month cover and NOAA station highs, every full year in the daily record. */
 export function hotBareDays(all: Daily, monthCover: string) {
-  const daily = only(all, 'ncei_tmax_c');
+  const daily = onlyBy(all, stTmax);
   if (!daily) return null;
   const y0 = +daily.first.slice(0, 4), y1 = +daily.last.slice(0, 4) - (daily.last.slice(5) >= '12-31' ? 0 : 1);
   const per: number[] = [];
   for (let y = y0; y <= y1; y++) {
     let n = 0, seen = 0;
     for (const r of daily.rows) {
-      if (!r.date.startsWith(String(y)) || r.ncei_tmax_c == null) continue;
+      const tx = stTmax(r);
+      if (!r.date.startsWith(String(y)) || tx == null) continue;
       seen++;
-      if (r.ncei_tmax_c >= HOT_C && monthCover[+r.date.slice(5, 7) - 1] === 'b') n++;
+      if (tx >= HOT_C && monthCover[+r.date.slice(5, 7) - 1] === 'b') n++;
     }
     if (seen > 300) per.push(n);
   }
