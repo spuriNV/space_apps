@@ -2,6 +2,7 @@ import Icon from '../Icons';
 import { setPref, usePrefs, type LiteSetting, type Theme } from './prefs';
 import { ax } from './ax';
 import { t } from '../../i18n';
+import LangToggle from '../../i18n/LangToggle';
 
 function Switch({ checked, onChange, title, hint, testid }: { checked: boolean; onChange: (v: boolean) => void; title: string; hint: string; testid: string }) {
   return (
@@ -26,6 +27,10 @@ export function MenuItems({ onList, onAbout, onShortcuts, onDone }: { onList: ()
   const prefs = usePrefs();
   return (
     <div className="menu-items" role="group" aria-label={t('ui.mi.menu')} data-testid="menu-items" onKeyDown={(e) => { if (e.key === 'Escape') { e.stopPropagation(); onDone(); } }}>
+      <section className="mi-section mi-lang" aria-label="Language / Idioma" data-testid="lang-section">
+        <h2 className="mi-h">Language · Idioma</h2>
+        <LangToggle />
+      </section>
       <section className="mi-section" aria-labelledby="mi-a11y-h" data-testid="a11y-section">
         <h2 id="mi-a11y-h" className="mi-h">{ax('section')}</h2>
         <Switch checked={prefs.simple} onChange={(v) => setPref('simple', v)} title={ax('simple')} hint={ax('simpleHint')} testid="simple-toggle" />

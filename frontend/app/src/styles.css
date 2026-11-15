@@ -2331,9 +2331,11 @@ html[data-bigtext="1"] .step-foot .btn { border-radius: var(--r-lg); }
   .rain-card .rain-layers { width: calc(100% - 40px); }
   .drought-legend { grid-template-columns: 1fr 1fr; }
 }
-=======
 
 /* Year sheet header: the title keeps a readable width when the legend and toggles are long (More detail on) */
 .ys-head { flex-wrap: wrap; }
 .ys-title { flex: 0 1 260px; min-width: 200px; }
 .ys-legend { flex: 1 1 340px; }
+/* Language toggle lives in the menu below 1600 px so the top bar never crowds */
+@media (max-width: 1600px) { .tb-right > .lang-toggle { display: none; } }
+.mi-lang .lang-toggle { font-size: 15px; } .mi-lang .lang-toggle button { min-height: 44px; padding: 8px 12px; }
