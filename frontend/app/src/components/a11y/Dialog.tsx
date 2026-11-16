@@ -2,11 +2,13 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import Icon from '../Icons';
 import { t } from '../../i18n';
+import { useBackClose } from '../../useBackClose';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, summary, [tabindex]:not([tabindex="-1"])';
 
 export function Dialog({ title, onClose, children, testid, wide }: { title: string; onClose: () => void; children: ReactNode; testid?: string; wide?: boolean }) {
   const box = useRef<HTMLDivElement>(null);
+  useBackClose(true, onClose);
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null;
     box.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus();

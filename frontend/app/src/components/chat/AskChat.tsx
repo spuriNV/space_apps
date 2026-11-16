@@ -2,6 +2,7 @@
 // labelled, each new answer is announced once through a polite live region, Escape closes and returns focus to the Ask
 // button. Spoken input uses the browser's speech recognition where it exists; "Read answers aloud" (off by default, for people
 // without a screen reader) and spoken questions use the server voice (speech.ts), else the device's voice. The phone keyboard's own mic works in the box as well.
+import { useBackClose } from '../../useBackClose';
 import { useEffect, useRef, useState } from 'react';
 import { API_BASE, askChat, chatStatus, type ChatTurn } from '../../api';
 import { Speaker } from './speech';
@@ -51,6 +52,7 @@ export default function AskChat({ fieldId, fieldName, screen, date, waterLimit }
   const sp = speaker.current;
 
   const stopSpeech = () => { sp.stop(); setSpeaking(null); };
+  useBackClose(open, () => { setOpen(false); rec.current?.stop(); sp.stop(); setSpeaking(null); });
   const close = () => { setOpen(false); rec.current?.stop(); stopSpeech(); btn.current?.focus(); };
   useEffect(() => { chatStatus().then((s) => { serverVoice.current = s.tts; setEnabled(s.enabled); }); }, []);
   useEffect(() => { if (open) { input.current?.focus(); announce('ask'); } }, [open]);

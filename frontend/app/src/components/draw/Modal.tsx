@@ -1,9 +1,11 @@
 // A rounded dialog over a soft scrim: pops in (opacity and a small scale, from its own centre), Esc and a tap on the scrim
 // close it, Tab stays inside, and focus goes back to where it was. Used for naming, deleting and adding a shared field.
 import { useEffect, useRef, type ReactNode } from 'react';
+import { useBackClose } from '../../useBackClose';
 
 export function Modal({ title, onClose, children, testid }: { title: string; onClose: () => void; children: ReactNode; testid?: string }) {
   const box = useRef<HTMLDivElement>(null);
+  useBackClose(true, onClose);
   const was = useRef<Element | null>(null);
   useEffect(() => {
     was.current = document.activeElement;
