@@ -1,97 +1,117 @@
 # CropLytics
 
-NASA Space Apps Challenge 2026, Vancouver: **Field Shift: Adapting Farms with NASA Data**.
+**Plan next season's crop rotation with NASA data.**
 
-A crop-rotation planner for a grower and their farm adviser, built on NASA Earth data. It works on two real California fields: a rice field west of Williams (Colusa County) and an alfalfa field south of Hanford (Kings County). For each field it shows:
-- what's happening on the field now;
-- what's likely in the coming season;
-- what each rotation would gain or give up in water, soil cover and risk.
+[Live site](https://croplytics.xyz) · [Backup](https://croplytics-app.onrender.com) · [Video](video/croplytics-30s-v9.mp4) · [Android download](https://github.com/spuriNV/space_apps/releases/latest)
 
-It ends with a one-page brief for the adviser.
+NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data
 
-**Start here:**
-- [PLAN.md](PLAN.md): the working plan and the decisions made so far.
-- [docs/judging-rubric.md](docs/judging-rubric.md): where the project stands on each judging criterion.
-- [CONTRACT.md](CONTRACT.md): build rules for anyone adding code.
+![CropLytics overview](design/screenshots/app/overview.png)
 
-## Live site
+## What it does
 
-**https://croplytics.xyz**: the full app and API, self-hosted and redeployed automatically within about 2 minutes of every push to `main`.
+A grower and their adviser ask one question: what should this field grow next season? CropLytics answers it from satellite data.
 
-Backup: **https://croplytics-app.onrender.com** (Render, free plan; the first visit after it has been idle takes a moment to wake up).
+- **Real field history.** Ten years of rain, soil moisture, groundwater and crop cover from NASA satellites, for the field you pick.
+- **This week.** Water need, irrigation verdict and whether the field can be worked.
+- **Compare rotations.** Each option shows what it gains and gives up in water, soil cover and risk, as likely ranges rather than single numbers.
+- **A page for your adviser.** One printable brief per field.
+- **Works anywhere in North America.** Tap any spot or draw a field. Indigenous lands show Nation tools and funding.
+- **English and Spanish, fully accessible.**
 
-**Reach:** California planted about 524,000 acres of rice in 2025; CropLytics covers every one of those fields with the same NASA data (USDA NASS, served at `/api/reach`).
+## How to use it
+
+### Website
+
+Open [croplytics.xyz](https://croplytics.xyz).
+
+1. **Pick a field.** Choose an example field, a pin from the farm catalog, tap anywhere on the map, or use **Draw a field** and tap its corners.
+2. **Your field now.** See the season, rain, water need, greenness, soil and groundwater, plus this week's irrigation and field access.
+3. **Coming season.** See winter rain, water supply and next season's need.
+4. **Compare rotations.** See the best options with gain and give-up ranges. Set your water limit and re-score.
+5. **Print for your adviser.** Print the one-page brief or save it as a PDF.
+
+Tips:
+
+- **Replay ten years** to watch the field change on the map.
+- Turn on the **Rain & drought** layer to see wet and dry spells.
+- Turn on the **Indigenous lands** layer to see reserves and tribal land with the tools and programs open to them.
+- Use **Ask CropLytics** to ask a question by voice or in text.
+- Open the **Accessibility** page at `#accessibility`. Use the language switch for English or Spanish.
+- Deep links: `#example` (Colusa rice), `#example-bc` (Salmon River hay, BC), `#nations` (Nation tools).
+
+### Android
+
+1. Download the APK from [Releases](https://github.com/spuriNV/space_apps/releases/latest).
+2. Allow installing unknown apps when Android asks.
+3. Open the app.
+
+### iOS
+
+Build it from [`apps/ios`](apps/ios) in Xcode (see Run it locally).
+
+## NASA data
+
+| Dataset | What it answers |
+| --- | --- |
+| POWER | Daily weather and reference water use |
+| GPM IMERG | How much rain fell |
+| SMAP | How wet the soil is |
+| GRACE-FO | How much groundwater there is |
+| HLS Landsat and Sentinel-2 | What the field looked like, in 30 m cells |
+| MODIS | Greenness and snow through the year |
+| ECOSTRESS | Crop stress |
+| OPERA DSWx | Where surface water stood |
+| NASADEM | Elevation and slope |
+| FIRMS, GIBS | Fires and daily imagery |
+| ISS astronaut photography | A view of the area from orbit |
+
+Partner data: ESA Sentinel-2. Also USDA, NOAA, ECCC, AAFC, California DWR and OpenET.
+
+Our water estimate runs 16 to 21 percent above OpenET measurements, with nothing tuned.
 
 ## Run it locally
 
-You need **Node 20+** and **[uv](https://docs.astral.sh/uv/)** (it installs Python 3.12 for you). Cached data is committed, so the app runs without any API keys.
+You need Node 20+ and [uv](https://docs.astral.sh/uv/). Cached data is committed, so no API keys are needed.
 
 ```sh
-# 1. API (real data from the cache)
-cd backend/api && uv run uvicorn app.main:app --port 8000
+# Backend
+cd backend/api && uv sync && uv run uvicorn app.main:app --port 8787
 
-# 2. App, in a second terminal
-cd frontend/app && npm install && npm run dev      # open http://localhost:5170
+# Frontend (second terminal)
+cd frontend/app && npm ci && npm run dev
+
+# Android
+cd apps/android && ./gradlew assembleDebug
+
+# iOS (Xcode 16+; the generated project is committed)
+brew install xcodegen && cd apps/ios && xcodegen generate
 ```
 
-Pick a field, then try:
-- "Your field now";
-- "Coming season";
-- "Your field's year";
-- "Compare";
-- "Print a summary for your adviser".
+To use a local API with the frontend, see [`backend/api/README.md`](backend/api/README.md) for routes and options. Data checks for each backend folder are listed in its own README.
 
-Scroll into the field on the map for the 3D view (crop, then soil moisture, then groundwater), or use **Look under the field in 3D** / **See this field’s year (3D)** on the field panel. Without the API running, the app falls back to example data and says so.
+## Repo layout
 
-**Nation tools example:** on Pick your field, open **Nation tools example** (Torres-Martinez Reservation farm field), or go to `#spot=pt_n335100_w1161200`. Land status is tribal land; open the tools for drought rotation, groundwater, land and season, and funding.
-
-Current screenshots are in `design/screenshots/app/`.
-
-## Check the data
-
-Each backend chunk runs and checks on its own and prints PASS/FAIL lines:
-
-```sh
-cd backend/api      && uv run python checks/check_api.py     # every route, validated against schemas/
-cd backend/regional && uv run python checks/run_checks.py    # NASA POWER, reservoirs, drought, soils, NOAA stations
-cd backend/field    && uv run python checks/run_checks.py    # field outlines, crop history, satellite calendar, 30 m grid
-cd backend/engine   && uv run python checks/run_checks.py    # rotation scoring, incl. the OpenET water check
-cd backend/ground   && uv run python checks/run_checks.py    # OpenET, NASS, AMS, crop insurance, EQIP
-cd backend/ai       && uv run python checks/run_checks.py    # bare-field detectors (rule vs machine learning), stress
-cd backend/outlook  && uv run python checks/run_checks.py    # coming-season outlooks
-cd backend/nasa     && uv run python checks/run_checks.py    # SMAP, IMERG, GRACE, MODIS, ECOSTRESS, OPERA
-cd backend/nasa_open && uv run python checks/run_checks.py   # NASADEM, HLS, ISS photos
-cd backend/news     && uv run python checks/run_checks.py    # news timeline
-```
-
-Some FAIL lines are real findings rather than bugs, for example Colusa's winter flooding showing in only some winters. Each chunk's `README.md` explains its results.
-
-**Headline validation:** our modelled crop water use is within +16% (rice) and +21% (alfalfa) of OpenET's satellite-based measurements for the same fields and years. See `backend/engine/README.md`.
-
-## Re-fetching data (needs keys)
-
-Some sources need free accounts; see [SIGNUPS.md](SIGNUPS.md).
-- Copy `.env.example` to `.env` and fill it in. `.env` is git-ignored; never commit it.
-- Check the NASA login with `cd backend/nasa && uv run python check_auth.py`.
-
-## Layout
-
-| Path | What |
-|---|---|
-| `frontend/app/` | The app (Vite, React, TypeScript, MapLibre) |
-| `backend/api/` | FastAPI server; serves real data where it exists, fixtures otherwise |
-| `backend/nasa/` | NASA data behind the Earthdata login: SMAP, GPM IMERG, GRACE, MODIS, ECOSTRESS, OPERA |
-| `backend/nasa_open/` | NASA data without a login: NASADEM elevation, HLS imagery, ISS astronaut photos |
-| `backend/regional/` | NASA POWER weather, reference ET, risk days, reservoirs, Drought Monitor, SSURGO soils, NOAA stations |
-| `backend/field/` | Field outlines, Cropland Data Layer history, satellite cover calendar, 30 m grid |
-| `backend/ai/` | Bare-field detection (rule vs random forest / gradient boosting) and crop-stress anomalies |
-| `backend/engine/` | Crops, the 8 rotations, scoring with ranges and ties, water check against OpenET |
-| `backend/ground/` | California ground data: OpenET, CIMIS, NASS, AMS hay prices, crop-insurance losses, EQIP |
-| `backend/outlook/` | Coming-season outlooks: NOAA seasonal and drought outlooks, reservoirs, allocations |
-| `backend/news/` | Cached headlines for the timeline |
+| Folder | What |
+| --- | --- |
+| `frontend/app/` | The web app (Vite, React, TypeScript, MapLibre) |
+| `apps/android/` | Native Android app ([README](apps/android/README.md)) |
+| `apps/ios/` | Native iOS app ([README](apps/ios/README.md)) |
+| `backend/api/` | FastAPI server and routes ([README](backend/api/README.md)) |
+| `backend/engine/` | Crops, rotations and scoring with ranges |
+| `backend/nasa/`, `backend/nasa_open/` | NASA data, with and without an Earthdata login |
+| `backend/regional/`, `backend/field/`, `backend/ground/`, `backend/outlook/` | Weather, field outlines and crop history, ground data, seasonal outlooks |
+| `backend/nation/` | Nation tools and funding programs |
 | `schemas/`, `fixtures/` | JSON Schemas and example payloads |
 | `data/cache/` | Cached source data per field |
-| `design/` | Screenshots, capture scripts, and earlier design explorations |
-| `frontend/variants/`, `design/explorations/` | Earlier design rounds, kept for reference only |
-| `docs/` | Team plan, build spec, brief coverage, research, judging rubric |
-| `.claude/skills/fieldshift-visual-design/` | Design rules for the app, charts, brief and slides |
+| `design/` | Screenshots and design work |
+| `video/` | The demo video |
+| `docs/` | Plan, build spec, research |
+
+More: [PLAN.md](PLAN.md), [CONTRACT.md](CONTRACT.md), [SIGNUPS.md](SIGNUPS.md), [docs/SUBMISSION.md](docs/SUBMISSION.md).
+
+## Team
+
+[TEAM NAMES]
+
+CropLytics is an independent project. It is not endorsed by NASA or ESA.
