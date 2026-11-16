@@ -2,7 +2,7 @@
 
 **Plan next season's crop rotation with NASA data.**
 
-[Live site](https://croplytics.xyz) · [Backup](https://croplytics-app.onrender.com) · [Video](video/croplytics-30s-v9.mp4) · [Android download](https://github.com/spuriNV/space_apps/releases/latest)
+[Live site](https://croplytics.xyz) · [Backup](https://croplytics-app.onrender.com) · [Video](video/croplytics-30s-v9.mp4) · [Android app (APK)](https://github.com/spuriNV/space_apps/releases/latest/download/CropLytics-1.3.0.apk) · [Privacy](https://croplytics.xyz/privacy.html)
 
 NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data
 
@@ -42,13 +42,18 @@ Tips:
 
 ### Android
 
-1. Download the APK from [Releases](https://github.com/spuriNV/space_apps/releases/latest).
-2. Allow installing unknown apps when Android asks.
-3. Open the app.
+Native app, version 1.3.0, for Android 8 and newer.
+
+1. On your phone, open [**CropLytics-1.3.0.apk**](https://github.com/spuriNV/space_apps/releases/latest/download/CropLytics-1.3.0.apk) (or the [release page](https://github.com/spuriNV/space_apps/releases/tag/v1.3.0)).
+2. Allow your browser to install unknown apps when Android asks.
+3. Open CropLytics, pick a field, and swipe up on the sheet for the five steps.
 
 ### iOS
 
-Build it from [`apps/ios`](apps/ios) in Xcode (see Run it locally).
+Native SwiftUI app with a MapLibre map, in [`apps/ios`](apps/ios).
+
+1. On a Mac with Xcode 16 or newer: `brew install xcodegen && cd apps/ios && xcodegen generate`.
+2. Open `CropLytics.xcodeproj`, choose an iPhone simulator or your own iPhone, and press Run.
 
 ## NASA data
 
