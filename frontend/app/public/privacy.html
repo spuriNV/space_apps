@@ -23,28 +23,29 @@ li{margin:.3rem 0}
 <h1>CropLytics privacy policy</h1>
 <p class="meta">Effective 15 November 2026. Covers the CropLytics Android app (app.croplytics) and the website https://croplytics.xyz.</p>
 
-<p>CropLytics is a crop-rotation planner for growers and their advisers. It is run by one person, Caiden Merklin. This page says what the app and the website send, to whom, and what we do not do.</p>
+<p>CropLytics is a crop-rotation planner for growers and their advisers. It is run by one independent developer. This page says what the app and the website send, to whom, and what we do not do.</p>
 
 <h2>The short version</h2>
 <ul>
 <li>No accounts, no sign-in, no ads, no tracking, no purchases.</li>
 <li>We do not sell your data or share it for advertising.</li>
-<li>The Android app does not ask for your location, microphone or camera.</li>
+<li>The Android app does not ask for your location, microphone or camera. The website can use your browser's microphone only if you tap the voice button.</li>
 </ul>
 
 <h2>What is sent to our server</h2>
-<p><strong>Android app.</strong> When you open a field, the app asks our server for that field's data using the field's id. If you move the water-limit slider or change priorities, it sends the limit, the priorities and the what-if choice for that field id so the options can be ranked again. Like any web request, the server also receives your IP address and phone model details such as the app version. All requests use HTTPS.</p>
-<p><strong>Website.</strong> In addition to the above, if you tap a spot on the map or draw a field, the coordinates of that spot or outline are sent so the server can look up satellite data for it. If you use the Ask feature, your question, the last few messages, the field id, the open tab and the viewing date are sent to our server and, to write the answer, to the DeepSeek API. If you use voice input where your browser lacks its own, a short audio clip is sent to our server, turned into text, and discarded; clips are decoded in memory and are not saved. Chat text and transcripts are not logged or stored by us. Spoken answers are produced on our own server.</p>
+<p><strong>Android app.</strong> When you open a field, the app asks our server for that field's data using the field's id. If you move the water-limit slider or change priorities, it sends the limit, the priorities and the what-if choice for that field id so the options can be ranked again. If you long-press the map, or draw a field by tapping its corners, the coordinates of that spot or outline are sent so the server can look up satellite data and compute the analysis; the server may cache the result. If you use Ask CropLytics, your question, the last few messages, the field id, the open tab and the viewing date go to our server and, to write the answer, to the DeepSeek API. Like any web request, the server also receives your IP address and the app version. All requests use HTTPS. The app never uses your device location.</p>
+<p><strong>Website.</strong> The same as the app: tapped or drawn spots and outlines, and Ask questions. In addition, if you use voice input, a short audio clip is sent to our server, turned into text with Whisper running on that server, and deleted right after; clips are decoded in memory and are not saved. On Chrome and Safari the browser's own speech service may be used instead, under its maker's policy. Chat text and transcripts are not logged or stored by us. Spoken answers are produced on our own server.</p>
 
 <h2>What stays on your phone</h2>
-<p>The Android app saves what it fetched (so it works offline) and your water limits on your phone only. Clearing the app's storage or uninstalling the app deletes them. The app's cache is excluded from cloud backup. If you tap Share on the adviser summary, the PDF goes only where you send it.</p>
+<p>The Android app saves what it fetched (so it works offline) and your settings, such as water limits, on your phone only. Clearing the app's storage or uninstalling the app deletes them. The app's cache is excluded from cloud backup. If you tap Share on the adviser summary, the PDF goes only where you send it.</p>
 
 <h2>Third parties</h2>
 <ul>
 <li><strong>Esri</strong> (server.arcgisonline.com, and services9.arcgis.com on the website): satellite map imagery and field thumbnails. Esri sees your IP address and the map area you view.</li>
 <li><strong>OpenFreeMap</strong> (tiles.openfreemap.org): map labels. It sees your IP address and the map area you view.</li>
 <li><strong>Hosting:</strong> our API and website are served from our own server, with a backup copy on Render (croplytics-app.onrender.com), which the Android app uses. These hosts receive the requests described above and may keep ordinary server logs that include IP addresses.</li>
-<li><strong>DeepSeek:</strong> website Ask feature only, as described above.</li>
+<li><strong>DeepSeek:</strong> the Ask CropLytics feature (app and website), as described above.</li>
+<li><strong>Data providers:</strong> our server, not your device, calls public data services (NASA, USDA, OpenET and others) for a field. They never receive your identity.</li>
 </ul>
 <p>These providers have their own privacy policies. We do not use advertising, analytics or crash-reporting services.</p>
 
@@ -52,7 +53,7 @@ li{margin:.3rem 0}
 <p>Field data comes from public sources such as NASA Earth data, ESA Sentinel-2, USDA and OpenET. We do not receive those providers' data about you, and CropLytics is not endorsed by NASA, any agency or any Nation.</p>
 
 <h2>Keeping and deleting data</h2>
-<p>We do not hold an account or profile about you. Anything on your phone is deleted by clearing storage or uninstalling. For anything else, write to the address below and we will delete what we can find.</p>
+<p>We do not hold an account or profile about you. Anything on your phone is deleted by clearing storage or uninstalling. For anything else, open an issue at the link below and we will delete what we can find.</p>
 
 <h2>Children</h2>
 <p>CropLytics is for adults (18 and over). It is not directed to children.</p>
@@ -61,7 +62,7 @@ li{margin:.3rem 0}
 <p>If this policy changes we will update this page and its effective date.</p>
 
 <h2>Contact</h2>
-<p>Caiden Merklin, <a href="mailto:caiden.merklin@gmail.com">caiden.merklin@gmail.com</a></p>
+<p>Contact: open an issue at <a href="https://github.com/spuriNV/space_apps">github.com/spuriNV/space_apps</a></p>
 </main>
 </body>
 </html>

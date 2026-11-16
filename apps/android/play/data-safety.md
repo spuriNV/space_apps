@@ -1,4 +1,4 @@
-# Data safety form: answers for CropLytics 1.2.0 (app.croplytics)
+# Data safety form: answers for CropLytics 1.3.0 (app.croplytics)
 
 Based on the code in `apps/android/app/src/main` (read 15 Nov 2026). Play Console > Policy and programs > App content > Data safety.
 
@@ -8,7 +8,7 @@ Based on the code in `apps/android/app/src/main` (read 15 Nov 2026). Play Consol
 - Network (all HTTPS): reads `https://croplytics-app.onrender.com/api` (Retrofit GET for fields and their data by field id; one POST that sends the water limit, priority weights and a what-if scenario for a field id). Map tiles from `server.arcgisonline.com` (Esri) and `tiles.openfreemap.org`; field thumbnails from Esri.
 - On the phone: a Room cache of server answers, a file store for the daily record, and DataStore holding the water limit per field. Cloud backup of the database is excluded. The PDF for the adviser is shared through FileProvider, only when the user taps Share.
 - No SDKs for ads, analytics, crash reporting or sign-in. No accounts. No purchases.
-- The app does not send the user's coordinates. It has no tapped or drawn fields and no voice input; those exist only on the website.
+- Since 1.3.0 the app sends coordinates the user chooses (long-press on the map, corners of a drawn field) to `/analyze` and `/my-fields`, and Ask CropLytics questions to `/chat`, which our server forwards to the DeepSeek API. No voice input in the app (voice is website only). Device location is never read.
 
 ## Section 1: Data collection and security
 
@@ -16,19 +16,17 @@ Based on the code in `apps/android/app/src/main` (read 15 Nov 2026). Play Consol
 |---|---|
 | Does your app collect or share any of the required user data types? | **Yes** (see the decision below; "No" is also defensible) |
 | Is all of the user data collected by your app encrypted in transit? | **Yes** (HTTPS only) |
-| Do you provide a way for users to request that their data be deleted? | **Yes**: clear storage or uninstall removes everything on the phone; nothing is held on a server account. Email caiden.merklin@gmail.com for anything else. (No account exists, so no deletion URL is required.) |
+| Do you provide a way for users to request that their data be deleted? | **Yes**: clear storage or uninstall removes everything on the phone; nothing is held on a server account. Email (Play requires a developer email: use your Console account email; public text uses github.com/spuriNV/space_apps) for anything else. (No account exists, so no deletion URL is required.) |
 
-### DECISION for the owner: how to declare the field ids and water limit
-
-The app sends a field id and, when the slider is used, a water limit and priorities. None of it identifies a person, and there is no account. Recommended, cautious answer:
+### Declaration for 1.3.0 (replaces the 1.2.0 decision)
 
 | Data type | Collected | Shared | Optional | Purpose |
 |---|---|---|---|---|
-| App activity > Other actions (field viewed, water limit and priorities used for scoring) | Yes | No | No (needed for the feature) | App functionality |
+| App activity > Other actions (field viewed, water limit, priorities) | Yes | No | No | App functionality |
+| Location > Approximate location (spots pressed and fields drawn by the user, not device location) | Yes | No | Yes | App functionality |
+| Messages > Other in-app messages (Ask CropLytics questions) | Yes | **Yes**, with DeepSeek (service provider that writes the answer) | Yes | App functionality |
 
-Everything else on the Data types list: **not collected**: location (approximate and precise), personal info, financial info, health, messages, photos and videos, audio, files and docs, calendar, contacts, web browsing, device or other IDs, app info and performance (no crash logs).
-
-Alternative: answer "No data collected." Google's own guidance lets you skip data that is processed only ephemerally or is not tied to a person, but the server does see the IP address of every request, so the cautious table above is safer. Third-party tile servers (Esri, OpenFreeMap) also see the IP address and the map area when tiles load. Treat them as service providers acting for the app, so "Shared: No".
+Not collected: precise device location, personal info, financial, health, photos and videos, audio (voice is website only), files, calendar, contacts, web browsing, device or other IDs, crash logs. Not tied to an account or identity; not retained for ads. Provider-processing note: if you treat DeepSeek strictly as a service provider acting for you, Google lets you mark "Shared: No"; the cautious answer above is "Yes".
 
 ## Section 2: Other statements
 
@@ -37,7 +35,7 @@ Alternative: answer "No data collected." Google's own guidance lets you skip dat
 | Data sold | No |
 | Data used for advertising or marketing | No |
 | Data used for tracking across apps | No |
-| Data shared with third parties | No |
+| Data shared with third parties | Yes: Ask questions to DeepSeek (see above) |
 | Ads | No ads |
 
 ## Website features (only if the website is covered)

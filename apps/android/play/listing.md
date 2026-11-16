@@ -1,4 +1,4 @@
-# Google Play listing: CropLytics 1.2.0 (app.croplytics)
+# Google Play listing: CropLytics 1.3.0 (app.croplytics)
 
 Paste each block below into Play Console > Grow users > Store presence > Main store listing. Character counts are at the bottom.
 
@@ -30,6 +30,12 @@ Pick a field on the map and see, in plain words:
 Water, in the units you use
 Every rotation shows its water need per acre in inches and in acre-feet. Set your own water limit with the slider. The app scores each option again against that limit and tells you how far over or under you would be.
 
+This week
+A card at the top of Field now: irrigate or wait, a 7-day water-need strip, which field work the weather allows, the forecast in inches and degrees F, and alerts.
+
+Any spot, any field
+Long-press the map to analyze that spot, or draw your own field by tapping its corners. About 450 farms are pinned on the map; tap one to open it. Ask CropLytics answers typed questions about the open field.
+
 Compare
 See the two best options for your field, what each one gains and what it gives up, and how it fares in a dry year or a wet one. Change your priorities and the ranking changes with them.
 
@@ -49,7 +55,7 @@ Made to be read
 Text follows your phone's font size. Charts have spoken descriptions for TalkBack, buttons are large, and there is a dark theme.
 
 No account, no ads
-There is nothing to sign up for. The app has no ads, no tracking and no purchases. It does not use your location or microphone. Privacy policy: https://croplytics.xyz/privacy.html
+There is nothing to sign up for. The app has no ads, no tracking and no purchases. It does not use your location or microphone. Spots you press or draw, and questions you ask, are sent to our server to work out the answer. Privacy policy: https://croplytics.xyz/privacy.html
 
 Where the data comes from
 - NASA Earth data: Harmonized Landsat Sentinel-2 (HLS) and Landsat imagery, GPM IMERG rainfall, SMAP soil moisture, GRACE-FO groundwater and NASA POWER weather.
@@ -63,13 +69,13 @@ Satellite pixels are coarse. SMAP and GRACE-FO readings cover areas many miles w
 Not endorsed
 CropLytics is an independent project. It is not endorsed by or affiliated with NASA, ESA, USDA, OpenET, any government agency, or any First Nation or tribal Nation.
 
-Questions or corrections: caiden.merklin@gmail.com
+Questions or corrections: open an issue at github.com/spuriNV/space_apps
 Website: https://croplytics.xyz
 ```
 
 ## Category
 
-Primary: **Productivity** (Play has no farming category; "Business" is the other fit, and is what advisers use it for). Recommended: Productivity. App (not Game).
+Primary: **Productivity**. Play has no farming category; Weather is wrong (we plan crops, not forecast), Tools is a catch-all. Productivity fits a planning aid for growers and advisers. App (not Game).
 
 ## Tags (pick up to 5 from the Console list; closest matches)
 
@@ -79,7 +85,8 @@ Keywords to work into text elsewhere: crop rotation, farm planning, irrigation, 
 
 ## Contact details
 
-- Email: caiden.merklin@gmail.com
+- Email: the Play Console account email (required, shown publicly; use a project address if you want one)
+- Issues: github.com/spuriNV/space_apps
 - Website: https://croplytics.xyz
 - Phone: optional, leave blank
 - Privacy policy URL: https://croplytics.xyz/privacy.html (live once the site redeploys, about 2 minutes after the push)
@@ -98,4 +105,62 @@ Keywords to work into text elsewhere: crop rotation, farm planning, irrigation, 
 | Short description | 70 | 80 |
 | Full description | 3140 | 4,000 |
 
-Note: the Android app has no "This week" screen (it exists on the website), so the description does not claim it. Add it back when the app has it.
+
+
+## Graphics
+
+Folder `screenshots/` holds 8 phone screenshots (1080 x 2160, 1:2). Short and full descriptions above are re-counted below after the 1.3.0 edit; check with the Console counter.
+
+## Spanish (es-419)
+
+Short description (max 80):
+
+```
+Planifique rotaciones de cultivos por parcela, con agua en pulgadas y acre-pies.
+```
+
+Full description:
+
+```
+CropLytics ayuda al agricultor y a su asesor a planear la próxima rotación de cultivos de una parcela, con datos de satélite de la NASA y una cifra clara de agua.
+
+Elija una parcela en el mapa y vea, en palabras sencillas:
+
+- Cómo está la parcela ahora: lluvia, humedad del suelo, verdor y agua subterránea, comparados con lo normal para la fecha.
+- Cómo se ve la próxima temporada: lluvia de invierno, suministro de agua y cuánta agua necesitaría el próximo cultivo.
+- El año de esta parcela: una franja por temporada desde 2023, con cultivo, suelo desnudo, inundación y estrés.
+
+Esta semana
+Una tarjeta al inicio: regar o esperar, la necesidad de agua de 7 días, qué labores permite el clima, el pronóstico en pulgadas y grados F, y alertas.
+
+Cualquier punto, cualquier parcela
+Mantenga presionado el mapa para analizar ese punto, o dibuje su propia parcela tocando las esquinas. Unas 450 fincas aparecen marcadas; toque una para abrirla. Pregunte a CropLytics sobre la parcela abierta.
+
+Agua, en las unidades que usted usa
+Cada rotación muestra su necesidad de agua por acre en pulgadas y en acre-pies. Fije su propio límite de agua con el control deslizante y la app recalcula cada opción.
+
+Comparar
+Vea las dos mejores opciones, lo que gana y lo que cede cada una, y cómo le va en un año seco o húmedo. Cambie sus prioridades y el orden cambia.
+
+Para su asesor
+Una página tamaño Carta con la parcela, las cifras y las fuentes. Compártala como PDF o imprímala desde el teléfono.
+
+Funciona con poca señal
+Todo lo que abre se guarda en el teléfono. El servidor puede tardar hasta un minuto en despertar; la app avisa cuando espera.
+
+Sin cuenta, sin anuncios
+No hay nada que registrar. Sin anuncios, sin rastreo y sin compras. No usa su ubicación ni su micrófono. Los puntos que marca y las preguntas que hace se envían a nuestro servidor para calcular la respuesta. Política de privacidad: https://croplytics.xyz/privacy.html
+
+De dónde vienen los datos
+- NASA: Harmonized Landsat Sentinel-2 (HLS) y Landsat, lluvia GPM IMERG, humedad del suelo SMAP, agua subterránea GRACE-FO y clima NASA POWER.
+- Imágenes Sentinel-2 de la ESA, a través de HLS.
+- USDA: mapas y estadísticas de cultivos (NASS) y estudios de suelos.
+- OpenET: para contrastar nuestras cifras de agua.
+- Mapa de Esri y etiquetas de OpenFreeMap.
+
+Los píxeles de satélite son gruesos y algunas lecturas son estimaciones. Verifique localmente antes de sembrar o cambiar una rotación. CropLytics ayuda a decidir; no reemplaza al agricultor ni al asesor.
+
+Proyecto independiente, sin respaldo ni afiliación con la NASA, ESA, USDA, OpenET ni ninguna agencia.
+
+Sitio web: https://croplytics.xyz
+```

@@ -1,6 +1,6 @@
 # Play Console click-path for CropLytics (app.croplytics)
 
-Files are in `apps/android/play/`. Do these in order. Build the AAB separately (`./gradlew bundleRelease`, versionCode 4, versionName 1.2.0).
+Files are in `apps/android/play/`. Do these in order. Build the AAB separately (`./gradlew bundleRelease`, versionName 1.3.0, versionCode 5).
 
 ## 1. Create app
 1. play.google.com/console > **Create app**.
@@ -26,14 +26,14 @@ Files are in `apps/android/play/`. Do these in order. Build the AAB separately (
 | Privacy policy | `https://croplytics.xyz/privacy.html` (check it loads first) | `privacy.html` |
 | App access | All functionality available without special access | `data-safety.md` |
 | Ads | No ads | `data-safety.md` |
-| Content rating | Start questionnaire, email caiden.merklin@gmail.com, category Utility/Productivity, all answers No | `data-safety.md` |
+| Content rating | Start questionnaire, email (Play requires a developer email: use your Console account email; public text uses github.com/spuriNV/space_apps), category Utility/Productivity, all answers No | `data-safety.md` |
 | Target audience and content | 18 and over only; not for children | `data-safety.md` |
 | Data safety | Enter the table, encrypted in transit Yes, deletion Yes | `data-safety.md` (decide the declaration row first) |
 | Government apps, Financial features, Health | None / No | `data-safety.md` |
 | News app, COVID-19 | No | |
-| Select app category and contact details | Category Productivity (App). Email caiden.merklin@gmail.com. Website https://croplytics.xyz | `listing.md` |
+| Select app category and contact details | Category Productivity (App). Email (Play requires a developer email: use your Console account email; public text uses github.com/spuriNV/space_apps). Website https://croplytics.xyz | `listing.md` |
 | Main store listing | Name, short description, full description | `listing.md` |
-| Graphics | App icon `icon-512.png`; feature graphic `feature-graphic.png`; phone screenshots `screenshot-1.png` to `screenshot-4.png` | this folder |
+| Graphics | App icon `icon-512.png`; feature graphic `feature-graphic.png`; phone screenshots files in `screenshots/` | this folder |
 
 ## 5. Before you press publish
 - Confirm https://croplytics.xyz/privacy.html is live (redeploys about 2 minutes after the push to main).
