@@ -4,15 +4,15 @@
 import { useSyncExternalStore } from 'react';
 
 const KEY = 'croplytics.a11y';
-export type Theme = 'system' | 'light' | 'dark';
+export type Theme = 'light' | 'dark';
 export type LiteSetting = 'auto' | 'on' | 'off';
 export interface Prefs { outdoor: boolean; pause: boolean; simple: boolean; textPct: number; theme: Theme; dyslexia: boolean; largePrint: boolean; lite: LiteSetting }
-const DEFAULTS: Prefs = { outdoor: false, pause: false, simple: false, textPct: 100, theme: 'system', dyslexia: false, largePrint: false, lite: 'auto' };
+const DEFAULTS: Prefs = { outdoor: false, pause: false, simple: false, textPct: 100, theme: 'light', dyslexia: false, largePrint: false, lite: 'auto' };
 const read = (): Prefs => {
   try {
     const p = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) ?? '{}') } as Prefs;
     p.textPct = Math.min(200, Math.max(100, Math.round(Number(p.textPct) || 100)));
-    if (!['system', 'light', 'dark'].includes(p.theme)) p.theme = 'system';
+    if (!['light', 'dark'].includes(p.theme)) p.theme = 'light';
     if (!['auto', 'on', 'off'].includes(p.lite)) p.lite = 'auto';
     return p;
   } catch { return { ...DEFAULTS }; }
@@ -27,7 +27,7 @@ export function slowConnection(): boolean {
 }
 /** Lite mode is in force: turned on, or "Automatic" on a slow or Data Saver connection. */
 export const liteOn = () => state.lite === 'on' || (state.lite === 'auto' && slowConnection());
-const dark = () => state.theme === 'dark' || (state.theme === 'system' && typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches);
+const dark = () => state.theme === 'dark';
 
 export function applyPrefs() {
   const h = document.documentElement;
@@ -49,7 +49,7 @@ export function setPref<K extends keyof Prefs>(k: K, v: Prefs[K]) {
   subs.forEach((f) => f());
 }
 // the system theme and the connection can change while the page is open
-if (typeof matchMedia === 'function') matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (state.theme === 'system') { applyPrefs(); subs.forEach((f) => f()); } });
+if (typeof matchMedia === 'function') matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { /* light by default; system theme ignored */ });
 if (typeof navigator !== 'undefined') (navigator as unknown as { connection?: EventTarget }).connection?.addEventListener?.('change', () => { applyPrefs(); subs.forEach((f) => f()); });
 
 // the snapshot includes the derived Lite flag so components re-render when the connection changes

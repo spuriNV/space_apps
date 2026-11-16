@@ -16,8 +16,8 @@ function Row({ id, title, hint, checked, onChange }: { id: string; title: string
 
 function QuickSettings() {
   const p = usePrefs();
-  const themes: [Theme, string][] = [['system', t('System', 'Sistema')], ['light', t('Light', 'Claro')], ['dark', t('Dark', 'Oscuro')]];
-  const reset = () => { setPref('outdoor', false); setPref('pause', false); setPref('simple', false); setPref('dyslexia', false); setPref('textPct', 100); setPref('theme', 'system'); setPref('lite', 'auto'); };
+  const themes: [Theme, string][] = [['light', t('Light', 'Claro')], ['dark', t('Dark', 'Oscuro')]];
+  const reset = () => { setPref('outdoor', false); setPref('pause', false); setPref('simple', false); setPref('dyslexia', false); setPref('textPct', 100); setPref('theme', 'light'); setPref('lite', 'auto'); };
   return (
     <section className="ap-card ap-quick" aria-labelledby="ap-q" data-testid="a11y-quick">
       <h3 id="ap-q">{t('Quick settings', 'Ajustes rápidos')}</h3>

@@ -40,7 +40,7 @@ export function MenuItems({ onList, onAbout, onShortcuts, onDone }: { onList: ()
           <small>{ax('textSizeHint')}{prefs.textPct !== 100 && <> · <button type="button" className="link-btn" onClick={() => setPref('textPct', 100)}>{ax('reset')}</button></>}</small>
         </div>
         <Radios<Theme> name="theme" legend={ax('theme')} value={prefs.theme} onChange={(v) => setPref('theme', v)} testid="theme-group"
-          options={[{ v: 'system', label: ax('themeSystem') }, { v: 'light', label: ax('themeLight') }, { v: 'dark', label: ax('themeDark') }]} />
+          options={[{ v: 'light', label: ax('themeLight') }, { v: 'dark', label: ax('themeDark') }]} />
         <Switch checked={prefs.dyslexia} onChange={(v) => setPref('dyslexia', v)} title={ax('dys')} hint={ax('dysHint')} testid="dys-toggle" />
         <Switch checked={prefs.outdoor} onChange={(v) => setPref('outdoor', v)} title={t('ui.a11y.s1b')} hint={t('ui.mi.outdoor_s')} testid="outdoor-toggle" />
         <Switch checked={prefs.pause} onChange={(v) => setPref('pause', v)} title={t('ui.a11y.s2b')} hint={t('ui.mi.pause_s')} testid="pause-toggle" />
