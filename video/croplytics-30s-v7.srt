@@ -1,48 +1,36 @@
 1
-00:00:00,090 --> 00:00:01,120
+00:00:00,200 --> 00:00:01,190
 2022.
 
 2
-00:00:01,100 --> 00:00:05,160
+00:00:01,220 --> 00:00:05,700
 The water ran short, and this Colusa rice field sat bare all year.
 
 3
-00:00:05,180 --> 00:00:06,480
+00:00:05,780 --> 00:00:07,070
 What should it grow next?
 
 4
-00:00:06,460 --> 00:00:08,630
+00:00:07,100 --> 00:00:09,480
 CropLytics starts with the real field.
 
 5
-00:00:08,650 --> 00:00:12,340
+00:00:09,560 --> 00:00:13,510
 Ten years of NASA satellite passes show how it's really farmed.
 
 6
-00:00:12,360 --> 00:00:16,550
+00:00:13,540 --> 00:00:18,030
 This week: rain, crop water, and whether you can get on the ground.
 
 7
-00:00:16,570 --> 00:00:20,450
+00:00:18,060 --> 00:00:21,930
 Compare rotations, and see which still fit a dry year's water.
 
 8
-00:00:18,680 --> 00:00:20,330
-Every number shows its likely range.
-
-9
-00:00:20,430 --> 00:00:22,530
-Checked against measured water use: +16–21% vs OpenET. Nothing tuned.
-
-10
-00:00:22,430 --> 00:00:26,090
+00:00:21,960 --> 00:00:25,870
 First Nations farmers get the same tools, and the funding to match.
 
-11
-00:00:26,110 --> 00:00:27,020
-CropLytics.
-
-12
-00:00:27,000 --> 00:00:29,260
-Plan next season with NASA data.
+9
+00:00:25,900 --> 00:00:28,900
+CropLytics. Plan next season with NASA data.
 
