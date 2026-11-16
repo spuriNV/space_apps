@@ -112,6 +112,6 @@ More: [PLAN.md](PLAN.md), [CONTRACT.md](CONTRACT.md), [SIGNUPS.md](SIGNUPS.md), 
 
 ## Team
 
-[TEAM NAMES]
+Caiden, Matthew, Saketh, Sri
 
 CropLytics is an independent project. It is not endorsed by NASA or ESA.
