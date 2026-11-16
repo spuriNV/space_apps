@@ -1,0 +1,118 @@
+/* ===========================================================================================================
+   Phone pass (docs/ui-redesign-spec.md): one bottom-sheet model, one column of map controls that rides above the
+   sheet, cards and dialogs as full-height sheets with their own scroll and safe-area insets, 44 px targets, 14 px text.
+   Loaded last on purpose: it only refines the phone (<= 640 px) and short landscape layouts.
+   =========================================================================================================== */
+@media (max-width: 640px) {
+  :root { --fs-fine: calc(14px * var(--tx, 1)); }
+  .lang-toggle { font-size: 14px; }
+
+  /* bottom tab bar: number over label, five equal columns, never scrolls sideways (Spanish: "Temporada", "Imprimir") */
+  .mob-tabs { overflow: hidden; grid-template-columns: repeat(5, minmax(0, 1fr)); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+  .mob-tabs button { font-size: calc(14px * var(--tx, 1)); padding: 0 2px; min-width: 0; }
+  .mob-tabs button span { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; line-height: 1.2; padding: 4px 6px; max-width: 100%; white-space: nowrap; border-radius: var(--r-full); }
+  .mob-tabs button span em { font-style: normal; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .mob-tabs button { min-height: 50px; }
+  .mob-tabs button span { height: auto; min-height: 36px; padding: 2px 3px; line-height: 1.15; }
+  .mob-tabs button span b { font-weight: 700; font-size: 14px; }
+
+  /* sheet: a 44 px grabber, 44 px tabs */
+  .fp-grab { height: 44px; }
+  .fp-grab::after { display: none; }
+  .lang-toggle button { min-height: 44px; padding: 8px 12px; }
+  .ap-field input[type=range], .mi-group input[type="range"], .limit-ctl input[type="range"] { min-height: 44px; }
+  .ys-play, .ys-head button, .year-dock .btn { min-height: 44px; }
+  .year-dock .link, .link-btn { min-height: 44px; display: inline-flex; align-items: center; }
+  .pk-tabs button, [data-testid^="pick-tab-"] { min-height: 44px; }
+  .picker2 input[type="search"], .picker2 .pk-search input, [data-testid="lands-search"], [data-testid="pk-search"] { min-height: 44px; }
+  .ra, .read-aloud { min-height: 44px; }
+  input[type="range"] { min-height: 44px; }
+
+  /* map controls: ONE column, riding above the sheet (App.tsx sets bottom from the sheet height); compass is a gesture away */
+  .controls { grid-template-columns: 48px !important; gap: 6px; }
+  .controls .ctl-compass { display: none; }
+  @media (max-height: 800px) { .controls [data-testid="play-ctl"] { display: none; } } /* short phones: keep the column clear of the top-right tools */
+  .app.sheet-tall .controls, .app.sheet-tall .map-tools, .app.sheet-tall .lands-legend, .app.sheet-tall .res-legend, .app.sheet-tall .hud { visibility: hidden; }
+  .app:has(.year-dock) .map-tools { display: none !important; }
+  .app.drawing .controls, .app.drawing .lands-legend, .app.drawing .res-legend, .app.drawing .hud, .app:has(.year-dock) .controls, .app:has(.year-dock) .lands-legend, .app:has(.year-dock) .res-legend { display: none !important; }
+  /* map legends keep clear of the control column and wrap instead of being cut off */
+  .lands-legend, .res-legend { left: 12px !important; right: 76px; width: auto; max-width: none; }
+  .lands-legend small, .res-legend small { white-space: normal; }
+  .lite-badge { bottom: calc(var(--tabs-h) + 8px); }
+
+  /* Rain & drought: the card owns the top, the timeline sits above the peeking sheet, nothing else floats over them */
+  .app.wx-open .hud, .app.wx-open .controls, .app.wx-open .lands-legend, .app.wx-open .res-legend, .app.wx-open .date-banner { display: none !important; }
+  .rain-tl { bottom: calc(var(--tabs-h) + 96px + var(--s-2)); }
+  .rain-card { max-height: calc(100dvh - var(--bar-h) - 3px - var(--s-3) - 48px - var(--s-2) - 96px - var(--tabs-h) - 112px); padding-bottom: calc(var(--s-4) + env(safe-area-inset-bottom, 0px)); }
+  .rain-x { width: 44px; height: 44px; top: 0; right: 0; }
+  .rain-card .rain-layers { width: calc(100% - 48px); }
+  .rain-tl input[type="range"] { min-height: 44px; margin: -10px 0; }
+  .rain-tl .tl-body { padding-bottom: 18px; }
+  .hud.drill-hint { min-height: 44px; }
+
+  /* Ask CropLytics: a full-height sheet under the top bar, its own scroll, above the tab bar */
+  .ask-wrap { position: static; }
+  .ask-pop { position: fixed; left: 0; right: 0; top: calc(var(--bar-h) + 3px + var(--s-2)); bottom: 0; width: auto; max-height: none; border-radius: var(--r-xl) var(--r-xl) 0 0; z-index: 400; transform-origin: bottom center; padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+  .ask-head { padding-top: var(--s-2); }
+  .ask-log { min-height: 0; }
+  .ask-chip, .ask-speak, .ask-play { min-height: 44px; }
+  .ask-form input { height: 44px; }
+  .ask-form .icon-btn { width: 44px; height: 44px; }
+  .ask-foot p, .ask-hint { font-size: 14px; }
+
+  /* Draw a field: bar sits above the tab bar, scrolls if the keyboard or Spanish makes it tall; 44 px shape buttons */
+  .draw-bar { bottom: calc(var(--tabs-h) + 8px + env(safe-area-inset-bottom, 0px)); width: calc(100% - 16px); max-height: calc(100dvh - var(--bar-h) - var(--tabs-h) - 24px); overflow-y: auto; overscroll-behavior: contain; padding: var(--s-3) var(--s-4) var(--s-4); }
+  .draw-row .seg button, .draw-seg button { min-height: 44px; }
+  .draw-seg { flex-wrap: wrap; overflow: visible; border-radius: var(--r-lg); }
+  .draw-row .btn { min-height: 44px; }
+
+  /* dialogs and the Accessibility page: bottom sheets / full-height pages with their own scroll and safe-area insets */
+  .dlg-back, .dlg-scrim { place-items: end center; padding: 0; padding-top: env(safe-area-inset-top, 0px); }
+  .dlg { width: 100%; max-width: 100%; max-height: calc(100dvh - var(--s-4)); overflow-y: auto; overscroll-behavior: contain; border-radius: var(--r-xl) var(--r-xl) 0 0; padding: var(--s-5) var(--s-4) calc(var(--s-4) + env(safe-area-inset-bottom, 0px)); padding-left: max(var(--s-4), env(safe-area-inset-left)); padding-right: max(var(--s-4), env(safe-area-inset-right)); }
+  .dlg.wide { height: calc(100dvh - var(--s-3)); padding: 0; }
+  .dlg header { padding: var(--s-3) var(--s-4) var(--s-2); }
+  .dlg-body { padding: 0 var(--s-4) calc(var(--s-5) + env(safe-area-inset-bottom, 0px)); overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .dlg.wide header { border-radius: var(--r-xl) var(--r-xl) 0 0; }
+  .dlg-row .btn, .dlg-row button { min-height: 44px; }
+  .dlg .icon-btn, .dlg header .icon-btn { width: 44px; height: 44px; }
+
+  /* land panel and lists: own scroll, clear of the tab bar and home indicator */
+  .land-panel, .map-list { padding-bottom: env(safe-area-inset-bottom, 0px); overscroll-behavior: contain; }
+
+  /* Spanish and big text: long strings wrap or truncate instead of pushing the layout */
+  .tb-field b, .tb-field small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .btn, .chip, .opt-row, .pk-row, .nt-chip { overflow-wrap: anywhere; }
+  .step-foot .btn { min-width: 0; }
+  .tour-card { max-height: calc(100dvh - var(--bar-h) - var(--tabs-h) - 24px); overflow-y: auto; }
+}
+
+/* ---- short landscape phones (844 x 390): the desktop layout, with room made for the map controls ---- */
+@media (max-height: 500px) and (orientation: landscape) {
+  .controls { grid-template-columns: 48px !important; display: grid !important; gap: 4px; }
+  .controls .ctl-desk, .controls .ctl-compass { display: none; }
+  .ctl { width: 44px; height: 44px; }
+  .ctl-group { height: 88px; width: 44px; }
+  .lands-legend, .res-legend { max-width: 300px; }
+  .lands-legend small, .res-legend small { display: none; }
+  .tb-tabs button, .tb-ask, .tb-layers, .tb-date, .tb-menu-btn { min-width: 44px; min-height: 44px; }
+  [data-testid^="pick-tab-"] { min-height: 44px; }
+  .app:has(.year-dock) .map-tools, .app:has(.year-dock) .hud { display: none !important; }
+  .ask-pop { position: fixed; top: calc(var(--bar-h) + 3px + var(--s-2)); right: var(--s-2); bottom: var(--s-2); max-height: none; width: min(380px, calc(100vw - 16px)); z-index: 400; }
+  .dlg-back, .dlg-scrim { padding: var(--s-2); }
+  .dlg { max-height: calc(100dvh - var(--s-4)); overflow-y: auto; }
+  .dlg.wide { height: calc(100dvh - var(--s-4)); }
+  .rain-card { max-height: calc(100dvh - var(--bar-h) - 3px - var(--s-4) - 48px - var(--s-2) - 8px); }
+  .draw-bar { bottom: var(--s-2); max-height: calc(100dvh - var(--bar-h) - 24px); overflow-y: auto; }
+}
+
+/* ---- touch sizes shared by phones and short landscape phones: 14 px type, 44 px targets ---- */
+@media (max-width: 640px), (max-height: 500px) and (orientation: landscape) {
+  :root { --fs-fine: calc(14px * var(--tx, 1)); }
+  .maplibregl-ctrl-scale { font-size: 14px; }
+  .pk-tabs button[data-testid^="pick-tab-"], .picker2 input, .ra, .read-aloud, .ys-play, .rain-x, .hud.drill-hint, .lang-toggle button, .ask-chip, .ask-speak, .ask-form input { min-height: 44px; }
+  .rain-x { min-width: 44px; }
+  input[type="range"] { min-height: 44px; }
+  .lang-toggle { font-size: 14px; }
+  .app.wx-open .lands-legend, .app.wx-open .res-legend, .app.wx-open .hud { display: none !important; }
+  .app.drawing .lands-legend, .app.drawing .res-legend { display: none !important; }
+}

@@ -509,7 +509,7 @@ export default function App() {
 
   return (
     <DetailCtx.Provider value={{ on: detail, set: setDetail }}>
-    <div className={`app ${detail ? 'detail-on' : 'detail-off'} ${wxOn ? 'wx-open' : ''}`}>
+    <div className={`app ${detail ? 'detail-on' : 'detail-off'} ${wxOn ? 'wx-open' : ''} ${drawing ? 'drawing' : ''} ${phone && (leftPanel || stepPanel) && sheetPx > window.innerHeight * 0.6 ? 'sheet-tall' : ''}`}>
       <a className="skip-link" href="#field-panel" onClick={(e) => { e.preventDefault(); const el = document.getElementById('field-panel'); if (el) { el.focus(); el.scrollIntoView({ block: 'nearest' }); } else document.getElementById('main')?.focus(); }}>{tr('app.skip')}</a>
       <div className="sr-only-live" ref={setLiveRegion} aria-atomic="true" data-testid="ax-live" />
       {lite && <p className="lite-badge" data-testid="lite-badge">{ax('liteBadge')}</p>}
@@ -588,7 +588,7 @@ export default function App() {
       </header>
       {tour != null && selected?.id === exId && <Tour stops={exStops} idx={tour} go={tourGo} canReplay={canReplay} onReplay={startReplay} onClose={() => setTour(null)} />}
       <nav className="mob-tabs" aria-label={tr('app.steps')}>
-        {FLOW.map((f) => <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} disabled={f.id !== 'pick' && !selected} data-testid={`mtab-${f.id}`}><span>{f.n} {tr(`flow.${f.id}.short`)}</span></button>)}
+        {FLOW.map((f) => <button key={f.id} className={step === f.id ? 'on' : ''} aria-current={step === f.id ? 'step' : undefined} onClick={() => goStep(f.id)} disabled={f.id !== 'pick' && !selected} data-testid={`mtab-${f.id}`}><span><b className="mt-n">{f.n}</b>{' '}<em>{tr(`flow.${f.id}.short`)}</em></span></button>)}
       </nav>
       {t !== TODAY_T && panel !== 'season' && panel !== 'compare' && !briefOpen && <div className="date-banner" data-testid="date-banner" role="status" style={phone ? undefined : { left: `calc(50% + ${(leftInset - rightInset) / 2}px)` }}><span>{tr('app.showing')} <b>{tLabel(t)}</b></span><button className="btn btn-secondary btn-sm" onClick={() => { setT(TODAY_T); setPlaying(false); }}>{tr('app.backToday')}</button></div>}
 
@@ -641,7 +641,7 @@ export default function App() {
         <button className="ctl ctl-desk glass" onClick={() => map.current?.flyContinent()} title="Whole US and Canada" aria-label="Show the whole US and Canada" data-testid="continent-ctl"><Icon name="fields" size={18} /></button>
         <button className="ctl ctl-desk glass" onClick={() => { if (!layersOpen) announce('layers'); setLayersOpen(!layersOpen); }} title={tr('app.layers')} aria-label={tr('app.layers')} aria-expanded={layersOpen} data-testid="layers-ctl"><Icon name="layers" size={18} /></button>
         {selected && d?.cal && <button className="ctl glass" onClick={() => { if (canReplay) startReplay(); else setPlaying(!playing); }} title={playing || replaying ? tr('app.pause') : tr('app.playT')} aria-label={playing || replaying ? tr('app.pauseA') : tr('app.playA')} aria-pressed={playing || replaying} data-testid="play-ctl"><Icon name={playing || replaying ? 'pause' : 'play'} size={18} /></button>}
-        <button className="ctl glass" onClick={() => map.current?.resetNorth()} title={tr('app.north')} aria-label={tr('app.northA')}><span style={{ transform: `rotate(${-view.bearing - 45}deg)`, display: 'flex' }}><Icon name="compass" size={20} /></span></button>
+        <button className="ctl ctl-compass glass" onClick={() => map.current?.resetNorth()} title={tr('app.north')} aria-label={tr('app.northA')}><span style={{ transform: `rotate(${-view.bearing - 45}deg)`, display: 'flex' }}><Icon name="compass" size={20} /></span></button>
         <button className="ctl glass text" onClick={() => map.current?.toggle3D()} title={tr('app.tilt')} aria-label={view.pitch > 5 ? tr('app.flat') : tr('app.tilt3d')} data-testid="tilt">{view.pitch > 5 ? '2D' : '3D'}</button>
         <div className="ctl-group glass">
           <button onClick={() => map.current?.zoomBy(1)} title={tr('app.zin')} aria-label={tr('app.zin')}><Icon name="plus" size={18} /></button>
