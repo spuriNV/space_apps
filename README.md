@@ -6,7 +6,7 @@
 
 NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data
 
-![CropLytics overview](design/screenshots/app/overview.png)
+![CropLytics overview](docs/hero.png)
 
 ## What it does
 
