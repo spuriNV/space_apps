@@ -1,6 +1,6 @@
 NASA Space Apps Challenge 2026, Vancouver. Field Shift: Adapting Farms with NASA Data.
 
-Paste-ready. Replace `Caiden, Matthew, Saketh, Sri` first. Wording rule: no First Nation or tribe is named as a partner or endorser.
+Paste-ready. Wording rule: no First Nation or tribe is named as a partner or endorser.
 
 # CropLytics YouTube fields, video v7 (the team's own voice)
 
