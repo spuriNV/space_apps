@@ -2,7 +2,7 @@
 
 **Plan next season's crop rotation with NASA data.**
 
-[Live site](https://croplytics.xyz) · [Backup](https://croplytics-app.onrender.com) · [Video](video/croplytics-30s-v9.mp4) · [Android app (APK)](https://github.com/spuriNV/space_apps/releases/latest/download/CropLytics-1.3.0.apk) · [Privacy](https://croplytics.xyz/privacy.html)
+[Live site](https://croplytics.xyz) · [Video](video/croplytics-30s-v9.mp4) · [Android app (APK)](https://github.com/spuriNV/space_apps/releases/latest/download/CropLytics-1.3.0.apk) · [Privacy](https://croplytics.xyz/privacy.html)
 
 NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data
 
