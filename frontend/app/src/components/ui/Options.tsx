@@ -172,7 +172,7 @@ function WaterAnswer({ strategies, allocation, exampleLimit, state }: { strategi
 /** Torres-Martinez Reservation farm field (check_api): opens Nation tools with tribal land status. */
 export const NATION_EXAMPLE = { lat: 33.51, lon: -116.12, label: t('ui.nx.label'), sub: t('ui.nx.sub') };
 export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locations: Location[]; live: boolean | null; strips: Record<string, Record<number, string>>; selectedId: string | null; onSelect: (id: string) => void; onBC: () => void; onClose?: () => void; catalog?: Catalog | null; catGroup?: string | null; setCatGroup?: (g: string | null) => void; onCatalogPick?: (it: CatalogItem) => void; onExample?: () => void; onExampleBC?: () => void; onNationsExample?: () => void; onNationExample?: () => void; onSheet?: (visiblePx: number) => void ; lands?: LandFeature[] | null; activeLandId?: string | null; onPickLand?: (id: string) => void; tab?: 'fields' | 'lands'; setTab?: (t: 'fields' | 'lands') => void }) {
-  const sheet = useSheet(p.onSheet, { initial: 'peek', peek: () => Math.round(window.innerHeight * 0.35) });
+  const sheet = useSheet(p.onSheet, { initial: 'peek', min: true, key: 'croplytics.sheet.pick', peek: () => Math.max(150, Math.round(window.innerHeight * 0.2)) });
   const thumbs = useThumbs();
   const [q, setQ] = useState('');
   const [fam, setFam] = useState<string | null>(null);
@@ -185,6 +185,7 @@ export function FieldPicker(p: { mine?: Location[]; onDraw?: () => void; locatio
   return (
     <aside ref={sheet.ref} id="field-panel" tabIndex={-1} className={`picker2 pick-sheet sheet-${sheet.snap}`} data-testid="fields-panel" aria-label={t('ui.flow.pick.label')} {...sheet.handlers}>
       <button className="fp-grab" onClick={sheet.cycle} onKeyDown={sheet.onKey} aria-label={t('ui.resize')} data-testid="grab"><i /></button>
+      <button className="pk-pill" onClick={sheet.cycle} tabIndex={sheet.snap === 'min' ? 0 : -1} aria-hidden={sheet.snap !== 'min'} data-testid="pk-pill"><Icon name="fields" size={16} />{t('ui.pk.fields')}</button>
       <div className="pk-scroll">
       <header className="pk-head">
         <h1>{t('ui.flow.pick.label')}</h1>

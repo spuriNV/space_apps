@@ -141,23 +141,25 @@ export function StepShell(p: StepShellProps) {
   );
 }
 
-type Snap = 'peek' | 'half' | 'full';
-const SNAPS: Snap[] = ['peek', 'half', 'full'];
+type Snap = 'min' | 'peek' | 'half' | 'full';
+const MIN_PX = 72; // collapsed: the grabber and a pill; the map is essentially full screen
+export const sheetMemory = (key: string): Snap | null => { try { const v = sessionStorage.getItem(key); return v === 'min' || v === 'peek' || v === 'half' || v === 'full' ? v : null; } catch { return null; } };
 const PHONE = '(max-width: 640px)';
 /** Phone bottom sheet: snap points peek (128px), half (52% of the screen) and full. The sheet follows the finger by
  *  transform only; on release it goes to the nearest snap point, or to the next one in the direction of a fling
  *  (faster than 0.5 px/ms). Tap the handle to cycle; arrow keys on the handle step. Content scrolls only at full;
  *  below that, a drag anywhere on the sheet moves the sheet (the Google Maps behaviour). */
-export function useSheet(onSheet?: (visiblePx: number) => void, opts?: { initial?: Snap; peek?: () => number }) {
+export function useSheet(onSheet?: (visiblePx: number) => void, opts?: { initial?: Snap; peek?: () => number; min?: boolean; key?: string }) {
+  const SNAPS: Snap[] = opts?.min ? ['min', 'peek', 'half', 'full'] : ['peek', 'half', 'full'];
   const ref = useRef<HTMLElement>(null);
-  const [snap, setSnap] = useState<Snap>(opts?.initial ?? 'half');
+  const [snap, setSnap] = useState<Snap>(() => { const m = opts?.key ? sheetMemory(opts.key) : null; return m && SNAPS.includes(m) ? m : opts?.initial ?? 'half'; });
   const peekPx = () => opts?.peek?.() ?? 128;
   const drag = useRef<{ id: number; y0: number; off0: number; last: number; t: number; v: number; on: boolean } | null>(null);
   const dragged = useRef(false);
   const phone = () => window.matchMedia(PHONE).matches;
   const offOf = (s: Snap) => {
     const h = ref.current?.offsetHeight ?? 0;
-    return s === 'full' ? 0 : Math.max(0, h - (s === 'half' ? Math.round(window.innerHeight * 0.52) : peekPx()));
+    return s === 'full' ? 0 : Math.max(0, h - (s === 'min' ? MIN_PX : s === 'half' ? Math.round(window.innerHeight * 0.52) : peekPx()));
   };
   const curOff = () => { const el = ref.current; return el ? new DOMMatrixReadOnly(getComputedStyle(el).transform).m42 : 0; };
   const go = useCallback((s: Snap) => {
@@ -165,6 +167,7 @@ export function useSheet(onSheet?: (visiblePx: number) => void, opts?: { initial
     if (!el || !phone()) return;
     el.style.setProperty('--sheet-off', `${offOf(s)}px`);
     setSnap(s);
+    if (opts?.key) { try { sessionStorage.setItem(opts.key, s); } catch { /* private mode */ } }
     onSheet?.((el.offsetHeight ?? 0) - offOf(s));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onSheet]);
@@ -193,7 +196,7 @@ export function useSheet(onSheet?: (visiblePx: number) => void, opts?: { initial
       if (snap === 'full' && dy < 0) { drag.current = null; return; } // already at the top: let the content scroll
       d.on = true; if (!el.hasPointerCapture(e.pointerId) && !(e.target as Element).hasPointerCapture?.(e.pointerId)) el.setPointerCapture(e.pointerId); el.classList.add('dragging');
     }
-    const max = offOf('peek');
+    const max = offOf(SNAPS[0]);
     let off = d.off0 + dy;
     if (off < 0) off = -Math.pow(-off, 0.7); // rubber band past the top and past peek
     else if (off > max) off = max + Math.pow(off - max, 0.7);
@@ -224,9 +227,9 @@ export function useSheet(onSheet?: (visiblePx: number) => void, opts?: { initial
     // a drag that started on a button must not also press it
     onClickCapture: (e: React.MouseEvent) => { if (dragged.current) { e.stopPropagation(); e.preventDefault(); } },
   };
-  const cycle = () => { if (!dragged.current) go(snap === 'peek' ? 'half' : snap === 'half' ? 'full' : 'peek'); };
+  const cycle = () => { if (!dragged.current) go(snap === 'min' ? 'peek' : snap === 'peek' ? 'half' : snap === 'half' ? 'full' : 'peek'); };
   const onKey = (e: RKeyboardEvent) => {
-    const i = SNAPS.indexOf(snap), j = e.key === 'ArrowUp' ? Math.min(2, i + 1) : e.key === 'ArrowDown' ? Math.max(0, i - 1) : i;
+    const i = SNAPS.indexOf(snap), j = e.key === 'ArrowUp' ? Math.min(SNAPS.length - 1, i + 1) : e.key === 'ArrowDown' ? Math.max(0, i - 1) : i;
     if (j !== i) { e.preventDefault(); go(SNAPS[j]); }
   };
   return { ref, snap, handlers, cycle, onKey };

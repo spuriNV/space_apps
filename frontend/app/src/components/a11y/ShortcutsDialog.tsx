@@ -2,7 +2,7 @@ import { Dialog } from './Dialog';
 import { ax } from './ax';
 import { t } from '../../i18n';
 
-const ROWS: [string, Parameters<typeof ax>[0]][] = [['1 2 3 4 5', 'kStep'], ['/', 'kSearch'], ['l', 'kList'], ['r', 'kRead'], ['?', 'kHelp'], ['Esc', 'kEsc']];
+const ROWS: [string, Parameters<typeof ax>[0]][] = [['1 2 3 4 5', 'kStep'], ['/', 'kSearch'], ['l', 'kList'], ['r', 'kRead'], ['m', 'kPanel'], ['?', 'kHelp'], ['Esc', 'kEsc']];
 /** The keyboard shortcuts, as a real table so a screen reader can walk it. */
 export function ShortcutsDialog({ onClose }: { onClose: () => void }) {
   return (

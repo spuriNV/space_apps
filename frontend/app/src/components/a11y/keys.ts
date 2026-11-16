@@ -6,7 +6,7 @@ const typing = (el: Element | null) => {
   return t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || (el as HTMLElement).isContentEditable;
 };
 /** One-key shortcuts. They do nothing while the person is typing in a field, or with Ctrl, Alt or Cmd held. */
-export function useShortcuts(h: { step: (n: number) => void; search: () => void; list: () => void; read: () => void; help: () => void }) {
+export function useShortcuts(h: { step: (n: number) => void; search: () => void; list: () => void; read: () => void; panel: () => void; help: () => void }) {
   const ref = useRef(h); ref.current = h;
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
@@ -16,6 +16,7 @@ export function useShortcuts(h: { step: (n: number) => void; search: () => void;
       else if (k === '/') { e.preventDefault(); ref.current.search(); }
       else if (k === 'l' || k === 'L') { e.preventDefault(); ref.current.list(); }
       else if (k === 'r' || k === 'R') { e.preventDefault(); ref.current.read(); }
+      else if (k === 'm' || k === 'M') { e.preventDefault(); ref.current.panel(); }
       else if (k === '?') { e.preventDefault(); ref.current.help(); }
     };
     document.addEventListener('keydown', on);

@@ -432,7 +432,11 @@ export default function App() {
   const phone = usePhone();
   // steps 3 to 5 sit in the same left slot as step 2 (one frame for the whole flow)
   const stepPanel = !!selected && !!d && !yearExpanded && !drawing && (briefOpen || panel === 'season' || panel === 'compare');
-  const leftInset = phone ? 0 : leftPanel || stepPanel ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
+  const hasLeft = !!(leftPanel || stepPanel);
+  const [panelOff, setPanelOff] = useState(() => { try { return sessionStorage.getItem('croplytics.panel.hidden') === '1'; } catch { return false; } });
+  const hidden = !phone && panelOff && hasLeft; // desktop: the side panel is slid away for a full-screen map
+  const setHidden = (v: boolean) => { setPanelOff(v); try { sessionStorage.setItem('croplytics.panel.hidden', v ? '1' : '0'); } catch { /* private mode */ } setTimeout(() => (document.querySelector<HTMLElement>(v ? '[data-testid="panel-show"]' : '#field-panel, [data-testid="land-panel"]'))?.focus(), 60); };
+  const leftInset = phone ? 0 : hasLeft && !hidden ? Math.min(460, window.innerWidth * 0.46) + 24 : 0;
   const rightInset = layersOpen ? 396 : 0;
   const bottomInset = phone ? 64 + (leftPanel || stepPanel ? sheetPx : 0) : yearExpanded ? (showEarlier ? 470 : 290) : 12;
   // "Ten years from orbit": needs the real quarterly grid (preset fields); the button is hidden elsewhere
@@ -485,6 +489,7 @@ export default function App() {
   useShortcuts({
     step: (n) => { if (!dialogOpen()) goNumber(n); },
     search: () => { if (dialogOpen()) return; setSwitchOpen(true); setTimeout(() => searchRef.current?.focus(), 0); },
+    panel: () => { if (!dialogOpen() && !phone && hasLeft) setHidden(!hidden); },
     list: () => { if (!dialogOpen()) { announce('draw'); setListOpen(true); } },
     read: () => { if (!dialogOpen()) readAnswer(); },
     help: () => setKeysOpen((v) => !v),
@@ -509,7 +514,7 @@ export default function App() {
 
   return (
     <DetailCtx.Provider value={{ on: detail, set: setDetail }}>
-    <div className={`app ${detail ? 'detail-on' : 'detail-off'} ${wxOn ? 'wx-open' : ''} ${drawing ? 'drawing' : ''} ${phone && (leftPanel || stepPanel) && sheetPx > window.innerHeight * 0.6 ? 'sheet-tall' : ''}`}>
+    <div className={`app ${detail ? 'detail-on' : 'detail-off'} ${wxOn ? 'wx-open' : ''} ${drawing ? 'drawing' : ''} ${hidden ? 'panel-hidden' : ''} ${phone && (leftPanel || stepPanel) && sheetPx > window.innerHeight * 0.6 ? 'sheet-tall' : ''}`}>
       <a className="skip-link" href="#field-panel" onClick={(e) => { e.preventDefault(); const el = document.getElementById('field-panel'); if (el) { el.focus(); el.scrollIntoView({ block: 'nearest' }); } else document.getElementById('main')?.focus(); }}>{tr('app.skip')}</a>
       <div className="sr-only-live" ref={setLiveRegion} aria-atomic="true" data-testid="ax-live" />
       {lite && <p className="lite-badge" data-testid="lite-badge">{ax('liteBadge')}</p>}
@@ -636,6 +641,11 @@ export default function App() {
       )}
             {bc && !hasBC && (bcOpen || nearBC) && panel === 'none' && <div className="bc-float" style={{ left: `calc(${leftInset}px + 24px)` }}><BCCard bc={bc} floating onClose={bcOpen ? () => setBcOpen(false) : undefined} /></div>}
 
+      {!phone && hasLeft && (
+        <button className={`panel-toggle ${hidden ? 'is-show' : 'is-hide'}`} style={hidden ? undefined : { left: leftInset - 14 }} onClick={() => setHidden(!hidden)} aria-expanded={!hidden} aria-controls="field-panel" aria-label={hidden ? tr('panel.show') : tr('panel.hide')} title={hidden ? tr('panel.showTitle') : tr('panel.hideTitle')} data-testid={hidden ? 'panel-show' : 'panel-hide'}>
+          <Icon name={hidden ? 'fields' : 'chevleft'} size={18} />{hidden && <span>{tr('panel.show')}</span>}
+        </button>
+      )}
       <div className="controls" style={{ right: 16 + rightInset, bottom: bottomInset + 14 }}>
         <button className="ctl ctl-desk glass" onClick={goHome} title={tr('app.homeT')} aria-label={tr('app.homeA')}><Icon name="home" size={18} /></button>
         <button className="ctl ctl-desk glass" onClick={() => map.current?.flyContinent()} title="Whole US and Canada" aria-label="Show the whole US and Canada" data-testid="continent-ctl"><Icon name="fields" size={18} /></button>

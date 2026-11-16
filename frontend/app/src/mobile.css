@@ -4,6 +4,8 @@
    Loaded last on purpose: it only refines the phone (<= 640 px) and short landscape layouts.
    =========================================================================================================== */
 @media (max-width: 640px) {
+  /* nothing may scroll the app shell itself (focus / scrollIntoView on a card used to push the top bar off screen) */
+  html, body, #root, .app { overflow: clip; }
   :root { --fs-fine: calc(14px * var(--tx, 1)); }
   .lang-toggle { font-size: 14px; }
 
@@ -111,8 +113,33 @@
   .maplibregl-ctrl-scale { font-size: 14px; }
   .pk-tabs button[data-testid^="pick-tab-"], .picker2 input, .ra, .read-aloud, .ys-play, .rain-x, .hud.drill-hint, .lang-toggle button, .ask-chip, .ask-speak, .ask-form input { min-height: 44px; }
   .rain-x { min-width: 44px; }
-  input[type="range"] { min-height: 44px; }
+  input[type="range"], .mi-group input[type="range"], .ap-field input[type="range"], .limit-ctl input[type="range"] { min-height: 44px; }
   .lang-toggle { font-size: 14px; }
+  .app.wx-open .controls { display: none !important; }
   .app.wx-open .lands-legend, .app.wx-open .res-legend, .app.wx-open .hud { display: none !important; }
   .app.drawing .lands-legend, .app.drawing .res-legend { display: none !important; }
 }
+
+/* ---- Pick sheet, collapsed: just the grabber and a "Fields" pill, the map is essentially full screen ---- */
+.pk-pill { display: none; }
+@media (max-width: 640px) {
+  .picker2.sheet-min .pk-scroll { visibility: hidden; }
+  .picker2.sheet-min .pk-pill { display: inline-flex; align-items: center; gap: var(--s-2); position: absolute; left: 50%; top: 22px; transform: translateX(-50%); min-height: 44px; padding: 0 var(--s-5); border-radius: var(--r-full); background: var(--accent-container); color: var(--on-accent-container); font: 600 var(--fs-body)/1 var(--font-ui); z-index: 2; }
+  .picker2.sheet-min .pk-pill svg { color: var(--accent); }
+  .picker2.sheet-min .fp-grab { height: 22px; }
+}
+
+/* ---- Desktop: hide the side panel for a full-screen map; a floating "Show panel" pill brings it back ---- */
+.panel-toggle { position: absolute; z-index: 25; top: calc(var(--bar-h) + 3px + 50vh - 36px); display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); min-width: 28px; min-height: 56px; border-radius: var(--r-md); background: var(--panel); color: var(--text); box-shadow: var(--e2); font: 600 var(--fs-small)/1 var(--font-ui); transition: left 0.2s, background-color var(--dur-1) var(--ease-std); }
+.panel-toggle.is-hide { width: 28px; padding: 0; top: calc(50% - 28px); }
+.panel-toggle.is-show { left: var(--s-3); top: calc(var(--bar-h) + 3px + var(--s-3)); min-height: 48px; padding: 0 var(--s-4); border-radius: var(--r-full); }
+.panel-toggle svg { color: var(--accent); }
+.panel-toggle:focus-visible { outline: none; box-shadow: var(--e2), var(--focus-ring); }
+@media (hover: hover) and (pointer: fine) { .panel-toggle:hover { background: var(--panel-2); } }
+@media (min-width: 641px) {
+  .picker2, .lpanel, .fpanel { transition: transform 0.25s var(--ease-drawer), opacity 0.2s; }
+  .app.panel-hidden .picker2, .app.panel-hidden .fpanel, .app.panel-hidden .lpanel { transform: translateX(calc(-100% - 24px)); visibility: hidden; opacity: 0; pointer-events: none; transition: transform 0.25s var(--ease-drawer), opacity 0.2s, visibility 0s linear 0.25s; }
+  .app.panel-hidden .hud { left: var(--s-3); }
+  .app.panel-hidden .lands-legend { left: var(--s-4) !important; }
+}
+@media (max-width: 640px) { .panel-toggle { display: none; } }
